@@ -34,9 +34,12 @@ Phase 2 — ✅ Complete
 Phase 3 — ✅ Complete
 Phase 4 — ⬜ Not started
 
-## Known Issues
-None — npm run tsc and npm run lint both clean
-
+## Schema Discrepancies Found (fix during Server Actions)
+- students table: has extra columns (grade_section, guardian_name, guardian_phone, guardian_email, id_card_url, device_id) not in spec — harmless, leave them
+- students table: institution_id and deletion_scheduled_at added via ALTER — now correct
+- activity_logs columns: user_id/entity_type/entity_id/metadata (not spec names) — use these
+- offline_submissions_staging: payload JSONB wraps answers (not individual columns)
+- types/supabase.ts reflects actual DB — always trust types over docs when they conflict
 ## Canonical Reminders
 - 26 migrations (001→026) — all applied to remote Supabase
 - student_answers: submission_id FK + question_id UUID FK (Design A — verified)
