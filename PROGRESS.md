@@ -1,50 +1,48 @@
 # MINDSPARK — Development Progress
 
 ## Current Phase
-Phase 0 — Project Scaffold
+Phase 4 — Server Actions and Route Handlers
 
 ## Last Completed Task
-Not started
+src/lib/offline/storage-probe.ts — Phase 3 complete
 
-## Files Written This Session
-None yet
+## Files Written (All Phases)
+### Phase 2
+- src/lib/supabase/client.ts
+- src/lib/supabase/server.ts
+- src/lib/supabase/admin.ts
+- src/lib/supabase/middleware.ts
+- src/lib/auth/rbac.ts
+- src/lib/auth/session.ts
+- src/stores/auth-store.ts
+
+### Phase 3
+- src/stores/exam-session-store.ts
+- src/stores/ui-store.ts
+- src/lib/offline/indexed-db-store.ts
+- src/lib/offline/sync-engine.ts
+- src/lib/offline/storage-probe.ts
 
 ## Next Task
-Create package.json with all packages from CLAUDE.md §STACK
+src/app/api/submissions/teardown/route.ts
+Route Handler — pagehide keepalive — JWT from Authorization header — NOT a Server Action
+
+## Phase Completion Status
+Phase 0 — ✅ Complete
+Phase 1 — ✅ Complete (26 migrations, verified on remote DB)
+Phase 2 — ✅ Complete
+Phase 3 — ✅ Complete
+Phase 4 — ⬜ Not started
 
 ## Known Issues
-None
+None — npm run tsc and npm run lint both clean
 
-## Current Errors
-None
-
----
-
-## Phase Completion Log
-
-| Phase | Status | Commit | Notes |
-|-------|--------|--------|-------|
-| 0 — Scaffold | ⬜ Not started | — | |
-| 1 — Database | ⬜ Not started | — | |
-| 2 — Auth | ⬜ Not started | — | |
-| 3 — State + Offline | ⬜ Not started | — | |
-| 4 — Server Actions | ⬜ Not started | — | |
-| 5 — Components | ⬜ Not started | — | |
-| 6 — Admin Panel | ⬜ Not started | — | |
-| 7 — Student Panel | ⬜ Not started | — | |
-| 8 — Engine | ⬜ Not started | — | |
-
----
-
-## Canonical Reminders (do not delete — checked every session)
-
-- Migration count: 26 (001→026)
-- student_answers: submission_id FK + question_id UUID FK (Design A)
-- RPC: validate_and_migrate_offline_submission (full name only)
+## Canonical Reminders
+- 26 migrations (001→026) — all applied to remote Supabase
+- student_answers: submission_id FK + question_id UUID FK (Design A — verified)
+- RPC: validate_and_migrate_offline_submission (full name)
+- 3 Route Handlers: teardown, offline-sync, consent/verify
+- 16 Server Actions across 9 files (all plural or hyphenated)
 - Phase string: PHASE_2_FLASH (never 'FLASH')
-- Route Handlers: 3 (teardown, offline-sync, consent/verify)
-- Server Actions: 16 across 9 files (all plural or hyphenated)
-- Admin monitor route: /admin/monitor/[id] (not /admin/live-monitor)
-- Student routes: /student/exams and /student/tests (plural)
 - #991B1B: negative arithmetic numbers ONLY
-- #DC2626: wrong answers, errors, validation failures
+- #DC2626: wrong answers and errors
