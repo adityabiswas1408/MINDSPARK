@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -11,6 +11,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.4"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -109,6 +134,7 @@ export type Database = {
       }
       announcements: {
         Row: {
+          body_html: string | null
           content: string
           created_at: string
           created_by: string | null
@@ -117,11 +143,14 @@ export type Database = {
           id: string
           institution_id: string
           priority: string
+          published_at: string | null
           target_audience: string[]
+          target_level_id: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          body_html?: string | null
           content: string
           created_at?: string
           created_by?: string | null
@@ -130,11 +159,14 @@ export type Database = {
           id?: string
           institution_id: string
           priority?: string
+          published_at?: string | null
           target_audience: string[]
+          target_level_id?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          body_html?: string | null
           content?: string
           created_at?: string
           created_by?: string | null
@@ -143,7 +175,9 @@ export type Database = {
           id?: string
           institution_id?: string
           priority?: string
+          published_at?: string | null
           target_audience?: string[]
+          target_level_id?: string | null
           title?: string
           updated_at?: string
         }
@@ -160,6 +194,13 @@ export type Database = {
             columns: ["institution_id"]
             isOneToOne: false
             referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcements_target_level_id_fkey"
+            columns: ["target_level_id"]
+            isOneToOne: false
+            referencedRelation: "levels"
             referencedColumns: ["id"]
           },
         ]
@@ -214,6 +255,7 @@ export type Database = {
       }
       assessment_sessions: {
         Row: {
+          closed_at: string | null
           cohort_id: string
           created_at: string
           deleted_at: string | null
@@ -221,10 +263,13 @@ export type Database = {
           id: string
           paper_id: string
           scheduled_at: string
+          started_at: string | null
           status: string
+          student_id: string | null
           updated_at: string
         }
         Insert: {
+          closed_at?: string | null
           cohort_id: string
           created_at?: string
           deleted_at?: string | null
@@ -232,10 +277,13 @@ export type Database = {
           id?: string
           paper_id: string
           scheduled_at: string
+          started_at?: string | null
           status?: string
+          student_id?: string | null
           updated_at?: string
         }
         Update: {
+          closed_at?: string | null
           cohort_id?: string
           created_at?: string
           deleted_at?: string | null
@@ -243,7 +291,9 @@ export type Database = {
           id?: string
           paper_id?: string
           scheduled_at?: string
+          started_at?: string | null
           status?: string
+          student_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -259,6 +309,13 @@ export type Database = {
             columns: ["paper_id"]
             isOneToOne: false
             referencedRelation: "exam_papers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_sessions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
             referencedColumns: ["id"]
           },
         ]
@@ -348,6 +405,8 @@ export type Database = {
       }
       exam_papers: {
         Row: {
+          anzan_delay_ms: number | null
+          closed_at: string | null
           created_at: string
           created_by: string
           deleted_at: string | null
@@ -356,13 +415,18 @@ export type Database = {
           id: string
           institution_id: string
           level_id: string
+          opened_at: string | null
           pass_percentage: number | null
+          result_published_at: string | null
           status: string
           title: string
           total_marks: number
+          type: string
           updated_at: string
         }
         Insert: {
+          anzan_delay_ms?: number | null
+          closed_at?: string | null
           created_at?: string
           created_by: string
           deleted_at?: string | null
@@ -371,13 +435,18 @@ export type Database = {
           id?: string
           institution_id: string
           level_id: string
+          opened_at?: string | null
           pass_percentage?: number | null
+          result_published_at?: string | null
           status?: string
           title: string
           total_marks?: number
+          type?: string
           updated_at?: string
         }
         Update: {
+          anzan_delay_ms?: number | null
+          closed_at?: string | null
           created_at?: string
           created_by?: string
           deleted_at?: string | null
@@ -386,10 +455,13 @@ export type Database = {
           id?: string
           institution_id?: string
           level_id?: string
+          opened_at?: string | null
           pass_percentage?: number | null
+          result_published_at?: string | null
           status?: string
           title?: string
           total_marks?: number
+          type?: string
           updated_at?: string
         }
         Relationships: [
@@ -418,30 +490,45 @@ export type Database = {
       }
       grade_boundaries: {
         Row: {
+          assessment_type: string | null
           color_hex: string | null
           created_at: string
+          grade: string | null
           grade_name: string
           id: string
           institution_id: string
+          label: string | null
+          max_score: number | null
           min_percentage: number
+          min_score: number | null
           updated_at: string
         }
         Insert: {
+          assessment_type?: string | null
           color_hex?: string | null
           created_at?: string
+          grade?: string | null
           grade_name: string
           id?: string
           institution_id: string
+          label?: string | null
+          max_score?: number | null
           min_percentage: number
+          min_score?: number | null
           updated_at?: string
         }
         Update: {
+          assessment_type?: string | null
           color_hex?: string | null
           created_at?: string
+          grade?: string | null
           grade_name?: string
           id?: string
           institution_id?: string
+          label?: string | null
+          max_score?: number | null
           min_percentage?: number
+          min_score?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -646,11 +733,18 @@ export type Database = {
       questions: {
         Row: {
           correct_answer: Json
+          correct_option: string | null
           created_at: string
           deleted_at: string | null
+          equation_display: string | null
+          flash_sequence: number[] | null
           id: string
           marks: number
           metadata: Json | null
+          option_a: string | null
+          option_b: string | null
+          option_c: string | null
+          option_d: string | null
           options: Json | null
           order_index: number
           paper_id: string
@@ -660,11 +754,18 @@ export type Database = {
         }
         Insert: {
           correct_answer: Json
+          correct_option?: string | null
           created_at?: string
           deleted_at?: string | null
+          equation_display?: string | null
+          flash_sequence?: number[] | null
           id?: string
           marks?: number
           metadata?: Json | null
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
           options?: Json | null
           order_index: number
           paper_id: string
@@ -674,11 +775,18 @@ export type Database = {
         }
         Update: {
           correct_answer?: Json
+          correct_option?: string | null
           created_at?: string
           deleted_at?: string | null
+          equation_display?: string | null
+          flash_sequence?: number[] | null
           id?: string
           marks?: number
           metadata?: Json | null
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
           options?: Json | null
           order_index?: number
           paper_id?: string
@@ -749,6 +857,7 @@ export type Database = {
           cohort_id: string
           consent_verified: boolean
           created_at: string
+          date_of_birth: string | null
           deleted_at: string | null
           deletion_scheduled_at: string | null
           device_id: string | null
@@ -770,6 +879,7 @@ export type Database = {
           cohort_id: string
           consent_verified?: boolean
           created_at?: string
+          date_of_birth?: string | null
           deleted_at?: string | null
           deletion_scheduled_at?: string | null
           device_id?: string | null
@@ -791,6 +901,7 @@ export type Database = {
           cohort_id?: string
           consent_verified?: boolean
           created_at?: string
+          date_of_birth?: string | null
           deleted_at?: string | null
           deletion_scheduled_at?: string | null
           device_id?: string | null
@@ -842,11 +953,14 @@ export type Database = {
       submissions: {
         Row: {
           completed_at: string | null
+          completion_seal: string | null
           created_at: string
           deletion_scheduled_at: string | null
+          dpm: number | null
           grade: string | null
           id: string
           idempotency_key: string | null
+          paper_id: string | null
           percentage: number | null
           result_published_at: string | null
           score: number
@@ -857,11 +971,14 @@ export type Database = {
         }
         Insert: {
           completed_at?: string | null
+          completion_seal?: string | null
           created_at?: string
           deletion_scheduled_at?: string | null
+          dpm?: number | null
           grade?: string | null
           id?: string
           idempotency_key?: string | null
+          paper_id?: string | null
           percentage?: number | null
           result_published_at?: string | null
           score?: number
@@ -872,11 +989,14 @@ export type Database = {
         }
         Update: {
           completed_at?: string | null
+          completion_seal?: string | null
           created_at?: string
           deletion_scheduled_at?: string | null
+          dpm?: number | null
           grade?: string | null
           id?: string
           idempotency_key?: string | null
+          paper_id?: string | null
           percentage?: number | null
           result_published_at?: string | null
           score?: number
@@ -886,6 +1006,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "submissions_paper_id_fkey"
+            columns: ["paper_id"]
+            isOneToOne: false
+            referencedRelation: "exam_papers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "submissions_session_id_fkey"
             columns: ["session_id"]
@@ -948,7 +1075,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      bulk_import_students: { Args: { p_data: Json }; Returns: Json }
+      bulk_import_students: {
+        Args: {
+          p_institution_id: string
+          p_level_id: string
+          p_cohort_id: string | null
+          p_students: Json
+        }
+        Returns: Json
+      }
       calculate_results: { Args: { p_submission_id: string }; Returns: Json }
       get_live_monitor_data: {
         Args: { p_paper_id: string }
@@ -1101,6 +1236,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
