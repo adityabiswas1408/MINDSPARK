@@ -175,13 +175,13 @@ Total tasks: 196 across 8 phases.
 ## Phase 4 — Server Actions + Route Handlers
 > ⚠️ Context note: This phase has 12 files. Consider /clear after completing Route Handlers if context > 60%.
 
-- [ ] `src/app/api/submissions/teardown/route.ts` — POST Route Handler; JWT from `Authorization` header; upsert answers; idempotent on duplicate call.
+- [x] `src/app/api/submissions/teardown/route.ts` — POST Route Handler; JWT from `Authorization` header; upsert answers; idempotent on duplicate call.
   Depends: Phase 2, Phase 1 migrations
   Criterion: `fetch('/api/submissions/teardown', { keepalive: true })` returns 200 with valid JWT; 401 without
-- [ ] `src/app/api/submissions/offline-sync/route.ts` — POST Route Handler; HMAC validation; calls `validate_and_migrate_offline_submission` RPC; rate limit 10/60s.
+- [x] `src/app/api/submissions/offline-sync/route.ts` — POST Route Handler; HMAC validation; calls `validate_and_migrate_offline_submission` RPC; rate limit 10/60s.
   Depends: Phase 2, migration 017
   Criterion: Duplicate `idempotency_key` returns `{ synced_count: 0 }`, not error
-- [ ] `src/app/api/consent/verify/route.ts` — GET Route Handler; unauthenticated; reads JWT from `?token=` query param; validates it; sets `students.consent_verified = true` via service-role client; returns success/error state for UI.
+- [x] `src/app/api/consent/verify/route.ts` — GET Route Handler; unauthenticated; reads JWT from `?token=` query param; validates it; sets `students.consent_verified = true` via service-role client; returns success/error state for UI.
   Depends: Phase 2 admin client, migration 025
   Criterion: GET with valid JWT returns 200 and sets `consent_verified = true`; GET with expired/invalid JWT returns 401 with `{ error: 'LINK_EXPIRED' }` — no raw stack trace in response
 - [ ] `src/app/actions/levels.ts` — `createLevel`, `updateLevel`, `reorderLevels`, `softDeleteLevel`. Admin role required.

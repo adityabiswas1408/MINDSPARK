@@ -750,6 +750,7 @@ export type Database = {
           consent_verified: boolean
           created_at: string
           deleted_at: string | null
+          deletion_scheduled_at: string | null
           device_id: string | null
           dob: string | null
           full_name: string
@@ -760,6 +761,7 @@ export type Database = {
           guardian_phone: string | null
           id: string
           id_card_url: string | null
+          institution_id: string | null
           level_id: string
           roll_number: string | null
           updated_at: string
@@ -769,6 +771,7 @@ export type Database = {
           consent_verified?: boolean
           created_at?: string
           deleted_at?: string | null
+          deletion_scheduled_at?: string | null
           device_id?: string | null
           dob?: string | null
           full_name: string
@@ -779,6 +782,7 @@ export type Database = {
           guardian_phone?: string | null
           id: string
           id_card_url?: string | null
+          institution_id?: string | null
           level_id: string
           roll_number?: string | null
           updated_at?: string
@@ -788,6 +792,7 @@ export type Database = {
           consent_verified?: boolean
           created_at?: string
           deleted_at?: string | null
+          deletion_scheduled_at?: string | null
           device_id?: string | null
           dob?: string | null
           full_name?: string
@@ -798,6 +803,7 @@ export type Database = {
           guardian_phone?: string | null
           id?: string
           id_card_url?: string | null
+          institution_id?: string | null
           level_id?: string
           roll_number?: string | null
           updated_at?: string
@@ -815,6 +821,13 @@ export type Database = {
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "students_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
             referencedColumns: ["id"]
           },
           {
