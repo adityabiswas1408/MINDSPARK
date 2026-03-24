@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
-import { DM_Sans, DM_Mono, Geist } from 'next/font/google';
+import { DM_Sans, DM_Mono } from 'next/font/google';
 import './globals.css';
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 const dmMono = DM_Mono({
   subsets: ['latin'],
@@ -23,9 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" className={cn("font-sans", dmSans.variable)}>
       <body 
-        className={`${geist.variable} ${dmMono.variable} font-sans antialiased bg-page text-secondary min-h-screen`}
+        className={`${dmSans.variable} ${dmMono.variable} font-sans antialiased bg-page text-secondary min-h-screen`}
       >
         <a 
           href="#main-content" 

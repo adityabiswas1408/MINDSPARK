@@ -66,7 +66,7 @@
     background-color: var(--bg-page);
     color: var(--text-secondary);
     /* Falls back automatically via Tailwind font-sans config */
-    @apply bg-background text-foreground;
+    /* Shadcn defaults removed to enforce original design tokens */
   }
 
   /* Global Keyboard Focus (WCAG 2.2 AA / AAA Customization) */
