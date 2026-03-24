@@ -12,16 +12,14 @@ const compat = new FlatCompat({
 export default [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
+    files: ['src/app/(student)/**/*.{ts,tsx}', 'src/components/**/*.{ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/stores/**/*.{ts,tsx}'],
     rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [{
-            group: ["*/lib/supabase/admin", "*/lib/supabase/admin/*"],
-            message: "Do not import the Supabase Admin client in client components! It exposes the SERVICE_ROLE_KEY."
-          }]
-        }
-      ]
-    }
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['**/supabase/admin', '**/lib/supabase/admin*'],
+          message: 'Service-role client forbidden here. See docs/14_security.md §4.',
+        }],
+      }],
+    },
   }
 ];

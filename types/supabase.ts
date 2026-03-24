@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -536,36 +536,51 @@ export type Database = {
       }
       offline_submissions_staging: {
         Row: {
+          client_ts: number | null
           completed_at: string | null
           created_at: string
           error_message: string | null
+          hmac_timestamp: string | null
           id: string
           institution_id: string
           payload: Json
           processing_started_at: string | null
+          server_received_at: string
+          session_id: string | null
           status: string
+          student_id: string | null
           updated_at: string
         }
         Insert: {
+          client_ts?: number | null
           completed_at?: string | null
           created_at?: string
           error_message?: string | null
+          hmac_timestamp?: string | null
           id?: string
           institution_id: string
           payload: Json
           processing_started_at?: string | null
+          server_received_at?: string
+          session_id?: string | null
           status?: string
+          student_id?: string | null
           updated_at?: string
         }
         Update: {
+          client_ts?: number | null
           completed_at?: string | null
           created_at?: string
           error_message?: string | null
+          hmac_timestamp?: string | null
           id?: string
           institution_id?: string
           payload?: Json
           processing_started_at?: string | null
+          server_received_at?: string
+          session_id?: string | null
           status?: string
+          student_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -935,10 +950,16 @@ export type Database = {
           total_questions: number
         }[]
       }
-      validate_and_migrate_offline_submission: {
-        Args: { p_payload: Json }
-        Returns: Json
-      }
+      validate_and_migrate_offline_submission:
+        | { Args: { p_payload: Json }; Returns: Json }
+        | {
+            Args: {
+              p_client_ts: number
+              p_hmac_timestamp: string
+              p_staging_id: string
+            }
+            Returns: Json
+          }
     }
     Enums: {
       [_ in never]: never
