@@ -1,0 +1,25 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@/lib/supabase/admin",
+            "message": "Do not import the Supabase Admin client in client components! It exposes the SERVICE_ROLE_KEY."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["*/lib/supabase/admin", "*/lib/supabase/admin/*"],
+            "message": "Do not import the Supabase Admin client in client components! It exposes the SERVICE_ROLE_KEY."
+          }
+        ]
+      }
+    ]
+  }
+}
