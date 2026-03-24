@@ -1,6 +1,5 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
@@ -20,7 +19,7 @@ interface UpdateSettingsInput {
 
 export async function updateSettings(input: UpdateSettingsInput): Promise<ActionResult<{ updated: true }>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error as any, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
 
   if (input.session_timeout_seconds && (input.session_timeout_seconds < 900 || input.session_timeout_seconds > 86400)) {
@@ -45,7 +44,7 @@ export async function updateSettings(input: UpdateSettingsInput): Promise<Action
     }
   }
 
-  const updates: Record<string, any> = {};
+  const updates: Record<string, unknown> = {};
   if (input.session_timeout_seconds !== undefined) updates.session_timeout_seconds = input.session_timeout_seconds;
   if (input.timezone !== undefined) updates.timezone = input.timezone;
   if (input.logo_url !== undefined) updates.logo_url = input.logo_url;

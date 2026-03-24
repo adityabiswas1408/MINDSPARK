@@ -20,7 +20,7 @@ interface CreateAnnouncementOutput {
 
 export async function createAnnouncement(input: CreateAnnouncementInput): Promise<ActionResult<CreateAnnouncementOutput>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error as any, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
 
   if (!input.title || input.title.trim() === '') {

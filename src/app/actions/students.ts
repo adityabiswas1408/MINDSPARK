@@ -112,7 +112,7 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
       roll_number: input.roll_number,
       date_of_birth: input.date_of_birth,
       level_id: input.level_id,
-      cohort_id: input.cohort_id as any,
+      cohort_id: input.cohort_id as unknown as string,
       institution_id: institutionId
     });
 
@@ -192,7 +192,7 @@ export async function updateStudent(input: UpdateStudentInput): Promise<ActionRe
     entity_type: 'student',
     entity_id: input.student_id,
     action_type: 'UPDATE_STUDENT',
-    metadata: { changes: input as any }
+    metadata: { changes: input } as unknown as Record<string, string>
   });
 
   return { ok: true, data: { updated: true } };

@@ -4,9 +4,9 @@ import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 
-export async function fetchActivityLogs(): Promise<ActionResult<{ logs: any[] }>> {
+export async function fetchActivityLogs(): Promise<ActionResult<{ logs: Record<string, unknown>[] }>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error as any, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { institutionId } = authResult;
 
   const supabase = await createClient();

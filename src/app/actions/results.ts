@@ -16,7 +16,7 @@ interface PublishResultOutput {
 
 export async function publishResult(input: PublishResultInput): Promise<ActionResult<PublishResultOutput>> {
   const authResult = await requireRole(['admin', 'teacher']);
-  if ('error' in authResult) return { error: authResult.error as any, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId, role } = authResult;
 
   const supabase = await createClient();
@@ -62,7 +62,7 @@ interface UnpublishResultInput {
 
 export async function unpublishResult(input: UnpublishResultInput): Promise<ActionResult<{ unpublished: true }>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error as any, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
 
   const supabase = await createClient();
@@ -100,7 +100,7 @@ interface ReEvaluateResultsOutput {
 
 export async function reEvaluateResults(input: ReEvaluateResultsInput): Promise<ActionResult<ReEvaluateResultsOutput>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error as any, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
 
   const supabase = await createClient();

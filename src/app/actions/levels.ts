@@ -11,7 +11,7 @@ interface CreateLevelInput {
 
 export async function createLevel(input: CreateLevelInput): Promise<ActionResult<{ level_id: string }>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error as any, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
 
   const { data: level, error } = await adminSupabase.from('levels').insert({

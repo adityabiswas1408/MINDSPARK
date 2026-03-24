@@ -90,7 +90,7 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
       started_at: now,
       expires_at: expiresAt,
       scheduled_at: now,
-      cohort_id: cohortId as any,
+      cohort_id: cohortId as unknown as string,
       status: 'ACTIVE'
     })
     .select('id')
@@ -120,7 +120,7 @@ interface SubmitAnswerInput {
 export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResult<{ saved: true }>> {
   const authResult = await requireRole('student');
   if ('error' in authResult) return { error: authResult.error, message: authResult.message };
-  const { userId, institutionId } = authResult;
+  const { userId } = authResult;
 
   const supabase = await createClient();
 

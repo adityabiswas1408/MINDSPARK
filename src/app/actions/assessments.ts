@@ -87,7 +87,7 @@ export async function updateAssessment(input: UpdateAssessmentInput): Promise<Ac
     entity_type: 'assessment',
     entity_id: input.assessment_id,
     action_type: 'UPDATE_ASSESSMENT',
-    metadata: { changes: input as any }
+    metadata: { changes: input } as unknown as Record<string, string>
   });
 
   return { ok: true, data: { updated: true } };
