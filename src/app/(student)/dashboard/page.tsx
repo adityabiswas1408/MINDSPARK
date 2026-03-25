@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 
 export default async function StudentDashboardPage() {

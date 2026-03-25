@@ -30,6 +30,7 @@ interface ExamSessionState {
   sessionId: string | null;
   rafHandle: number | null;
   cooldownStart: number | null;
+  tabSwitchCount: number;
 
   // Actions
   setPhase: (newPhase: ExamPhase) => void;
@@ -43,6 +44,7 @@ interface ExamSessionState {
   incrementQuestion: () => void;
   setRafHandle: (handle: number | null) => void;
   setCooldownStart: (start: number | null) => void;
+  setTabSwitchCount: (count: number) => void;
 }
 
 // Deterministic Transition Guard
@@ -71,6 +73,7 @@ export const useExamSessionStore = create<ExamSessionState>((set, get) => ({
   sessionId: null,
   rafHandle: null,
   cooldownStart: null,
+  tabSwitchCount: 0,
 
   setPhase: (newPhase: ExamPhase) => {
     const currentPhase = get().phase;
@@ -109,4 +112,5 @@ export const useExamSessionStore = create<ExamSessionState>((set, get) => ({
 
   setRafHandle: (rafHandle) => set({ rafHandle }),
   setCooldownStart: (cooldownStart) => set({ cooldownStart }),
+  setTabSwitchCount: (tabSwitchCount) => set({ tabSwitchCount }),
 }));

@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.4"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       activity_logs: {
@@ -406,6 +381,8 @@ export type Database = {
       exam_papers: {
         Row: {
           anzan_delay_ms: number | null
+          anzan_digit_count: number | null
+          anzan_row_count: number | null
           closed_at: string | null
           created_at: string
           created_by: string
@@ -426,6 +403,8 @@ export type Database = {
         }
         Insert: {
           anzan_delay_ms?: number | null
+          anzan_digit_count?: number | null
+          anzan_row_count?: number | null
           closed_at?: string | null
           created_at?: string
           created_by: string
@@ -446,6 +425,8 @@ export type Database = {
         }
         Update: {
           anzan_delay_ms?: number | null
+          anzan_digit_count?: number | null
+          anzan_row_count?: number | null
           closed_at?: string | null
           created_at?: string
           created_by?: string
@@ -1072,30 +1053,20 @@ export type Database = {
       }
     }
     Views: {
-      dashboard_aggregates: {
-        Row: {
-          institution_id:    string;
-          total_students:    number | null;
-          total_assessments: number | null;
-          live_exams:        number | null;
-          total_submissions: number | null;
-          refreshed_at:      string | null;
-        };
-        Insert: never;
-        Update: never;
-        Relationships: [];
-      };
+      [_ in never]: never
     }
     Functions: {
-      bulk_import_students: {
-        Args: {
-          p_institution_id: string
-          p_level_id: string
-          p_cohort_id: string | null
-          p_students: Json
-        }
-        Returns: Json
-      }
+      bulk_import_students:
+        | { Args: { p_data: Json }; Returns: Json }
+        | {
+            Args: {
+              p_cohort_id: string
+              p_institution_id: string
+              p_level_id: string
+              p_students: Json
+            }
+            Returns: Json
+          }
       calculate_results: { Args: { p_submission_id: string }; Returns: Json }
       get_live_monitor_data: {
         Args: { p_paper_id: string }
@@ -1248,9 +1219,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

@@ -8,11 +8,19 @@ export default async function AdminDashboardPage() {
   const { institutionId } = authResult;
 
   const supabase = await createClient();
-  const { data: aggregates } = await supabase
-    .from('dashboard_aggregates')
-    .select('*')
-    .eq('institution_id', institutionId)
-    .single();
+
+  // Direct count queries — dashboard_aggregates view is not available
+  const [studentsRes, assessmentsRes, liveRes, submissionsRes] = await Promise.all([
+    supabase.from('students').select('id', { count: 'exact', head: true }).eq('institution_id', institutionId),
+    supabase.from('exam_papers').select('id', { count: 'exact', head: true }).eq('institution_id', institutionId),
+    supabase.from('exam_papers').select('id', { count: 'exact', head: true }).eq('institution_id', institutionId).eq('status', 'LIVE'),
+    supabase.from('submissions').select('id', { count: 'exact', head: true }),
+  ]);
+
+  const totalStudents = studentsRes.count ?? 0;
+  const totalAssessments = assessmentsRes.count ?? 0;
+  const liveExams = liveRes.count ?? 0;
+  const totalSubmissions = submissionsRes.count ?? 0;
 
   return (
     <div className="space-y-6">
@@ -23,7 +31,7 @@ export default async function AdminDashboardPage() {
             <CardTitle className="text-sm font-medium text-secondary">Total Students</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{aggregates?.total_students || 0}</div>
+            <div className="text-2xl font-bold text-primary">{totalStudents}</div>
           </CardContent>
         </Card>
         <Card>
@@ -31,7 +39,7 @@ export default async function AdminDashboardPage() {
             <CardTitle className="text-sm font-medium text-secondary">Total Assessments</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{aggregates?.total_assessments || 0}</div>
+            <div className="text-2xl font-bold text-primary">{totalAssessments}</div>
           </CardContent>
         </Card>
         <Card>
@@ -39,7 +47,7 @@ export default async function AdminDashboardPage() {
             <CardTitle className="text-sm font-medium text-secondary">Live Exams</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{aggregates?.live_exams || 0}</div>
+            <div className="text-2xl font-bold text-primary">{liveExams}</div>
           </CardContent>
         </Card>
         <Card>
@@ -47,7 +55,7 @@ export default async function AdminDashboardPage() {
             <CardTitle className="text-sm font-medium text-secondary">Total Submissions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{aggregates?.total_submissions || 0}</div>
+            <div className="text-2xl font-bold text-primary">{totalSubmissions}</div>
           </CardContent>
         </Card>
       </div>

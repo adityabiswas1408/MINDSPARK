@@ -9,7 +9,7 @@ export default function StudentLobbyPage(props: { params: Promise<{ id: string }
   
   const playMetronome = () => {
     try {
-      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       const ctx = new Ctx();
       const playBeep = (timeFromNow: number) => {
         const osc = ctx.createOscillator();
