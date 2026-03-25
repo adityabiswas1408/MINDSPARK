@@ -1072,7 +1072,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      dashboard_aggregates: {
+        Row: {
+          institution_id:    string;
+          total_students:    number | null;
+          total_assessments: number | null;
+          live_exams:        number | null;
+          total_submissions: number | null;
+          refreshed_at:      string | null;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
     }
     Functions: {
       bulk_import_students: {
