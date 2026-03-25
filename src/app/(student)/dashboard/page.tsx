@@ -1,0 +1,16 @@
+import { createClient } from '@/lib/supabase/server';
+import { requireRole } from '@/lib/auth/rbac';
+
+export default async function StudentDashboardPage() {
+  const authResult = await requireRole('student');
+  if ('error' in authResult) return null;
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-green-800">Student Dashboard</h1>
+      <div className="p-4 bg-card rounded-md border border-slate-200 shadow-sm">
+        <p className="text-secondary">Welcome. Your active exams will appear here.</p>
+      </div>
+    </div>
+  );
+}
