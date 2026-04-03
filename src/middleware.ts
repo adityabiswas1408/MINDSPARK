@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
 
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 

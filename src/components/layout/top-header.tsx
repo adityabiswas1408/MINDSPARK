@@ -35,14 +35,30 @@ export function TopHeader({ title, actions }: TopHeaderProps) {
         <div className="h-8 w-px bg-slate-200 mx-1" aria-hidden="true" />
 
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-green-800 outline-none focus-visible:ring-2 focus-visible:ring-green-800 focus-visible:ring-offset-1">
-              AD
-            </Button>
+          <DropdownMenuTrigger
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: '#F1F5F9',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-sans)',
+              fontWeight: '700',
+              fontSize: '14px',
+              color: '#1A3829',
+              outline: 'none',
+            }}
+          >
+            PS
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 font-sans">
+          <DropdownMenuContent align="end">
             <DropdownMenuItem>Profile Settings</DropdownMenuItem>
-            <DropdownMenuItem className="text-danger">Log Out</DropdownMenuItem>
+            <DropdownMenuItem>Change Password</DropdownMenuItem>
+            <DropdownMenuItem style={{ color: '#DC2626' }}>Sign Out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

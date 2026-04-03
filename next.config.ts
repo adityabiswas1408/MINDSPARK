@@ -19,8 +19,23 @@ if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test") {
   }
 }
 
-// CSP Headers
-const cspHeader = `
+// CSP Headers — dev mode needs unsafe-eval for HMR, production uses nonce + strict-dynamic
+const isDev = process.env.NODE_ENV === 'development';
+
+const cspHeader = isDev
+  ? `
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' blob: data: https://*.supabase.co http://localhost:*;
+    font-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    connect-src 'self' wss://*.supabase.co https://*.supabase.co ws://localhost:* http://localhost:*;
+  `.replace(/\s{2,}/g, ' ').trim()
+  : `
     default-src 'self';
     script-src 'self' 'nonce-{{nonce}}' 'strict-dynamic';
     style-src 'self' 'unsafe-inline';
@@ -32,8 +47,8 @@ const cspHeader = `
     frame-ancestors 'none';
     block-all-mixed-content;
     upgrade-insecure-requests;
-    connect-src 'self' wss://*.supabase.co https://*.supabase.co ws://localhost:* http://localhost:*;
-`.replace(/\s{2,}/g, ' ').trim();
+    connect-src 'self' wss://*.supabase.co https://*.supabase.co;
+  `.replace(/\s{2,}/g, ' ').trim();
 
 const nextConfig: NextConfig = {
   images: {
