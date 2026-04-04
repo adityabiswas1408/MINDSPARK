@@ -113,16 +113,28 @@ export function AnzanFlashView({
   }
 
   // ---- PHASE_2_FLASH: ONLY FlashNumber — everything else UNMOUNTED ----
+  //
+  // a11y requirements (08_a11y.md §6.1):
+  //   role="region"    — landmark so AT users can navigate to it
+  //   aria-live="off"  — content updates NOT announced (Ticker Mode is the accessible path)
+  //   aria-busy="true" — conveys "something is happening" without reading out flash numbers
+  //   data-testid      — required by Playwright A11Y-03 and E2E-02 tests
   if (phase === 'PHASE_2_FLASH') {
     return (
-      <>
+      <div
+        role="region"
+        aria-label="Flash number sequence"
+        aria-live="off"
+        aria-busy="true"
+        data-testid="anzan-flash-view"
+      >
         <FlashNumber
           numbers={currentSequence}
           intervalMs={anzanConfig.delayMs}
           onComplete={handleFlashComplete}
         />
         <PausedOverlay isPaused={isPaused} />
-      </>
+      </div>
     );
   }
 
