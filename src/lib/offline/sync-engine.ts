@@ -45,15 +45,36 @@ async function flushOfflineQueue() {
     }
 
     for (const [sessionId, answers] of Array.from(sessionMap.entries())) {
+      const batchTimestamp = Date.now();
+      const hmacInput = `${sessionId}:${batchTimestamp}`;
+      const secret = process.env.NEXT_PUBLIC_OFFLINE_SYNC_SECRET ?? '';
+      
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const signature = await crypto.subtle.sign(
+        'HMAC',
+        keyMaterial,
+        new TextEncoder().encode(hmacInput)
+      );
+      const hmacTimestamp = Array.from(new Uint8Array(signature))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+      
       const payload = {
         session_id: sessionId,
         answers: answers.map((a: PendingAnswer) => ({
           question_id: a.question_id,
           selected_option: a.selected_option,
           answered_at: a.answered_at,
-          idempotency_key: a.idempotency_key
+          idempotency_key: a.idempotency_key,
         })),
-        client_timestamp: Date.now()
+        hmac_timestamp: hmacTimestamp,
+        batch_timestamp: batchTimestamp,
       };
 
       const response = await fetch('/api/submissions/offline-sync', {
