@@ -16,9 +16,11 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
+    const loginEmail = email.includes('@') ? email : `${email}@mindspark.local`;
+
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
+      email: loginEmail,
       password,
     });
 
@@ -100,11 +102,12 @@ export default function LoginPage() {
               fontFamily: 'var(--font-sans)'
             }}
           >
-            Email
+            Roll Number / Email
           </label>
           <input
             id="email"
-            type="email"
+            type="text"
+            data-testid="roll-number"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -134,11 +137,12 @@ export default function LoginPage() {
               fontFamily: 'var(--font-sans)'
             }}
           >
-            Password
+            Password / DOB
           </label>
           <input
             id="password"
             type="password"
+            data-testid="dob"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -175,6 +179,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
+            data-testid="login-submit"
             disabled={loading}
             style={{
               width: '100%',
