@@ -13,7 +13,7 @@
  */
 
 /* 1. CONFIG */
-@config "../../tailwind.config.ts";
+@config "../tailwind.config.ts";
 
 /* 2. THIRD-PARTY IMPORTS */
 @import "tw-animate-css";
