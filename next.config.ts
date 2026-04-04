@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test") {
   }
 }
 
-// CSP Headers — dev mode needs unsafe-eval for HMR, production uses nonce + strict-dynamic
+// CSP Headers — dev mode needs unsafe-eval for HMR, production uses self + unsafe-inline
 const isDev = process.env.NODE_ENV === 'development';
 
 const cspHeader = isDev
