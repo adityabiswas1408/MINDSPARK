@@ -37,7 +37,7 @@ const cspHeader = isDev
   `.replace(/\s{2,}/g, ' ').trim()
   : `
     default-src 'self';
-    script-src 'self' 'nonce-{{nonce}}' 'strict-dynamic' 'unsafe-inline';
+    script-src 'self' 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: https://*.supabase.co http://localhost:*;
     font-src 'self';
@@ -70,8 +70,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            // Fallback CSP for when middleware nonce is not processed
-            value: cspHeader.replace("'nonce-{{nonce}}'", ""),
+            value: cspHeader,
           },
           {
             key: "X-Content-Type-Options",

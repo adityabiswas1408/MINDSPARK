@@ -42,8 +42,8 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isProtectedRoute = 
-    request.nextUrl.pathname.startsWith("/admin/") || 
+  const isProtectedRoute =
+    request.nextUrl.pathname.startsWith("/admin/") ||
     request.nextUrl.pathname.startsWith("/student/");
 
   if (isProtectedRoute && !user) {
@@ -51,19 +51,6 @@ export async function middleware(request: NextRequest) {
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
-
-  // Inject CSP nonce replacing the placeholder
-  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-  const cspHeader = supabaseResponse.headers.get("Content-Security-Policy");
-  if (cspHeader) {
-      supabaseResponse.headers.set(
-          "Content-Security-Policy",
-          cspHeader.replace(/nonce-\{\{nonce\}\}/g, `nonce-${nonce}`)
-      );
-  }
-  
-  // Also pass nonce to server components via headers
-  supabaseResponse.headers.set("x-nonce", nonce);
 
   return supabaseResponse;
 }
