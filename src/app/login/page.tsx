@@ -16,7 +16,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const loginEmail = email.includes('@') ? email : `${email}@mindspark.local`;
+    const loginEmail = (email.includes('@') ? email : `${email}@mindspark.local`).toLowerCase();
 
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInWithPassword({
@@ -34,11 +34,11 @@ export default function LoginPage() {
     const role = user?.app_metadata?.role;
 
     if (role === 'admin' || role === 'teacher') {
-      router.push('/dashboard');
+      router.push('/admin/dashboard');
     } else if (role === 'student') {
       router.push('/student/dashboard');
     } else {
-      router.push('/dashboard');
+      router.push('/admin/dashboard');
     }
   };
 
