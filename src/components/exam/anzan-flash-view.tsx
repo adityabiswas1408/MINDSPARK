@@ -10,6 +10,7 @@ import { ExamNetworkBanner } from '@/components/exam/network-banner';
 import { CompletionCard } from '@/components/exam/completion-card';
 import { useExamSessionStore } from '@/stores/exam-session-store';
 import { useAnzanEngine } from '@/hooks/use-anzan-engine';
+import { TickerMode } from '@/components/a11y/a11y-ticker-mode';
 
 interface AnzanQuestion {
   id: string;
@@ -62,6 +63,7 @@ export function AnzanFlashView({
   const currentQuestionIndex = useExamSessionStore((s) => s.currentQuestionIndex);
   const totalQuestions = useExamSessionStore((s) => s.totalQuestions);
   const [error, setError] = useState<string | null>(null);
+  const tickerMode = false; // TODO: Wire from session/profile in the future
 
   const {
     currentSequence,
@@ -128,11 +130,19 @@ export function AnzanFlashView({
         aria-busy="true"
         data-testid="anzan-flash-view"
       >
-        <FlashNumber
-          numbers={currentSequence}
-          intervalMs={anzanConfig.delayMs}
-          onComplete={handleFlashComplete}
-        />
+        {tickerMode ? (
+          <TickerMode
+            sequence={currentSequence}
+            intervalMs={anzanConfig.delayMs}
+            onComplete={handleFlashComplete}
+          />
+        ) : (
+          <FlashNumber
+            numbers={currentSequence}
+            intervalMs={anzanConfig.delayMs}
+            onComplete={handleFlashComplete}
+          />
+        )}
         <PausedOverlay isPaused={isPaused} />
       </div>
     );
