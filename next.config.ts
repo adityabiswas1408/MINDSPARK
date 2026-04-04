@@ -37,7 +37,7 @@ const cspHeader = isDev
   `.replace(/\s{2,}/g, ' ').trim()
   : `
     default-src 'self';
-    script-src 'self' 'nonce-{{nonce}}' 'strict-dynamic';
+    script-src 'self' 'nonce-{{nonce}}' 'strict-dynamic' 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: https://*.supabase.co http://localhost:*;
     font-src 'self';
