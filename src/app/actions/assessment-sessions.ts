@@ -134,12 +134,23 @@ export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResu
   if (session.student_id !== userId) return { error: 'FORBIDDEN', message: 'Not your session' };
   if (session.closed_at) return { error: 'SESSION_CLOSED', message: 'Session closed' };
 
+  // C-4 fix: look up the actual submission.id for this session
+  // student_answers.submission_id FK → submissions(id), not assessment_sessions(id)
+  const { data: sub } = await adminSupabase
+    .from('submissions')
+    .select('id')
+    .eq('session_id', input.session_id)
+    .eq('student_id', userId)
+    .maybeSingle();
+
+  const submissionId = sub?.id ?? input.session_id;
+
   await adminSupabase.from('student_answers').upsert({
     idempotency_key: input.idempotency_key,
-    submission_id: input.session_id,
-    question_id: input.question_id,
+    submission_id:   submissionId,
+    question_id:     input.question_id,
     selected_option: input.selected_option,
-    answered_at: new Date(input.answered_at).toISOString()
+    answered_at:     new Date(input.answered_at).toISOString()
   }, { onConflict: 'idempotency_key' });
 
   return { ok: true, data: { saved: true } };
@@ -186,17 +197,19 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
     paper_id: session.paper_id,
     completed_at: now,
     completion_seal: seal
-  }, { onConflict: 'session_id' }).select('completed_at').single();
+  }, { onConflict: 'session_id' }).select('id, completed_at').single();
 
   await adminSupabase.from('assessment_sessions').update({ closed_at: now }).eq('id', input.session_id);
 
   if (input.final_answers_snapshot && input.final_answers_snapshot.length > 0) {
+    // sub was upserted above and its id is the correct submissions FK value
+    const submissionRowId = sub?.id ?? input.session_id;
     const payloads = input.final_answers_snapshot.map(a => ({
       idempotency_key: a.idempotency_key,
-      submission_id: input.session_id,
-      question_id: a.question_id,
+      submission_id:   submissionRowId,
+      question_id:     a.question_id,
       selected_option: a.selected_option,
-      answered_at: new Date(a.answered_at).toISOString()
+      answered_at:     new Date(a.answered_at).toISOString()
     }));
     await adminSupabase.from('student_answers').upsert(payloads, { onConflict: 'idempotency_key' });
   }
