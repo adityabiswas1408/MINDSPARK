@@ -37,3 +37,5 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+.mcp.json
+.code-review-graph/
