@@ -7,7 +7,6 @@ import {
   Monitor, BarChart2, Megaphone, FileText,
   ActivitySquare, Settings,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { href: '/admin/dashboard',     label: 'Dashboard',      icon: LayoutDashboard },
@@ -56,16 +55,30 @@ export function AdminSidebar() {
               key={item.href}
               href={item.href}
               aria-current={isActive ? 'page' : undefined}
-              className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-medium',
-                'transition-colors outline-none',
-                'focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1',
+              className="flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1"
+              style={
                 isActive
-                  ? 'bg-white/90 text-[#1A3829] font-semibold'
-                  : 'text-white/80 hover:text-white hover:bg-white/10'
-              )}
+                  ? { backgroundColor: 'rgba(255,255,255,0.92)', color: '#1A3829', textDecoration: 'none', fontWeight: '600' }
+                  : { color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }
+              }
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255,255,255,0.10)';
+                  (e.currentTarget as HTMLAnchorElement).style.color = '#FFFFFF';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent';
+                  (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.85)';
+                }
+              }}
             >
-              <item.icon className="shrink-0 h-[18px] w-[18px]" aria-hidden="true" />
+              <item.icon
+                className="shrink-0 h-[18px] w-[18px]"
+                aria-hidden="true"
+                style={{ color: isActive ? '#1A3829' : 'rgba(255,255,255,0.70)' }}
+              />
               {item.label}
             </Link>
           );
