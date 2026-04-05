@@ -13,7 +13,7 @@ export default async function StudentLayout({ children }: { children: ReactNode 
   // Single column centered layout per rules
   return (
     <StudentClientProvider>
-      <div className="min-h-screen bg-page flex flex-col items-center">
+      <div className="min-h-screen bg-bg-page flex flex-col items-center">
         <main className="w-full max-w-5xl px-4 py-8">
           {children}
         </main>

@@ -28,34 +28,34 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-secondary">Total Students</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-600">Total Students</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{totalStudents}</div>
+            <div className="text-2xl font-bold font-mono text-slate-900">{totalStudents}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-secondary">Total Assessments</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-600">Total Assessments</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{totalAssessments}</div>
+            <div className="text-2xl font-bold font-mono text-slate-900">{totalAssessments}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-secondary">Live Exams</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-600">Live Exams</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{liveExams}</div>
+            <div className="text-2xl font-bold font-mono text-slate-900">{liveExams}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-secondary">Total Submissions</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-600">Total Submissions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{totalSubmissions}</div>
+            <div className="text-2xl font-bold font-mono text-slate-900">{totalSubmissions}</div>
           </CardContent>
         </Card>
       </div>

@@ -22,7 +22,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen w-full bg-page overflow-hidden">
+    <div className="flex h-screen w-full bg-bg-page overflow-hidden">
       <AdminClientProvider />
       <AdminSidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">

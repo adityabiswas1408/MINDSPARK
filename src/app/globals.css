@@ -117,6 +117,18 @@
 
 /* 5. UTILITIES LAYER */
 @layer utilities {
+  /* Admin sidebar — always flex on desktop, hidden on mobile.
+     Uses .admin-sidebar class instead of hidden md:flex to avoid
+     Tailwind v4 cascade ordering issue where hidden overrides md:flex. */
+  .admin-sidebar {
+    display: flex;
+  }
+  @media (max-width: 767px) {
+    .admin-sidebar {
+      display: none;
+    }
+  }
+
   .font-mono {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
@@ -169,6 +181,39 @@
   --font-sans:    var(--font-sans);
   --font-mono:    var(--font-mono);
   --font-heading: var(--font-sans);
+
+  /* ── Slate palette — generates border-slate-*, text-slate-*, bg-slate-*, hover:bg-slate-* ── */
+  --color-slate-50:  #F8FAFC;
+  --color-slate-100: #F1F5F9;
+  --color-slate-200: #E2E8F0;
+  --color-slate-300: #CBD5E1;
+  --color-slate-400: #94A3B8;
+  --color-slate-500: #64748B;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1E293B;
+  --color-slate-900: #0F172A;
+  --color-slate-950: #020617;
+
+  /* ── MINDSPARK brand colours — generates text-green-800, bg-green-800 etc. ── */
+  --color-green-800:    #1A3829;
+  --color-brand-navy:   #204074;
+  --color-brand-orange: #F57A39;
+
+  /* ── Page/card backgrounds — generates bg-page, bg-card ── */
+  --color-bg-page: #F8FAFC;
+  --color-bg-card: #FFFFFF;
+
+  /* ── Semantic state colours ── */
+  --color-success-bg:   #DCFCE7;
+  --color-success-text: #166534;
+  --color-warning-bg:   #FEF9C3;
+  --color-warning-text: #854D0E;
+  --color-error-bg:     #FEE2E2;
+  --color-error-text:   #DC2626;
+  --color-info-bg:      #EFF6FF;
+  --color-info-text:    #1D4ED8;
+  --color-live-badge:   #EF4444;
 
   --color-background:                 var(--background);
   --color-foreground:                 var(--foreground);

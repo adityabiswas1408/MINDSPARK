@@ -8,7 +8,7 @@ export default async function StudentDashboardPage() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-green-800">Student Dashboard</h1>
       <div className="p-4 bg-card rounded-md border border-slate-200 shadow-sm">
-        <p className="text-secondary">Welcome. Your active exams will appear here.</p>
+        <p className="text-slate-600">Welcome. Your active exams will appear here.</p>
       </div>
     </div>
   );

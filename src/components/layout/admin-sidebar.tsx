@@ -2,35 +2,53 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { 
-  LayoutDashboard, Users, Layers, FileText, Activity, 
-  BarChart2, Megaphone, PieChart, History, Settings 
+import {
+  LayoutDashboard, Users, Layers, ClipboardList,
+  Monitor, BarChart2, Megaphone, FileText,
+  ActivitySquare, Settings,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
-  { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/admin/students', icon: Users, label: 'Students' },
-  { href: '/admin/levels', icon: Layers, label: 'Levels' },
-  { href: '/admin/assessments', icon: FileText, label: 'Assessments' },
-  { href: '/admin/monitor', icon: Activity, label: 'Live Monitor' },
-  { href: '/admin/results', icon: BarChart2, label: 'Results' },
-  { href: '/admin/announcements', icon: Megaphone, label: 'Announcements' },
-  { href: '/admin/reports', icon: PieChart, label: 'Reports' },
-  { href: '/admin/activity-log', icon: History, label: 'Activity Log' },
-  { href: '/admin/settings', icon: Settings, label: 'Settings' },
+  { href: '/admin/dashboard',     label: 'Dashboard',      icon: LayoutDashboard },
+  { href: '/admin/students',      label: 'Students',       icon: Users           },
+  { href: '/admin/levels',        label: 'Levels',         icon: Layers          },
+  { href: '/admin/assessments',   label: 'Assessments',    icon: ClipboardList   },
+  { href: '/admin/monitor',       label: 'Live Monitor',   icon: Monitor         },
+  { href: '/admin/results',       label: 'Results',        icon: BarChart2       },
+  { href: '/admin/announcements', label: 'Announcements',  icon: Megaphone       },
+  { href: '/admin/reports',       label: 'Reports',        icon: FileText        },
+  { href: '/admin/activity-log',  label: 'Activity Log',   icon: ActivitySquare  },
+  { href: '/admin/settings',      label: 'Settings',       icon: Settings        },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[280px] h-screen border-r border-[#1A3829] bg-[#1A3829] hidden md:flex flex-col shrink-0">
-      <div className="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
-        <h1 className="font-sans font-bold text-[20px] text-white tracking-tight">MINDSPARK</h1>
+    /* admin-sidebar class in globals.css sets display:flex and hides on mobile.
+       We avoid hidden md:flex because of Tailwind v4 cascade ordering bug where
+       display:none from hidden overrides the responsive md:flex rule. */
+    <aside
+      className="admin-sidebar w-[260px] h-screen shrink-0 flex-col"
+      style={{ backgroundColor: '#1A3829', borderRight: '1px solid rgba(255,255,255,0.1)' }}
+    >
+      {/* Logo bar */}
+      <div
+        className="h-16 flex items-center px-6 shrink-0"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
+      >
+        <h1 className="font-sans font-bold text-[20px] text-white tracking-tight">
+          MINDSPARK
+        </h1>
       </div>
-      
-      <nav role="navigation" aria-label="Admin Sidebar" className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
+
+      {/* Navigation */}
+      <nav
+        role="navigation"
+        aria-label="Admin navigation"
+        className="flex-1 overflow-y-auto px-3 py-5 space-y-1"
+      >
         {NAV_ITEMS.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
@@ -39,13 +57,15 @@ export function AdminSidebar() {
               href={item.href}
               aria-current={isActive ? 'page' : undefined}
               className={cn(
-                "flex items-center px-4 py-3 rounded-[10px] font-sans text-[15px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1 focus-visible:ring-offset-[#1A3829]",
-                isActive 
-                  ? "bg-white/10 text-white" 
-                  : "text-white/70 hover:bg-white/5 hover:text-white"
+                'flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-medium',
+                'transition-colors outline-none',
+                'focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1',
+                isActive
+                  ? 'bg-white/90 text-[#1A3829] font-semibold'
+                  : 'text-white/80 hover:text-white hover:bg-white/10'
               )}
             >
-              <item.icon className={cn("mr-3 h-5 w-5", isActive ? "text-white" : "text-white/70")} aria-hidden="true" />
+              <item.icon className="shrink-0 h-[18px] w-[18px]" aria-hidden="true" />
               {item.label}
             </Link>
           );
