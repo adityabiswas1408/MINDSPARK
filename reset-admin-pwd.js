@@ -6,8 +6,8 @@ const supabase = createClient(supabaseUrl, supabaseKey, { auth: { autoRefreshTok
 async function resetPassword() {
   const { data: users, error: listError } = await supabase.auth.admin.listUsers();
   if (listError) throw listError;
-  const adminUser = users.users.find(u => u.email === 'admin@mindspark.test');
-  if (!adminUser) throw new Error('Admin not found');
+  const adminUser = users.users.find(u => u.email === 'student-001@mindspark.test');
+  if (!adminUser) throw new Error('Student not found');
 
   const { data, error } = await supabase.auth.admin.updateUserById(adminUser.id, {
     password: 'password123'
