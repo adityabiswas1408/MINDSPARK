@@ -1,18 +1,31 @@
+/**
+ * sync-engine.ts — Offline Answer Queue Flush
+ *
+ * Reads unsynced answers from IndexedDB (Dexie) and POSTs them to
+ * /api/submissions/offline-sync. HMAC is generated SERVER-SIDE in the
+ * route handler using HMAC_SECRET — the secret never touches the browser.
+ *
+ * Guards:
+ *  - isSyncing flag prevents concurrent flush attempts (race condition fix)
+ *  - navigator.onLine check prevents wasted requests
+ *  - getUser() server-validates JWT before using the token
+ */
+
 import { db, type PendingAnswer } from '@/lib/offline/indexed-db-store';
 import { createClient } from '@/lib/supabase/client';
 
-let isSyncing = false;
-let isStarted = false;
+let isSyncing  = false;
+let isStarted  = false;
 
-async function flushOfflineQueue() {
+async function flushOfflineQueue(): Promise<void> {
   if (isSyncing || typeof window === 'undefined') return;
-  if (!navigator.onLine) return; // Strict offline guard
+  if (!navigator.onLine) return;
 
   isSyncing = true;
 
   try {
     const unsyncedAnswers = await db.pendingAnswers
-      .filter((record) => record.synced === false)
+      .filter((r) => r.synced === false)
       .toArray();
 
     if (unsyncedAnswers.length === 0) {
@@ -21,77 +34,52 @@ async function flushOfflineQueue() {
     }
 
     const supabase = createClient();
-    
-    // 1. MUST validate the session with the server via getUser() 
-    // to prevent offline-sync silently failing with a stale token.
+
+    // Server-validate the JWT before using it
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      isSyncing = false;
-      return;
-    }
+    if (!user) { isSyncing = false; return; }
 
-    // 2. Safely extract the token ONLY after server verification
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) {
-      isSyncing = false;
-      return;
-    }
+    if (!session?.access_token) { isSyncing = false; return; }
 
+    // Group answers by session_id — one POST per session
     const sessionMap = new Map<string, PendingAnswer[]>();
     for (const ans of unsyncedAnswers) {
-      const group = sessionMap.get(ans.session_id) || [];
+      const group = sessionMap.get(ans.session_id) ?? [];
       group.push(ans);
       sessionMap.set(ans.session_id, group);
     }
 
     for (const [sessionId, answers] of Array.from(sessionMap.entries())) {
-      const batchTimestamp = Date.now();
-      const hmacInput = `${sessionId}:${batchTimestamp}`;
-      const secret = process.env.NEXT_PUBLIC_OFFLINE_SYNC_SECRET ?? '';
-      
-      const keyMaterial = await crypto.subtle.importKey(
-        'raw',
-        new TextEncoder().encode(secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-      );
-      const signature = await crypto.subtle.sign(
-        'HMAC',
-        keyMaterial,
-        new TextEncoder().encode(hmacInput)
-      );
-      const hmacTimestamp = Array.from(new Uint8Array(signature))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-      
+      // HMAC is generated server-side in the route handler.
+      // Client only sends session_id + batch_timestamp.
+      // No secret ever appears in the browser bundle.
       const payload = {
-        session_id: sessionId,
-        answers: answers.map((a: PendingAnswer) => ({
-          question_id: a.question_id,
+        session_id:      sessionId,
+        answers:         answers.map((a: PendingAnswer) => ({
+          question_id:     a.question_id,
           selected_option: a.selected_option,
-          answered_at: a.answered_at,
+          answered_at:     a.answered_at,
           idempotency_key: a.idempotency_key,
         })),
-        hmac_timestamp: hmacTimestamp,
-        batch_timestamp: batchTimestamp,
+        batch_timestamp: Date.now(),
       };
 
       const response = await fetch('/api/submissions/offline-sync', {
-        method: 'POST',
+        method:  'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
         const result = await response.json();
-        
-        if (result.synced && Array.isArray(result.synced)) {
+        // Route returns synced_keys (array of idempotency_key strings)
+        if (result.synced_keys && Array.isArray(result.synced_keys)) {
           await Promise.all(
-            result.synced.map((key: string) => 
+            result.synced_keys.map((key: string) =>
               db.pendingAnswers.update(key, { synced: true })
             )
           );
@@ -99,7 +87,7 @@ async function flushOfflineQueue() {
       }
     }
   } catch (error) {
-    console.error('Offline sync failed on client. Retrying on next connection:', error);
+    console.error('[SyncEngine] Flush failed — will retry on next connection:', error);
   } finally {
     isSyncing = false;
   }
@@ -107,20 +95,15 @@ async function flushOfflineQueue() {
 
 const onlineListener = () => flushOfflineQueue();
 
-export function startSyncEngine() {
+export function startSyncEngine(): void {
   if (typeof window === 'undefined' || isStarted) return;
   isStarted = true;
-  
   window.addEventListener('online', onlineListener);
-  
-  if (navigator.onLine) {
-    flushOfflineQueue();
-  }
+  if (navigator.onLine) flushOfflineQueue();
 }
 
-export function stopSyncEngine() {
+export function stopSyncEngine(): void {
   if (typeof window === 'undefined' || !isStarted) return;
   isStarted = false;
-  
   window.removeEventListener('online', onlineListener);
 }
