@@ -129,6 +129,16 @@
     }
   }
 
+  /* Student sidebar — same pattern as admin-sidebar */
+  .student-sidebar {
+    display: flex;
+  }
+  @media (max-width: 767px) {
+    .student-sidebar {
+      display: none;
+    }
+  }
+
   .font-mono {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";

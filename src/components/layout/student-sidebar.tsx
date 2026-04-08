@@ -1,0 +1,90 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  LayoutDashboard, BookOpen, Zap, BarChart2,
+  User, Settings, HelpCircle,
+} from 'lucide-react';
+
+const NAV_ITEMS = [
+  { href: '/student/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/student/exams',     label: 'Exams',     icon: BookOpen },
+  { href: '/student/tests',     label: 'Tests',     icon: Zap },
+  { href: '/student/results',   label: 'Results',   icon: BarChart2 },
+  { href: '/student/profile',   label: 'Profile',   icon: User },
+];
+
+const BOTTOM_ITEMS = [
+  { href: '/student/settings', label: 'Settings', icon: Settings },
+  { href: '/student/support',  label: 'Support',  icon: HelpCircle },
+];
+
+export function StudentSidebar() {
+  const pathname = usePathname();
+
+  const renderLink = (item: { href: string; label: string; icon: React.ElementType }) => {
+    const isActive = pathname.startsWith(item.href);
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        aria-current={isActive ? 'page' : undefined}
+        className="flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1"
+        style={
+          isActive
+            ? { backgroundColor: 'rgba(255,255,255,0.92)', color: '#1A3829', textDecoration: 'none', fontWeight: '600' }
+            : { color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }
+        }
+        onMouseEnter={(e) => {
+          if (!isActive) {
+            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255,255,255,0.10)';
+            (e.currentTarget as HTMLAnchorElement).style.color = '#FFFFFF';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isActive) {
+            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent';
+            (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.85)';
+          }
+        }}
+      >
+        <item.icon
+          className="shrink-0 h-[18px] w-[18px]"
+          aria-hidden="true"
+          style={{ color: isActive ? '#1A3829' : 'rgba(255,255,255,0.70)' }}
+        />
+        {item.label}
+      </Link>
+    );
+  };
+
+  return (
+    <aside
+      className="student-sidebar w-[240px] h-screen shrink-0 flex-col"
+      style={{ backgroundColor: '#1A3829', borderRight: '1px solid rgba(255,255,255,0.1)' }}
+    >
+      {/* Logo */}
+      <div
+        className="h-16 flex items-center px-6 shrink-0"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
+      >
+        <h1 className="font-sans font-bold text-[20px] text-white tracking-tight">MINDSPARK</h1>
+      </div>
+
+      {/* Main nav */}
+      <nav
+        role="navigation"
+        aria-label="Student navigation"
+        className="flex-1 overflow-y-auto px-3 py-5 space-y-1"
+      >
+        {NAV_ITEMS.map(renderLink)}
+      </nav>
+
+      {/* Bottom nav */}
+      <div className="px-3 pb-5 space-y-1" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '12px' }}>
+        {BOTTOM_ITEMS.map(renderLink)}
+      </div>
+    </aside>
+  );
+}
