@@ -114,7 +114,7 @@ export function LobbyClient({
           {examTitle}
         </h2>
         <p style={{ fontSize: '15px', color: '#475569', maxWidth: '320px', lineHeight: 1.5 }}>
-          Prepare your workspace. The assessment will begin when you click I'm Ready.
+          Prepare your workspace. The assessment will begin when you click I&apos;m Ready.
         </p>
       </div>
 
@@ -188,7 +188,7 @@ export function LobbyClient({
           </Button>
           
           <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '12px', color: '#64748B' }}>
-            By clicking "I'm Ready", you agree to begin the assessment under monitored conditions.
+            By clicking &quot;I&apos;m Ready&quot;, you agree to begin the assessment under monitored conditions.
           </div>
         </div>
       </div>
