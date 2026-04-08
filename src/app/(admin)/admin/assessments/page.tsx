@@ -13,7 +13,7 @@ export default async function AdminAssessmentsPage() {
   const supabase = await createClient();
   const [{ data: papers }, { data: levels }] = await Promise.all([
     supabase.from('exam_papers').select('*').eq('institution_id', institutionId).order('created_at', { ascending: false }),
-    supabase.from('levels').select('id, name').eq('institution_id', institutionId).order('sort_order'),
+    supabase.from('levels').select('id, name').eq('institution_id', institutionId).order('sequence_order'),
   ]);
 
   return (
