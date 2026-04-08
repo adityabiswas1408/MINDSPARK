@@ -165,7 +165,7 @@ export async function forceOpenExam(input: ForceOpenExamInput): Promise<ActionRe
 
   const { data: assessment, error } = await supabase
     .from('exam_papers')
-    .update({ status: 'LIVE' })
+    .update({ status: 'LIVE', opened_at: new Date().toISOString() })
     .eq('id', input.assessment_id)
     .select('id, status')
     .single();
