@@ -84,16 +84,10 @@ export function AssessmentCard({ paper }: AssessmentCardProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <span style={badgeStyle}>
             {paper.status === 'LIVE' && (
-              <span
-                style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  backgroundColor: '#FFFFFF',
-                  animation: 'pulse 1.5s ease-in-out infinite',
-                  display: 'inline-block',
-                }}
-              />
+              <span className="relative flex h-2 w-2 mr-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+              </span>
             )}
             {paper.status}
           </span>

@@ -46,9 +46,11 @@ export function CreateAssessmentWizard({ levels }: CreateAssessmentWizardProps) 
 
   function handleClose() {
     setIsOpen(false);
-    setState(INITIAL_STATE);
-    setError(null);
-    setLoading(false);
+    setTimeout(() => {
+      setState(INITIAL_STATE);
+      setError(null);
+      setLoading(false);
+    }, 300);
   }
 
   function handleConfigChange(partial: Partial<WizardConfig>) {
