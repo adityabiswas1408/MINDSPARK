@@ -11,6 +11,14 @@ interface CompletionCardProps {
   onBackToDashboard: () => void;
   /** Assessment type for tailored messaging */
   assessmentType: 'EXAM' | 'TEST';
+  /** Score as a 0–100 integer percentage */
+  scorePercent?: number;
+  /** Number of correctly answered questions */
+  correctCount?: number;
+  /** Total number of questions in the exam */
+  totalCount?: number;
+  /** Elapsed time in seconds from exam start to submission */
+  timeTakenSeconds?: number;
 }
 
 /**
@@ -22,11 +30,21 @@ interface CompletionCardProps {
  *   - Confetti: green palette, contained, 2000ms duration
  *   - Suppressed if prefers-reduced-motion
  */
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
 export function CompletionCard({
   visible,
   onViewResults,
   onBackToDashboard,
   assessmentType,
+  scorePercent,
+  correctCount,
+  totalCount,
+  timeTakenSeconds,
 }: CompletionCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -155,6 +173,40 @@ export function CompletionCard({
             Your answers have been saved successfully.
           </p>
         </div>
+
+        {scorePercent !== undefined && (
+          <div className="flex flex-col items-center gap-1 w-full">
+            <div
+              style={{
+                fontFamily: 'var(--font-mono), monospace',
+                fontVariantNumeric: 'tabular-nums',
+                fontSize: '48px',
+                fontWeight: '700',
+                color: '#0F172A',
+                lineHeight: 1,
+              }}
+            >
+              {scorePercent}%
+            </div>
+            {correctCount !== undefined && totalCount !== undefined && (
+              <p className="text-sm" style={{ color: '#475569' }}>
+                {correctCount} / {totalCount} correct
+              </p>
+            )}
+            {timeTakenSeconds !== undefined && timeTakenSeconds > 0 && (
+              <p
+                className="text-xs"
+                style={{
+                  color: '#94A3B8',
+                  fontFamily: 'var(--font-mono), monospace',
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                Time taken: {formatTime(timeTakenSeconds)}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col gap-2 w-full">
           <button

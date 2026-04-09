@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useExamSessionStore } from '@/stores/exam-session-store';
 import { ExamVerticalView } from '@/components/exam/exam-vertical-view';
 import { AnzanFlashView } from '@/components/exam/anzan-flash-view';
+import { CompletionCard } from '@/components/exam/completion-card';
 import { submitExam } from '@/app/actions/assessment-sessions';
 
 interface ExamQuestion {
   id: string;
   equationDisplay: string;
+  correctOption: 'A' | 'B' | 'C' | 'D' | null;
   options: Array<{ key: 'A' | 'B' | 'C' | 'D'; label: string }>;
   orderIndex: number;
 }
@@ -45,6 +47,11 @@ export function ExamPageClient({
   const answers = useExamSessionStore((s) => s.answers);
   const [isOnline, setIsOnline] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [scorePercent, setScorePercent] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [timeTakenSeconds, setTimeTakenSeconds] = useState(0);
+  const examStartRef = useRef(Date.now());
 
   const totalQuestions =
     paperType === 'EXAM' ? examQuestions.length : anzanQuestions.length;
@@ -75,22 +82,41 @@ export function ExamPageClient({
     };
   }, []);
 
+  function computeScore(questions: ExamQuestion[], answerMap: typeof answers) {
+    const correct = questions.filter(
+      (q) => q.correctOption !== null && answerMap[q.id]?.selected_option === q.correctOption
+    ).length;
+    return {
+      correctCount: correct,
+      scorePercent: questions.length > 0 ? Math.round((correct / questions.length) * 100) : 0,
+    };
+  }
+
   const handleSubmit = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     const finalAnswers = Object.values(answers);
-    await submitExam({ session_id: sessionId, final_answers_snapshot: finalAnswers });
-    // TODO: navigate to /student/results once that page is built
-    router.push('/student/dashboard');
+    const result = await submitExam({ session_id: sessionId, final_answers_snapshot: finalAnswers });
+    const elapsed = Math.round((Date.now() - examStartRef.current) / 1000);
+    const { correctCount: c, scorePercent: s } = computeScore(examQuestions, answers);
+    setCorrectCount(c);
+    setScorePercent(s);
+    setTimeTakenSeconds(elapsed);
+    void result; // session is closed server-side regardless of result shape
+    setSubmitted(true);
   };
 
   const handleTimeExpired = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     const finalAnswers = Object.values(answers);
-    await submitExam({ session_id: sessionId, final_answers_snapshot: finalAnswers });
-    // TODO: navigate to /student/results once that page is built
-    router.push('/student/dashboard');
+    const result = await submitExam({ session_id: sessionId, final_answers_snapshot: finalAnswers });
+    const elapsed = Math.round((Date.now() - examStartRef.current) / 1000);
+    const { correctCount: c, scorePercent: s } = computeScore(examQuestions, answers);
+    setCorrectCount(c);
+    setScorePercent(s);
+    setTimeTakenSeconds(elapsed);
+    if (result.ok || !result.ok) setSubmitted(true);
   };
 
   const syncStatus: 'synced' | 'offline' | 'error' = isOnline ? 'synced' : 'offline';
@@ -113,12 +139,24 @@ export function ExamPageClient({
   }
 
   return (
-    <ExamVerticalView
-      questions={examQuestions}
-      expiresAt={expiresAt}
-      onSubmit={handleSubmit}
-      onTimeExpired={handleTimeExpired}
-      syncStatus={syncStatus}
-    />
+    <>
+      <ExamVerticalView
+        questions={examQuestions}
+        expiresAt={expiresAt}
+        onSubmit={handleSubmit}
+        onTimeExpired={handleTimeExpired}
+        syncStatus={syncStatus}
+      />
+      <CompletionCard
+        visible={submitted}
+        assessmentType="EXAM"
+        scorePercent={scorePercent}
+        correctCount={correctCount}
+        totalCount={examQuestions.length}
+        timeTakenSeconds={timeTakenSeconds}
+        onViewResults={() => router.push('/student/results')}
+        onBackToDashboard={() => router.push('/student/dashboard')}
+      />
+    </>
   );
 }

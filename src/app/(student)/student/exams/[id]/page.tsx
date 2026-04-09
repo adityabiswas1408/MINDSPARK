@@ -36,7 +36,7 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
   // Fetch questions — scoped to this paper, student can only access LIVE papers
   const { data: questionsData } = await supabase
     .from('questions')
-    .select('id, equation_display, flash_sequence, option_a, option_b, option_c, option_d, order_index')
+    .select('id, equation_display, flash_sequence, option_a, option_b, option_c, option_d, correct_option, order_index')
     .eq('paper_id', paperId)
     .order('order_index', { ascending: true });
 
@@ -77,6 +77,7 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
   const examQuestions = questions.map((q) => ({
     id: q.id,
     equationDisplay: q.equation_display ?? '',
+    correctOption: (q.correct_option ?? null) as 'A' | 'B' | 'C' | 'D' | null,
     options: optionKeys
       .map((key, i) => {
         const label = [q.option_a, q.option_b, q.option_c, q.option_d][i];
