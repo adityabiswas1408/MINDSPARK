@@ -153,6 +153,7 @@ export function ExamVerticalView({
                 fontSize: 'clamp(24px, 4vw, 40px)',
                 color: '#0F172A',
                 lineHeight: '1.4',
+                whiteSpace: 'pre',
               }}
             >
               {currentQuestion.equationDisplay}
