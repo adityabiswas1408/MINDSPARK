@@ -197,7 +197,7 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
     paper_id: session.paper_id,
     completed_at: now,
     completion_seal: seal
-  }, { onConflict: 'session_id' }).select('id, completed_at').single();
+  }, { onConflict: 'session_id,student_id' }).select('id, completed_at').single();
 
   await adminSupabase.from('assessment_sessions').update({ closed_at: now }).eq('id', input.session_id);
 
