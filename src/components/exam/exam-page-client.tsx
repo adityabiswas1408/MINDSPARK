@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useExamSessionStore } from '@/stores/exam-session-store';
 import { ExamVerticalView } from '@/components/exam/exam-vertical-view';
@@ -147,6 +148,7 @@ export function ExamPageClient({
         onTimeExpired={handleTimeExpired}
         syncStatus={syncStatus}
       />
+      {submitted && createPortal(
       <CompletionCard
         visible={submitted}
         assessmentType="EXAM"
@@ -156,7 +158,7 @@ export function ExamPageClient({
         timeTakenSeconds={timeTakenSeconds}
         onViewResults={() => router.push('/student/results')}
         onBackToDashboard={() => router.push('/student/dashboard')}
-      />
+      />, document.body)}
     </>
   );
 }
