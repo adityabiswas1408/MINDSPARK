@@ -51,7 +51,16 @@ export function ExamPageClient({
 
   useEffect(() => {
     initSession(sessionId, paperType, totalQuestions);
-    setPhase('INTERSTITIAL');
+    // initSession resets phase to IDLE. Chain through required transitions:
+    // IDLE → LOBBY (guard only allows IDLE→LOBBY)
+    setPhase('LOBBY');
+    if (paperType === 'EXAM') {
+      // EXAM skips flash entirely: LOBBY → INTERSTITIAL → PHASE_1_START → PHASE_3_MCQ
+      setPhase('INTERSTITIAL');
+      setPhase('PHASE_1_START');
+      setPhase('PHASE_3_MCQ');
+    }
+    // TEST: stop at LOBBY — AnzanFlashView picks up from there
   }, [sessionId, paperType, totalQuestions, initSession, setPhase]);
 
   useEffect(() => {

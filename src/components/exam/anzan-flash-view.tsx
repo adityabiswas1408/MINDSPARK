@@ -87,7 +87,7 @@ export function AnzanFlashView({
   // LOBBY is a waiting state for the lobby page — by the time student
   // reaches assessment/[id] they are past LOBBY. Go directly to INTERSTITIAL.
   useEffect(() => {
-    if (phase === 'IDLE' && isReady) {
+    if ((phase === 'IDLE' || phase === 'LOBBY') && isReady) {
       setPhase('INTERSTITIAL');
     }
   }, [phase, isReady, setPhase]);
