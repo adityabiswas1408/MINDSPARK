@@ -91,7 +91,7 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
       expires_at: expiresAt,
       scheduled_at: now,
       cohort_id: cohortId as unknown as string,
-      status: 'ACTIVE'
+      status: 'active'
     })
     .select('id')
     .single();
