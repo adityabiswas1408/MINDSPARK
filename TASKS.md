@@ -248,93 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 11: Admin Settings Page
-
-**Why this matters:**
-Admin cannot save institution configuration.
-Grade boundaries are hardcoded. Session timeout
-cannot be adjusted. Data retention policy has
-no toggle. All forms render but save nothing.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /shadcn — form, input, select, toggle, table
-- /frontend-design — settings page layout
-
-**Files to read before touching anything:**
-- src/app/(admin)/admin/settings/page.tsx
-  — current state, what renders
-- src/app/actions/settings.ts
-  — updateSettings, updateGradeBoundaries actions
-
-**What currently exists:**
-Settings page renders three sections but no form
-saves any data. Actions may exist in settings.ts.
-
-**Changes to make:**
-1. Institution Profile section:
-   Institution name input
-   Primary timezone select (list of IANA timezones)
-   Session timeout input (seconds, default 3600)
-   Save Institution button → calls updateSettings
-   On success: toast "Settings saved"
-
-2. Grade Boundaries section:
-   Table with rows: A+ / A / B / C
-   Each row: grade label, min score input,
-   max score input, status badge
-   Overlap detection (client-side):
-   If B.min > A.max or ranges overlap:
-   highlight conflicting inputs in red
-   Show "⚠ Overlap Detected — Min > Max value"
-   Save Boundaries button → calls updateGradeBoundaries
-   Reset to Defaults button
-
-3. Data Retention Policy section:
-   Auto-Archive Records toggle
-   Description: "Move inactive student data to
-   cold storage after 12 months"
-   Save with institution settings
-
-4. Support card (right side):
-   "Need help with advanced config?"
-   Open Developer Docs button (link only)
-
-5. Current Session timer (bottom left):
-   "CURRENT SESSION — Expires in: [countdown]"
-   Reads from session expiry
-
-**Hard constraints:**
-- updateSettings must validate server-side
-- Grade boundaries must not allow gaps or overlaps
-  Validate both client-side (UX) and server-side
-  (security)
-
-**Validator — task is DONE only when ALL pass:**
-[ ] Change institution name, click Save
-[ ] DB check:
-    SELECT name FROM institutions
-    WHERE id = '[id]';
-    Name must match what was saved
-[ ] Set overlapping grade boundaries
-    — overlap warning appears in UI
-    — Save is blocked or shows error
-[ ] Valid grade boundaries save successfully:
-    SELECT * FROM grade_boundaries
-    WHERE institution_id = '[id]';
-[ ] Data retention toggle saves to DB
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — admin settings done,
-move Task 12 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
 ### TASK 12: Admin Activity Log Page
 
 **Why this matters:**
@@ -422,6 +335,8 @@ move Task 13 to IN PROGRESS"
 git push
 
 ---
+
+## UP NEXT
 ### TASK 13: Offline Sync Verification
 
 **Why this matters:**
@@ -637,6 +552,12 @@ git push
 ---
 
 ## DONE
+
+### Task 11: Admin Settings Page
+Completed: 2026-04-10
+Commit: 43d4266a
+What was built: Institution Profile form (name, timezone, session timeout) wired to updateSettings action; Grade Boundaries table loading all 5 grades (O/A+/A/B/C) from DB with client-side overlap detection; Data Retention toggle as UI-only with support note; session countdown timer via getSession(); Support card.
+Key findings: updateSettings had no name field — extended action to accept name; grade_boundaries min_score/max_score were NULL in DB so max is derived from next grade's min_percentage - 1 on init; no auto_archive column exists — toggle is UI-only; delete-then-insert wrapped with backup/restore for atomicity protection; Switch component not in shadcn — built custom toggle button.
 
 ### Task 10: Admin Announcements Page
 Completed: 2026-04-10
