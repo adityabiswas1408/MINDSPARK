@@ -1,1342 +1,1885 @@
+Create the file A:\MS\mindspark\TASKS.md with the 
+complete contents below. Overwrite any existing file.
+Read CLAUDE.md first. Then write this file exactly
+as specified. Do not summarise. Do not skip sections.
+
+After writing, run:
+Get-Content A:\MS\mindspark\TASKS.md | Measure-Object -Line
+Report line count. Must exceed 600 lines.
+
+Then commit:
+git add TASKS.md
+git commit -m "chore: comprehensive TASKS.md rewrite — all tasks, validators, skill invocations"
+git push
+
+Installed packages confirmed:
+recharts, @tanstack/react-table, @hello-pangea/dnd,
+@tiptap/react, @tiptap/starter-kit, dexie,
+sanitize-html, lucide-react, zustand, zod,
+date-fns, papaparse, lottie-react
+Skip all package verification.
+
+════════════════════════════════════════════════════════
+FILE CONTENTS — write everything below exactly
+════════════════════════════════════════════════════════
+
 # MINDSPARK — Master Task Board
+# Last updated: 2026-04-10
+# Rule: Top item in UP NEXT is always the next task.
+
+---
 
 ## HOW TO USE THIS FILE
 
-1. The top item in UP NEXT is always the next task.
-2. Before starting: move it to IN PROGRESS, commit.
-3. Read every file listed under "Files to read" before
-   writing any code.
-4. Do not write code until the plan is approved.
-5. After completing: run every item in the Validator.
-6. Only move to DONE when every Validator item passes.
-7. Update this file after every task:
+1. Read KNOWN BUGS first — every session, every task.
+2. Read IN PROGRESS to know the current task.
+3. Before coding: read every file under "Files to read".
+4. Invoke skills listed under "Skills to invoke" first.
+5. Propose a 3-bullet plan. Wait for "proceed".
+6. Run every Validator item before marking DONE.
+7. After completing: update this file.
    git add TASKS.md
-   git commit -m "chore: task board update — [task name]"
+   git commit -m "chore: task board — [task] done"
    git push
 
 ---
 
+## CODE QUALITY RULES
+## Every task inherits these rules. No exceptions.
+
+### Planning
+- Invoke /superpowers at the start of every task
+- State 3 bullet plan before writing any code
+- Wait for explicit "proceed" before editing files
+- If blocked after 2 attempts: stop, report blocker,
+  do not retry same approach a third time
+
+### Response Style
+- Concise responses only
+- After each step: one line — PASS / FAIL / NEEDS ATTENTION
+- No detailed summaries unless asked
+
+### File Reading
+- Read files sequentially in current context
+- Do NOT spawn subagents for file reading
+- Do NOT parallelize unless task says "run in parallel"
+
+### Database Rules
+- Before ANY UPDATE or INSERT:
+  Run SELECT with same WHERE clause first
+  Show row count. Only proceed if count > 0
+  If count = 0: stop and investigate
+- Before ANY status/enum column update:
+  SELECT constraint_name, check_clause
+  FROM information_schema.check_constraints
+  WHERE table_name = '[table]';
+  Verify exact casing of allowed values
+- Before ANY upsert:
+  SELECT indexname, indexdef
+  FROM pg_indexes WHERE tablename = '[table]';
+  Use exact columns from the unique index
+
+### Build and Deploy
+- Run npm run tsc after every file change
+- Zero TypeScript errors before committing
+- After every deploy:
+  Use chrome-devtools to navigate affected route
+  Confirm HTTP 200 not 404
+  Take one screenshot to confirm render
+  Never declare done from build logs alone
+- Before debugging any build error:
+  Run git diff HEAD~1 --name-only
+  Check if a recent Claude-made change is the cause
+  Revert first, rebuild, confirm — then add new fixes
+
+### Browser Testing
+- Maximum 3 screenshots per session
+- Use take_snapshot or get_page_text for functional
+  verification — costs ~200 tokens vs ~6k for screenshot
+- Never use evaluate() or querySelector for clicking
+  interactive UI elements — bypasses React events
+- When clicking inside Base UI dialogs:
+  Verify dialog is open first
+  Use chrome-devtools click tool on exact button text
+  If click times out: check for data-base-ui-inert overlay
+
+### Test Reset (run before every exam flow test)
+Run scripts/reset-test-state.sql in Supabase SQL editor:
+  UPDATE assessment_sessions
+  SET closed_at = NOW()
+  WHERE student_id = (
+    SELECT id FROM students
+    WHERE roll_number = 'STUDENT-001'
+  ) AND closed_at IS NULL;
+  SELECT COUNT(*) as open_sessions
+  FROM assessment_sessions
+  WHERE student_id = (
+    SELECT id FROM students
+    WHERE roll_number = 'STUDENT-001'
+  ) AND closed_at IS NULL;
+Expected: 0
+
+### UI and Components
+- Skeleton loaders: Tailwind animate-pulse only
+  No external skeleton libraries
+- Modals and overlays: always use
+  createPortal(content, document.body)
+  Never rely on z-index alone when parent has
+  overflow: auto or overflow: hidden
+- Skeleton shape must match real content layout
+
+### Skills
+- /superpowers — every task, plan before code
+- /frontend-design — every UI component task
+- /shadcn — forms, dialogs, tables, inputs, badges
+- /ui-ux-pro-max — all student-facing pages
+- /web-design-guidelines — layout, spacing, typography
+
+---
+
+## KNOWN BUGS
+## Read this section before starting any task.
+
+### BUG 1: tickerMode hardcoded false
+Severity: MEDIUM
+Where: src/stores/exam-session-store.ts
+What happens: ticker mode never activates regardless
+  of student profile setting
+Root cause: hardcoded false, not read from
+  profiles.ticker_mode
+Fix: read profiles.ticker_mode for student on
+  session init, pass to store
+Blocks: Task 12 (exam engine)
+
+### BUG 2: Anzan config hardcoded
+Severity: MEDIUM
+Where: src/components/exam/anzan-flash-view.tsx
+What happens: digit count and row count use hardcoded
+  values instead of exam configuration
+Root cause: anzan_digit_count and anzan_row_count
+  not passed from exam_papers record
+Fix: read from exam_papers and pass as props
+Blocks: Task 12 (exam engine)
+
+### BUG 3: No lobby polling fallback
+Severity: HIGH
+Where: src/app/(student)/student/exams/[id]/lobby/
+  lobby-client.tsx
+What happens: if student misses WebSocket broadcast
+  they stay in lobby forever
+Root cause: lobby only listens to WebSocket,
+  no polling fallback
+Fix: add 30-second polling interval checking
+  exam_papers.status directly
+Blocks: Task 15 (lobby polling)
+
+### BUG 4: No storage buckets in Supabase
+Severity: MEDIUM
+Where: Supabase project ahrnkwuqlhmwenhvnupb
+What happens: avatar uploads, CSV imports, logo
+  uploads all fail silently
+Root cause: buckets never created
+Fix: create via Supabase dashboard or SQL:
+  INSERT INTO storage.buckets (id, name, public)
+  VALUES ('avatars','avatars',false),
+         ('logos','logos',true),
+         ('csv-imports','csv-imports',false)
+Blocks: Task 5 (admin students)
+
+### BUG 5: Student results page is empty shell
+Severity: HIGH
+Where: src/app/(student)/student/results/page.tsx
+What happens: blank page, no data
+Blocks: Task 4 (student results)
+
+### BUG 6: Student exams list page is empty shell
+Severity: HIGH
+Where: src/app/(student)/student/exams/page.tsx
+What happens: blank page, no exam cards
+Blocks: Task 2 (student exams list)
+
+### BUG 7: onConflict key mismatch risk
+Severity: HIGH
+Where: any upsert on submissions table
+What happens: upsert silently does nothing if
+  conflict key does not match actual unique index
+Root cause: submissions has composite unique index
+  (session_id, student_id) — both columns required
+Fix: always verify indexes before upsert (see
+  DATABASE RULES above)
+Blocks: none currently — fixed in Task 1
+
+---
+
+After writing the complete file:
+1. Count lines:
+   Get-Content A:\MS\mindspark\TASKS.md |
+   Measure-Object -Line
+   Must be over 600 lines. If not, something
+   was skipped — check and complete it.
+
+2. Verify every task has all sections:
+   Why it matters, Skills to invoke,
+   Files to read, Changes to make,
+   Hard constraints, Performance requirement,
+   Validator, After completing
+
+3. Commit:
+   git add TASKS.md
+   git commit -m "chore: comprehensive TASKS.md —
+   17 tasks with validators, skill invocations,
+   deployment checklist"
+   git push
+
+4. Report: line count and commit hash.
+
 ## IN PROGRESS
+### TASK 2: Student Exams List Page
+
+**Why this matters:**
+Students currently have no way to see available exams
+except through the dashboard LIVE NOW card. They
+cannot browse upcoming exams, see past exams, or
+navigate to the lobby from a list. This page is the
+primary exam discovery surface for students.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /frontend-design — exam card visual design
+- /ui-ux-pro-max — student-facing UX
+- /shadcn — badge, card components
+
+**Files to read before touching anything:**
+- src/app/(student)/student/exams/page.tsx
+  — current empty shell
+- src/app/(student)/layout.tsx
+  — student layout structure
+- src/app/actions/assessments.ts
+  — existing fetch patterns
+- supabase/migrations/008_create_exam_papers.sql
+  — but verify against live DB, migration may be stale
+- src/app/(student)/student/dashboard/page.tsx
+  — how LIVE exam is currently fetched and displayed
+
+**What currently exists:**
+src/app/(student)/student/exams/page.tsx is an empty
+shell. Returns placeholder text only.
+
+**Changes to make:**
+1. Rewrite src/app/(student)/student/exams/page.tsx
+   as a Server Component:
+   - requireRole('student')
+   - Fetch student's level_id and institution_id
+   - Fetch exam_papers where:
+     institution_id matches AND
+     level_id matches AND
+     status IN ('LIVE', 'PUBLISHED', 'CLOSED')
+   - Sort: LIVE first, then PUBLISHED by created_at,
+     then CLOSED by closed_at desc
+
+2. Render three sections:
+   LIVE NOW section (if any LIVE exams):
+   - Red LIVE badge with animate-ping dot
+   - Exam title, type, duration
+   - "Enter Now →" button linking to lobby
+   - Timer showing time remaining
+
+   UPCOMING section (PUBLISHED exams):
+   - Date badge (month/day)
+   - Exam title, type badge (EXAM/TEST)
+   - Duration in minutes
+   - "View Details" or greyed "Not Live Yet" state
+
+   COMPLETED section (CLOSED exams):
+   - Greyed out card
+   - "Completed" badge
+   - Score if result published, "Pending" if not
+
+3. Empty state if no exams for student's level:
+   Icon + "No exams scheduled yet" message
+
+**Hard constraints:**
+- Server Component for data fetching
+- No admin.ts imports
+- Use createClient() not adminSupabase
+
+**Performance requirement:**
+Page must load in under 2 seconds on standard
+connection. At 500 concurrent students browsing
+this page simultaneously: Supabase query must use
+existing institution_id and level_id indexes.
+Verify with EXPLAIN ANALYZE in Supabase SQL editor.
+
+**Validator — task is DONE only when ALL pass:**
+[ ] Navigate to /student/exams as STUDENT-001
+    — page loads, no 404, no console errors
+[ ] LIVE exam appears in LIVE NOW section with
+    correct title and time remaining
+[ ] PUBLISHED exam appears in UPCOMING section
+    with correct date badge
+[ ] "Enter Now" button navigates to correct lobby URL:
+    /student/exams/[paper_id]/lobby
+[ ] Skeleton loader appears on Slow 3G before content
+[ ] DB query verified:
+    SELECT id, title, status FROM exam_papers
+    WHERE institution_id = '[id]'
+    AND level_id = '[id]'
+    AND status IN ('LIVE','PUBLISHED','CLOSED');
+    Result must match what page displays
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
+
+**After completing this task:**
+git add TASKS.md
+git commit -m "chore: task board — student exams list done,
+move Task 3 to IN PROGRESS"
+git push
 
 ---
 
 ## UP NEXT
 
 ---
-### TASK 2: Skeleton Loaders on All Data-Fetching Pages
+### TASK 3: Exam Engine Improvements
+
 **Why this matters:**
-Every page in the app currently shows a blank white screen while server data loads. On a slow
-connection (3G, school Wi-Fi) students and admins see nothing for 1–4 seconds before content
-appears. This is particularly bad during exam day when many students hit the dashboard
-simultaneously. Skeleton loaders communicate that something is happening and prevent users
-from assuming the app is broken.
+The exam engine has four critical gaps that affect
+every student's exam experience:
+1. Long equations (10+ numbers) overflow or truncate
+2. Sidebar and header show during exams — distracting
+   and wastes screen space students need
+3. Flash anzan options appear during flash phase —
+   students see answers before memorising numbers
+4. Question palette does not clearly show how many
+   questions remain
+5. No clear submit button at end of last question —
+   students do not know how to finish
+
+These are not cosmetic — they directly affect exam
+integrity and student performance.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /ui-ux-pro-max — exam UX is highest stakes
+- /frontend-design — equation and option rendering
+- /shadcn — dialog components for submit confirm
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/assessments/page.tsx` — async server component; understand how data is fetched
-- `src/app/(admin)/admin/dashboard/page.tsx` — check current state; likely a placeholder
-- `src/app/(admin)/admin/students/page.tsx` — check current state
-- `src/app/(admin)/admin/results/page.tsx` — check current state
-- `src/app/(student)/student/dashboard/page.tsx` — two-column layout with live exam card and upcoming list
-- `src/app/(student)/student/exams/page.tsx` — check current state
-- `src/app/(student)/student/results/page.tsx` — check current state
-- `src/components/shared/` — check if a skeleton component already exists
+- src/components/exam/exam-vertical-view.tsx
+  — current equation display, find overflow handling
+- src/components/exam/anzan-flash-view.tsx
+  — find where options render relative to flash phase
+- src/components/exam/question-navigator.tsx
+  — current palette implementation
+- src/components/exam/confirm-submit.tsx
+  — current submit dialog
+- src/components/exam/exam-page-client.tsx
+  — how layout is structured, where sidebar renders
+- src/app/(student)/student/exams/[id]/page.tsx
+  — server component, layout wrapper
+- src/stores/exam-session-store.ts
+  — phase transitions: PHASE_2_FLASH, PHASE_3_MCQ
+- src/app/(student)/layout.tsx
+  — student layout that wraps exam page
 
 **What currently exists:**
-All pages are Server Components that `await` Supabase queries before rendering. Next.js streams
-these by default but there are no `loading.tsx` files in any route segment, so the browser shows
-nothing until the server responds. No skeleton components exist in the shared component library.
+- Equation display works for short equations but
+  has not been tested with 10+ numbers
+- Student sidebar renders inside exam page
+- Flash options timing not verified against phase
+- Question navigator exists but remaining count
+  display not confirmed
+- Submit button exists in header only
+- BUG 1 and BUG 2 from KNOWN BUGS affect this task
 
 **Changes to make:**
-1. Create `src/components/shared/skeleton.tsx` — a base `Skeleton` component: `<div className="animate-pulse bg-slate-200 rounded" style={style} />`. Accept `className` and `style` props.
-2. Create `src/app/(admin)/admin/assessments/loading.tsx` — skeleton that mirrors assessment cards layout: header row with title + button placeholder, then 3 card-shaped skeleton blocks (height 80px each).
-3. Create `src/app/(admin)/admin/dashboard/loading.tsx` — 4 KPI card skeletons in a row, then two chart placeholder boxes.
-4. Create `src/app/(admin)/admin/students/loading.tsx` — filter bar skeleton, then a table skeleton with 5 row placeholders.
-5. Create `src/app/(admin)/admin/results/loading.tsx` — assessment selector skeleton, chart skeleton, table skeleton.
-6. Create `src/app/(admin)/admin/monitor/loading.tsx` — summary count row skeleton, table skeleton.
-7. Create `src/app/(admin)/admin/announcements/loading.tsx` — editor skeleton (tall box) + history panel skeleton.
-8. Create `src/app/(admin)/admin/settings/loading.tsx` — two section card skeletons.
-9. Create `src/app/(admin)/admin/activity/loading.tsx` — filter bar skeleton, table skeleton.
-10. Create `src/app/(admin)/admin/levels/loading.tsx` — level card skeletons.
-11. Create `src/app/(student)/student/dashboard/loading.tsx` — hero card skeleton (200px tall), upcoming list skeleton (3 row placeholders), right column skeletons.
-12. Create `src/app/(student)/student/exams/loading.tsx` — 3 exam card skeletons.
-13. Create `src/app/(student)/student/results/loading.tsx` — hero card skeleton, table skeleton.
-14. All skeleton shapes must match the actual content dimensions within 10% — measure by eye against the real rendered page.
+
+CHANGE 1 — Fullscreen exam layout (no sidebar):
+In src/app/(student)/student/exams/[id]/page.tsx:
+- Do NOT render inside student layout
+- Export a custom layout that shows ONLY the exam
+- No sidebar, no top header, no navigation
+- Full viewport width and height for exam content
+Add to page.tsx: export const dynamic = 'force-dynamic'
+Create a minimal exam shell layout with only:
+  - Top bar: MINDSPARK logo left, timer centre,
+    question counter right
+  - Main content area: full remaining height
+  - No sidebar, no profile, no navigation links
+
+CHANGE 2 — Long equation vertical display:
+In src/components/exam/exam-vertical-view.tsx:
+- Equation container must scroll vertically if
+  more than 8 numbers: overflow-y: auto
+- Each number row: minimum height 48px
+- Font size scales down for 10+ rows:
+  10 rows: text-3xl
+  15+ rows: text-2xl
+- Separator line (─────) always visible
+- "Total = ?" always at bottom, never clipped
+- Test with a 15-number equation in dev
+
+CHANGE 3 — Flash options appear only after flash:
+In src/components/exam/anzan-flash-view.tsx:
+- During PHASE_2_FLASH: render ONLY the number
+  Full screen, DM Mono font, #1A3829 colour
+  No options, no navigator, no timer bar
+  No other UI elements visible
+- Transition to PHASE_3_MCQ: options appear
+  Timer starts counting from this moment
+  Navigator becomes visible
+  "Total = ?" prompt appears
+- Phase string must be PHASE_2_FLASH not 'FLASH'
+- Verify phase transition in exam-session-store.ts
+
+CHANGE 4 — Question palette remaining count:
+In src/components/exam/question-navigator.tsx:
+- Add prominent counter above palette:
+  "7 of 20 remaining" in large text
+  Or "13 answered · 7 remaining"
+- Colour coding:
+  Answered: bg-[#1A3829] text-white
+  Current: border-2 border-[#1A3829] bg-white
+  Unanswered: bg-slate-100 text-slate-600
+  Marked for review: bg-amber-100 text-amber-700
+- Counter updates in real time as student answers
+
+CHANGE 5 — Submit button at last question:
+In src/components/exam/exam-vertical-view.tsx:
+- On the final question (currentIndex === total - 1):
+  Show a large "Submit Exam →" button below MCQ grid
+  Style: bg-[#1A3829] text-white w-full py-4 text-lg
+  This button opens confirm-submit.tsx dialog
+- confirm-submit.tsx dialog must show:
+  "You have answered X of Y questions"
+  List of unanswered question numbers if any
+  Two buttons: "Review Answers" and "Submit Final"
+  Submit Final calls submitExam action
+  After submit: completion-card.tsx renders via
+  createPortal(content, document.body)
+- Header "Finish Exam" button remains for non-last
+  questions but is less prominent (outline style)
+
+CHANGE 6 — Fix BUG 1 tickerMode from DB:
+In src/app/(student)/student/exams/[id]/page.tsx:
+- Fetch profiles.ticker_mode for current student
+- Pass to exam-page-client as prop
+- exam-page-client passes to exam store initSession
+
+CHANGE 7 — Fix BUG 2 anzan config from DB:
+In src/app/(student)/student/exams/[id]/page.tsx:
+- Fetch anzan_delay_ms, anzan_digit_count,
+  anzan_row_count from exam_papers
+- Pass to AnzanFlashView as anzanConfig prop
+- AnzanFlashView uses these values not hardcoded ones
 
 **Hard constraints:**
-- Use `animate-pulse` from Tailwind — do not use `setTimeout` or JS animations
-- Skeleton colour must be `bg-slate-200` (compiles correctly in Tailwind v4 with the `@theme inline` block in `globals.css`)
-- No `bg-gray-*` — use the slate palette
-- Do not introduce new dependencies for skeleton loaders
+- PHASE_2_FLASH string — never just 'FLASH'
+- No setTimeout in src/lib/anzan/
+- No adminSupabase in student routes
+- createPortal for completion card
+- Fullscreen layout must not break other student
+  routes — only applies to /student/exams/[id]
 
 **Performance requirement:**
-Skeleton must be visible within 200ms of navigation on a throttled Slow 3G connection. Since
-`loading.tsx` is rendered immediately by Next.js App Router before the async Server Component
-resolves, this is guaranteed by the framework — verify it holds.
+Flash sequence must display numbers at exact timing
+from anzan_delay_ms — no drift over 20 numbers.
+At 500 concurrent students in flash phase:
+server must not be involved — flash runs client-side.
+Equation rendering for 15 numbers must complete
+in under 16ms (one frame at 60fps).
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Open DevTools → Network → throttle to Slow 3G. Navigate to each admin page. Skeleton appears immediately, then content replaces it. No blank white flash on any page.
-- [ ] Frontend: Navigate to `/student/dashboard` on Slow 3G — live exam hero skeleton is visible before the real card loads
-- [ ] Frontend: Skeleton shapes visually match the layout of real content (no wildly different proportions)
-- [ ] Frontend: At full speed (no throttling), skeletons still briefly appear and fade — no hydration errors in console
-- [ ] Supabase DB check: No DB query needed — this is a purely frontend task. Verify no extra DB calls are introduced.
-- [ ] Performance: In Lighthouse (Mobile preset), FCP must not regress from baseline. Run before and after.
-- [ ] TypeScript: `npm run tsc` reports 0 errors
-- [ ] Edge case: If data fetch fails (Supabase returns error), page renders the real component with empty state — skeleton does not stay on screen forever
+[ ] Navigate to /student/exams/[id] as STUDENT-001
+    — sidebar is NOT visible
+    — top header navigation is NOT visible
+    — only exam chrome visible (timer, counter, logo)
+[ ] Create a test question with 12 number equation
+    — all numbers visible without scroll on desktop
+    — "Total = ?" visible at bottom
+    — no overflow or truncation
+[ ] Take TEST type exam:
+    — during flash: ONLY number visible
+    — options NOT visible during PHASE_2_FLASH
+    — options appear immediately when PHASE_3_MCQ starts
+    — phase logged in console: PHASE_2_FLASH not FLASH
+[ ] Question palette shows:
+    — correct remaining count "X of Y remaining"
+    — answered questions in dark green
+    — current question highlighted
+    — unanswered in grey
+[ ] On last question:
+    — large "Submit Exam →" button visible below MCQ
+    — clicking opens confirm dialog
+    — dialog shows answered/unanswered count
+    — "Submit Final" calls submitExam
+    — completion card renders (not blank, not 404)
+[ ] completion-card renders via portal:
+    document.querySelector('[data-completion-card]')
+    must be a child of document.body not of exam div
+[ ] tickerMode reads from DB:
+    UPDATE profiles SET ticker_mode = true
+    WHERE id = (SELECT id FROM students
+    WHERE roll_number = 'STUDENT-001');
+    Reload exam — ticker mode active
+[ ] Anzan config reads from DB:
+    UPDATE exam_papers SET anzan_digit_count = 4
+    WHERE title = 'E2E Full Test Exam';
+    Take flash exam — 4-digit numbers appear
+[ ] npm run tsc — exit 0
+[ ] Zero console errors during full exam flow
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Skeleton Loaders to DONE"
+git commit -m "chore: task board — exam engine done,
+move Task 4 to IN PROGRESS"
 git push
-```
-
----
-### TASK 3: Student Exams List Page
-**Why this matters:**
-The student dashboard shows a single LIVE exam card and up to 5 upcoming exams. There is no
-dedicated page where a student can see all their exams — past, present, and future. The "View
-All" link on the dashboard points to `/student/exams` but that route either does not exist or is
-an empty shell. Students have no way to browse the full exam catalogue or check past attempts.
-
-**Files to read before touching anything:**
-- `src/app/(student)/student/exams/page.tsx` — check current state; likely a shell or missing
-- `src/app/(student)/student/dashboard/page.tsx` — see the query pattern used for LIVE/PUBLISHED exams; replicate and extend it
-- `src/app/(student)/student/exams/[id]/page.tsx` — understand the redirect logic so the list links correctly to lobby or exam
-- `src/app/(student)/student/exams/[id]/lobby/page.tsx` — understand lobby entry point
-- `src/lib/auth/rbac.ts` — understand `requireRole('student')` return shape to get `institutionId` and `userId`
-- `src/lib/supabase/server.ts` — server client for data fetching
-
-**What currently exists:**
-The `/student/exams` route likely does not exist as a full page. The dashboard already queries
-`exam_papers` for LIVE and PUBLISHED status filtered by institution and level. There is no query
-for CLOSED papers from the student's perspective and no dedicated list UI. The "View All" link
-on the dashboard navigates here but lands on a blank or missing page.
-
-**Changes to make:**
-1. `src/app/(student)/student/exams/page.tsx` — implement as a Server Component. Call `requireRole('student')` to get `userId` and `institutionId`. Fetch the student row to get `level_id`. Then fetch ALL `exam_papers` for this institution and level across all statuses (LIVE, PUBLISHED, CLOSED, DRAFT — show DRAFT only if the student has an existing session). Order by `created_at` descending.
-2. Group results into three sections: **Live Now** (status = LIVE), **Upcoming** (status = PUBLISHED), **Past** (status = CLOSED).
-3. LIVE exam card: red pulse badge "LIVE", exam title, type badge (EXAM/TEST), duration. "Enter Now" button links to `/student/exams/[id]/lobby`. Card border: `1px solid #EF4444`.
-4. PUBLISHED exam card: date badge (month + day), exam title, type, duration. No action button — show "Scheduled" badge.
-5. CLOSED exam card: greyed out. Title, type, date. If student has a submission for this paper, show "Completed" badge (green). If no submission, show "Missed" badge (slate).
-6. Empty state for each section: if no LIVE exams, show "No live exams right now" inline note (not a full empty state component). If no upcoming, show "No upcoming assessments". If no past, show "No completed exams yet".
-7. Page header: "All Assessments" h1, subtitle showing student name and level.
-
-**Hard constraints:**
-- Use `src/lib/supabase/server.ts` — not the admin client
-- Role check at the top: `const authResult = await requireRole('student'); if ('error' in authResult) redirect('/login');`
-- Do not use `src/lib/supabase/admin.ts` in this student route
-- LIVE badge colour: `#EF4444` on `#FFFFFF` per design system (Live badge spec)
-- No banned colours: `#FF6B6B` `#121212` `#1A1A1A` `#E0E0E0`
-
-**Performance requirement:**
-Page must render within 2 seconds at 500 concurrent students. Use a single Supabase query with
-`in('status', ['LIVE', 'PUBLISHED', 'CLOSED'])` rather than three parallel queries. Join
-submissions in the same query using `.select('*, submissions(id)')` filtered to `student_id`.
-
-**Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Navigate to `/student/exams` — page renders with three sections. LIVE exam (if any) shows pulse badge. PUBLISHED exams appear in Upcoming.
-- [ ] Frontend: Click "Enter Now" on a LIVE exam → redirects to `/student/exams/[id]/lobby`
-- [ ] Frontend: CLOSED exam with a submission shows green "Completed" badge; CLOSED exam without submission shows grey "Missed" badge
-- [ ] Frontend: All three sections show their empty-state message when no exams exist in that category
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM exam_papers WHERE institution_id = '<id>' AND status = 'LIVE';` — count matches number of LIVE cards shown
-- [ ] Supabase DB check: `SELECT id FROM submissions WHERE student_id = '<student_id>' AND paper_id = '<paper_id>';` — "Completed" badge appears iff this row exists
-- [ ] Performance: Page renders in < 2000ms on production Vercel deployment (check Vercel function logs)
-- [ ] Edge case: Student has no `level_id` set — page still loads, shows institution-wide exams without level filter
-- [ ] TypeScript: `npm run tsc` reports 0 errors
-
-**After completing this task:**
-```
-git add TASKS.md
-git commit -m "chore: task board — move Student Exams List to DONE"
-git push
-```
 
 ---
 ### TASK 4: Student Results Page
+
 **Why this matters:**
-After submitting an exam, students are routed to the dashboard with no visibility into their
-score, grade, or historical performance. The `CompletionCard` "View Results →" button currently
-navigates to `/student/dashboard` as a placeholder. There is no results page. Students and
-parents cannot see assessment outcomes. This is a core product requirement.
+After submitting an exam students have nowhere to go.
+The completion card links back to dashboard but
+students cannot see their scores, grades, or history.
+This is the final step of the student journey and
+currently completely missing.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /frontend-design — results card and chart design
+- /ui-ux-pro-max — results UX is emotionally important
+- /shadcn — table, badge, card components
 
 **Files to read before touching anything:**
-- `src/app/(student)/student/results/page.tsx` — check current state (likely empty shell)
-- `src/app/actions/assessment-sessions.ts` — understand the `submissions` table columns available
-- `src/components/exam/completion-card.tsx` — understand the "View Results →" navigation target
-- `src/components/exam/exam-page-client.tsx` — understand the TODO comment on results navigation
-- `src/lib/auth/rbac.ts` — understand `requireRole('student')` return shape
+- src/app/(student)/student/results/page.tsx
+  — current empty shell
+- src/app/actions/results.ts
+  — existing result fetch actions if any
+- supabase/migrations/ — find submissions and
+  student_answers table definitions
+- src/app/(student)/student/dashboard/page.tsx
+  — pattern for fetching student-specific data
 
 **What currently exists:**
-`/student/results` is either a missing route or empty shell. The `submissions` table has
-`completed_at`, `paper_id`, `student_id`, `session_id`. The `exam_papers` table has `title`,
-`type`, `duration_minutes`. There is no `result_published_at` on submissions yet — check the
-live schema in Supabase SQL editor before building. The `student_answers` table has
-`selected_option` and `question_id`; `questions` has `correct_option` for grading.
+src/app/(student)/student/results/page.tsx is an
+empty shell. No data fetching, no components.
 
 **Changes to make:**
-1. Run `SELECT column_name FROM information_schema.columns WHERE table_name = 'submissions';` in Supabase SQL editor to confirm actual columns before writing any query.
-2. `src/app/(student)/student/results/page.tsx` — implement as Server Component. Fetch all submissions for this student joined with `exam_papers(title, type, duration_minutes)`. Only show submissions where a result has been published (check for `result_published_at` column; if it does not exist in live DB, show all submissions with `completed_at`).
-3. Hero card: most recent result — exam title, date, score percentage in large DM Mono, grade badge (A+/A/B/C/F based on score).
-4. Academic ledger table: columns = Exam Name, Date, Type badge, Duration, Score %, Grade badge. Sort by `completed_at` descending.
-5. GPA trend: recharts `LineChart` — X axis = submission dates, Y axis = score percentage 0–100. Show last 12 results. If fewer than 2 results, show "Not enough data" placeholder instead of the chart.
-6. Pending evaluation section: submissions where result not yet published — show exam title and "Awaiting Results" badge.
-7. Export Report button: renders as a disabled button with "Coming Soon" tooltip — placeholder, no functionality.
-8. Once this page exists, update `exam-page-client.tsx` to remove both TODO comments and replace `router.push('/student/dashboard')` with `router.push('/student/results')` in both `handleSubmit` and `onNavigateResults`.
+1. Rewrite as Server Component:
+   - requireRole('student')
+   - Fetch submissions joined with exam_papers
+     where result_published_at IS NOT NULL
+     and student_id = userId
+   - Order by result_published_at DESC
+
+2. Recently Published hero card (most recent result):
+   - Dark green card matching dashboard style
+   - Exam title, score percentage large
+   - Grade badge (A+/A/B/C/F)
+   - Percentile if available
+   - Published timestamp
+
+3. Pending Evaluation section:
+   - submissions where result_published_at IS NULL
+   - Show exam name, submitted_at, "Pending" badge
+   - Estimated availability if known
+
+4. Academic Ledger table:
+   Columns: Subject icon, Exam Name, Date, 
+   Duration, Score %, Grade badge, Status badge
+   Pagination: 10 rows per page
+   Export Report button (placeholder — just UI)
+
+5. GPA Trend chart:
+   recharts LineChart
+   X axis: exam dates
+   Y axis: score percentage 0-100
+   Two lines: student score vs class average
+   Only render if 2+ results exist
+
+6. Empty state if no published results:
+   Icon + "No results published yet"
+   "Check back after your exam is graded"
 
 **Hard constraints:**
-- Use `src/lib/supabase/server.ts` — not admin client
-- recharts is already installed — do not add new chart libraries
-- DM Mono for all numbers (score %, GPA values): `fontFamily: 'var(--font-mono), monospace'`
-- Grade boundaries: A+ ≥ 90, A ≥ 80, B ≥ 70, C ≥ 60, F < 60 (use these until Settings page persists custom boundaries)
-- Banned colours must not appear anywhere on this page
+- Only show results where result_published_at
+  IS NOT NULL — never show unpublished scores
+- No adminSupabase in student route
+- createClient() only
 
 **Performance requirement:**
-Page must load in < 2 seconds for a student with 50 past exams. Do not fetch `student_answers`
-on this page — compute score server-side via a Supabase RPC or compute it from a pre-existing
-`score` column on `submissions` if it exists (check live schema first).
+Results query must use student_id index.
+Chart must not block page render — load after
+table is visible using Suspense boundary.
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Navigate to `/student/results` after submitting an exam — hero card shows latest result, table shows all results
-- [ ] Frontend: GPA trend chart renders with at least 2 data points; Y axis is 0–100
-- [ ] Frontend: Pending evaluation section shows exams with no published result separately from graded ones
-- [ ] Frontend: "View Results →" button on CompletionCard navigates to `/student/results` (update exam-page-client.tsx)
-- [ ] Supabase DB check: `SELECT id, completed_at FROM submissions WHERE student_id = '<id>' ORDER BY completed_at DESC;` — matches rows shown in the table
-- [ ] Supabase DB check: Confirm `result_published_at` column exists or does not: `SELECT column_name FROM information_schema.columns WHERE table_name = 'submissions' AND column_name = 'result_published_at';`
-- [ ] Performance: Page loads in < 2000ms on Vercel production (check function duration in Vercel dashboard)
-- [ ] Edge case: Student with zero submissions — page shows "No results yet" empty state, hero card is hidden
-- [ ] Edge case: Student with 1 submission — GPA trend shows "Not enough data" instead of a chart with one point
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] Navigate to /student/results as STUDENT-001
+    — page loads, no 404, no console errors
+[ ] Published result appears in hero card with
+    correct score and grade
+[ ] Academic ledger table shows correct exam history
+[ ] Unpublished results do NOT appear
+    — verify: submission without result_published_at
+    is not visible on the page
+[ ] GPA chart renders if 2+ results exist
+[ ] Pending section shows ungraded submissions
+[ ] Skeleton loader visible on Slow 3G
+[ ] DB check:
+    SELECT s.id, s.score_percentage,
+    ep.title, s.result_published_at
+    FROM submissions s
+    JOIN exam_papers ep ON ep.id = s.paper_id
+    WHERE s.student_id = '[STUDENT-001 id]'
+    ORDER BY s.result_published_at DESC;
+    Result must match what page displays
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Student Results Page to DONE"
+git commit -m "chore: task board — student results done,
+move Task 5 to IN PROGRESS"
 git push
-```
 
 ---
 ### TASK 5: Admin Dashboard Charts
+
 **Why this matters:**
-The admin dashboard is a placeholder shell. Admins currently have no visibility into platform
-health — how many students are enrolled, how many exams are live, what the average score is,
-or how many students are in an active session right now. Without this, admins must query
-Supabase directly to understand platform state during an exam session.
+The admin dashboard currently shows 4 plain number
+cards with no trend data, no charts, and no recent
+activity. Admin cannot see platform health at a
+glance. The recharts library is already installed
+and unused. This task activates it.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /frontend-design — chart and KPI card design
+- /shadcn — card components
+- /web-design-guidelines — data visualisation rules
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/dashboard/page.tsx` — current state; likely minimal or placeholder
-- `src/app/actions/` — check if a `dashboard` or `analytics` action file exists
-- `src/lib/supabase/server.ts` — server client
-- `src/lib/auth/rbac.ts` — admin role check pattern
+- src/app/(admin)/admin/dashboard/page.tsx
+  — current KPI cards, what data is fetched
+- src/components/dashboard/ — all files in this dir
+  — kpi-card.tsx, sparkline-chart.tsx,
+    live-pulse.tsx, recent-activity-feed.tsx
+- supabase/migrations/ — find dashboard_aggregates
+  materialized view if it exists
 
 **What currently exists:**
-The admin dashboard at `/admin/dashboard` likely renders a heading and nothing else. There are
-no pre-built dashboard query actions. The `activity_logs` table exists and is written to by
-every server action. No materialized view named `dashboard_aggregates` has been confirmed to
-exist in the live DB — verify before using it.
+4 KPI cards render with static numbers.
+No charts exist. No recent activity table.
+Dashboard component files exist but may be stubs.
 
 **Changes to make:**
-1. Before writing any code: run `SELECT table_name FROM information_schema.tables WHERE table_name = 'dashboard_aggregates';` in Supabase SQL editor. If it does not exist, use direct queries.
-2. `src/app/(admin)/admin/dashboard/page.tsx` — four parallel Supabase queries wrapped in `Promise.all`: (a) `COUNT(*)` from `students` where `institution_id` matches, (b) `COUNT(*)` from `exam_papers` where `status = 'LIVE'`, (c) `AVG(score)` from `submissions` — check if `score` column exists first, (d) `COUNT(*)` from `assessment_sessions` where `closed_at IS NULL`.
-3. Four KPI cards: Total Students, Active Exams, Avg Score, Live Now. Each card: large number in DM Mono, label below, small recharts `Sparkline` (AreaChart with no axes) showing 7-day trend. For Phase 1, the sparkline data can be static placeholder data — note this in a comment.
-4. Score Trend chart: recharts `LineChart`. Query: group `submissions` by month for the last 6 months, compute avg score per month. X axis = month labels, Y axis = 0–100. Render at 100% width, height 280px.
-5. Level Distribution chart: recharts `BarChart`. Query: `COUNT(students.id)` grouped by `level_id` joined with `levels(name)`. Render bars with label on X axis.
-6. Recent Activity table: `SELECT * FROM activity_logs WHERE institution_id = ? ORDER BY created_at DESC LIMIT 10`. Columns: timestamp (formatted), actor `user_id` (show last 8 chars), `action_type` badge (colour-coded), `entity_type`. No expand functionality needed here (that is in Task 12).
-7. All chart containers must have a fixed height to prevent layout shift. Use `style={{ height: '280px' }}` wrappers.
+1. KPI cards with sparklines:
+   Each card shows: label, large number, trend line
+   Use recharts Sparkline inside each card
+   Data: last 7 days of daily counts from
+   dashboard_aggregates or direct queries
+   Cards: Total Students, Active Exams,
+   Avg Score, Live Now
+
+2. Score Trend chart:
+   recharts LineChart, 6 months
+   X axis: month labels (Jan Feb Mar...)
+   Y axis: average score percentage
+   Data from: SELECT DATE_TRUNC('month', submitted_at),
+   AVG(score_percentage) FROM submissions
+   GROUP BY 1 ORDER BY 1
+
+3. Level Distribution chart:
+   recharts BarChart
+   X axis: level names
+   Y axis: student count
+   Data from: SELECT l.name, COUNT(s.id)
+   FROM levels l LEFT JOIN students s
+   ON s.level_id = l.id GROUP BY l.name
+
+4. Recent Activity table:
+   Last 10 rows from activity_logs
+   Columns: timestamp, actor email, action badge
+   (colour coded by action type), target entity
+   "View Full Log →" link to /admin/activity-log
+
+5. All chart components use next/dynamic with
+   ssr: false — recharts requires browser
 
 **Hard constraints:**
-- recharts already installed — use it, do not add `chart.js` or `victory`
-- All DB queries must be scoped to `institution_id` — never query platform-wide without the filter
-- DM Mono for all number displays
-- Do not create a materialized view via SQL — no new migrations
+- recharts only — already installed
+- All chart components loaded with next/dynamic
+- No chart renders server-side
+- dashboard_aggregates view used if it exists,
+  direct queries as fallback
 
 **Performance requirement:**
-Dashboard must load in < 3 seconds with full data at 500 students and 50 exams. Use `Promise.all`
-to run all four KPI queries in parallel. The score trend query must use a single SQL aggregate,
-not N queries for N months.
+Charts must not block initial page render.
+KPI numbers must appear before charts load.
+At 500 concurrent admins: dashboard queries must
+complete in under 500ms — use materialized view
+where possible, add LIMIT to recent activity.
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Admin dashboard shows 4 KPI cards with real numbers from DB, not hardcoded placeholders
-- [ ] Frontend: Score trend LineChart renders with 6 months of data (or fewer if DB has less history)
-- [ ] Frontend: Level Distribution BarChart renders with one bar per level
-- [ ] Frontend: Recent Activity table shows last 10 log entries with correct timestamps
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM students WHERE institution_id = '<id>';` — matches Total Students card
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM exam_papers WHERE status = 'LIVE' AND institution_id = '<id>';` — matches Active Exams card
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM assessment_sessions WHERE closed_at IS NULL;` — matches Live Now card
-- [ ] Performance: All 4 KPI queries complete in < 1000ms total (use Supabase query log to verify)
-- [ ] Edge case: Institution with zero students — KPI cards show 0, charts show empty state text, no JS errors
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] /admin/dashboard loads — 4 KPI cards visible
+    with real numbers from DB
+[ ] Sparkline visible inside each KPI card
+[ ] Score Trend chart renders with real data
+[ ] Level Distribution bar chart renders
+[ ] Recent Activity shows last 10 activity_logs rows
+[ ] Charts load after KPI numbers (not blocking)
+[ ] Skeleton visible while charts load on Slow 3G
+[ ] DB check — KPI numbers match:
+    SELECT COUNT(*) FROM students; (Total Students)
+    SELECT COUNT(*) FROM exam_papers
+    WHERE status = 'LIVE'; (Active Exams)
+    SELECT AVG(score_percentage) FROM submissions;
+    (Avg Score)
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Admin Dashboard Charts to DONE"
+git commit -m "chore: task board — admin dashboard done,
+move Task 6 to IN PROGRESS"
 git push
-```
 
 ---
 ### TASK 6: Admin Students Page
+
 **Why this matters:**
-Admins have no way to view, search, or manage the student roster. Student accounts are created
-in Supabase Auth but there is no UI to browse them, filter by level, check status, or view a
-student's academic profile. This is required before any real institution can use MindSpark —
-admins need to know who is enrolled and be able to manage their accounts.
+Admin currently cannot view, search, filter, or
+manage student records. The students page is a
+critical operational tool — admins need it to
+check student status, promote students to next
+level, suspend accounts, and access academic history.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /frontend-design — table and profile design
+- /shadcn — table, badge, checkbox, dialog
+- /ui-ux-pro-max — admin operational UX
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/students/page.tsx` — current state; likely empty shell
-- `src/app/actions/students.ts` — check what student actions exist (create, update, suspend etc.)
-- `src/lib/supabase/server.ts` — server client
-- `src/lib/auth/rbac.ts` — admin role check
-- `src/lib/supabase/admin.ts` — needed for Supabase Auth operations (promote, suspend, reset password)
+- src/app/(admin)/admin/students/page.tsx
+  — current empty shell
+- src/app/actions/students.ts
+  — existing student actions
+- src/app/(admin)/admin/students/[id]/page.tsx
+  — check if profile page exists
 
 **What currently exists:**
-The `students` table has `id, roll_number, full_name, level_id, institution_id, consent_verified`
-at minimum (check live schema for extra columns). The `levels` table has `id, name`. There is
-no student management UI. The admin client is needed to call `supabase.auth.admin.*` methods
-for password reset and suspend operations.
+Students page is an empty shell.
+Student actions may exist for promote/suspend.
+No profile page exists.
+BUG 4 (no storage buckets) affects avatar uploads.
 
 **Changes to make:**
-1. `src/app/(admin)/admin/students/page.tsx` — Server Component. Fetch students joined with levels. Accept `searchParams` for `level` and `status` filter query params. Pass data to a `StudentsClient` component.
-2. Create `src/components/students/students-client.tsx` — `'use client'`. Filter bar with Level `<select>` and Status `<select>` (Active/Inactive). Table using `@tanstack/react-table` with columns: checkbox, initials avatar circle, name, roll number, level badge, status badge, "View Profile" link.
-3. Checkbox selection — when rows are selected, show a bulk action bar above the table with Promote, Suspend, Export buttons. Promote and Suspend call server actions. Export is placeholder.
-4. Pagination: 20 rows per page. Implement client-side pagination against the full fetched dataset (do not re-query on page change for MVP).
-5. Student profile page: `src/app/(admin)/admin/students/[id]/page.tsx` — Server Component. Fetch student by id, their submissions, and level. Left panel: initials avatar (64×64, green bg), full name, roll number, level, join date, status badge. Promote button, Suspend button, Reset Password button — each calls a server action. Right panel: Academic tab — recharts LineChart of scores over time, exam history table (exam name, date, score, grade).
-6. "Add Student" button in page header opens a `Dialog` with a simple form: full name, roll number, level select. Calls `createStudent` action.
-7. Import CSV button opens a `Dialog` with a file upload input — placeholder modal, no actual import logic needed.
+1. Rewrite students page as Server Component:
+   - Fetch all students with level info
+   - Support filter params: level_id, status
+   - Pagination: 20 per page
+
+2. Filter bar:
+   Level dropdown (fetched from levels table)
+   Status dropdown (ACTIVE / INACTIVE)
+   Clear all filters link
+   Search input (client-side filter by name/roll)
+
+3. Table columns:
+   Checkbox, avatar initials circle (bg from name hash),
+   Student Name (bold), Roll Number, Level name,
+   Status badge (ACTIVE green / INACTIVE grey),
+   View Profile link
+
+4. Bulk action bar (appears when rows selected):
+   "X selected" count
+   Promote button, Suspend button, Export button
+   X to dismiss
+
+5. Student profile page:
+   Create: src/app/(admin)/admin/students/[id]/page.tsx
+   Left panel:
+   - Large avatar/initials circle
+   - Name, status badge, level
+   - Roll number, joined date
+   - "Promote Student" dark green button
+   - "Suspend" red outline button
+   - "Reset Password" grey button
+   - Contact info (email, phone if exists)
+   Right panel (tabs: Academic / History / Settings):
+   Academic tab:
+   - Current GPA large number
+   - GPA trend recharts LineChart
+   - Exam history table (name, score, grade, date,
+     actions menu)
+   - Stats row: attendance %, assignments, skill points
+
+6. Import CSV button — placeholder modal:
+   "CSV import coming soon" message only
+
+7. Add Student button — simple modal:
+   Name, roll number, level select, email
+   Calls createStudent action
 
 **Hard constraints:**
-- `@tanstack/react-table` already installed — use it
-- `src/lib/supabase/admin.ts` is allowed in admin server actions but NOT in client components or hooks
-- Every server action must start with `const authResult = await requireRole('admin'); if ('error' in authResult) return { error: authResult.error };`
-- Avatar colour: `#1A3829` background, `#FFFFFF` initials — DM Sans font
+- BUG 4: storage buckets must exist before
+  avatar upload works — skip upload UI for now,
+  show initials only
+- No adminSupabase in client components
+- All mutations via server actions
 
 **Performance requirement:**
-Table must render 500 students without lag. Use virtual scrolling via `@tanstack/react-virtual`
-if row count exceeds 200, otherwise simple pagination suffices.
+Table must paginate — never load all students at once.
+At 1240 students (from dashboard KPI): query must
+use institution_id index and return in under 300ms.
+Verify with EXPLAIN ANALYZE.
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: `/admin/students` shows all students in a table with correct level and status badges
-- [ ] Frontend: Filter by Level dropdown updates table immediately (client-side filter)
-- [ ] Frontend: Select 3 rows → bulk action bar appears with Promote/Suspend/Export buttons
-- [ ] Frontend: Click "View Profile" → student profile page loads with correct data
-- [ ] Frontend: "Add Student" button opens dialog; submit form → new row appears in table
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM students WHERE institution_id = '<id>';` — matches row count in table
-- [ ] Supabase DB check: After promoting a student: `SELECT level_id FROM students WHERE id = '<id>';` — new level_id is set
-- [ ] Performance: Table renders 500 rows in < 500ms (measure with React DevTools Profiler)
-- [ ] Edge case: Student with no submissions — profile page academic tab shows "No exam history" empty state
-- [ ] Edge case: No students exist — page shows empty state with "Add Student" CTA
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] /admin/students loads with real student data
+[ ] Filter by Level works — only that level shows
+[ ] Filter by Status works
+[ ] Search filters by name in real time
+[ ] Selecting rows shows bulk action bar
+[ ] View Profile opens /admin/students/[id]
+[ ] Profile page loads with correct student data
+[ ] Promote button calls correct action:
+    SELECT level_id FROM students
+    WHERE roll_number = 'STUDENT-001';
+    Click Promote, verify level_id changed
+[ ] Suspend button changes status to INACTIVE
+[ ] Skeleton visible on Slow 3G for table
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Admin Students Page to DONE"
+git commit -m "chore: task board — admin students done,
+move Task 7 to IN PROGRESS"
 git push
-```
 
 ---
-### TASK 7: Admin Levels Page — Wire Create Level and Drag Reorder
+### TASK 7: Admin Levels — Wire Create Level Button
+
 **Why this matters:**
-The Levels page already renders level cards but the "Create Level" button has no `onClick`
-handler. Admins cannot create new levels through the UI. Additionally, levels cannot be
-reordered — `sequence_order` exists in the DB but there is no drag-and-drop reorder UI.
-Without this, institutions are stuck with whatever levels were seeded at setup time.
+The Create Level button has no handler. Level 1
+exists in the DB but admin cannot create Level 2,
+3 or beyond from the UI. Without levels, assessments
+cannot be assigned to new student cohorts.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /shadcn — dialog, input, select
+- /frontend-design — level card design
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/levels/page.tsx` — current state; understand existing card rendering
-- `src/app/actions/levels.ts` — confirm `createLevel` action exists and its input shape
-- `src/lib/auth/rbac.ts` — admin role check pattern
+- src/app/(admin)/admin/levels/page.tsx
+  — current state, what the button does
+- src/app/actions/levels.ts
+  — createLevel action signature and fields
+- src/components/assessments/create-assessment-wizard.tsx
+  — pattern to follow for dialog component
 
 **What currently exists:**
-The levels page renders existing level cards but has no create functionality wired. The
-`createLevel` action likely exists in `src/app/actions/levels.ts` — verify its signature before
-building the dialog. The `@hello-pangea/dnd` package is installed for drag-and-drop.
+createLevel action exists and is fully implemented.
+Button has no onClick handler — same bug as
+Create Assessment had before Phase 1.
+Level 1 exists in DB. No drag reorder exists.
 
 **Changes to make:**
-1. Verify `createLevel` action input shape by reading `src/app/actions/levels.ts`. Note the required fields.
-2. Create `src/components/levels/create-level-dialog.tsx` — a `Dialog` with two inputs: name (text) and sequence_order (number). Submit calls `createLevel`. On success: close dialog, `router.refresh()`.
-3. Wire the "Create Level" button in the levels page to open `CreateLevelDialog`.
-4. Level cards must show: name, status badge (ACTIVE/DRAFT based on a status column — check if this exists in live schema), enrolled student count (query `COUNT(students) WHERE level_id = ?`), drag handle icon on the left.
-5. Wrap the level cards list in `DragDropContext` and `Droppable` from `@hello-pangea/dnd`. Each card is a `Draggable`. On `onDragEnd`: call an `updateLevelOrder` server action that updates `sequence_order` for the moved item.
-6. Stats row at bottom: Total Student Load (sum of all students across levels), Average Competencies (placeholder — 0 until competency tracking is built), Curriculum Density (placeholder).
+1. Create src/components/levels/create-level-dialog.tsx
+   'use client'
+   Simple dialog (simpler than assessment wizard):
+   - Level name input (required)
+   - sequence_order input (auto-filled as next number)
+   - Description textarea (optional)
+   - Save button calls createLevel action
+   - On success: router.refresh(), close dialog
+
+2. Update levels page:
+   - Replace dead button with CreateLevelDialog
+   - Each level card shows:
+     Drag handle icon (left)
+     Level name + status badge (ACTIVE/DRAFT)
+     Competency count (placeholder: 0)
+     Enrolled students count
+   - Use @hello-pangea/dnd for drag reorder
+   - On reorder: call updateLevelOrder action
+     (create if not exists)
+
+3. Stats row at bottom:
+   Total Student Load, Average Competencies,
+   Curriculum Density — placeholder values ok
 
 **Hard constraints:**
-- `@hello-pangea/dnd` is already installed — do not add `react-beautiful-dnd` or `dnd-kit`
-- No new Supabase migrations — if `status` column does not exist on `levels`, omit the status badge
-- `createLevel` action must follow the `ActionResult<T>` return type pattern
+- sequence_order must auto-increment
+  SELECT MAX(sequence_order) FROM levels
+  WHERE institution_id = '[id]'
+  Use result + 1 as default value
 
 **Performance requirement:**
-Drag reorder must feel instant. Optimistically update the card order in React state on
-`onDragEnd` before the server action resolves. Revert if the server action returns an error.
+Levels list is small (< 20 items) — no pagination
+needed. Drag reorder must feel instant (optimistic
+UI update before server confirms).
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Click "Create Level" → dialog opens → fill name → submit → new level card appears without page reload
-- [ ] Frontend: Drag a level card to reorder → cards snap to new position immediately (optimistic update)
-- [ ] Frontend: Level card shows enrolled student count as a real number
-- [ ] Supabase DB check: After creating a level: `SELECT * FROM levels WHERE name = '<name>';` — row exists with correct `institution_id` and `sequence_order`
-- [ ] Supabase DB check: After drag reorder: `SELECT name, sequence_order FROM levels ORDER BY sequence_order;` — order matches what is shown on screen
-- [ ] Edge case: Create level with duplicate name — server action returns error; toast shown; dialog stays open
-- [ ] Edge case: Single level — drag handle is visible but dragging has no effect (no reorder needed with one item)
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] Click Create Level — dialog opens
+[ ] Fill name, submit — level appears in list
+[ ] DB check:
+    SELECT id, name, sequence_order FROM levels
+    WHERE institution_id = '[id]'
+    ORDER BY sequence_order;
+    New level must appear with correct sequence_order
+[ ] Drag level card to new position — order updates
+[ ] sequence_order updated in DB after drag
+[ ] Level card shows enrolled student count
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Admin Levels to DONE"
+git commit -m "chore: task board — admin levels done,
+move Task 8 to IN PROGRESS"
 git push
-```
 
 ---
 ### TASK 8: Admin Results Page
+
 **Why this matters:**
-After an exam closes, admins need to see the grade distribution, per-student scores, and publish
-results to students. Currently there is no results management UI. Results remain invisible to
-students (`CompletionCard` shows a generic message) until manually published. Without this page,
-the assessment lifecycle is incomplete — exams are taken but results are never surfaced.
+Admin cannot currently publish student results.
+After an exam closes, grades must be reviewed and
+published before students can see their scores.
+This is a critical administrative workflow.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /frontend-design — grade distribution chart
+- /shadcn — table, checkbox, badge, dialog
+- /web-design-guidelines — data visualisation
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/results/page.tsx` — current state
-- `src/app/actions/assessments.ts` — check `forceCloseExam` and any results-related actions
-- `src/lib/supabase/server.ts` — server client
-- Database schema section in CLAUDE.md — understand `submissions` and `student_answers` columns
-- Check live schema: `SELECT column_name FROM information_schema.columns WHERE table_name = 'submissions';`
+- src/app/(admin)/admin/results/page.tsx
+  — current empty shell
+- src/app/actions/results.ts
+  — publishResults, calculateResults actions
+- supabase/migrations/ — find submissions table
+  and result_published_at column
 
 **What currently exists:**
-The results page is a placeholder. The `submissions` table has `completed_at`, `paper_id`,
-`student_id`. Check if `result_published_at` and `score` columns exist in the live DB before
-building — they may have been added manually outside migrations (per CLAUDE.md gotcha about
-live DB having extra columns not in migrations). The `student_answers` table has
-`selected_option`; `questions` has `correct_option` for grading.
+Results page is an empty shell.
+Result actions may exist in results.ts.
 
 **Changes to make:**
-1. `src/app/(admin)/admin/results/page.tsx` — fetch all CLOSED `exam_papers` for the institution. Pass to a `ResultsClient` component.
-2. Assessment selector: a dropdown or tab list of CLOSED exams. When an exam is selected, fetch its submissions joined with student info.
-3. Grade distribution: recharts `AreaChart` (bell curve approximation). Compute score distribution — bin students into 10-point score ranges (0-9, 10-19, ..., 90-100), plot as an area chart.
-4. Stats bar below chart: Mean score, Median score, DPM Average (digits per minute — placeholder 0 until computed).
-5. Results table: columns = checkbox, student avatar (initials), name, score, grade badge (A+/A/B/C/F), status badge (Published/Unpublished). Per-row "Publish" button calls `publishResult` server action.
-6. Create `src/app/actions/results.ts` — `publishResult({ submission_id })` action: sets `result_published_at = now()` on the `submissions` row (or appends this column via a SQL update if it does not exist yet).
-7. Bulk action bar: Publish Selected (calls `publishResult` for each selected `submission_id`), Export (placeholder).
-8. Re-evaluate button: calls `calculateResults({ paper_id })` — computes score by comparing `student_answers.selected_option` to `questions.correct_option` and stores result. This is a server action, not an RPC, unless an RPC already exists.
+1. Assessment selector:
+   Dropdown of all CLOSED exam_papers
+   Selecting one loads its results
+
+2. Stats bar:
+   MEAN: [X]% MEDIAN: [X]% DPM AVG: [X]
+   Re-evaluate button calls calculateResults RPC
+
+3. Grade Distribution chart:
+   recharts AreaChart bell curve shape
+   X axis: grade labels (F D C B A A+)
+   Y axis: student count
+   Filled area in light green
+
+4. Student results table:
+   Checkbox, avatar initials, name, score %,
+   grade badge (colour coded), status badge,
+   Publish button per row
+   
+5. Bulk action bar:
+   "SELECTED X" count
+   Publish Selected button
+   Export button
+   X dismiss
+
+6. Publishing flow:
+   Single publish: calls publishResult({
+     submission_id, result_published_at: NOW()
+   })
+   Bulk publish: calls publishResults([ids])
+   After publish: student can see result in
+   /student/results page
 
 **Hard constraints:**
-- No new Supabase migrations — use `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS result_published_at timestamptz;` only via Supabase SQL editor if needed, not a migration file
-- Grade boundaries: A+ ≥ 90, A ≥ 80, B ≥ 70, C ≥ 60, F < 60
-- recharts already installed
-- `publishResult` action must log to `activity_logs`
+- Only admin role can publish results
+- result_published_at must be set server-side
+  never trust client timestamp
+- Verify RPC calculate_results exists before calling
 
 **Performance requirement:**
-Results table must handle 500 students with scores computed server-side. Do not compute scores
-client-side on 500 rows. Compute them in a single SQL aggregate query or RPC.
+Grade distribution chart must render in under
+500ms for 500 student results.
+Bulk publish of 500 results must complete in
+under 10 seconds — use batch update not loop.
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Select a closed exam from dropdown → grade distribution chart renders, stats bar shows real mean/median
-- [ ] Frontend: Results table shows all students with scores and grade badges
-- [ ] Frontend: Click "Publish" on one row → status badge changes to "Published" without page reload
-- [ ] Frontend: Select 3 rows → bulk publish → all 3 change to "Published"
-- [ ] Supabase DB check: After publishing: `SELECT result_published_at FROM submissions WHERE id = '<id>';` — not null
-- [ ] Supabase DB check: After re-evaluate: `SELECT score FROM submissions WHERE paper_id = '<id>' LIMIT 5;` — scores are populated (if score column exists)
-- [ ] Student side: After admin publishes, student visits `/student/results` and sees the result listed (not in Pending section)
-- [ ] Performance: Results table with 500 students loads in < 3 seconds
-- [ ] Edge case: Exam with zero submissions — table shows empty state, chart shows "No data"
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] /admin/results loads — assessment selector visible
+[ ] Select closed exam — student results table loads
+[ ] Stats bar shows correct mean and median
+[ ] Grade distribution chart renders
+[ ] Publish one result — student can now see it
+    at /student/results (verify in browser)
+[ ] Bulk publish 3 results — all visible to students
+[ ] DB check after publish:
+    SELECT id, result_published_at FROM submissions
+    WHERE paper_id = '[id]'
+    AND result_published_at IS NOT NULL;
+    Count must match number published
+[ ] Re-evaluate button calls calculateResults
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Admin Results Page to DONE"
+git commit -m "chore: task board — admin results done,
+move Task 9 to IN PROGRESS"
 git push
-```
 
 ---
-### TASK 9: Admin Monitor Page — Real-Time Student Table
+### TASK 9: Admin Monitor — Real-time Student Table
+
 **Why this matters:**
-During a live exam, admins cannot see which students are connected, how many questions they have
-answered, or whether any student has disconnected. If a student loses connection mid-exam,
-admins have no way to identify and assist them. The monitor page is the admin's real-time
-control panel during live exam sessions.
+During a LIVE exam admin cannot see what students
+are doing. If a student disconnects, admin has no
+way to know. The monitor page is the control room
+for live exams — critical for exam integrity.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /frontend-design — real-time table design
+- /ui-ux-pro-max — live monitoring UX
+- /shadcn — table, badge, toast components
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/monitor/page.tsx` — current state
-- `src/app/actions/assessments.ts` — understand `forceOpenExam` and `forceCloseExam` for context
-- `src/lib/supabase/server.ts` — server client for initial fetch
-- `src/lib/supabase/client.ts` — needed for Supabase Realtime subscription in the client component
+- src/app/(admin)/admin/monitor/page.tsx
+  — current empty shell
+- src/app/(admin)/admin/monitor/[id]/page.tsx
+  — check if detail page exists
+- src/app/actions/assessment-sessions.ts
+  — session fetch patterns
+- supabase/migrations/ — realtime setup
 
 **What currently exists:**
-The monitor page is a placeholder shell. The `assessment_sessions` table has `student_id`,
-`paper_id`, `started_at`, `closed_at`, `expires_at`, `status`. The `student_answers` table
-can be counted per session to compute progress. Supabase Realtime is already used in the lobby
-and exam pages for broadcast events.
+Monitor page is an empty shell.
+Supabase realtime is configured for exam channels.
 
 **Changes to make:**
-1. `src/app/(admin)/admin/monitor/page.tsx` — Server Component. Fetch all active sessions (`closed_at IS NULL`) for LIVE exams in this institution. Join with `students(full_name, roll_number)` and `exam_papers(title)`. Pass to `MonitorClient`.
-2. Create `src/components/monitor/monitor-client.tsx` — `'use client'`. Subscribe to Supabase Realtime on the `assessment_sessions` table for INSERT/UPDATE events where `paper_id` matches a LIVE exam. Update the rows table in state on each event.
-3. Summary counts row at top: In Progress count, Submitted count, Disconnected count (where `status = 'disconnected'`), Waiting count.
-4. Filters: Status tab bar (All / In Progress / Submitted / Disconnected / Waiting). Text search input for student name.
-5. Table columns: student initials avatar, name, roll number, current status badge, progress bar (`answered_count / total_questions`), last seen timestamp (relative, e.g. "2m ago"), Actions menu (Alert Student — placeholder).
-6. Progress bar: fetch `COUNT(student_answers) WHERE submission_id = ?` for each session. This is expensive at 500 students — use a server-side pre-computed snapshot passed as initial props, then update via Realtime.
-7. Session Update toast: when a Realtime event fires, show a shadcn `toast` notification with the student name and event type.
+1. Monitor index page (/admin/monitor):
+   List of LIVE exam_papers
+   Each with: title, student count, time remaining
+   Click → goes to /admin/monitor/[paper_id]
+
+2. Monitor detail page (/admin/monitor/[id]):
+   Header: exam title, LIVE badge, Export Report,
+   Force Close Exam button
+
+   Summary row: In Progress count, Submitted count,
+   Disconnected count, Waiting count
+
+   Filter tabs: All Statuses, by level/grade
+   Search: filter by student name
+
+   Real-time table (Supabase realtime subscription):
+   Columns: avatar, name, ID, current status badge,
+   progress bar (questions answered / total),
+   last seen timestamp, actions menu (⋮)
+
+   Status colours:
+   In Progress: green dot
+   Submitted: blue checkmark
+   Disconnected: red warning
+   Waiting: grey dash
+
+   Actions menu per row:
+   Alert Student (placeholder toast)
+   View Profile link
+
+   Session Update toast: "System-wide auto-sync
+   completed for all X active users. Latency: Xms"
+
+3. Real-time subscription:
+   Subscribe to assessment_sessions changes
+   WHERE paper_id = [id]
+   Update table row on INSERT/UPDATE without
+   full page reload
 
 **Hard constraints:**
-- Use `src/lib/supabase/client.ts` (not server) for Realtime subscriptions in the client component
-- Realtime subscription must be cleaned up in `useEffect` return function to prevent memory leaks
-- Do not use `src/lib/supabase/admin.ts` in any client component
-- Status badge colours: In Progress = green (#1A3829 bg), Submitted = blue (#2563EB bg), Disconnected = red (#DC2626 bg), Waiting = slate (#475569 bg)
+- Realtime subscription must unsubscribe on
+  component unmount (cleanup in useEffect return)
+- Force Close Exam calls forceCloseExam action
+  from assessments.ts — do not duplicate logic
 
 **Performance requirement:**
-Monitor must update within 3 seconds of a student event (answer submitted, session created).
-Supabase Realtime latency is typically < 500ms — the remaining budget is React re-render time.
-Table must not re-render all 500 rows on every Realtime event — use `useMemo` and keyed updates.
+Table must update within 3 seconds of student
+status change. At 500 concurrent students:
+realtime subscription must handle 500 simultaneous
+presence updates without dropping events.
+Test: open exam in two browser tabs simultaneously,
+verify both show in monitor within 3 seconds.
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Open monitor page during a live exam — table shows all active sessions with correct student names
-- [ ] Frontend: Student answers a question → progress bar updates within 3 seconds (without page refresh)
-- [ ] Frontend: Filter by "Submitted" tab → shows only students with `closed_at` not null
-- [ ] Frontend: Search for a student name → table filters in real-time (client-side)
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM assessment_sessions WHERE closed_at IS NULL;` — matches "In Progress" count on monitor page
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM student_answers WHERE submission_id = '<id>';` — matches progress bar denominator for that student
-- [ ] Performance: Monitor page initial load < 3 seconds. Realtime event reflected in UI < 3 seconds.
-- [ ] Edge case: No live exams — monitor shows "No active sessions" empty state
-- [ ] Edge case: Student closes browser tab — after 30 seconds, status changes to "Disconnected" (if implemented) or last-seen timestamp stops updating
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] /admin/monitor shows LIVE exams list
+[ ] Click exam → detail page loads
+[ ] Student table shows STUDENT-001 as active
+[ ] Open exam in second browser tab as student
+    — student appears in monitor within 3 seconds
+[ ] Answer a question — progress bar updates
+[ ] Student status changes to Submitted after submit
+[ ] Force Close Exam button calls forceCloseExam
+    — exam status changes to CLOSED in DB:
+    SELECT status FROM exam_papers
+    WHERE id = '[id]';
+[ ] Realtime subscription cleaned up on navigate away
+    — no memory leak (check DevTools Performance)
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Admin Monitor Page to DONE"
+git commit -m "chore: task board — admin monitor done,
+move Task 10 to IN PROGRESS"
 git push
-```
 
 ---
-### TASK 10: Admin Announcements Page — TipTap Editor Wired
+### TASK 10: Admin Announcements Page
+
 **Why this matters:**
-Admins have no way to communicate with students through the platform. Announcements are a core
-feature for notifying students of exam schedules, results releases, or policy changes. The
-TipTap dependency is already installed but the editor is not wired. The student dashboard has
-an Announcements section that currently shows nothing.
+Admin has no way to communicate with students.
+Announcements are how admins broadcast exam
+schedules, result publications, and policy updates.
+TipTap is already installed but completely unused.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /frontend-design — editor and history panel design
+- /shadcn — select, input, button components
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/announcements/page.tsx` — current state
-- `src/app/actions/` — check if `announcements.ts` exists with a `createAnnouncement` action
-- `src/app/(student)/student/dashboard/page.tsx` — check if announcements are fetched for students
-- `package.json` — verify TipTap packages installed (`@tiptap/react`, `@tiptap/starter-kit`)
+- src/app/(admin)/admin/announcements/page.tsx
+  — current empty shell
+- src/app/actions/announcements.ts
+  — createAnnouncement action if exists
 
 **What currently exists:**
-The announcements page is a placeholder. TipTap is listed as a dependency. There may or may not
-be an `announcements` table in the live DB — check with `SELECT table_name FROM information_schema.tables WHERE table_name = 'announcements';`. If it does not exist, the table must be created via the Supabase SQL editor (not a migration file).
+Announcements page is an empty shell.
+TipTap installed as dependency but not used.
 
 **Changes to make:**
-1. Check if `announcements` table exists. If not: run in Supabase SQL editor:
-   ```sql
-   CREATE TABLE IF NOT EXISTS announcements (
-     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-     institution_id uuid NOT NULL,
-     title text NOT NULL,
-     body text NOT NULL,
-     target_level_id uuid REFERENCES levels(id),
-     created_by uuid NOT NULL,
-     created_at timestamptz DEFAULT now(),
-     published_at timestamptz
-   );
-   ALTER TABLE announcements ENABLE ROW LEVEL SECURITY;
-   ```
-2. Create `src/app/actions/announcements.ts` if it does not exist — `createAnnouncement({ title, body, target_level_id? })` action. Validates non-empty title and body. Inserts into `announcements`. Logs to `activity_logs`.
-3. `src/app/(admin)/admin/announcements/page.tsx` — two-column layout. Left: Publish New Announcement section. Right: Recent History panel.
-4. Create `src/components/announcements/announcement-editor.tsx` — `'use client'`. Load TipTap with `next/dynamic` and `ssr: false`. Use `useEditor` from `@tiptap/react` with `StarterKit`. Title input above the editor. Target Level `<select>` below. "Publish Announcement" button calls `createAnnouncement`.
-5. Right panel: Recent History — fetch last 5 announcements from the `announcements` table. Each item: title, published date, level badge (or "All Levels"), read percentage (placeholder: "—").
-6. Engagement Insights card at bottom: placeholder card with "Coming Soon" content.
-7. Student dashboard: fetch and render announcements for the student's level (add to `dashboard/page.tsx` — only if the table exists).
+1. Left panel — compose form:
+   Title input (required)
+   Target Level select (All Levels or specific level)
+   Message Body: TipTap rich text editor
+   Load TipTap with next/dynamic ssr:false
+   Toolbar: Bold, Italic, Bullet List, Link
+   Publish Announcement button
+
+2. Right panel — Recent History:
+   Last 5 announcements as cards:
+   Title, sent time, read percentage bar,
+   level badge, "Read by X of Y students"
+
+3. Engagement Insights card at bottom of right panel:
+   "Announcements sent on Tuesday mornings have
+   a 25% higher read rate" (static text ok)
+
+4. createAnnouncement action (create if not exists):
+   Insert to announcements table:
+   institution_id, created_by, title, body (HTML),
+   target_level_id (null = all levels),
+   published_at = NOW()
 
 **Hard constraints:**
-- TipTap must be loaded with `next/dynamic({ ssr: false })` — never imported directly in a Server Component
-- `sanitize-html` (already installed) must be used server-side to sanitize `body` before storing — DOMPurify is banned
-- The `announcements` table must have RLS enabled
-- No new migration files — use Supabase SQL editor only
+- TipTap must load with next/dynamic ssr:false
+  or it will crash Next.js server rendering
+- Announcement body stored as HTML string
+  Sanitize with sanitize-html server-side
+  DOMPurify is BANNED — use sanitize-html only
 
 **Performance requirement:**
-TipTap editor initialises client-side only (SSR false). Editor must be interactive within 2
-seconds of page load. The dynamic import ensures no SSR overhead.
+TipTap editor must be interactive within 2 seconds
+of page load. Editor bundle loaded separately
+from page shell via dynamic import.
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Announcements page loads with TipTap editor and title input visible
-- [ ] Frontend: Type a title and body, click "Publish Announcement" → success toast, announcement appears in Recent History
-- [ ] Frontend: Student dashboard shows the published announcement (once student dashboard fetch is updated)
-- [ ] Supabase DB check: `SELECT id, title, created_at FROM announcements ORDER BY created_at DESC LIMIT 5;` — the published announcement appears
-- [ ] Supabase DB check: Confirm `announcements` table has RLS enabled: `SELECT relrowsecurity FROM pg_class WHERE relname = 'announcements';` — returns `t`
-- [ ] Edge case: Publish with empty title → form validation blocks submission, error shown inline
-- [ ] Edge case: Publish with empty body → same validation
-- [ ] Performance: Editor is interactive (cursor visible, typing works) within 2 seconds of page load
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] /admin/announcements loads — editor visible
+[ ] TipTap toolbar renders (Bold, Italic, List, Link)
+[ ] Type announcement, click Publish
+[ ] DB check:
+    SELECT id, title, published_at
+    FROM announcements
+    ORDER BY published_at DESC LIMIT 1;
+    New row must exist
+[ ] Recent History panel shows published announcement
+[ ] Target Level filter works — announcement stored
+    with correct target_level_id
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Admin Announcements to DONE"
+git commit -m "chore: task board — announcements done,
+move Task 11 to IN PROGRESS"
 git push
-```
 
 ---
 ### TASK 11: Admin Settings Page
+
 **Why this matters:**
-Admins cannot change the institution name, configure session timeout, or set grade boundaries
-through the UI. These settings are either hardcoded or missing entirely. Grade boundaries (A+/A/B
-etc.) affect how student results are displayed on the results page. Without this page, every
-institution is locked to default settings.
+Admin cannot save institution configuration.
+Grade boundaries are hardcoded. Session timeout
+cannot be adjusted. Data retention policy has
+no toggle. All forms render but save nothing.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /shadcn — form, input, select, toggle, table
+- /frontend-design — settings page layout
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/settings/page.tsx` — current state
-- `src/app/actions/settings.ts` — check if it exists and what actions are available
-- Database schema: check if an `institution_settings` or `institutions` table exists with the relevant columns
+- src/app/(admin)/admin/settings/page.tsx
+  — current state, what renders
+- src/app/actions/settings.ts
+  — updateSettings, updateGradeBoundaries actions
 
 **What currently exists:**
-Settings page is a placeholder. Check if a `settings.ts` action file exists. The `profiles`
-table has `institution_id`. There may be an `institutions` table with `name` and other fields —
-verify in live DB. Grade boundaries are currently hardcoded in the results and student results
-pages.
+Settings page renders three sections but no form
+saves any data. Actions may exist in settings.ts.
 
 **Changes to make:**
-1. Check live DB: `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name IN ('institutions', 'institution_settings');`.
-2. If `institutions` table exists with `name` column, use it. If not, store settings on the `profiles` table or create a minimal settings table via Supabase SQL editor.
-3. `src/app/(admin)/admin/settings/page.tsx` — three section cards:
-   - **Institution Profile**: Institution name input, Primary timezone `<select>` (list of IANA timezones), Session timeout input (number, seconds, default 3600). "Save Institution" button calls `updateSettings`.
-   - **Grade Boundaries**: A table with rows for A+, A, B, C, F. Each row: grade label, min score input, max score input. Overlap detection: if any range overlaps another, highlight the conflicting row in red (`border: '1px solid #DC2626'`). "Save Boundaries" button (disabled while overlapping). "Reset to Defaults" button restores A+≥90, A≥80, B≥70, C≥60.
-   - **Data Retention Policy**: Toggle switch: "Auto-Archive Records" (placeholder, no backend wiring needed).
-4. Support card: static card with institution email and "Open Developer Docs" link (placeholder href).
-5. Current Session timer: bottom-left corner — a `useEffect` that counts up seconds since page load. Format as mm:ss.
-6. Create or update `src/app/actions/settings.ts` — `updateSettings({ name?, timezone?, session_timeout_seconds?, grade_boundaries? })`. Store in DB. Log to `activity_logs`.
+1. Institution Profile section:
+   Institution name input
+   Primary timezone select (list of IANA timezones)
+   Session timeout input (seconds, default 3600)
+   Save Institution button → calls updateSettings
+   On success: toast "Settings saved"
+
+2. Grade Boundaries section:
+   Table with rows: A+ / A / B / C
+   Each row: grade label, min score input,
+   max score input, status badge
+   Overlap detection (client-side):
+   If B.min > A.max or ranges overlap:
+   highlight conflicting inputs in red
+   Show "⚠ Overlap Detected — Min > Max value"
+   Save Boundaries button → calls updateGradeBoundaries
+   Reset to Defaults button
+
+3. Data Retention Policy section:
+   Auto-Archive Records toggle
+   Description: "Move inactive student data to
+   cold storage after 12 months"
+   Save with institution settings
+
+4. Support card (right side):
+   "Need help with advanced config?"
+   Open Developer Docs button (link only)
+
+5. Current Session timer (bottom left):
+   "CURRENT SESSION — Expires in: [countdown]"
+   Reads from session expiry
 
 **Hard constraints:**
-- Overlap detection must be client-side (real-time as user types) — do not round-trip to server for this
-- `npm run tsc` 0 errors
-- No banned colours for error states — use `#DC2626` on `#FEE2E2` per design system Error spec
-
-**Performance requirement:**
-Settings page is low-traffic — one admin at a time. No performance constraints beyond normal
-page load < 2 seconds.
+- updateSettings must validate server-side
+- Grade boundaries must not allow gaps or overlaps
+  Validate both client-side (UX) and server-side
+  (security)
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Settings page loads with all three sections visible
-- [ ] Frontend: Change institution name, click Save → success toast
-- [ ] Frontend: Reload page → institution name persists (from DB, not just React state)
-- [ ] Frontend: Set grade boundary with overlapping ranges → row highlights red, Save button disabled
-- [ ] Frontend: Reset to Defaults → inputs reset to A+≥90, A≥80, B≥70, C≥60
-- [ ] Frontend: Current Session timer counts up in bottom-left corner
-- [ ] Supabase DB check: After saving institution name: `SELECT name FROM institutions WHERE id = '<id>';` (or equivalent table) — new name persists
-- [ ] Supabase DB check: After saving grade boundaries: verify stored correctly in whatever table is used
-- [ ] Edge case: Two ranges overlap (e.g. A: 70–100 and B: 60–80) → overlap highlighted immediately on input change
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] Change institution name, click Save
+[ ] DB check:
+    SELECT name FROM institutions
+    WHERE id = '[id]';
+    Name must match what was saved
+[ ] Set overlapping grade boundaries
+    — overlap warning appears in UI
+    — Save is blocked or shows error
+[ ] Valid grade boundaries save successfully:
+    SELECT * FROM grade_boundaries
+    WHERE institution_id = '[id]';
+[ ] Data retention toggle saves to DB
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Admin Settings Page to DONE"
+git commit -m "chore: task board — admin settings done,
+move Task 12 to IN PROGRESS"
 git push
-```
 
 ---
 ### TASK 12: Admin Activity Log Page
+
 **Why this matters:**
-Every server action writes to `activity_logs`. This data exists but is invisible to admins.
-Without an activity log UI, admins cannot audit who did what, when an exam was opened or closed,
-or which student submitted. This is required for compliance and incident investigation.
+Admin has no audit trail UI. Activity logs are
+written to DB on every action but are invisible
+to admins. For compliance, debugging, and security
+review this page is essential.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
+- /shadcn — table, input, select, date picker
+- /frontend-design — log table design
 
 **Files to read before touching anything:**
-- `src/app/(admin)/admin/activity/page.tsx` — current state
-- `src/app/actions/assessments.ts` — see how `activity_logs` inserts work to understand the data structure
-- Database schema: `SELECT column_name FROM information_schema.columns WHERE table_name = 'activity_logs';` — confirm actual columns
+- src/app/(admin)/admin/activity-log/page.tsx
+  — current empty shell
+- src/app/actions/activity-log.ts
+  — fetch actions if exist
 
 **What currently exists:**
-The activity log page is a placeholder. `activity_logs` has `id, user_id, institution_id, action_type, entity_type, entity_id, metadata, created_at` at minimum. The `metadata` column is JSONB. Every server action already inserts into this table.
+Activity log page is an empty shell.
 
 **Changes to make:**
-1. `src/app/(admin)/admin/activity/page.tsx` — Server Component. Fetch most recent 100 log entries for the institution. Accept `searchParams` for filter query params. Pass to `ActivityClient`.
-2. Create `src/components/activity/activity-client.tsx` — `'use client'`. Filter bar: User Search text input (filters by `user_id` contains), Action Type `<select>` (dropdown of distinct action types), Timestamp Range (two `<input type="date">` pickers), Export CSV button (placeholder).
-3. Table: timestamp (formatted "Apr 9, 2026 14:23"), actor (`user_id` — last 8 chars with avatar initials circle), action badge (colour-coded: CREATE = green, UPDATE = blue, DELETE = red, SUBMIT = purple, OPEN/CLOSE = orange), target entity (`entity_type` + `entity_id` last 6 chars), expand chevron button.
-4. Expanded row: full-width panel below the row. Two sub-panels side by side:
-   - Metadata panel: IP (not currently stored — show "N/A"), user agent (not currently stored — show "N/A"), trace ID (use `entity_id`).
-   - JSON Payload panel: render `metadata` JSONB as a formatted `<pre>` block with syntax-like styling (no library needed — just monospace font).
-5. System Status bar at bottom: three static cards — Database Performance (placeholder "Normal"), Log Retention (placeholder "90 days"), Security Audit (placeholder "Passed").
-6. Pagination: 100 rows per page. "Load More" button fetches the next 100 (cursor-based using `created_at` as cursor).
+1. Filter bar:
+   User Search input
+   Action Type dropdown (all action_type values)
+   Timestamp Range: two date inputs (from/to)
+   Export CSV button (generates CSV download)
+
+2. Table:
+   Columns: Timestamp (UTC), Actor (avatar + email),
+   Action badge (colour coded by type),
+   Target Entity, Details expand chevron
+
+   Action badge colours:
+   PUBLISH_RESULT: green
+   FORCE_CLOSE: red
+   CREATE_ASSESSMENT: blue
+   LOGIN_SUCCESS: grey
+   SYSTEM_LOCK: orange
+
+3. Expanded row:
+   Metadata panel: IP Address, User Agent, Trace ID
+   JSON Payload Diff panel: before/after values
+
+4. System Status bar (bottom):
+   Database Performance: INDEX_HEALTH: 99%
+   Log Retention: RETENTION: 365D
+   Security Audit: ALERTS: ACTIVE
+   (Static values ok for now)
+
+5. Pagination: 50 rows per page
+   Show total: "Showing 1-50 of 12,402 events"
 
 **Hard constraints:**
-- Do not expose full UUIDs in the UI — show last 6–8 characters only
-- `metadata` JSONB must be rendered in a `<pre>` block using `JSON.stringify(metadata, null, 2)` — do not use DOMPurify or sanitize-html for this (it is not user-generated content)
-- Export CSV is a placeholder — do not implement actual CSV generation yet
+- Activity log is read-only — no mutations allowed
+- Timestamp must display in UTC with timezone label
+- Filter queries must use timestamp indexes
+  EXPLAIN ANALYZE to verify
 
 **Performance requirement:**
-Initial page load of 100 rows must complete in < 2 seconds. Use cursor-based pagination, not
-`OFFSET/LIMIT` — at 10,000 log entries, `OFFSET 9900` is very slow.
+With 12,000+ log entries: paginated query must
+return in under 200ms using BRIN index on
+timestamps. Do not load all rows at once.
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Activity log page shows 100 most recent entries with correct timestamps and action badges
-- [ ] Frontend: Click expand chevron on a row → metadata panel opens below showing JSON payload
-- [ ] Frontend: Filter by Action Type "CREATE_ASSESSMENT" → table shows only those rows
-- [ ] Frontend: User search for a partial user_id → table filters
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM activity_logs WHERE institution_id = '<id>';` — total row count consistent with pagination
-- [ ] Supabase DB check: After any action (e.g. create assessment), refresh activity log → new row appears at top within 5 seconds
-- [ ] Performance: Page loads 100 rows in < 2000ms. Load More fetches next 100 in < 1000ms.
-- [ ] Edge case: Zero log entries — page shows "No activity yet" empty state
-- [ ] Edge case: `metadata` is null for some rows — JSON panel shows "No metadata" instead of crashing
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] /admin/activity-log loads with real log entries
+[ ] Filter by action type works
+[ ] Filter by date range works
+[ ] Expand row shows metadata panel
+[ ] DB check — filter matches:
+    SELECT COUNT(*) FROM activity_logs
+    WHERE action_type = 'CREATE_ASSESSMENT'
+    AND institution_id = '[id]';
+    Count must match filtered table row count
+[ ] Export CSV downloads a file
+[ ] Pagination works — page 2 loads different rows
+[ ] npm run tsc — exit 0
+[ ] Zero console errors
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Admin Activity Log to DONE"
+git commit -m "chore: task board — activity log done,
+move Task 13 to IN PROGRESS"
 git push
-```
 
 ---
-### TASK 13: Flash Phase — TEST Type Exam Engine Verification
+### TASK 13: Offline Sync Verification
+
 **Why this matters:**
-The `AnzanFlashView` component exists and the phase state machine is wired, but the full flash
-sequence has never been verified end-to-end in production with real exam data from the DB. The
-timing engine, digit count, and row count must come from the DB record. `tickerMode` is
-hardcoded `false`. If the flash sequence does not play correctly, TEST-type exams are broken for
-all students.
+Students in low-connectivity areas will lose
+connection mid-exam. If answers are lost when
+connection drops, the platform is not deployable
+in real institutions. Offline sync must work
+reliably before any real student takes an exam.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
 
 **Files to read before touching anything:**
-- `src/components/exam/anzan-flash-view.tsx` — understand current phase transitions; note `tickerMode = false` hardcoded on line 66
-- `src/app/(student)/student/exams/[id]/page.tsx` — how `anzanConfig` is passed from DB fields
-- `src/hooks/use-anzan-engine.ts` — understand how flash sequences are generated and timed
-- `src/lib/anzan/timing-engine.ts` — verify RAF loop, accumulator pattern, `MINIMUM_INTERVAL_MS`
-- `src/stores/exam-session-store.ts` — verify phase constants include `PHASE_2_FLASH` (the string, not a bare `'FLASH'`)
+- src/lib/offline/sync-engine.ts
+  — current offline sync implementation
+- src/lib/offline/indexed-db-store.ts
+  — Dexie IndexedDB store
+- src/app/api/submissions/offline-sync/route.ts
+  — server endpoint for sync
+- src/components/exam/sync-indicator.tsx
+  — UI indicator for sync status
 
 **What currently exists:**
-`AnzanFlashView` is built and phase-aware. `anzanConfig` is read from `exam_papers.anzan_delay_ms`,
-`anzan_digit_count`, `anzan_row_count` in the server component and passed as props — this is
-correct. `tickerMode` is hardcoded `false` on line 66 of `anzan-flash-view.tsx`. The timing
-engine uses RAF and accumulator pattern. `PHASE_2_FLASH` must be used as the phase string.
+Sync engine exists. HMAC validation exists server-side.
+app.hmac_secret is set in production DB.
+sync-indicator component exists.
 
 **Changes to make:**
-1. Create a TEST exam in admin with `anzan_delay_ms = 800`, `anzan_digit_count = 2`, `anzan_row_count = 5`. Add 3 questions with valid `flash_sequence` arrays (e.g. `[12, 34, 56, 78, 90]`). Publish and set LIVE.
-2. Log in as a student and enter the exam. Observe the full phase sequence: INTERSTITIAL → PHASE_1_START → PHASE_2_FLASH → PHASE_3_MCQ → SUBMITTED.
-3. If any phase transition is broken, trace the fault in `exam-session-store.ts` and fix the guard.
-4. Verify `PHASE_2_FLASH` is used as the phase constant everywhere — search codebase for bare string `'FLASH'` and replace with `PHASE_2_FLASH` if found.
-5. Verify `timing-engine.ts` uses `requestAnimationFrame` only — search `src/lib/anzan/` for `setTimeout` and `setInterval` (should be zero).
-6. Document any timing discrepancy found (e.g. if 800ms flashes feel longer). Do NOT fix by adjusting timing constants unless a real bug is found.
-7. Note: `tickerMode` fix is tracked separately in Task 17. Do not wire it here.
+1. Verify sync engine works end to end:
+   No code changes expected — this is verification.
+   If bugs found: fix them.
+
+2. Test plan:
+   - Answer 3 questions while online
+   - DevTools → Network → Offline
+   - Answer 2 more questions
+   - Verify sync-indicator shows offline state
+   - DevTools → Network → Online
+   - Verify sync-indicator shows syncing then synced
+   - Verify all 5 answers in student_answers table
+
+3. HMAC rejection test:
+   Manually craft a payload with wrong HMAC
+   POST to /api/submissions/offline-sync
+   Verify 401 response
+   Verify HMAC_REJECTION logged in activity_logs
 
 **Hard constraints:**
-- `PHASE_2_FLASH` — never the bare string `'FLASH'`
-- No `setTimeout` or `setInterval` anywhere in `src/lib/anzan/`
-- `MINIMUM_INTERVAL_MS = 200` — flash timing must never go below 200ms
-- `neurologist_approved` flag required for sub-200ms timing — do not add sub-200ms paths without this gate
+- Do NOT use setTimeout in src/lib/anzan/
+- HMAC secret read from app.hmac_secret only
+  Never from NEXT_PUBLIC_ env vars
 
 **Performance requirement:**
-Flash sequence must not drift more than 50ms per flash over a 20-flash sequence. The RAF
-accumulator pattern prevents drift — verify by logging timestamps in development mode only.
+Sync of 50 queued answers must complete within
+5 seconds of reconnection.
+At 500 students reconnecting simultaneously:
+offline-sync endpoint must handle burst traffic.
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: TEST exam shows INTERSTITIAL screen for 3 seconds, then "Begin Flash ▶" button
-- [ ] Frontend: Click "Begin Flash ▶" → full-screen flash number displays at correct timing
-- [ ] Frontend: After last flash, MCQ grid appears immediately
-- [ ] Frontend: Select an answer → next question's flash begins
-- [ ] Frontend: After last question is answered → CompletionCard appears
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM student_answers WHERE submission_id = '<id>';` — count matches questions answered
-- [ ] Supabase DB check: `SELECT closed_at FROM assessment_sessions WHERE id = '<session_id>';` — not null after submission
-- [ ] Grep check: `grep -r "setInterval\|setTimeout" src/lib/anzan/` — zero matches
-- [ ] Grep check: `grep -rn "'FLASH'" src/` — zero matches (only `PHASE_2_FLASH` used)
-- [ ] Performance: Flash timing at 800ms shows numbers for ~800ms each — measure with stopwatch on 5 consecutive flashes
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] Answer 3 questions online — 3 rows in DB
+[ ] Go offline — sync indicator shows offline
+[ ] Answer 2 questions offline — 0 new rows in DB
+[ ] Come back online — sync indicator shows syncing
+[ ] After sync: 5 total rows in student_answers:
+    SELECT COUNT(*) FROM student_answers
+    WHERE submission_id IN (
+      SELECT id FROM submissions
+      WHERE student_id = '[STUDENT-001 id]'
+    );
+    Expected: 5
+[ ] HMAC rejection test:
+    POST tampered payload to offline-sync
+    Response must be 401
+    SELECT * FROM activity_logs
+    WHERE action_type = 'HMAC_REJECTION'
+    ORDER BY created_at DESC LIMIT 1;
+    Must exist
+[ ] Zero console errors during sync
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Flash Phase Verification to DONE"
+git commit -m "chore: task board — offline sync done,
+move Task 14 to IN PROGRESS"
 git push
-```
 
 ---
-### TASK 14: Offline Sync Verification
+### TASK 14: Lobby Polling Fallback
+
 **Why this matters:**
-MindSpark is designed for school environments with unreliable internet. The offline sync system
-(Dexie + HMAC + `/api/submissions/offline-sync`) is architecturally complete but has never been
-verified end-to-end. If offline sync is broken, students who lose connection during an exam lose
-all their answers — catastrophic data loss during high-stakes assessments.
+The lobby currently relies only on a WebSocket
+broadcast to know the exam is live. If a student
+misses this broadcast (page load timing, network
+blip) they stay in the lobby forever even when
+the exam is already live. This is a reliability
+bug that will affect real students.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
 
 **Files to read before touching anything:**
-- `src/lib/offline/indexed-db-store.ts` — understand Dexie schema and `PendingAnswer` row shape
-- `src/lib/offline/sync-engine.ts` — understand flush trigger and the `/api/submissions/offline-sync` endpoint
-- `src/app/api/submissions/offline-sync/route.ts` — verify HMAC validation logic
-- `src/components/exam/sync-indicator.tsx` — understand how offline state is surfaced to user
-- `src/components/exam/network-banner.tsx` — understand the offline banner component
+- src/app/(student)/student/exams/[id]/lobby/
+  lobby-client.tsx
+  — find the WebSocket subscription code
+  — find where exam status is checked
 
 **What currently exists:**
-Dexie 4 `IndexedDB` store queues `PendingAnswer` rows. `sync-engine.ts` flushes when online.
-The `/api/offline-sync` route validates HMAC signatures. The exam client tracks `isOnline` via
-`navigator.onLine` events. `SyncIndicator` and `ExamNetworkBanner` show offline state. This
-has not been tested end-to-end.
+Lobby client subscribes to WebSocket broadcast.
+No polling fallback exists (BUG 3).
 
 **Changes to make:**
-1. This task is primarily verification, not new code. Follow the steps below and fix any bugs discovered.
-2. Start a TEST or EXAM exam as a student. Answer 3 questions while online — verify `student_answers` rows appear in Supabase.
-3. Go to DevTools → Network → Offline. Answer 2 more questions. Verify `SyncIndicator` shows "offline" state and the network banner appears.
-4. Check Dexie store: in DevTools → Application → IndexedDB → mindspark-offline → pendingAnswers. Verify 2 rows exist.
-5. Come back online (DevTools → Network → No throttling). Verify sync-engine flushes — the 2 rows should disappear from IndexedDB and appear in Supabase `student_answers`.
-6. Verify HMAC rejection: manually craft a fetch to `/api/submissions/offline-sync` with a tampered payload. Verify 401 response.
-7. Fix any bugs found during steps 2–6. Common failure modes: sync-engine does not trigger when coming back online, HMAC secret not set in production env vars, Dexie table schema mismatch.
-8. Verify `activity_logs` has an `OFFLINE_SYNC` row after flush.
+1. Add 30-second polling interval in lobby-client.tsx:
+   useEffect with setInterval 30000ms
+   On each tick: fetch exam_papers.status directly
+   from Supabase client
+   If status === 'LIVE': keep showing lobby (already there)
+   If status === 'CLOSED': redirect to /student/exams
+   If status === 'PUBLISHED': show "Exam starting soon"
+
+2. Cleanup: interval must clear on unmount
+   return () => clearInterval(intervalId)
+
+3. Do NOT remove the WebSocket subscription —
+   keep both. Polling is a fallback only.
 
 **Hard constraints:**
-- HMAC signing is server-side only — the secret `HMAC_SECRET` must never appear in client-side code or be logged
-- Do not change the Dexie schema version without understanding migration implications
-- Do not bypass HMAC validation — this is an anti-cheat measure
-
-**Performance requirement:**
-Sync flush must complete within 10 seconds of coming back online. At 100 queued answers (worst
-case), the flush must complete as a single batch call, not 100 individual requests.
+- setInterval is allowed in lobby-client.tsx
+- No setTimeout in src/lib/anzan/ (different file)
+- Polling must not cause duplicate navigations
+  if WebSocket fires at same time as poll
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Go offline mid-exam → network banner appears, SyncIndicator shows "offline"
-- [ ] Frontend: Answer 2 questions offline → DevTools IndexedDB shows 2 `PendingAnswer` rows
-- [ ] Frontend: Come back online → IndexedDB pendingAnswers table empties within 10 seconds
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM student_answers WHERE submission_id = '<id>';` — count = 5 (3 online + 2 offline synced)
-- [ ] Supabase DB check: `SELECT * FROM activity_logs WHERE action_type = 'OFFLINE_SYNC' ORDER BY created_at DESC LIMIT 1;` — row exists after sync
-- [ ] Network check: Craft tampered request to `/api/submissions/offline-sync` (change one byte of HMAC) → 401 Unauthorized
-- [ ] Performance: 100 queued answers sync in < 10 seconds as a single batch
-- [ ] Edge case: Student closes browser tab while offline → on next load, pending answers are still in Dexie and sync on reconnect
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] Student in lobby — disable WebSocket in DevTools
+[ ] Wait 31 seconds — page still shows correct state
+[ ] Enable WebSocket — no duplicate navigation
+[ ] Force close exam — within 31 seconds lobby
+    redirects to /student/exams even without WebSocket
+[ ] Component unmounts cleanly — interval cleared:
+    Navigate away from lobby, check DevTools
+    Performance — no interval still firing
+[ ] npm run tsc — exit 0
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Offline Sync Verification to DONE"
+git commit -m "chore: task board — lobby polling done,
+move Task 15 to IN PROGRESS"
 git push
-```
 
 ---
-### TASK 15: Performance — 500 Concurrent Students Load Testing
+### TASK 15: Performance — 500 Concurrent Students
+
 **Why this matters:**
-MindSpark will be used in exam halls with all students starting simultaneously. The "thundering
-herd" scenario — 500 students hitting the session init endpoint at the same second — is the
-highest-risk moment. Without load testing, we have no evidence the platform can handle this.
-A production failure during an exam is catastrophic and unrecoverable.
+The platform has never been tested under real load.
+A single institution could have 500+ students taking
+an exam simultaneously. Without load testing we do
+not know if Vercel Edge functions, Supabase
+connection pooling, or realtime subscriptions can
+handle the load.
+
+**Skills to invoke:**
+- /superpowers — plan before writing
 
 **Files to read before touching anything:**
-- `k6/` directory — check if k6 test files exist; if not, they must be created
-- `src/app/actions/assessment-sessions.ts` — understand `initSession` — this is the hot path
-- `src/app/api/submissions/offline-sync/route.ts` — second hot path
-- `src/app/(student)/student/exams/[id]/page.tsx` — understand data fetching; check for N+1 queries
+- k6/lt-01-thundering-herd.js
+- k6/lt-02-heartbeat-storm.js
+- k6/lt-03-offline-sync-storm.js
 
 **What currently exists:**
-No k6 load test files have been confirmed to exist. The `initSession` server action creates
-assessment sessions and fetches questions. It uses `adminSupabase` for the insert — check
-Supabase connection pool limits (default: 60 connections on free tier, 200 on Pro). The exam
-page fetches questions in a separate query from the session — potential N+1 if questions are
-fetched per student rather than once.
+k6 scripts exist but have never been run against
+production. Results unknown.
 
 **Changes to make:**
-1. Check if `k6/` directory exists. Create it if not.
-2. Create `k6/lt-01-thundering-herd.js` — 500 VUs all call `initSession` simultaneously. Scenario: ramp to 500 VUs in 5 seconds, hold for 30 seconds. Target: p95 < 2000ms, error rate < 1%.
-3. Create `k6/lt-02-heartbeat-storm.js` — 500 VUs each submit an answer every 10 seconds for 5 minutes. Target: p95 < 500ms.
-4. Create `k6/lt-03-offline-sync-storm.js` — 100 VUs each submit a batch of 20 answers via `/api/offline-sync` simultaneously. Target: p95 < 3000ms.
-5. Check for N+1 queries: `exam page` fetches session + questions in two queries — this is fine. Check if `initSession` makes additional per-student queries (the `students.cohort_id` fetch on line 43 of `assessment-sessions.ts` is a separate round-trip — consider moving it into the session insert logic or caching it).
-6. If Supabase connection pool errors appear under load, add connection pool documentation in a code comment and note the Supabase plan required.
+1. Install k6 if not installed:
+   winget install k6 or download from k6.io
 
-**Hard constraints:**
-- k6 must target the production Vercel URL, not localhost
-- Load test must not run against production DB with real student data — use test institution only
-- Do not store k6 results files in git — add `k6/results/` to `.gitignore`
+2. Run each test in order:
+   k6 run k6/lt-01-thundering-herd.js
+   k6 run k6/lt-02-heartbeat-storm.js
+   k6 run k6/lt-03-offline-sync-storm.js
 
-**Performance requirement:**
-All three load tests must pass:
-- lt-01: p95 < 2000ms, error rate < 1%, zero 500 errors
-- lt-02: p95 < 500ms, error rate < 0.1%
-- lt-03: p95 < 3000ms, error rate < 1%
+3. For each test record:
+   p95 response time (target: < 2000ms)
+   Error rate (target: < 1%)
+   Requests per second peak
+   Any 500 errors
 
-**Validator — task is DONE only when ALL pass:**
-- [ ] k6 lt-01 thundering herd: run `k6 run k6/lt-01-thundering-herd.js` → all thresholds pass in output summary
-- [ ] k6 lt-02 heartbeat storm: run `k6 run k6/lt-02-heartbeat-storm.js` → all thresholds pass
-- [ ] k6 lt-03 offline sync storm: run `k6 run k6/lt-03-offline-sync-storm.js` → all thresholds pass
-- [ ] Supabase DB check: After lt-01, check for duplicate sessions: `SELECT paper_id, student_id, COUNT(*) FROM assessment_sessions GROUP BY paper_id, student_id HAVING COUNT(*) > 1;` — zero rows (upsert idempotency holds)
-- [ ] Supabase logs: Check Supabase dashboard for connection pool exhaustion errors during lt-01 — should be zero
-- [ ] Network check: Zero 500-status responses in k6 output for all three tests
-- [ ] Performance: Vercel function duration (in Vercel dashboard) for `initSession` p95 < 2000ms during lt-01
-- [ ] Edge case: k6 terminates early due to high error rate → investigate root cause before marking done
-
-**After completing this task:**
-```
-git add TASKS.md
-git commit -m "chore: task board — move Load Testing to DONE"
-git push
-```
-
----
-### TASK 16: Lobby 30-Second Polling Fallback
-**Why this matters:**
-The lobby page relies exclusively on a Supabase Realtime WebSocket broadcast (`exam_live` event)
-to detect when the admin opens the exam. If the student's WebSocket connection drops, or if the
-student loads the lobby page after the broadcast was already sent, they will wait in the lobby
-forever. This is a silent failure — no error, no redirect, just a stuck countdown. The polling
-fallback ensures every student reaches the exam regardless of WebSocket reliability.
-
-**Files to read before touching anything:**
-- `src/app/(student)/student/exams/[id]/lobby/lobby-client.tsx` — current WebSocket subscription; understand where the `exam_live` event handler is
-- `src/app/(student)/student/exams/[id]/lobby/page.tsx` — server component wrapper; understand what data is passed to LobbyClient
-- `src/lib/supabase/client.ts` — client for Supabase Realtime and polling queries
-
-**What currently exists:**
-`LobbyClient` subscribes to `supabase.channel('exam:<paperId>')` and listens for `exam_live`
-broadcast event. On event: calls `initSession` then navigates to `/student/exams/[id]`. There
-is no polling fallback. If the WebSocket connection is lost or the student arrives late, they
-stay on the lobby page indefinitely.
-
-**Changes to make:**
-1. In `lobby-client.tsx`, add a `useEffect` that sets up a 30-second `setInterval` polling interval. Note: `setInterval` is allowed outside `src/lib/anzan/` — the ban is only in the anzan timing engine.
-2. Every 30 seconds: query `supabase.from('exam_papers').select('status').eq('id', paperId).single()`.
-3. If `status === 'LIVE'`: trigger the same `initSession` + navigation flow as the WebSocket handler.
-4. If `status === 'CLOSED'`: redirect to `/student/exams` with a toast: "This exam has ended."
-5. Cleanup: clear the interval in the `useEffect` return function — critical to prevent memory leaks and navigation after unmount.
-6. Guard: if the WebSocket event fires first and navigation has already started, the polling interval must not fire again. Use a `useRef<boolean>` flag `hasNavigated` set to `true` before any `router.push`.
-7. The polling interval starts immediately on mount — do not wait 30 seconds for the first check. Use `checkStatus()` immediately, then poll every 30 seconds.
-
-**Hard constraints:**
-- `setInterval` is allowed here (this is `lobby-client.tsx`, not `src/lib/anzan/`)
-- The interval must be cleared on component unmount — no interval leaks
-- Do not add polling to the exam page itself — only the lobby needs this
-- `hasNavigated` ref prevents double-navigation
+4. If tests fail:
+   Check Supabase connection pool settings
+   Check for N+1 queries in exam page
+   Add database indexes if missing
+   Check Vercel function timeout settings
 
 **Performance requirement:**
-Each poll is a single lightweight Supabase query (HEAD request equivalent — just status column).
-At 500 students in the lobby polling every 30 seconds, this is ~17 requests/second — well
-within Supabase rate limits.
+All three k6 tests must pass with:
+p95 < 2000ms
+Error rate < 1%
+Zero 500 errors
+Zero database connection pool exhaustion errors
 
 **Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Student in lobby. Open DevTools → Application → Network → block WebSocket connections. Wait 30 seconds. Verify the page makes a GET/POST to Supabase `exam_papers` endpoint at 30-second intervals.
-- [ ] Frontend: With WebSocket blocked, admin opens the exam. Within 30 seconds, student is automatically redirected to the exam page (not stuck in lobby).
-- [ ] Frontend: Admin closes the exam while student is in lobby. Within 30 seconds (or immediately if WebSocket works), student is redirected to `/student/exams`.
-- [ ] Frontend: Student navigates away from lobby page — no "setState on unmounted component" errors in console (interval is cleaned up).
-- [ ] Supabase DB check: `SELECT status FROM exam_papers WHERE id = '<id>';` — matches the redirect behaviour observed
-- [ ] Performance: Polling adds < 1KB of network traffic per 30-second interval per student
-- [ ] Edge case: `initSession` called by both WebSocket handler and polling simultaneously — second call is idempotent (existing session returned, no duplicate created)
-- [ ] TypeScript: `npm run tsc` reports 0 errors
+[ ] k6 lt-01 completes — p95 < 2000ms, errors < 1%
+[ ] k6 lt-02 completes — same thresholds
+[ ] k6 lt-03 completes — same thresholds
+[ ] Supabase logs show no connection pool exhaustion
+[ ] Vercel logs show no function timeouts
+[ ] Report saved: k6-results/[date]-report.txt
 
 **After completing this task:**
-```
 git add TASKS.md
-git commit -m "chore: task board — move Lobby Polling Fallback to DONE"
+git commit -m "chore: task board — load tests done,
+move BEFORE DEPLOYMENT checklist to IN PROGRESS"
 git push
-```
-
----
-### TASK 17: tickerMode and Anzan Config from DB
-**Why this matters:**
-`tickerMode` is hardcoded `false` in `anzan-flash-view.tsx` line 66. Students with visual
-impairments or specific accessibility needs who have `ticker_mode = true` on their profile
-will never get the accessible ticker interface. Additionally, if `anzan_digit_count`,
-`anzan_row_count`, and `anzan_delay_ms` are ever wrong in the DB (e.g. null), the hardcoded
-defaults in the fallback may produce incorrect exam configs — digit counts and timing are
-exam-integrity-critical.
-
-**Files to read before touching anything:**
-- `src/components/exam/anzan-flash-view.tsx` — line 66: `const tickerMode = false; // TODO`
-- `src/app/(student)/student/exams/[id]/page.tsx` — how `anzanConfig` is constructed and passed; also understand the student fetch shape (does it include `ticker_mode`?)
-- `src/lib/auth/rbac.ts` — `requireRole('student')` return shape — does it expose profile fields?
-- Database: `SELECT column_name FROM information_schema.columns WHERE table_name = 'profiles';` — confirm `ticker_mode` column exists
-
-**What currently exists:**
-The server component at `student/exams/[id]/page.tsx` fetches the paper and session but does NOT
-fetch the student profile's `ticker_mode`. The `anzanConfig` is correctly read from
-`exam_papers.anzan_delay_ms`, `anzan_digit_count`, `anzan_row_count` and passed as props — this
-part is already correct. `tickerMode` is hardcoded `false` client-side.
-
-**Changes to make:**
-1. In Supabase SQL editor, verify: `SELECT ticker_mode FROM profiles WHERE id = '<student_user_id>';` — confirm the column exists and is boolean.
-2. `src/app/(student)/student/exams/[id]/page.tsx` — add a query to fetch `profiles.ticker_mode` for the authenticated student (use `requireRole` result's `userId`): `supabase.from('profiles').select('ticker_mode').eq('id', userId).single()`.
-3. Pass `tickerMode: profile?.ticker_mode ?? false` as a prop to `ExamPageClient`.
-4. Update `ExamPageClientProps` interface to accept `tickerMode?: boolean`.
-5. Pass `tickerMode` through to `AnzanFlashView` as a prop.
-6. Update `AnzanFlashViewProps` to accept `tickerMode: boolean`.
-7. In `anzan-flash-view.tsx`, replace `const tickerMode = false;` with `const { tickerMode } = props;` (or destructure from props).
-8. Verify `TickerMode` component renders correctly when `tickerMode = true`: it should show a large text counter without the visual flash animation.
-
-**Hard constraints:**
-- `ticker_mode` must come from `profiles` (server-fetched, not client-settable)
-- Do not expose `ticker_mode` as a client-controllable parameter — students must not be able to toggle it via URL params or local storage
-- `npm run tsc` 0 errors after interface changes
-
-**Performance requirement:**
-One additional Supabase query per page load. This is negligible — the profiles fetch is a
-single-row lookup by primary key and will complete in < 50ms.
-
-**Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Set `ticker_mode = true` for a test student in Supabase. Log in as that student and start a TEST exam. Verify TickerMode component renders (text counter visible, no flash animation).
-- [ ] Frontend: Set `ticker_mode = false` — normal FlashNumber component renders.
-- [ ] Frontend: `anzan_digit_count = 3` on exam paper → 3-digit numbers appear in flash sequence
-- [ ] Frontend: `anzan_delay_ms = 500` on exam paper → flashes feel approximately 500ms each
-- [ ] Supabase DB check: `SELECT ticker_mode FROM profiles WHERE id = '<student_id>';` — value matches what is rendered
-- [ ] Grep check: `grep -n "tickerMode = false" src/components/exam/anzan-flash-view.tsx` — zero matches (hardcoded false is removed)
-- [ ] Edge case: `ticker_mode` column does not exist in live DB — fallback to `false`, no crash
-- [ ] TypeScript: `npm run tsc` reports 0 errors
-
-**After completing this task:**
-```
-git add TASKS.md
-git commit -m "chore: task board — move tickerMode DB wiring to DONE"
-git push
-```
 
 ---
 
 ## DONE
 
-### TASK 1: Exam Submit Flow — Completion Card for EXAM Type
-**Completed:** Apr 10, 2026
-**What was built:** CompletionCard now renders for EXAM type via `ReactDOM.createPortal` to `document.body` (bypassing layout stacking context). Added `scorePercent`, `correctCount`, `totalCount`, `timeTakenSeconds` props to CompletionCard. `handleSubmit` and `handleTimeExpired` compute score from `correctOption` and set `submitted=true` instead of redirecting. Fixed `submissions` upsert `onConflict` from `'session_id'` to `'session_id,student_id'` to match the composite unique index.
-**Commits:** `6c0dcda3`, `02801df3`, `614814f8`
+### Skeleton Loaders — All Pages
+Completed: 2026-04-10
+What was built: src/components/shared/skeletons.tsx
+with 6 named exports (KpiCardSkeleton, TableRowSkeleton,
+AssessmentCardSkeleton, DashboardHeroSkeleton,
+ExamCardSkeleton, ResultsRowSkeleton). Six loading.tsx
+files added for admin/dashboard, admin/students,
+admin/assessments, student/dashboard, student/exams,
+student/results. DashboardHeroSkeleton uses bg-slate-600
+(not bg-slate-200) to match the dark #1A3829 hero card.
+All inline styles from real pages reproduced exactly.
+Verified by: tsc 0 errors. No console errors on admin
+routes. No external deps added.
 
----
+### Exam Submit Flow
+Completed: 2026-04-09
+What was built: submitExam action wired to
+confirm-submit dialog. student_answers rows saved.
+assessment_sessions.closed_at set. Completion card
+renders via createPortal to document.body.
+Score and time taken displayed on completion card.
+Bugs fixed: onConflict key mismatch (composite index
+session_id + student_id required both columns).
+Portal stacking context (overflow:auto on parent
+trapped fixed children — fixed with createPortal).
+Verified by: student_answers rows confirmed in DB
+after submit. completion card rendered correctly.
 
-### Admin Login + Sidebar Navigation
-**Completed:** Apr 2026
-**What was built:** Full admin authentication flow with Supabase Auth. Sidebar renders with white
-link text on primary green (#1A3829) background, active state highlight, and Sign Out button
-wired to Supabase `signOut()`. Role check via `requireRole('admin')` on every admin page.
-**Bugs fixed during this task:** White text on green sidebar initially broken by Tailwind v4 cascade rules — fixed with explicit `.admin-sidebar` CSS class.
-**Verified by:** Manual login test with admin credentials; sidebar links all navigate correctly.
+### Exam MCQ Page
+Completed: 2026-04-09
+What was built: /student/exams/[id]/page.tsx.
+Vertical equation display, MCQ grid, question
+navigator, countdown timer, Submit Exam button.
+Phase chain fixed: IDLE→LOBBY→INTERSTITIAL→
+PHASE_1_START→PHASE_2_FLASH→PHASE_3_MCQ.
+Bugs fixed: phase transition guard blocked chain.
+Verified by: equation renders, MCQ grid works,
+navigator shows pills, timer counts down.
 
----
+### Student Lobby Page
+Completed: 2026-04-09
+What was built: /student/exams/[id]/lobby/page.tsx
+and lobby-client.tsx. Circular countdown timer,
+network status badge, pre-flight checklist,
+I'm Ready button, session creation, bottom info bar.
+Bugs fixed: consent_verified was false (patched in DB).
+Status 'ACTIVE' should be 'active' (fixed in action).
+Webpack WasmHash crash (reverted sha256 override).
+Stale file at wrong path deleted.
+Verified by: session row created in DB, timer counted
+down, I'm Ready navigated to exam page.
+
+### Student Dashboard
+Completed: 2026-04-08
+What was built: LIVE NOW hero card with countdown,
+upcoming assessments list, candidate profile panel,
+skill metrics. Sidebar and top header.
+Bugs fixed: opened_at was not set on forceOpenExam
+(fixed in assessments.ts). Timer showed --:-- (fixed).
+Verified by: countdown showed 29:36 and ticked down.
+
+### Create Assessment Wizard
+Completed: 2026-04-07
+What was built: 3-step wizard. Step 1 type picker,
+Step 2 question builder with add/delete, Step 3
+config with title/level/duration. Assessment cards
+with status badges. Go Live and Force Close buttons.
+Bugs fixed: wizard flashed Step 1 on close (close
+first, reset state after 300ms). LIVE badge had no
+pulse (fixed with animate-ping).
+Verified by: full E2E — create→publish→live→student
+sees exam in 7/7 steps passing.
+
+### Question Server Actions
+Completed: 2026-04-07
+What was built: src/app/actions/questions.ts with
+createQuestion, deleteQuestion, reorderQuestions.
+Verified by: questions saved to DB during wizard.
+
+### Admin Sidebar and Sign Out
+Completed: 2026-04-06
+What was built: Green #1A3829 sidebar with white
+nav links, active state white pill. Sign Out calls
+supabase.auth.signOut() and redirects to /login.
+Bugs fixed: text-white/80 Tailwind v4 opacity variant
+not compiling. hidden md:flex cascade ordering bug.
+Verified by: sidebar rgb(26,56,41) confirmed in
+computed styles. Sign Out redirects correctly.
 
 ### Tailwind v4 CSS Fixes
-**Completed:** Apr 2026
-**What was built:** Slate palette registered in `globals.css` via `@theme inline`. Fixed cascade
-bug where `hidden md:flex` was conflicting with Tailwind v4 specificity rules — replaced with
-`.admin-sidebar` CSS class. Colour tokens for `bg-bg-page`, `bg-green-800`, `border-slate-200`
-all compile correctly.
-**Bugs fixed during this task:** `hidden md:flex` bug causing sidebar to disappear; slate palette missing from compiled CSS.
-**Verified by:** Visual inspection; `npm run build` passes with no CSS warnings.
+Completed: 2026-04-06
+What was fixed: Slate palette added to @theme inline
+(border-slate-200, text-slate-400 etc now compile).
+Cascade bug fixed (.admin-sidebar CSS class replaces
+hidden md:flex). bg-bg-page and text-green-800
+now compile correctly.
+Note: downgrade to Tailwind v3 was NOT possible.
+Shadcn components use v4-only syntax (has-data-[],
+in-data-[], ring-3, rounded-4xl). v3 would have
+broken all shadcn components.
+Verified by: all named colour classes compile,
+sidebar visible at correct colour.
 
----
-
-### Create Assessment Wizard (3-Step)
-**Completed:** Apr 2026
-**What was built:** 3-step wizard: Step 1 = Type (EXAM/TEST toggle), Step 2 = Questions (add/
-edit/delete questions with equation_display and option fields), Step 3 = Config (title, duration,
-level assignment). Calls `createAssessment` then question server actions. Assessment card appears
-in list on completion.
-**Bugs fixed during this task:** None during this task.
-**Verified by:** Created multiple EXAM and TEST assessments end-to-end; verified rows in `exam_papers` and `questions` tables.
-
----
-
-### Assessment Cards with Status Badges and Actions
-**Completed:** Apr 2026
-**What was built:** `AssessmentCard` component renders for each paper: title, type badge (EXAM/TEST),
-status badge (DRAFT/PUBLISHED/LIVE/CLOSED), duration, question count. Action buttons: Publish
-(DRAFT → PUBLISHED), Open (PUBLISHED → LIVE), Close (LIVE → CLOSED), with correct disabled states
-per status.
-**Bugs fixed during this task:** None.
-**Verified by:** Cycled through all status transitions in admin UI; verified Supabase status column updates.
-
----
-
-### opened_at Set on forceOpenExam
-**Completed:** Apr 2026
-**What was built:** `forceOpenExam` action sets `opened_at = now()` on the `exam_papers` row when
-status transitions to LIVE. `opened_at` is passed to `LobbyClient` to drive the countdown timer.
-**Bugs fixed during this task:** Initial implementation did not set `opened_at` — lobby countdown showed NaN.
-**Verified by:** Opened exam, verified `opened_at` in Supabase; lobby countdown displayed correctly.
-
----
-
-### Question Server Actions (Create, Delete, Reorder)
-**Completed:** Apr 2026
-**What was built:** Server actions for question management: `createQuestion`, `deleteQuestion`,
-`reorderQuestions`. All scoped to institution via `paper_id` ownership check. Used in the
-Create Assessment Wizard Step 2.
-**Bugs fixed during this task:** None.
-**Verified by:** Added, deleted, and reordered questions in wizard; verified `order_index` updates in DB.
-
----
-
-### Student Dashboard with LIVE Exam Card and Countdown
-**Completed:** Apr 2026
-**What was built:** Student dashboard fetches LIVE and PUBLISHED exams for student's level and
-institution. LIVE exam renders as a hero card with red badge, exam title, duration, and "Enter
-Exam" button linking to lobby. Upcoming exams in a list below. Candidate profile card in right column.
-**Bugs fixed during this task:** None.
-**Verified by:** Student 001 dashboard showed correct LIVE exam card during E2E test session.
-
----
-
-### Student Lobby Page (Timer, Checklist, I'm Ready)
-**Completed:** Apr 2026
-**What was built:** Lobby page server component fetches paper and student consent status. `LobbyClient`
-shows exam title, timer counting down from exam open time, pre-flight checklist (internet, device,
-consent), and "I'm Ready" button. Button calls `initSession` and navigates to `/student/exams/[id]`.
-**Bugs fixed during this task:** `consent_verified` bug — was checking wrong field; fixed. `status = 'ACTIVE'` casing bug — fixed to `'active'`.
-**Verified by:** Student 001 pressed "I'm Ready", session created in DB, redirected to exam page.
-
----
-
-### Exam MCQ Page (Vertical View, Navigator, Timer)
-**Completed:** Apr 2026
-**What was built:** `ExamPageClient` dispatches to `ExamVerticalView` (EXAM type) or `AnzanFlashView`
-(TEST type). `ExamVerticalView` shows equation display panel, MCQ grid, question navigator sidebar,
-exam timer pill, sync indicator, and Submit Exam button. `ConfirmSubmit` dialog wired to `onSubmit`.
-**Bugs fixed during this task:** Phase transition chain bug (`IDLE → INTERSTITIAL` was illegal) — fixed by adding `LOBBY` intermediate state. `AnzanFlashView` did not accept LOBBY as a valid starting phase — fixed. `white-space: pre` added to equation display for multi-line rendering.
-**Verified by:** E2E test with Student 001 — exam page rendered, questions navigable, equation displayed with correct whitespace.
-
----
-
-### All MCP Servers Configured
-**Completed:** Apr 2026
-**What was built:** `code-review-graph`, Chrome DevTools, Supabase, and Context7 MCP servers configured
-in Claude Code settings. Graph auto-updates on file changes via hooks. TypeScript check hook added
-as PostToolUse hook in `settings.json`.
-**Bugs fixed during this task:** settings.json missing hook section; fixed by merging hook config.
-**Verified by:** MCP tools respond in conversation; TypeScript hook fires after file edits.
-
----
-
-### Stale Lobby File at Wrong Path Deleted
-**Completed:** Apr 2026
-**What was built:** Not a feature — a file at an incorrect path was deleted to prevent import confusion.
-**Bugs fixed during this task:** Stale file was causing incorrect import resolution.
-**Verified by:** Build passes; correct lobby page renders.
-
----
-
-### Webpack WasmHash Build Crash Fixed
-**Completed:** Apr 2026
-**What was built:** Fixed a build-time crash caused by a Webpack WasmHash configuration issue. The
-exact fix details are in git history.
-**Bugs fixed during this task:** `npm run build` was crashing at WasmHash step.
-**Verified by:** `npm run build` completes successfully; Vercel deployment succeeds.
-
----
-
-## KNOWN BUGS
-
----
-### BUG 1: tickerMode Hardcoded False
-**Severity:** MEDIUM
-**Where:** `src/components/exam/anzan-flash-view.tsx` line 66
-**What happens:** All students get the visual FlashNumber component regardless of whether their profile has `ticker_mode = true`. Students with accessibility needs requiring TickerMode never get it.
-**Root cause:** Hardcoded `const tickerMode = false;` — profile is not fetched at exam page level.
-**Fix required:** Fetch `profiles.ticker_mode` in `student/exams/[id]/page.tsx` and pass it as a prop through `ExamPageClient` → `AnzanFlashView`. See Task 17.
-**Blocks:** Task 17
-
----
-### BUG 2: Anzan Config Not Fully Verified from DB
-**Severity:** MEDIUM
-**Where:** `src/components/exam/anzan-flash-view.tsx` — `anzanConfig` is passed as props correctly from `page.tsx`, but the end-to-end flow with real DB data has not been verified in production
-**What happens:** If `anzan_digit_count`, `anzan_row_count`, or `anzan_delay_ms` are null in the DB, fallback defaults (`{ delayMs: 1000, digitCount: 1, rowCount: 5 }`) are used silently — the exam runs with wrong config.
-**Root cause:** No null-check warning or logging when DB fields are null.
-**Fix required:** Add a console.warn in development when null values are used. Validate that exam paper config is non-null before allowing PUBLISHED status in `publishAssessment` action. See Task 13.
-**Blocks:** Task 13
-
----
-### BUG 3: No Lobby Polling Fallback
-**Severity:** HIGH
-**Where:** `src/app/(student)/student/exams/[id]/lobby/lobby-client.tsx`
-**What happens:** If the student's WebSocket connection drops before the `exam_live` broadcast, or if the student loads the lobby after the broadcast was already sent, they remain stuck in the lobby indefinitely. No error is shown; the countdown continues but the "I'm Ready" button is gone.
-**Root cause:** Lobby relies solely on Supabase Realtime WebSocket broadcast. No polling fallback exists.
-**Fix required:** Add 30-second polling interval in `lobby-client.tsx` that queries `exam_papers.status` directly. See Task 16.
-**Blocks:** Task 16, production readiness
-
----
-### BUG 4: No Supabase Storage Buckets
-**Severity:** LOW
-**Where:** Supabase project — no storage buckets configured
-**What happens:** Any feature that uploads files (avatar images, CSV imports, PDF exports) has no storage destination. Currently no feature actively requires this, but future development will hit this gap.
-**Root cause:** Storage buckets were never created in the Supabase project.
-**Fix required:** Create buckets `avatars` (public), `documents` (private) in Supabase Storage dashboard. Set RLS policies.
-**Blocks:** Student avatar upload, PDF export features
-
----
-### BUG 5: Student Results Page is Empty Shell
-**Severity:** HIGH
-**Where:** `src/app/(student)/student/results/page.tsx`
-**What happens:** Students cannot see their exam scores or history. The "View Results →" button on `CompletionCard` navigates to dashboard as a placeholder because this page does not exist.
-**Root cause:** Not yet built.
-**Fix required:** See Task 4.
-**Blocks:** Task 4, complete student exam flow
-
----
-### BUG 6: Student Exams List Page is Empty Shell
-**Severity:** HIGH
-**Where:** `src/app/(student)/student/exams/page.tsx`
-**What happens:** "View All" link on student dashboard navigates to a blank or missing page. Students cannot browse all their exams.
-**Root cause:** Not yet built.
-**Fix required:** See Task 3.
-**Blocks:** Task 3
+### MCP Infrastructure
+Completed: 2026-04-08
+What was set up: code-review-graph (402 nodes,
+2260 edges), Chrome DevTools MCP, Supabase MCP,
+Context7 MCP. All Windows cmd /c wrapper warnings
+fixed. Duplicate chrome-devtools server removed.
+skills: superpowers, frontend-design, shadcn,
+ui-ux-pro-max, web-design-guidelines installed.
 
 ---
 
 ## BEFORE DEPLOYMENT TO REAL STUDENTS
 
----
-### PRE-1: Rotate All Compromised Credentials
-**What to do:**
-1. Generate a new Supabase service role key in the Supabase dashboard (Project Settings → API → Rotate Service Role Key).
-2. Generate a new Supabase DB password (Project Settings → Database → Reset Database Password).
-3. Generate a new `HMAC_SECRET` value: `openssl rand -hex 32`.
-4. Generate a new `OFFLINE_SYNC_SECRET` value: `openssl rand -hex 32`.
-5. Update all four values in Vercel environment variables (Production, Preview, Development).
-6. Redeploy the production deployment to pick up new env vars.
-7. Revoke the old service role key in Supabase after verifying the new deployment works.
-**Files involved:** None — environment variables only, not committed to git.
-**How to verify:** Run `vercel env ls` (after installing Vercel CLI) to confirm all four vars are set. Make a test API call that uses the service role key — it should succeed.
-**Consequence of skipping:** Credentials from development sessions are in git history and accessible to anyone with repo access. A malicious actor could use the service role key to read or delete all student data, bypass RLS, and access auth users.
+### PRE-1: Rotate Compromised Credentials
+What to do:
+  Supabase service role key — exposed in git history
+  Generate new key in Supabase dashboard → API settings
+  Update SUPABASE_SERVICE_ROLE_KEY in Vercel env vars
+  Database superuser password — change in Supabase
+  HMAC_SECRET — generate new value:
+    node -e "console.log(require('crypto')
+    .randomBytes(32).toString('hex'))"
+  Update HMAC_SECRET in Vercel env vars
+  Update app.hmac_secret in production DB:
+    ALTER DATABASE postgres
+    SET app.hmac_secret = '[new value]';
+    SELECT pg_reload_conf();
+  OFFLINE_SYNC_SECRET — same process
+How to verify:
+  Old key returns 401 when used in API call
+  New key works in Supabase client
+Consequence of skipping:
+  Any attacker with git history access can query
+  your production database directly.
 
----
-### PRE-2: Verify app.hmac_secret in Production DB
-**What to do:**
-1. In Supabase SQL editor: `SELECT current_setting('app.hmac_secret', true);`
-2. If empty or null: `ALTER DATABASE postgres SET app.hmac_secret = '<new_secret>';` where `<new_secret>` matches the `HMAC_SECRET` env var set in PRE-1.
-3. Restart the Supabase DB connection pool (toggle "Pause" then "Resume" in dashboard, or contact Supabase support).
-**Files involved:** None.
-**How to verify:** Run the `SELECT` query again — must return the correct secret value. Then submit an offline sync payload from the client — it must be accepted (200) with the correct HMAC.
-**Consequence of skipping:** The `/api/submissions/offline-sync` route will reject all offline submissions with 401 Unauthorized because HMAC validation will fail — all offline answers are lost.
+### PRE-2: Verify app.hmac_secret in Production
+What to do:
+  Run in Supabase SQL editor:
+  SELECT
+    current_setting('app.hmac_secret', true)
+    IS NOT NULL AS configured,
+    length(current_setting('app.hmac_secret',
+    true)) AS secret_length;
+How to verify: configured = true, length > 0
+Consequence of skipping: all offline sync fails.
 
----
-### PRE-3: Run Lighthouse on Every Page and Fix Scores Below 90
-**What to do:**
-1. Open Chrome DevTools → Lighthouse.
-2. Run Mobile preset audit on: `/admin/dashboard`, `/admin/assessments`, `/admin/students`, `/admin/results`, `/student/dashboard`, `/student/exams`, `/student/results`, `/student/exams/[id]` (exam page).
-3. For any page scoring below 90 on Performance, Accessibility, or Best Practices: identify the failing audits and fix them.
-4. Common fixes: image sizes (add `width`/`height` to any `<img>`), missing `alt` attributes, colour contrast failures (check against design system), render-blocking resources.
-**Files involved:** Varies — fix in the specific page or component flagged.
-**How to verify:** Re-run Lighthouse after fixes — all pages must score ≥ 90 on Performance, Accessibility, Best Practices.
-**Consequence of skipping:** Students on mobile devices or slow connections have poor experience. Accessibility failures may exclude students with disabilities from taking exams — legal and ethical risk.
+### PRE-3: Create Storage Buckets
+What to do:
+  Run in Supabase SQL editor:
+  INSERT INTO storage.buckets (id, name, public)
+  VALUES
+    ('avatars','avatars',false),
+    ('logos','logos',true),
+    ('csv-imports','csv-imports',false)
+  ON CONFLICT DO NOTHING;
+How to verify: buckets visible in Supabase Storage tab
+Consequence of skipping: avatar uploads fail.
 
----
-### PRE-4: Run axe-core Accessibility Scan and Fix CRITICAL Issues
-**What to do:**
-1. Install axe browser extension or use `@axe-core/react` in dev mode.
-2. Scan every page in the student flow: dashboard, exams list, lobby, exam page, results.
-3. Scan every admin page.
-4. Fix all CRITICAL and SERIOUS violations. MODERATE violations: document and schedule for post-launch.
-5. Pay special attention to: focus management in dialogs (ConfirmSubmit must trap focus), keyboard navigation on MCQ grid, ARIA labels on sync indicator and flash number region.
-**Files involved:** Specific components flagged by axe scan.
-**How to verify:** Re-run axe scan — zero CRITICAL violations on all pages.
-**Consequence of skipping:** Students with screen readers or keyboard-only navigation cannot take exams. This is a legal accessibility requirement in most jurisdictions.
+### PRE-4: Lighthouse Audit — All Pages
+What to do:
+  Run Lighthouse in Chrome DevTools on:
+  /admin/dashboard, /admin/students,
+  /admin/assessments, /student/dashboard,
+  /student/exams/[id]/lobby,
+  /student/exams/[id]
+  Fix any score below 90 in:
+  Performance, Accessibility, Best Practices, SEO
+How to verify: all pages score 90+ in all categories
+Consequence of skipping: poor accessibility and
+performance on student-facing exam pages.
 
----
-### PRE-5: Run All Three k6 Load Tests
-**What to do:**
-Run in sequence (not simultaneously — each test needs a clean DB state):
-1. `k6 run k6/lt-01-thundering-herd.js` — wait for completion, record p95 and error rate.
-2. `k6 run k6/lt-02-heartbeat-storm.js` — record p95 and error rate.
-3. `k6 run k6/lt-03-offline-sync-storm.js` — record p95 and error rate.
-All tests must target a test institution with seeded test data, not real student data.
-**Files involved:** `k6/lt-01-thundering-herd.js`, `k6/lt-02-heartbeat-storm.js`, `k6/lt-03-offline-sync-storm.js`
-**How to verify:** All three k6 tests exit with green summary (all thresholds pass). See Task 15 for threshold values.
-**Consequence of skipping:** Unknown platform capacity. A real exam with 500 students may crash the platform. Session data loss is possible if the DB connection pool is exhausted.
+### PRE-5: axe Accessibility Scan
+What to do:
+  Run axe-core on every page:
+  npx playwright test e2e/a11y.spec.ts
+  Fix ALL violations marked CRITICAL or SERIOUS
+  Common issues to check:
+  - Timer has aria-live="polite" and aria-atomic="true"
+  - Flash number has aria-hidden="true"
+  - Network banner has role="alert"
+  - MCQ buttons minimum 44px touch target
+  - All form inputs have associated labels
+How to verify: zero CRITICAL or SERIOUS violations
+Consequence of skipping: platform is inaccessible
+to students with disabilities.
 
----
-### PRE-6: Full Admin Walkthrough End to End
-**What to do:**
-Using a fresh admin account:
-1. Log in → dashboard loads with charts.
-2. Create a Level.
-3. Create a student and assign to the level.
-4. Create an EXAM assessment (3 questions).
-5. Create a TEST assessment (3 questions with flash sequences).
-6. Publish the EXAM assessment.
-7. Open the EXAM → status changes to LIVE.
-8. Monitor page shows the session as active while student is in exam.
-9. Close the EXAM.
-10. View results → grade distribution appears, publish one result.
-11. Publish an announcement → appears in student dashboard.
-12. Check activity log → all actions from steps 1–11 appear.
-**Files involved:** All admin pages.
-**How to verify:** Every step completes without errors or blank screens. All DB writes are verified in Supabase.
-**Consequence of skipping:** Undetected admin UI bugs that break exam management on exam day.
+### PRE-6: Load Test — 500 Concurrent Students
+Covered in Task 15 above.
+Must complete before deployment.
 
----
-### PRE-7: Full Student Walkthrough End to End
-**What to do:**
-Using a fresh student account:
-1. Log in → dashboard shows live exam card (if one is live) and upcoming list.
-2. Navigate to exams list → all exams visible in correct sections.
-3. Enter lobby for a LIVE exam → countdown timer, checklist, I'm Ready button.
-4. Click I'm Ready → session created, navigated to exam page.
-5. Answer all questions (EXAM type) → submit → completion card appears with score.
-6. Repeat with TEST type exam → flash sequence plays → MCQ answered → completion card.
-7. Navigate to results page → both submissions appear with scores and grade badges.
-8. Go offline mid-exam → answer 2 questions → come back online → verify answers synced.
-**Files involved:** All student pages.
-**How to verify:** Every step completes without errors. All answers verified in Supabase `student_answers` table.
-**Consequence of skipping:** Undetected student flow bugs. Students may lose answers or be unable to submit.
+### PRE-7: Full Admin Walkthrough
+What to do:
+  Complete full admin flow without any help:
+  Login → create level → create assessment →
+  add questions → publish → go live →
+  monitor students → force close →
+  view results → publish results → logout
+  Document any friction or confusion.
+How to verify: walkthrough completes without errors
+Consequence of skipping: admin discovers broken
+flows during first real exam.
 
----
-### PRE-8: Verify HMAC Rejection Works
-**What to do:**
-1. Use `curl` or a browser fetch to call `/api/submissions/offline-sync` with a valid payload but a tampered HMAC signature (change the last character of the signature).
-2. Verify the response is 401 Unauthorized.
-3. Then call with a correctly signed payload → 200 OK.
-**Files involved:** `src/app/api/submissions/offline-sync/route.ts`
-**How to verify:** 401 for tampered request, 200 for valid request.
-**Consequence of skipping:** Anti-cheat protection is silently broken. Students could submit fake answers by bypassing HMAC.
+### PRE-8: Full Student Walkthrough
+What to do:
+  Complete full student flow without any help:
+  Login → dashboard → see live exam →
+  enter lobby → I'm Ready → take exam →
+  answer all questions → submit → view results
+  Do this for both EXAM type and TEST type.
+How to verify: both walkthroughs complete cleanly
+Consequence of skipping: students hit broken flows
+during first real exam.
 
----
-### PRE-9: Verify Offline Sync Works End to End
-**What to do:** Follow the Validator steps in Task 14 exactly — go offline, answer questions, come back online, verify all answers in Supabase. This is a repeat verification in a production environment (not just dev).
-**Files involved:** `src/lib/offline/sync-engine.ts`, `src/app/api/submissions/offline-sync/route.ts`
-**How to verify:** All Task 14 validator checks pass against the production Vercel deployment.
-**Consequence of skipping:** Offline sync may work in dev but fail in production due to env var differences (especially `HMAC_SECRET`).
+### PRE-9: Verify HMAC Rejection
+Covered in Task 13 Validator.
+HMAC_REJECTION must appear in activity_logs.
 
----
-### PRE-10: Create Supabase Storage Buckets
-**What to do:**
-1. In Supabase dashboard → Storage → New bucket.
-2. Create `avatars` bucket — Public, 5MB max file size.
-3. Create `documents` bucket — Private, 10MB max file size.
-4. Set RLS policies: `avatars` — anyone can read, authenticated users can upload their own. `documents` — only admin role can read/write.
-**Files involved:** None — dashboard only.
-**How to verify:** Upload a test file via Supabase dashboard → file appears in bucket. Attempt unauthenticated access to `documents` → 403.
-**Consequence of skipping:** Any future avatar upload or PDF export feature will fail at the storage layer. BUG 4 will surface as a runtime error.
-
----
-### PRE-11: Fix All KNOWN BUGS Marked HIGH or CRITICAL
-**What to do:** Complete Tasks 3, 4, and 16 (BUG 3, 5, 6 are HIGH severity). Verify each with its respective validator.
-**Files involved:** See individual task definitions above.
-**How to verify:** All HIGH bugs resolved — no empty shells in student flow, lobby has polling fallback.
-**Consequence of skipping:** Students experience broken flows: stuck in lobby, no results page, no exams list. Platform is not usable for real students.
+### PRE-10: Verify Offline Sync
+Covered in Task 13 Validator.
+All 5 queued answers must sync on reconnection.
 
 ---
 
 ## AFTER DEPLOYMENT
 
----
-### POST-1: Monitor First 24 Hours
-**What to do:**
-1. Open Vercel dashboard → Functions tab → watch for error rate on `initSession`, `submitAnswer`, `submitExam` functions.
-2. Open Supabase dashboard → Logs → watch for DB errors, connection pool exhaustion, slow queries.
-3. Watch for Realtime connection errors in Supabase Logs.
-4. Set up a Vercel alert for error rate > 1% on any function.
-**Files involved:** None — monitoring only.
-**How to verify:** After 24 hours: Vercel function error rate < 0.5%, no DB connection pool errors, no Realtime subscription errors.
-**Consequence of skipping:** Silent production failures may go undetected for hours. Student data may be lost before the issue is identified.
+### POST-1: Monitor Vercel Logs — First 24 Hours
+What to do:
+  Open Vercel dashboard → Functions tab
+  Watch for any 500 errors or function timeouts
+  Check every 2 hours for first day
+How to verify: error rate below 0.1%
 
----
 ### POST-2: Verify pg_cron Dashboard Refresh
-**What to do:**
-1. Check if a `pg_cron` job exists to refresh any materialized views: `SELECT * FROM cron.job;` in Supabase SQL editor.
-2. If `dashboard_aggregates` materialized view exists: verify the cron job refreshes it at the expected interval.
-3. If no cron job: verify the admin dashboard queries are performing acceptably without a materialized view (check Supabase slow query log).
-**Files involved:** None — Supabase SQL editor only.
-**How to verify:** Check Supabase logs for cron execution 24 hours after deployment. Dashboard KPI numbers should update within the cron interval.
-**Consequence of skipping:** Dashboard charts show stale data. Admins see incorrect student counts or scores.
+What to do:
+  Run in Supabase SQL editor:
+  SELECT * FROM cron.job
+  WHERE jobname LIKE '%dashboard%';
+  Wait 5 minutes, check dashboard KPI numbers
+  updated vs previous values
+How to verify: dashboard numbers change every
+5 minutes during active exam periods
 
----
 ### POST-3: Check activity_logs for Errors
-**What to do:**
-1. Query `activity_logs` for any unexpected `action_type` values: `SELECT DISTINCT action_type FROM activity_logs;`
-2. Check for any action_type that suggests a failed operation (e.g. `INIT_SESSION_ERROR` or similar).
-3. Verify log volume is healthy — at 500 students taking one exam, expect approximately 500 `INIT_SESSION` rows and 500 `SUBMIT_EXAM` rows.
-**Files involved:** None — Supabase SQL editor only.
-**How to verify:** Zero error-pattern action_types in logs. Row counts match expected exam activity.
-**Consequence of skipping:** Silent server-action errors may not be noticed until students report missing submissions.
+What to do:
+  SELECT action_type, COUNT(*) as count
+  FROM activity_logs
+  WHERE created_at > NOW() - INTERVAL '24 hours'
+  GROUP BY action_type
+  ORDER BY count DESC;
+  Flag any unexpected action types or
+  unusually high error counts
+How to verify: no HMAC_REJECTION or SYSTEM_LOCK
+entries from legitimate student activity
 
----
-### POST-4: Verify All Student Sessions Close Cleanly
-**What to do:**
-1. After the first exam session: `SELECT COUNT(*) FROM assessment_sessions WHERE closed_at IS NULL AND expires_at < now();`
-2. This query finds sessions that expired without being explicitly closed (student closed tab without submitting).
-3. If count > 0: these students did not submit. Cross-reference with `student_answers` to see if their answers were captured.
-4. Implement a cleanup job if needed: `UPDATE assessment_sessions SET closed_at = expires_at WHERE closed_at IS NULL AND expires_at < now();`
-**Files involved:** None — Supabase SQL editor only.
-**How to verify:** After cleanup: zero rows match the query above. Monitor for the same issue in the next exam session.
-**Consequence of skipping:** Open sessions accumulate in the DB. The monitor page shows ghost "In Progress" students who finished long ago. The next exam's session init may conflict with an unclosed old session.
+### POST-4: Verify All Sessions Close Cleanly
+What to do:
+  After first real exam closes, check:
+  SELECT COUNT(*) FROM assessment_sessions
+  WHERE paper_id = '[first real exam id]'
+  AND closed_at IS NULL;
+  Expected: 0 (all sessions closed)
+  If > 0: manually close and investigate why
+
+════════════════════════════════════════════════════════
+END OF FILE
+════════════════════════════════════════════════════════
+
