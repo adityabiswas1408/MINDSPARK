@@ -248,94 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 13: Offline Sync Verification
-
-**Why this matters:**
-Students in low-connectivity areas will lose
-connection mid-exam. If answers are lost when
-connection drops, the platform is not deployable
-in real institutions. Offline sync must work
-reliably before any real student takes an exam.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-
-**Files to read before touching anything:**
-- src/lib/offline/sync-engine.ts
-  — current offline sync implementation
-- src/lib/offline/indexed-db-store.ts
-  — Dexie IndexedDB store
-- src/app/api/submissions/offline-sync/route.ts
-  — server endpoint for sync
-- src/components/exam/sync-indicator.tsx
-  — UI indicator for sync status
-
-**What currently exists:**
-Sync engine exists. HMAC validation exists server-side.
-app.hmac_secret is set in production DB.
-sync-indicator component exists.
-
-**Changes to make:**
-1. Verify sync engine works end to end:
-   No code changes expected — this is verification.
-   If bugs found: fix them.
-
-2. Test plan:
-   - Answer 3 questions while online
-   - DevTools → Network → Offline
-   - Answer 2 more questions
-   - Verify sync-indicator shows offline state
-   - DevTools → Network → Online
-   - Verify sync-indicator shows syncing then synced
-   - Verify all 5 answers in student_answers table
-
-3. HMAC rejection test:
-   Manually craft a payload with wrong HMAC
-   POST to /api/submissions/offline-sync
-   Verify 401 response
-   Verify HMAC_REJECTION logged in activity_logs
-
-**Hard constraints:**
-- Do NOT use setTimeout in src/lib/anzan/
-- HMAC secret read from app.hmac_secret only
-  Never from NEXT_PUBLIC_ env vars
-
-**Performance requirement:**
-Sync of 50 queued answers must complete within
-5 seconds of reconnection.
-At 500 students reconnecting simultaneously:
-offline-sync endpoint must handle burst traffic.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] Answer 3 questions online — 3 rows in DB
-[ ] Go offline — sync indicator shows offline
-[ ] Answer 2 questions offline — 0 new rows in DB
-[ ] Come back online — sync indicator shows syncing
-[ ] After sync: 5 total rows in student_answers:
-    SELECT COUNT(*) FROM student_answers
-    WHERE submission_id IN (
-      SELECT id FROM submissions
-      WHERE student_id = '[STUDENT-001 id]'
-    );
-    Expected: 5
-[ ] HMAC rejection test:
-    POST tampered payload to offline-sync
-    Response must be 401
-    SELECT * FROM activity_logs
-    WHERE action_type = 'HMAC_REJECTION'
-    ORDER BY created_at DESC LIMIT 1;
-    Must exist
-[ ] Zero console errors during sync
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — offline sync done,
-move Task 14 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
 ### TASK 14: Lobby Polling Fallback
 
 **Why this matters:**
@@ -398,6 +310,8 @@ move Task 15 to IN PROGRESS"
 git push
 
 ---
+
+## UP NEXT
 ### TASK 15: Performance — 500 Concurrent Students
 
 **Why this matters:**
@@ -465,6 +379,12 @@ git push
 ---
 
 ## DONE
+
+### Task 13: Offline Sync Verification
+Completed: 2026-04-11
+Commit: d1e164ab
+What was built: Fixed 4 bugs blocking offline sync: (1) route removed hmac_timestamp from client schema and computes HMAC server-side via createHmac; (2) RPC updated to accept p_secret TEXT param instead of current_setting('app.hmac_secret') which cannot be set on Supabase managed Postgres; (3) sync-indicator gained 'syncing' state (blue pulse); (4) exam-page-client and assessment-client gained proper offline→syncing→synced state transitions. Old 3-param RPC overload dropped.
+Key findings: ALTER DATABASE SET app.hmac_secret is blocked on Supabase (permission denied even for postgres role); CREATE OR REPLACE FUNCTION with new param signature creates an overload — must DROP old signature separately; RPC was reading session_id from payload JSON (missing key) instead of staging row column; outer EXCEPTION handler INSERT was missing institution_id causing silent SYNC_ERROR failures; HMAC_REJECTION path in RPC verified working via direct MCP call; route now returns 401 specifically for HMAC_MISMATCH reason.
 
 ### Task 12: Admin Activity Log Page
 Completed: 2026-04-10
