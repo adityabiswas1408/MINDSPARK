@@ -248,117 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 4: Student Results Page
-
-**Why this matters:**
-After submitting an exam students have nowhere to go.
-The completion card links back to dashboard but
-students cannot see their scores, grades, or history.
-This is the final step of the student journey and
-currently completely missing.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /frontend-design — results card and chart design
-- /ui-ux-pro-max — results UX is emotionally important
-- /shadcn — table, badge, card components
-
-**Files to read before touching anything:**
-- src/app/(student)/student/results/page.tsx
-  — current empty shell
-- src/app/actions/results.ts
-  — existing result fetch actions if any
-- supabase/migrations/ — find submissions and
-  student_answers table definitions
-- src/app/(student)/student/dashboard/page.tsx
-  — pattern for fetching student-specific data
-
-**What currently exists:**
-src/app/(student)/student/results/page.tsx is an
-empty shell. No data fetching, no components.
-
-**Changes to make:**
-1. Rewrite as Server Component:
-   - requireRole('student')
-   - Fetch submissions joined with exam_papers
-     where result_published_at IS NOT NULL
-     and student_id = userId
-   - Order by result_published_at DESC
-
-2. Recently Published hero card (most recent result):
-   - Dark green card matching dashboard style
-   - Exam title, score percentage large
-   - Grade badge (A+/A/B/C/F)
-   - Percentile if available
-   - Published timestamp
-
-3. Pending Evaluation section:
-   - submissions where result_published_at IS NULL
-   - Show exam name, submitted_at, "Pending" badge
-   - Estimated availability if known
-
-4. Academic Ledger table:
-   Columns: Subject icon, Exam Name, Date,
-   Duration, Score %, Grade badge, Status badge
-   Pagination: 10 rows per page
-   Export Report button (placeholder — just UI)
-
-5. GPA Trend chart:
-   recharts LineChart
-   X axis: exam dates
-   Y axis: score percentage 0-100
-   Two lines: student score vs class average
-   Only render if 2+ results exist
-
-6. Empty state if no published results:
-   Icon + "No results published yet"
-   "Check back after your exam is graded"
-
-**Hard constraints:**
-- Only show results where result_published_at
-  IS NOT NULL — never show unpublished scores
-- No adminSupabase in student route
-- createClient() only
-
-**Performance requirement:**
-Results query must use student_id index.
-Chart must not block page render — load after
-table is visible using Suspense boundary.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] Navigate to /student/results as STUDENT-001
-    — page loads, no 404, no console errors
-[ ] Published result appears in hero card with
-    correct score and grade
-[ ] Academic ledger table shows correct exam history
-[ ] Unpublished results do NOT appear
-    — verify: submission without result_published_at
-    is not visible on the page
-[ ] GPA chart renders if 2+ results exist
-[ ] Pending section shows ungraded submissions
-[ ] Skeleton loader visible on Slow 3G
-[ ] DB check:
-    SELECT s.id, s.score_percentage,
-    ep.title, s.result_published_at
-    FROM submissions s
-    JOIN exam_papers ep ON ep.id = s.paper_id
-    WHERE s.student_id = '[STUDENT-001 id]'
-    ORDER BY s.result_published_at DESC;
-    Result must match what page displays
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — student results done,
-move Task 5 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
-
----
 ### TASK 5: Admin Dashboard Charts
 
 **Why this matters:**
@@ -459,6 +348,10 @@ git add TASKS.md
 git commit -m "chore: task board — admin dashboard done,
 move Task 6 to IN PROGRESS"
 git push
+
+---
+
+## UP NEXT
 
 ---
 ### TASK 6: Admin Students Page
@@ -1328,6 +1221,20 @@ git push
 ---
 
 ## DONE
+
+### Student Results Page
+Completed: 2026-04-10
+Commit: f724c0ce
+What was built: Server Component fetching submissions
+joined to exam_papers via paper_id (confirmed in live
+DB via dashboard_aggregates migration). Hero card
+(dark green, score + grade badge). Pending Evaluation
+section. Academic Ledger table (percentage/grade/dpm
+columns from live DB). Score Trend recharts LineChart
+in separate 'use client' component. Empty state.
+Key findings: column is `percentage` not
+`score_percentage`; `paper_id` added to live DB
+manually (no FK constraint — used two-query pattern).
 
 ### Exam Engine Improvements
 Completed: 2026-04-10
