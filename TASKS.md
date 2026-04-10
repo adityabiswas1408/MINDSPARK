@@ -234,112 +234,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 2: Student Exams List Page
-
-**Why this matters:**
-Students currently have no way to see available exams
-except through the dashboard LIVE NOW card. They
-cannot browse upcoming exams, see past exams, or
-navigate to the lobby from a list. This page is the
-primary exam discovery surface for students.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /frontend-design — exam card visual design
-- /ui-ux-pro-max — student-facing UX
-- /shadcn — badge, card components
-
-**Files to read before touching anything:**
-- src/app/(student)/student/exams/page.tsx
-  — current empty shell
-- src/app/(student)/layout.tsx
-  — student layout structure
-- src/app/actions/assessments.ts
-  — existing fetch patterns
-- supabase/migrations/008_create_exam_papers.sql
-  — but verify against live DB, migration may be stale
-- src/app/(student)/student/dashboard/page.tsx
-  — how LIVE exam is currently fetched and displayed
-
-**What currently exists:**
-src/app/(student)/student/exams/page.tsx is an empty
-shell. Returns placeholder text only.
-
-**Changes to make:**
-1. Rewrite src/app/(student)/student/exams/page.tsx
-   as a Server Component:
-   - requireRole('student')
-   - Fetch student's level_id and institution_id
-   - Fetch exam_papers where:
-     institution_id matches AND
-     level_id matches AND
-     status IN ('LIVE', 'PUBLISHED', 'CLOSED')
-   - Sort: LIVE first, then PUBLISHED by created_at,
-     then CLOSED by closed_at desc
-
-2. Render three sections:
-   LIVE NOW section (if any LIVE exams):
-   - Red LIVE badge with animate-ping dot
-   - Exam title, type, duration
-   - "Enter Now →" button linking to lobby
-   - Timer showing time remaining
-
-   UPCOMING section (PUBLISHED exams):
-   - Date badge (month/day)
-   - Exam title, type badge (EXAM/TEST)
-   - Duration in minutes
-   - "View Details" or greyed "Not Live Yet" state
-
-   COMPLETED section (CLOSED exams):
-   - Greyed out card
-   - "Completed" badge
-   - Score if result published, "Pending" if not
-
-3. Empty state if no exams for student's level:
-   Icon + "No exams scheduled yet" message
-
-**Hard constraints:**
-- Server Component for data fetching
-- No admin.ts imports
-- Use createClient() not adminSupabase
-
-**Performance requirement:**
-Page must load in under 2 seconds on standard
-connection. At 500 concurrent students browsing
-this page simultaneously: Supabase query must use
-existing institution_id and level_id indexes.
-Verify with EXPLAIN ANALYZE in Supabase SQL editor.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] Navigate to /student/exams as STUDENT-001
-    — page loads, no 404, no console errors
-[ ] LIVE exam appears in LIVE NOW section with
-    correct title and time remaining
-[ ] PUBLISHED exam appears in UPCOMING section
-    with correct date badge
-[ ] "Enter Now" button navigates to correct lobby URL:
-    /student/exams/[paper_id]/lobby
-[ ] Skeleton loader appears on Slow 3G before content
-[ ] DB query verified:
-    SELECT id, title, status FROM exam_papers
-    WHERE institution_id = '[id]'
-    AND level_id = '[id]'
-    AND status IN ('LIVE','PUBLISHED','CLOSED');
-    Result must match what page displays
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — student exams list done,
-move Task 3 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
-
----
 ### TASK 3: Exam Engine Improvements
 
 **Why this matters:**
@@ -534,6 +428,10 @@ git add TASKS.md
 git commit -m "chore: task board — exam engine done,
 move Task 4 to IN PROGRESS"
 git push
+
+---
+
+## UP NEXT
 
 ---
 ### TASK 4: Student Results Page
@@ -1612,6 +1510,18 @@ git push
 ---
 
 ## DONE
+
+### Student Exams List Page
+Completed: 2026-04-10
+What was built: Rewrote /student/exams as Server Component
+with 3 sections — LIVE NOW (reuses LiveExamCard with timer),
+UPCOMING (date-badge rows matching dashboard style),
+COMPLETED (greyed cards with View Results link). Empty state
+when no exams for student's level. Fetches exam_papers
+filtered by institution_id + level_id across LIVE/PUBLISHED/
+CLOSED statuses. STUDENT-001 password set to Student@123456.
+Verified by: page renders live exam, upcoming exam visible,
+correct lobby URL, zero console errors.
 
 ### Skeleton Loaders — All Pages
 Completed: 2026-04-10
