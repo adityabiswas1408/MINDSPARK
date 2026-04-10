@@ -248,70 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 14: Lobby Polling Fallback
-
-**Why this matters:**
-The lobby currently relies only on a WebSocket
-broadcast to know the exam is live. If a student
-misses this broadcast (page load timing, network
-blip) they stay in the lobby forever even when
-the exam is already live. This is a reliability
-bug that will affect real students.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-
-**Files to read before touching anything:**
-- src/app/(student)/student/exams/[id]/lobby/
-  lobby-client.tsx
-  — find the WebSocket subscription code
-  — find where exam status is checked
-
-**What currently exists:**
-Lobby client subscribes to WebSocket broadcast.
-No polling fallback exists (BUG 3).
-
-**Changes to make:**
-1. Add 30-second polling interval in lobby-client.tsx:
-   useEffect with setInterval 30000ms
-   On each tick: fetch exam_papers.status directly
-   from Supabase client
-   If status === 'LIVE': keep showing lobby (already there)
-   If status === 'CLOSED': redirect to /student/exams
-   If status === 'PUBLISHED': show "Exam starting soon"
-
-2. Cleanup: interval must clear on unmount
-   return () => clearInterval(intervalId)
-
-3. Do NOT remove the WebSocket subscription —
-   keep both. Polling is a fallback only.
-
-**Hard constraints:**
-- setInterval is allowed in lobby-client.tsx
-- No setTimeout in src/lib/anzan/ (different file)
-- Polling must not cause duplicate navigations
-  if WebSocket fires at same time as poll
-
-**Validator — task is DONE only when ALL pass:**
-[ ] Student in lobby — disable WebSocket in DevTools
-[ ] Wait 31 seconds — page still shows correct state
-[ ] Enable WebSocket — no duplicate navigation
-[ ] Force close exam — within 31 seconds lobby
-    redirects to /student/exams even without WebSocket
-[ ] Component unmounts cleanly — interval cleared:
-    Navigate away from lobby, check DevTools
-    Performance — no interval still firing
-[ ] npm run tsc — exit 0
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — lobby polling done,
-move Task 15 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
 ### TASK 15: Performance — 500 Concurrent Students
 
 **Why this matters:**
@@ -378,7 +314,15 @@ git push
 
 ---
 
+## UP NEXT
+
 ## DONE
+
+### Task 14: Lobby Polling Fallback
+Completed: 2026-04-11
+Commit: fbf207bd
+What was built: Added 30-second setInterval polling to lobby-client.tsx that queries exam_papers.status via Supabase client on each tick. CLOSED status triggers redirect to /student/exams. LIVE/PUBLISHED/DRAFT are no-ops. Shared `navigated` ref guards both the polling redirect and the existing countdown-timer redirect, preventing duplicate router.push calls.
+Key findings: No WebSocket subscription existed in lobby-client.tsx (task description was outdated — "subscribes to WebSocket broadcast" was never implemented). Countdown timer's existing redirect was not guarded — added navigated ref check there too. Expired exam sessions (timer=0 on mount) redirect immediately on first tick, which is correct behavior.
 
 ### Task 13: Offline Sync Verification
 Completed: 2026-04-11
