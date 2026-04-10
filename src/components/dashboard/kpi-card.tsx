@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import { SparklineChart } from './sparkline-chart';
 
 export interface KPICardProps {
   title: string;
@@ -10,9 +11,10 @@ export interface KPICardProps {
   trend?: 'up' | 'down' | 'neutral';
   trendValue?: string;
   description?: string;
+  sparklineData?: number[];
 }
 
-export function KPICard({ title, value, icon, trend, trendValue, description }: KPICardProps) {
+export function KPICard({ title, value, icon, trend, trendValue, description, sparklineData }: KPICardProps) {
   return (
     <Card className="overflow-hidden border-slate-200 bg-card shadow-sm transition-all hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -44,6 +46,11 @@ export function KPICard({ title, value, icon, trend, trendValue, description }: 
         </div>
         {description && (
           <p className="mt-2 text-xs text-slate-500">{description}</p>
+        )}
+        {sparklineData && sparklineData.length > 1 && (
+          <div className="mt-3">
+            <SparklineChart data={sparklineData} color="text-green-700" height={36} width={120} />
+          </div>
         )}
       </CardContent>
     </Card>
