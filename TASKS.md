@@ -248,113 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 9: Admin Monitor — Real-time Student Table
-
-**Why this matters:**
-During a LIVE exam admin cannot see what students
-are doing. If a student disconnects, admin has no
-way to know. The monitor page is the control room
-for live exams — critical for exam integrity.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /frontend-design — real-time table design
-- /ui-ux-pro-max — live monitoring UX
-- /shadcn — table, badge, toast components
-
-**Files to read before touching anything:**
-- src/app/(admin)/admin/monitor/page.tsx
-  — current empty shell
-- src/app/(admin)/admin/monitor/[id]/page.tsx
-  — check if detail page exists
-- src/app/actions/assessment-sessions.ts
-  — session fetch patterns
-- supabase/migrations/ — realtime setup
-
-**What currently exists:**
-Monitor page is an empty shell.
-Supabase realtime is configured for exam channels.
-
-**Changes to make:**
-1. Monitor index page (/admin/monitor):
-   List of LIVE exam_papers
-   Each with: title, student count, time remaining
-   Click → goes to /admin/monitor/[paper_id]
-
-2. Monitor detail page (/admin/monitor/[id]):
-   Header: exam title, LIVE badge, Export Report,
-   Force Close Exam button
-
-   Summary row: In Progress count, Submitted count,
-   Disconnected count, Waiting count
-
-   Filter tabs: All Statuses, by level/grade
-   Search: filter by student name
-
-   Real-time table (Supabase realtime subscription):
-   Columns: avatar, name, ID, current status badge,
-   progress bar (questions answered / total),
-   last seen timestamp, actions menu (⋮)
-
-   Status colours:
-   In Progress: green dot
-   Submitted: blue checkmark
-   Disconnected: red warning
-   Waiting: grey dash
-
-   Actions menu per row:
-   Alert Student (placeholder toast)
-   View Profile link
-
-   Session Update toast: "System-wide auto-sync
-   completed for all X active users. Latency: Xms"
-
-3. Real-time subscription:
-   Subscribe to assessment_sessions changes
-   WHERE paper_id = [id]
-   Update table row on INSERT/UPDATE without
-   full page reload
-
-**Hard constraints:**
-- Realtime subscription must unsubscribe on
-  component unmount (cleanup in useEffect return)
-- Force Close Exam calls forceCloseExam action
-  from assessments.ts — do not duplicate logic
-
-**Performance requirement:**
-Table must update within 3 seconds of student
-status change. At 500 concurrent students:
-realtime subscription must handle 500 simultaneous
-presence updates without dropping events.
-Test: open exam in two browser tabs simultaneously,
-verify both show in monitor within 3 seconds.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] /admin/monitor shows LIVE exams list
-[ ] Click exam → detail page loads
-[ ] Student table shows STUDENT-001 as active
-[ ] Open exam in second browser tab as student
-    — student appears in monitor within 3 seconds
-[ ] Answer a question — progress bar updates
-[ ] Student status changes to Submitted after submit
-[ ] Force Close Exam button calls forceCloseExam
-    — exam status changes to CLOSED in DB:
-    SELECT status FROM exam_papers
-    WHERE id = '[id]';
-[ ] Realtime subscription cleaned up on navigate away
-    — no memory leak (check DevTools Performance)
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — admin monitor done,
-move Task 10 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
 ### TASK 10: Admin Announcements Page
 
 **Why this matters:**
@@ -436,7 +329,8 @@ move Task 11 to IN PROGRESS"
 git push
 
 ---
-### TASK 11: Admin Settings Page
+
+## UP NEXT### TASK 11: Admin Settings Page
 
 **Why this matters:**
 Admin cannot save institution configuration.
@@ -823,6 +717,12 @@ git push
 ---
 
 ## DONE
+
+### Task 9: Admin Monitor — Real-time Student Table
+Completed: 2026-04-10
+Commit: a3e910a1
+What was built: Monitor index page with student count + time remaining cards; detail page server component fetching sessions/students/answers; MonitorClient with TanStack table, 3 realtime channels (postgres_changes, broadcast, presence), countdown timer, Force Close button.
+Key findings: assessment_sessions has cohort-level rows with student_id = NULL — must filter IS NOT NULL on all queries. Submitted state derived from submissions.completed_at NOT sessions.status. supabase_realtime publication was empty — added assessment_sessions + student_answers via MCP. forceCloseExam takes { assessment_id } not { paper_id }.
 
 ### Task 8: Admin Results Page
 Completed: 2026-04-10
