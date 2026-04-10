@@ -248,107 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 8: Admin Results Page
-
-**Why this matters:**
-Admin cannot currently publish student results.
-After an exam closes, grades must be reviewed and
-published before students can see their scores.
-This is a critical administrative workflow.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /frontend-design — grade distribution chart
-- /shadcn — table, checkbox, badge, dialog
-- /web-design-guidelines — data visualisation
-
-**Files to read before touching anything:**
-- src/app/(admin)/admin/results/page.tsx
-  — current empty shell
-- src/app/actions/results.ts
-  — publishResults, calculateResults actions
-- supabase/migrations/ — find submissions table
-  and result_published_at column
-
-**What currently exists:**
-Results page is an empty shell.
-Result actions may exist in results.ts.
-
-**Changes to make:**
-1. Assessment selector:
-   Dropdown of all CLOSED exam_papers
-   Selecting one loads its results
-
-2. Stats bar:
-   MEAN: [X]% MEDIAN: [X]% DPM AVG: [X]
-   Re-evaluate button calls calculateResults RPC
-
-3. Grade Distribution chart:
-   recharts AreaChart bell curve shape
-   X axis: grade labels (F D C B A A+)
-   Y axis: student count
-   Filled area in light green
-
-4. Student results table:
-   Checkbox, avatar initials, name, score %,
-   grade badge (colour coded), status badge,
-   Publish button per row
-
-5. Bulk action bar:
-   "SELECTED X" count
-   Publish Selected button
-   Export button
-   X dismiss
-
-6. Publishing flow:
-   Single publish: calls publishResult({
-     submission_id, result_published_at: NOW()
-   })
-   Bulk publish: calls publishResults([ids])
-   After publish: student can see result in
-   /student/results page
-
-**Hard constraints:**
-- Only admin role can publish results
-- result_published_at must be set server-side
-  never trust client timestamp
-- Verify RPC calculate_results exists before calling
-
-**Performance requirement:**
-Grade distribution chart must render in under
-500ms for 500 student results.
-Bulk publish of 500 results must complete in
-under 10 seconds — use batch update not loop.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] /admin/results loads — assessment selector visible
-[ ] Select closed exam — student results table loads
-[ ] Stats bar shows correct mean and median
-[ ] Grade distribution chart renders
-[ ] Publish one result — student can now see it
-    at /student/results (verify in browser)
-[ ] Bulk publish 3 results — all visible to students
-[ ] DB check after publish:
-    SELECT id, result_published_at FROM submissions
-    WHERE paper_id = '[id]'
-    AND result_published_at IS NOT NULL;
-    Count must match number published
-[ ] Re-evaluate button calls calculateResults
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — admin results done,
-move Task 9 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
-
-
----
 ### TASK 9: Admin Monitor — Real-time Student Table
 
 **Why this matters:**
@@ -454,6 +353,8 @@ move Task 10 to IN PROGRESS"
 git push
 
 ---
+
+## UP NEXT
 ### TASK 10: Admin Announcements Page
 
 **Why this matters:**
@@ -922,6 +823,12 @@ git push
 ---
 
 ## DONE
+
+### Task 8: Admin Results Page
+Completed: 2026-04-10
+Commit: 1cbcadb3
+What was built: publishResults batch action in results.ts, ResultsClient with TanStack table + recharts AreaChart grade distribution + bulk publish + re-evaluate, admin page.tsx with URL-driven paper selection and server-side submissions fetch.
+Key findings: (1) No shadcn Checkbox exists — use native <input type="checkbox"> with ref callback for indeterminate state. (2) recharts ResponsiveContainer requires explicit px height on parent div (h-[280px]). (3) calculate_results RPC requires grade boundaries configured to assign grades — without them grade stays null. (4) searchParams is a Promise in Next.js 15 — must await before destructuring.
 
 ### Task 7: Admin Levels — Wire Create Level Button
 Completed: 2026-04-10
