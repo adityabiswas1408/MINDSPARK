@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { updateLevelOrder } from '@/app/actions/levels';
@@ -24,6 +24,10 @@ export function LevelsClient({ levels: initialLevels, nextSequenceOrder }: Level
   const router = useRouter();
   const [levels, setLevels] = useState(initialLevels);
   const [, startTransition] = useTransition();
+
+  useEffect(() => {
+    setLevels(initialLevels);
+  }, [initialLevels]);
 
   function handleDragEnd(result: DropResult) {
     if (!result.destination || result.destination.index === result.source.index) return;
