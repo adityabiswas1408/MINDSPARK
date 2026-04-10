@@ -123,6 +123,11 @@ Font numbers:     DM Mono (always tabular-nums)
 - Sidebar uses `.admin-sidebar` CSS class — never `hidden md:flex` (v4 cascade bug)
 - `bg-bg-page`, `bg-green-800`, `border-slate-200` all compile correctly
 
+## Before Any DB Operation
+Read GOTCHAS.md database section first.
+Known live DB divergences are documented there.
+Never assume migration files reflect live DB.
+
 ## Database Schema (key tables)
 | Table | Key columns |
 |-------|-------------|
@@ -171,3 +176,195 @@ Priority:
 | `refactor_tool` | Planning renames, finding dead code |
 
 Fall back to Grep/Glob/Read only when the graph doesn't cover what you need. Graph auto-updates on file changes via hooks.
+
+## Mandatory Before Any Code Change
+Before writing or editing any file, state in 3 bullet points:
+1. What file(s) will change
+2. What the change is
+3. What could go wrong
+Wait for user confirmation before proceeding.
+Exception: single-line fixes and import additions.
+
+## Working Rules — Follow These Without Exception
+
+### Before Any Changes
+Before making ANY changes, provide:
+- 3 bullet points describing your approach
+- If debugging: what broke, root cause, and 
+  proposed fix (one line each)
+- Wait for explicit "proceed" before writing 
+  any code or making any edits
+
+### Response Style
+- Be concise in all responses
+- No explanations unless I ask
+- After completing a step: one line summary 
+  with status: PASS / FAIL / NEEDS ATTENTION
+- Never summarize what you just did in detail
+
+### MCP Tool Results
+After any MCP tool returns a large result,
+summarize the key finding in 1-3 lines only.
+Do not reproduce the full result in your response.
+suggest to Use /compact only when the session exceeds 30 messages.
+
+### Database Mutations
+- Before ANY UPDATE or INSERT, run SELECT 
+  with the same WHERE clause first
+- Show matching row count
+- Only proceed with mutation if count > 0
+- If count = 0, stop and investigate why
+
+### Task Scope
+- Each session has exactly one goal
+- State the goal in the first message
+- Do not start a new goal until current 
+  goal's validator fully passes
+- If blocked for more than 2 attempts, 
+  stop and report blocker — do not retry 
+  same approach a third time
+
+## Before Debugging Any Build Error
+1. Run: git diff HEAD~1 --name-only
+2. Check if a recent Claude-made change 
+   could be the cause
+3. If yes, revert it first and rebuild
+4. Only add new fixes after ruling out 
+   own changes as the cause
+## Before Any Status/Enum Column Update
+Run this first:
+SELECT constraint_name, check_clause 
+FROM information_schema.check_constraints 
+WHERE table_name = '[table]';
+Verify the exact allowed values match 
+what you plan to insert.
+Never assume casing — always verify.
+
+### Before Any Upsert Operation
+Run this first to verify the exact unique index:
+SELECT indexname, indexdef 
+FROM pg_indexes 
+WHERE tablename = '[table]';
+
+Never guess the conflict key.
+Use the exact columns from the unique index.
+Composite indexes require all columns listed.
+
+### Modals and Overlays
+Any component that must appear above all content
+(completion cards, dialogs, toasts) must use:
+  createPortal(content, document.body)
+
+Never rely on z-index alone when parent has
+overflow: auto or overflow: hidden.
+These create stacking contexts that trap 
+fixed/absolute children.
+
+### Browser Testing Rules
+Never use evaluate() or querySelector clicks 
+for interactive UI elements.
+Always use chrome-devtools click tool which
+goes through the real browser event system.
+
+If an element cannot be clicked via the click
+tool, find out why — do not fall back to JS
+evaluate() as it bypasses React synthetic events
+and Zustand store updates will not fire.
+
+### Clicking Dialog Buttons (Base UI Components)
+Base UI dialogs render a data-base-ui-inert overlay
+that blocks automated clicks on background elements.
+
+When clicking inside a dialog:
+1. First verify the dialog is open:
+   document.querySelector('[role="dialog"]')
+2. Click buttons using the chrome-devtools 
+   click tool by targeting the exact button text
+3. Never use querySelector fallback for dialog 
+   confirm buttons — find the correct selector first
+4. If click times out: check for inert overlay
+   before assuming the button is missing
+
+### Screenshot Policy
+Screenshots cost ~6k tokens each.
+Maximum 3 screenshots per session.
+
+Use snapshots (accessibility tree) instead:
+chrome-devtools get_page_text or take_snapshot
+returns text content at ~200 tokens.
+
+Only use take_screenshot when:
+- Verifying visual layout (colours, positioning)
+- Something is invisible and you need to see why
+
+For all functional verification (button exists,
+text content, URL, form values) use:
+take_snapshot or get_page_text instead.
+
+## Agent Behavior
+- Do NOT spawn subagents for file reading or planning.
+  Read files sequentially in the current context.
+- Do NOT parallelize tool calls unless the task 
+  explicitly states "run in parallel".
+- Complete all file reads, planning, and coding 
+  in a single agent context.
+- Prefer sequential tool calls over concurrent 
+  subagent dispatch.
+- Exception: load testing scripts (k6) and 
+  independent shell commands may run in parallel.
+
+## Session Management
+- One Claude Code session per day
+- Use /compact between tasks, not new sessions
+- MCP servers stay connected across /compact
+- Use /clear only if context confusion persists
+  after /compact
+- Never close and reopen session just to start 
+  a new task
+
+## Editing TASKS.md
+- TASKS.md is ~2000 lines
+- Use Grep to locate sections before any edit
+- Use targeted Edit with exact old_string only
+- Never rewrite the full file
+- Never replace section headers with placeholders
+- Use /task-advance skill for all task promotions
+
+<!-- code-review-graph MCP tools -->
+## MCP Tools: code-review-graph
+
+**IMPORTANT: This project has a knowledge graph. ALWAYS use the
+code-review-graph MCP tools BEFORE using Grep/Glob/Read to explore
+the codebase.** The graph is faster, cheaper (fewer tokens), and gives
+you structural context (callers, dependents, test coverage) that file
+scanning cannot.
+
+### When to use graph tools FIRST
+
+- **Exploring code**: `semantic_search_nodes` or `query_graph` instead of Grep
+- **Understanding impact**: `get_impact_radius` instead of manually tracing imports
+- **Code review**: `detect_changes` + `get_review_context` instead of reading entire files
+- **Finding relationships**: `query_graph` with callers_of/callees_of/imports_of/tests_for
+- **Architecture questions**: `get_architecture_overview` + `list_communities`
+
+Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
+
+### Key Tools
+
+| Tool | Use when |
+|------|----------|
+| `detect_changes` | Reviewing code changes   gives risk-scored analysis |
+| `get_review_context` | Need source snippets for review   token-efficient |
+| `get_impact_radius` | Understanding blast radius of a change |
+| `get_affected_flows` | Finding which execution paths are impacted |
+| `query_graph` | Tracing callers, callees, imports, tests, dependencies |
+| `semantic_search_nodes` | Finding functions/classes by name or keyword |
+| `get_architecture_overview` | Understanding high-level codebase structure |
+| `refactor_tool` | Planning renames, finding dead code |
+
+### Workflow
+
+1. The graph auto-updates on file changes (via hooks).
+2. Use `detect_changes` for code review.
+3. Use `get_affected_flows` to understand impact.
+4. Use `query_graph` pattern="tests_for" to check coverage.
