@@ -141,3 +141,31 @@ export async function reEvaluateResults(input: ReEvaluateResultsInput): Promise<
 
   return { ok: true, data: { recalculated_sessions: count } };
 }
+
+export async function publishResults(session_ids: string[]): Promise<ActionResult<{ published_count: number }>> {
+  const authResult = await requireRole(['admin', 'teacher']);
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
+  const { userId, institutionId } = authResult;
+
+  if (!session_ids.length) return { ok: true, data: { published_count: 0 } };
+
+  const now = new Date().toISOString();
+
+  const { error } = await adminSupabase
+    .from('submissions')
+    .update({ result_published_at: now })
+    .in('id', session_ids);
+
+  if (error) return { error: 'INTERNAL_ERROR', message: 'Failed to bulk publish results' };
+
+  await adminSupabase.from('activity_logs').insert({
+    user_id: userId,
+    institution_id: institutionId,
+    entity_type: 'submissions',
+    entity_id: session_ids[0],
+    action_type: 'BULK_PUBLISH_RESULTS',
+    metadata: { count: session_ids.length },
+  });
+
+  return { ok: true, data: { published_count: session_ids.length } };
+}
