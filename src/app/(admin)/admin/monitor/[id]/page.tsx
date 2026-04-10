@@ -1,74 +1,100 @@
-'use client';
+import { notFound } from 'next/navigation';
+import { requireRole } from '@/lib/auth/rbac';
+import { createClient } from '@/lib/supabase/server';
+import MonitorClient, { type InitialSession } from './monitor-client';
 
-import { useEffect, useState, use } from 'react';
-import { createClient } from '@/lib/supabase/client';
+interface Props {
+  params: Promise<{ id: string }>;
+}
 
-const JITTER_WINDOW_MS = 2000;
+type RawSubmission = { id: string; completed_at: string | null };
+type RawSession = {
+  id: string;
+  student_id: string | null;
+  status: string | null;
+  students: { full_name: string; roll_number: string } | null;
+  submissions: RawSubmission[] | null;
+};
 
-export default function AdminMonitorPage(props: { params: Promise<{ id: string }> }) {
-  const params = use(props.params);
-  const paperId = params.id;
-  
-  const [status, setStatus] = useState<Record<string, 'active' | 'offline' | 'submitted'>>({});
+export default async function AdminMonitorDetailPage({ params }: Props) {
+  const { id: paperId } = await params;
 
-  useEffect(() => {
-    const supabase = createClient();
-    
-    // Broadcast for lifecycle events
-    const examChannel = supabase.channel(`exam:${paperId}`);
-    examChannel.on('broadcast', { event: 'lifecycle' }, (payload) => {
-      if (payload.payload?.status === 'submitted' && payload.payload?.student_id) {
-        setStatus(prev => ({ ...prev, [payload.payload.student_id]: 'submitted' }));
-      }
+  const authResult = await requireRole('admin');
+  if ('error' in authResult) return null;
+  const { institutionId } = authResult;
+
+  const supabase = await createClient();
+
+  // Fetch paper metadata
+  const { data: paper } = await supabase
+    .from('exam_papers')
+    .select('id, title, status, duration_minutes, opened_at')
+    .eq('id', paperId)
+    .eq('institution_id', institutionId)
+    .single();
+
+  if (!paper) notFound();
+
+  // Question count for progress bar denominator
+  const { count: totalQuestions } = await supabase
+    .from('questions')
+    .select('id', { count: 'exact', head: true })
+    .eq('paper_id', paperId);
+
+  // Sessions with student info and submission state
+  // Filter: student_id IS NOT NULL (excludes cohort-level session)
+  //         closed_at IS NULL (active sessions only)
+  const { data: rawSessions } = await supabase
+    .from('assessment_sessions')
+    .select('id, student_id, status, students(full_name, roll_number), submissions(id, completed_at)')
+    .eq('paper_id', paperId)
+    .not('student_id', 'is', null)
+    .is('closed_at', null);
+
+  const sessions = (rawSessions as RawSession[] | null) ?? [];
+
+  // Collect all submission IDs to bulk-count answers
+  const submissionIds = sessions
+    .flatMap(s => (s.submissions ?? []).map(sub => sub.id))
+    .filter(Boolean);
+
+  // Count student_answers per submission_id
+  const answerCountMap: Record<string, number> = {};
+  if (submissionIds.length > 0) {
+    const { data: answers } = await supabase
+      .from('student_answers')
+      .select('submission_id')
+      .in('submission_id', submissionIds);
+    for (const a of answers ?? []) {
+      answerCountMap[a.submission_id] = (answerCountMap[a.submission_id] ?? 0) + 1;
+    }
+  }
+
+  // Build typed InitialSession array — filter out any rows where join failed
+  const initialSessions: InitialSession[] = sessions
+    .filter(s => s.student_id !== null && s.students !== null)
+    .map(s => {
+      const sub = s.submissions?.[0] ?? null;
+      return {
+        session_id: s.id,
+        student_id: s.student_id!,
+        full_name: s.students!.full_name,
+        roll_number: s.students!.roll_number,
+        session_status: s.status ?? 'active',
+        completed_at: sub?.completed_at ?? null,
+        answered_count: sub ? (answerCountMap[sub.id] ?? 0) : 0,
+      };
     });
-
-    // Presence for student status in Lobby
-    const lobbyChannel = supabase.channel(`lobby:${paperId}`);
-    lobbyChannel.on('presence', { event: 'sync' }, () => {
-      // Sync events when joining — handle active presences
-    })
-    .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-      setStatus(prev => {
-        const studentId = leftPresences?.[0]?.student_id || key;
-        const current = prev[studentId];
-        // Rules: Submitted status permanently green — never overwritten by Presence leave
-        if (current === 'submitted') return prev;
-        return { ...prev, [studentId]: 'offline' };
-      });
-    });
-
-    // Rules: WebSocket connect wrapped in setTimeout(() => channel.subscribe(), Math.random() * JITTER_WINDOW_MS)
-    const timer = setTimeout(() => {
-      examChannel.subscribe();
-      lobbyChannel.subscribe();
-    }, Math.random() * JITTER_WINDOW_MS);
-
-    return () => {
-      clearTimeout(timer);
-      supabase.removeChannel(examChannel);
-      supabase.removeChannel(lobbyChannel);
-    };
-  }, [paperId]);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-green-800">Live Monitor</h1>
-      <div className="p-4 bg-card rounded-md border border-slate-200">
-        <p className="text-secondary mb-4">Monitoring Paper: <span className="font-mono">{paperId}</span></p>
-        {Object.keys(status).length === 0 ? (
-          <p className="text-sm text-slate-500">No students connected yet.</p>
-        ) : (
-          <ul className="space-y-2">
-            {Object.entries(status).map(([studentId, state]) => (
-              <li key={studentId} className="flex items-center space-x-2">
-                <span className={`h-2 w-2 rounded-full ${state === 'submitted' ? 'bg-green-500' : state === 'active' ? 'bg-blue-500' : 'bg-red-500'}`} />
-                <span className="font-mono text-sm">{studentId}</span>
-                <span className="text-xs uppercase text-slate-500">{state}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
+    <MonitorClient
+      paperId={paperId}
+      paperTitle={paper.title}
+      paperStatus={paper.status ?? 'LIVE'}
+      durationMinutes={paper.duration_minutes ?? 60}
+      openedAt={paper.opened_at ?? null}
+      totalQuestions={totalQuestions ?? 0}
+      initialSessions={initialSessions}
+    />
   );
 }
