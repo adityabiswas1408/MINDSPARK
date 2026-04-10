@@ -231,6 +231,18 @@ suggest to Use /compact only when the session exceeds 30 messages.
 3. If yes, revert it first and rebuild
 4. Only add new fixes after ruling out 
    own changes as the cause
+
+## Webpack
+- Never override webpack hash functions
+- sha256/WasmHash overrides cause build failures
+- If build fails: run git diff HEAD~1 --name-only
+  and revert any webpack config changes first
+
+## Code-Review-Graph Build
+- If build stalls on same file for more than 120s: abort
+- Do not retry the same approach
+- Continue the task without the graph
+- Skip detect_changes_tool — it is known slow
 ## Before Any Status/Enum Column Update
 Run this first:
 SELECT constraint_name, check_clause 
@@ -329,6 +341,99 @@ take_snapshot or get_page_text instead.
 - Never rewrite the full file
 - Never replace section headers with placeholders
 - Use /task-advance skill for all task promotions
+
+## If frontend-design Skill Is Missing
+Run: npx skills add https://github.com/anthropics/skills 
+     --skill frontend-design --yes --global
+This must be re-run on any new machine or after 
+clearing .agents/skills/ cache.
+
+## Verification After Every Deploy
+
+### Step 1 — Always run core flow first
+After any deploy, always run /verify-exam-flow first.
+This confirms existing student flow is not broken
+by the new changes. Never skip this step even for
+admin-only changes.
+
+### Step 2 — Add task-specific checks after
+After /verify-exam-flow passes, run the additional
+checks from the current task's Validator in TASKS.md.
+
+Pattern for every deploy:
+  /verify-exam-flow
+  → PASS: continue to task-specific checks
+  → FAIL: stop, fix the regression before continuing
+
+### Step 3 — Admin page changes
+If the task touched admin pages, also run:
+  /verify-admin-pages
+Then run task-specific DB queries from TASKS.md.
+
+### Task-specific verification format
+After the skill runs, paste only the relevant
+Validator items from TASKS.md for the current task:
+
+  "Also verify these task-specific items:
+  1. [exact check from TASKS.md validator]
+  2. [exact DB query from TASKS.md validator]
+  3. [exact UI element from TASKS.md validator]"
+
+### Screenshot budget
+Maximum 3 screenshots total across both skill
+and task-specific verification.
+Use take_snapshot for all functional checks.
+Use take_screenshot only for visual layout checks.
+
+### Declaring a task done
+A task is DONE only when:
+  /verify-exam-flow → all steps PASS
+  /verify-admin-pages → all steps PASS (if admin)
+  All TASKS.md Validator items → PASS
+  Zero console errors confirmed
+  DB state confirmed via SQL query
+Never declare done from build logs or tsc alone.
+
+## Before Any Task Touching the DB
+Run schema verification for all tables involved:
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = '[table]'
+ORDER BY ordinal_position;
+Cross-reference with GOTCHAS.md known divergences.
+
+## Plan Requirements — Before Any Proceed
+
+Every 3-bullet plan must include a 4th item:
+
+Bullet 4 — Hidden assumptions:
+List every assumption the plan makes that could
+be wrong:
+- DB column names assumed (verify before coding)
+- FK constraints assumed (verify before joining)
+- CSS containment assumed (verify before fixed pos)
+- Package APIs assumed (verify against context7)
+- Existing component props assumed (verify by reading)
+
+If any assumption is unverified — verify it first.
+Add the verification result to the plan.
+Only then say proceed.
+
+Example of a good plan:
+- Files changing: X, Y, Z
+- What changes: [description]
+- What could go wrong: [risk]
+- Assumptions to verify first:
+  submissions.paper_id exists → confirmed via 
+  information_schema query above
+  parent has no overflow:auto → confirmed via 
+  chrome-devtools computed styles check
+
+Example of a bad plan:
+- Files changing: X, Y, Z  
+- What changes: [description]
+- What could go wrong: [risk]
+← no assumption verification = not ready to proceed
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
