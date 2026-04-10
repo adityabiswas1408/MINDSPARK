@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHmac } from 'crypto';
 import { z } from 'zod';
 import { adminSupabase } from '@/lib/supabase/admin';
 
@@ -16,7 +17,6 @@ const AnswerSchema = z.object({
 const BodySchema = z.object({
   session_id: z.string().uuid(),
   answers: z.array(AnswerSchema),
-  hmac_timestamp: z.string(),
   batch_timestamp: z.number(),
 });
 
@@ -60,7 +60,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'VALIDATION_ERROR' }, { status: 422 });
     }
 
-    const { session_id, answers, hmac_timestamp, batch_timestamp } = parsed.data;
+    const { session_id, answers, batch_timestamp } = parsed.data;
+
+    // Compute HMAC server-side — secret never touches the client
+    const hmac_timestamp = createHmac('sha256', process.env.HMAC_SECRET ?? '')
+      .update(`${session_id}:${batch_timestamp}`)
+      .digest('hex');
 
     // Early exit mapping to contract bounds
     if (answers.length === 0) {

@@ -1,14 +1,15 @@
 'use client';
 
-type SyncStatus = 'synced' | 'offline' | 'error';
+export type SyncStatus = 'synced' | 'offline' | 'syncing' | 'error';
 
 interface SyncIndicatorProps {
   /** Current sync status */
   status: SyncStatus;
 }
 
-const STATUS_CONFIG: Record<SyncStatus, { color: string; label: string }> = {
+const STATUS_CONFIG: Record<SyncStatus, { color: string; label: string; pulse?: boolean }> = {
   synced:  { color: '#166534', label: 'Answers synced' },
+  syncing: { color: '#1D4ED8', label: 'Syncing…', pulse: true },
   offline: { color: '#854D0E', label: 'Saving locally — will sync when online' },
   error:   { color: '#DC2626', label: 'Sync error — answers saved locally' },
 };
@@ -31,7 +32,7 @@ export function SyncIndicator({ status }: SyncIndicatorProps) {
       className="inline-flex items-center gap-1.5"
     >
       <span
-        className="block rounded-full"
+        className={`block rounded-full${config.pulse ? ' animate-pulse' : ''}`}
         style={{
           width: '8px',
           height: '8px',

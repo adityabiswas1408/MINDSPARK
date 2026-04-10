@@ -25,7 +25,7 @@ interface ExamVerticalViewProps {
   /** Called when exam timer expires */
   onTimeExpired: () => void;
   /** Sync status for the indicator */
-  syncStatus: 'synced' | 'offline' | 'error';
+  syncStatus: 'synced' | 'offline' | 'syncing' | 'error';
 }
 
 /**

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useExamSessionStore } from '@/stores/exam-session-store';
@@ -8,6 +8,7 @@ import { ExamVerticalView } from '@/components/exam/exam-vertical-view';
 import { AnzanFlashView } from '@/components/exam/anzan-flash-view';
 import { CompletionCard } from '@/components/exam/completion-card';
 import { submitExam } from '@/app/actions/assessment-sessions';
+import type { SyncStatus } from '@/components/exam/sync-indicator';
 
 interface ExamQuestion {
   id: string;
@@ -48,7 +49,7 @@ export function ExamPageClient({
   const initSession = useExamSessionStore((s) => s.initSession);
   const setPhase = useExamSessionStore((s) => s.setPhase);
   const answers = useExamSessionStore((s) => s.answers);
-  const [isOnline, setIsOnline] = useState(true);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [scorePercent, setScorePercent] = useState(0);
@@ -73,17 +74,28 @@ export function ExamPageClient({
     // TEST: stop at LOBBY — AnzanFlashView picks up from there
   }, [sessionId, paperType, totalQuestions, initSession, setPhase]);
 
+  const syncingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleOnline = useCallback(() => {
+    setSyncStatus('syncing');
+    syncingTimerRef.current = setTimeout(() => setSyncStatus('synced'), 3000);
+  }, []);
+
+  const handleOffline = useCallback(() => {
+    if (syncingTimerRef.current) clearTimeout(syncingTimerRef.current);
+    setSyncStatus('offline');
+  }, []);
+
   useEffect(() => {
-    setIsOnline(navigator.onLine);
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    if (!navigator.onLine) setSyncStatus('offline');
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      if (syncingTimerRef.current) clearTimeout(syncingTimerRef.current);
     };
-  }, []);
+  }, [handleOnline, handleOffline]);
 
   function computeScore(questions: ExamQuestion[], answerMap: typeof answers) {
     const correct = questions.filter(
@@ -122,8 +134,6 @@ export function ExamPageClient({
     if (result.ok || !result.ok) setSubmitted(true);
   };
 
-  const syncStatus: 'synced' | 'offline' | 'error' = isOnline ? 'synced' : 'offline';
-
   if (paperType === 'TEST') {
     return (
       <AnzanFlashView
@@ -132,7 +142,7 @@ export function ExamPageClient({
         anzanConfig={anzanConfig ?? { delayMs: 1000, digitCount: 1, rowCount: 5 }}
         tickerMode={tickerMode}
         syncStatus={syncStatus}
-        isOffline={!isOnline}
+        isOffline={syncStatus === 'offline'}
         onNavigateResults={() => {
           // TODO: navigate to /student/results once that page is built
           router.push('/student/dashboard');

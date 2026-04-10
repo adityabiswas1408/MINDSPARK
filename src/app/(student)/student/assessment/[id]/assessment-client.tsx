@@ -38,12 +38,13 @@ export function AssessmentClient({
 }: AssessmentClientProps) {
   const router = useRouter();
   const [isOffline, setIsOffline] = useState(false);
-  const [syncStatus, setSyncStatus] = useState<'synced' | 'offline' | 'error'>('synced');
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'offline' | 'syncing' | 'error'>('synced');
 
   useEffect(() => {
     const handleOnline = () => {
       setIsOffline(false);
-      setSyncStatus('synced');
+      setSyncStatus('syncing');
+      setTimeout(() => setSyncStatus('synced'), 3000);
     };
     const handleOffline = () => {
       setIsOffline(true);

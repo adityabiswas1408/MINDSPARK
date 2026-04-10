@@ -29,7 +29,7 @@ interface AnzanFlashViewProps {
     rowCount: number;
   };
   tickerMode?: boolean;
-  syncStatus: 'synced' | 'offline' | 'error';
+  syncStatus: 'synced' | 'offline' | 'syncing' | 'error';
   isOffline: boolean;
   onNavigateResults: () => void;
   onNavigateDashboard: () => void;
