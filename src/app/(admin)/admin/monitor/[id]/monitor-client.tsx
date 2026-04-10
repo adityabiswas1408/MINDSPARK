@@ -338,7 +338,7 @@ export default function MonitorClient({
           disabled={closing || examClosed}
           className="shrink-0"
         >
-          {closing ? 'Closing…' : examClosed ? 'Exam Closed' : 'Force Close Exam'}
+          {examClosed ? 'Exam Closed' : closing ? 'Closing…' : 'Force Close Exam'}
         </Button>
       </div>
 
