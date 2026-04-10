@@ -248,112 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 5: Admin Dashboard Charts
-
-**Why this matters:**
-The admin dashboard currently shows 4 plain number
-cards with no trend data, no charts, and no recent
-activity. Admin cannot see platform health at a
-glance. The recharts library is already installed
-and unused. This task activates it.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /frontend-design — chart and KPI card design
-- /shadcn — card components
-- /web-design-guidelines — data visualisation rules
-
-**Files to read before touching anything:**
-- src/app/(admin)/admin/dashboard/page.tsx
-  — current KPI cards, what data is fetched
-- src/components/dashboard/ — all files in this dir
-  — kpi-card.tsx, sparkline-chart.tsx,
-    live-pulse.tsx, recent-activity-feed.tsx
-- supabase/migrations/ — find dashboard_aggregates
-  materialized view if it exists
-
-**What currently exists:**
-4 KPI cards render with static numbers.
-No charts exist. No recent activity table.
-Dashboard component files exist but may be stubs.
-
-**Changes to make:**
-1. KPI cards with sparklines:
-   Each card shows: label, large number, trend line
-   Use recharts Sparkline inside each card
-   Data: last 7 days of daily counts from
-   dashboard_aggregates or direct queries
-   Cards: Total Students, Active Exams,
-   Avg Score, Live Now
-
-2. Score Trend chart:
-   recharts LineChart, 6 months
-   X axis: month labels (Jan Feb Mar...)
-   Y axis: average score percentage
-   Data from: SELECT DATE_TRUNC('month', submitted_at),
-   AVG(score_percentage) FROM submissions
-   GROUP BY 1 ORDER BY 1
-
-3. Level Distribution chart:
-   recharts BarChart
-   X axis: level names
-   Y axis: student count
-   Data from: SELECT l.name, COUNT(s.id)
-   FROM levels l LEFT JOIN students s
-   ON s.level_id = l.id GROUP BY l.name
-
-4. Recent Activity table:
-   Last 10 rows from activity_logs
-   Columns: timestamp, actor email, action badge
-   (colour coded by action type), target entity
-   "View Full Log →" link to /admin/activity-log
-
-5. All chart components use next/dynamic with
-   ssr: false — recharts requires browser
-
-**Hard constraints:**
-- recharts only — already installed
-- All chart components loaded with next/dynamic
-- No chart renders server-side
-- dashboard_aggregates view used if it exists,
-  direct queries as fallback
-
-**Performance requirement:**
-Charts must not block initial page render.
-KPI numbers must appear before charts load.
-At 500 concurrent admins: dashboard queries must
-complete in under 500ms — use materialized view
-where possible, add LIMIT to recent activity.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] /admin/dashboard loads — 4 KPI cards visible
-    with real numbers from DB
-[ ] Sparkline visible inside each KPI card
-[ ] Score Trend chart renders with real data
-[ ] Level Distribution bar chart renders
-[ ] Recent Activity shows last 10 activity_logs rows
-[ ] Charts load after KPI numbers (not blocking)
-[ ] Skeleton visible while charts load on Slow 3G
-[ ] DB check — KPI numbers match:
-    SELECT COUNT(*) FROM students; (Total Students)
-    SELECT COUNT(*) FROM exam_papers
-    WHERE status = 'LIVE'; (Active Exams)
-    SELECT AVG(score_percentage) FROM submissions;
-    (Avg Score)
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — admin dashboard done,
-move Task 6 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
-
----
 ### TASK 6: Admin Students Page
 
 **Why this matters:**
@@ -466,6 +360,11 @@ git add TASKS.md
 git commit -m "chore: task board — admin students done,
 move Task 7 to IN PROGRESS"
 git push
+
+---
+
+## UP NEXT
+
 
 ---
 ### TASK 7: Admin Levels — Wire Create Level Button
@@ -1221,6 +1120,12 @@ git push
 ---
 
 ## DONE
+
+### Task 5: Admin Dashboard Charts
+Completed: 2026-04-10
+Commit: 1780b207
+What was built: KPI cards with 7-day sparklines (bucketByDay/bucketAvgByDay helpers), Score Trend LineChart (6-month monthly avg), Level Distribution BarChart, Recent Activity feed with colour-coded badges. DashboardCharts client wrapper created to fix Next.js 15 `ssr: false` Server Component restriction.
+Key findings: submissions columns are `percentage`/`created_at` (not `score_percentage`/`submitted_at`); activity_logs timestamp column is `timestamp` (not `created_at`); `dashboard_aggregates` view does not exist — direct queries used; `assessment_sessions.status = 'active'` (lowercase); `next/dynamic` with `ssr: false` must live in a `'use client'` component, never in a Server Component.
 
 ### Student Results Page
 Completed: 2026-04-10
