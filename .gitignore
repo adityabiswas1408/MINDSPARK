@@ -89,3 +89,12 @@ AGENTS.md
 # Code review graph DB
 .code-review-graph/
 .graphignore
+
+# Playwright MCP and temp workspace dirs
+.playwright-mcp/
+T2/
+t3/
+
+# Build output and snapshot artifacts
+build-output*.txt
+snap*.md
