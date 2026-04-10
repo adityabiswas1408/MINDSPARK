@@ -248,95 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 7: Admin Levels — Wire Create Level Button
-
-**Why this matters:**
-The Create Level button has no handler. Level 1
-exists in the DB but admin cannot create Level 2,
-3 or beyond from the UI. Without levels, assessments
-cannot be assigned to new student cohorts.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /shadcn — dialog, input, select
-- /frontend-design — level card design
-
-**Files to read before touching anything:**
-- src/app/(admin)/admin/levels/page.tsx
-  — current state, what the button does
-- src/app/actions/levels.ts
-  — createLevel action signature and fields
-- src/components/assessments/create-assessment-wizard.tsx
-  — pattern to follow for dialog component
-
-**What currently exists:**
-createLevel action exists and is fully implemented.
-Button has no onClick handler — same bug as
-Create Assessment had before Phase 1.
-Level 1 exists in DB. No drag reorder exists.
-
-**Changes to make:**
-1. Create src/components/levels/create-level-dialog.tsx
-   'use client'
-   Simple dialog (simpler than assessment wizard):
-   - Level name input (required)
-   - sequence_order input (auto-filled as next number)
-   - Description textarea (optional)
-   - Save button calls createLevel action
-   - On success: router.refresh(), close dialog
-
-2. Update levels page:
-   - Replace dead button with CreateLevelDialog
-   - Each level card shows:
-     Drag handle icon (left)
-     Level name + status badge (ACTIVE/DRAFT)
-     Competency count (placeholder: 0)
-     Enrolled students count
-   - Use @hello-pangea/dnd for drag reorder
-   - On reorder: call updateLevelOrder action
-     (create if not exists)
-
-3. Stats row at bottom:
-   Total Student Load, Average Competencies,
-   Curriculum Density — placeholder values ok
-
-**Hard constraints:**
-- sequence_order must auto-increment
-  SELECT MAX(sequence_order) FROM levels
-  WHERE institution_id = '[id]'
-  Use result + 1 as default value
-
-**Performance requirement:**
-Levels list is small (< 20 items) — no pagination
-needed. Drag reorder must feel instant (optimistic
-UI update before server confirms).
-
-**Validator — task is DONE only when ALL pass:**
-[ ] Click Create Level — dialog opens
-[ ] Fill name, submit — level appears in list
-[ ] DB check:
-    SELECT id, name, sequence_order FROM levels
-    WHERE institution_id = '[id]'
-    ORDER BY sequence_order;
-    New level must appear with correct sequence_order
-[ ] Drag level card to new position — order updates
-[ ] sequence_order updated in DB after drag
-[ ] Level card shows enrolled student count
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — admin levels done,
-move Task 8 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
-
-
----
 ### TASK 8: Admin Results Page
 
 **Why this matters:**
@@ -382,7 +293,7 @@ Result actions may exist in results.ts.
    Checkbox, avatar initials, name, score %,
    grade badge (colour coded), status badge,
    Publish button per row
-   
+
 5. Bulk action bar:
    "SELECTED X" count
    Publish Selected button
@@ -431,6 +342,11 @@ git add TASKS.md
 git commit -m "chore: task board — admin results done,
 move Task 9 to IN PROGRESS"
 git push
+
+---
+
+## UP NEXT
+
 
 ---
 ### TASK 9: Admin Monitor — Real-time Student Table
@@ -1006,6 +922,12 @@ git push
 ---
 
 ## DONE
+
+### Task 7: Admin Levels — Wire Create Level Button
+Completed: 2026-04-10
+Commit: c26874ac
+What was built: CreateLevelDialog with auto-incrementing sequence_order, LevelsClient with optimistic drag-reorder via @hello-pangea/dnd, updateLevelOrder server action, secure page.tsx with institution_id filter and enrolled counts.
+Key findings: (1) useState(initialLevels) doesn't re-init on prop change — useEffect sync needed after router.refresh(). (2) UNIQUE constraint on (institution_id, sequence_order) blocks parallel swap — fixed with two-phase offset update (add 10000 first, then set final values).
 
 ### Task 6: Admin Students Page
 Completed: 2026-04-10
