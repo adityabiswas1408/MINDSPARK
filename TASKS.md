@@ -248,95 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 12: Admin Activity Log Page
-
-**Why this matters:**
-Admin has no audit trail UI. Activity logs are
-written to DB on every action but are invisible
-to admins. For compliance, debugging, and security
-review this page is essential.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /shadcn — table, input, select, date picker
-- /frontend-design — log table design
-
-**Files to read before touching anything:**
-- src/app/(admin)/admin/activity-log/page.tsx
-  — current empty shell
-- src/app/actions/activity-log.ts
-  — fetch actions if exist
-
-**What currently exists:**
-Activity log page is an empty shell.
-
-**Changes to make:**
-1. Filter bar:
-   User Search input
-   Action Type dropdown (all action_type values)
-   Timestamp Range: two date inputs (from/to)
-   Export CSV button (generates CSV download)
-
-2. Table:
-   Columns: Timestamp (UTC), Actor (avatar + email),
-   Action badge (colour coded by type),
-   Target Entity, Details expand chevron
-
-   Action badge colours:
-   PUBLISH_RESULT: green
-   FORCE_CLOSE: red
-   CREATE_ASSESSMENT: blue
-   LOGIN_SUCCESS: grey
-   SYSTEM_LOCK: orange
-
-3. Expanded row:
-   Metadata panel: IP Address, User Agent, Trace ID
-   JSON Payload Diff panel: before/after values
-
-4. System Status bar (bottom):
-   Database Performance: INDEX_HEALTH: 99%
-   Log Retention: RETENTION: 365D
-   Security Audit: ALERTS: ACTIVE
-   (Static values ok for now)
-
-5. Pagination: 50 rows per page
-   Show total: "Showing 1-50 of 12,402 events"
-
-**Hard constraints:**
-- Activity log is read-only — no mutations allowed
-- Timestamp must display in UTC with timezone label
-- Filter queries must use timestamp indexes
-  EXPLAIN ANALYZE to verify
-
-**Performance requirement:**
-With 12,000+ log entries: paginated query must
-return in under 200ms using BRIN index on
-timestamps. Do not load all rows at once.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] /admin/activity-log loads with real log entries
-[ ] Filter by action type works
-[ ] Filter by date range works
-[ ] Expand row shows metadata panel
-[ ] DB check — filter matches:
-    SELECT COUNT(*) FROM activity_logs
-    WHERE action_type = 'CREATE_ASSESSMENT'
-    AND institution_id = '[id]';
-    Count must match filtered table row count
-[ ] Export CSV downloads a file
-[ ] Pagination works — page 2 loads different rows
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — activity log done,
-move Task 13 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
 ### TASK 13: Offline Sync Verification
 
 **Why this matters:**
@@ -423,6 +334,8 @@ move Task 14 to IN PROGRESS"
 git push
 
 ---
+
+## UP NEXT
 ### TASK 14: Lobby Polling Fallback
 
 **Why this matters:**
@@ -552,6 +465,12 @@ git push
 ---
 
 ## DONE
+
+### Task 12: Admin Activity Log Page
+Completed: 2026-04-10
+Commit: 938fb720
+What was built: Rewrote activity-log.ts action with pagination, filtering (action type, actor search, date range), and CSV export. Created activity-log-client.tsx with expandable rows, colour-coded badges for all 13 real action_types, and system status bar. Page.tsx fetches initial 50 rows server-side with two-step profile lookup.
+Key findings: existing action sorted on non-existent `created_at` (DB column is `timestamp`); badge colours mapped to actual DB action_types (FORCE_CLOSE_EXAM not FORCE_CLOSE; no LOGIN_SUCCESS); profiles.email is accessible for actor display — no auth.users join needed; adminSupabase bypasses RLS for reliable reads.
 
 ### Task 11: Admin Settings Page
 Completed: 2026-04-10
