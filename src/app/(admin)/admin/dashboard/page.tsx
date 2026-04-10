@@ -22,6 +22,21 @@ function bucketByDay(timestamps: string[], days: number): number[] {
   return buckets;
 }
 
+// Bucket rows into daily averages for the last N days
+function bucketAvgByDay(rows: { ts: string; value: number }[], days: number): number[] {
+  const now = new Date();
+  const sums   = Array(days).fill(0);
+  const counts = Array(days).fill(0);
+  for (const { ts, value } of rows) {
+    const diffDays = Math.floor((now.getTime() - new Date(ts).getTime()) / 86_400_000);
+    if (diffDays >= 0 && diffDays < days) {
+      sums[days - 1 - diffDays]   += value;
+      counts[days - 1 - diffDays] += 1;
+    }
+  }
+  return sums.map((sum, i) => counts[i] > 0 ? Number((sum / counts[i]).toFixed(1)) : 0);
+}
+
 // Format a UTC date to short month label e.g. "Jan"
 function monthLabel(dateStr: string): string {
   return new Date(dateStr).toLocaleString('default', { month: 'short' });
@@ -43,6 +58,9 @@ export default async function AdminDashboardPage() {
     liveSessionsRes,
     avgScoreRes,
     recentStudentsRes,
+    recentExamPapersRes,
+    recentScoresRes,
+    recentSessionsRes,
     scoreTrendRes,
     levelDistRes,
     activityRes,
@@ -79,6 +97,26 @@ export default async function AdminDashboardPage() {
       .eq('institution_id', institutionId)
       .gte('created_at', sevenDaysAgo),
 
+    // Sparkline: exam papers created in last 7 days
+    supabase
+      .from('exam_papers')
+      .select('created_at')
+      .eq('institution_id', institutionId)
+      .gte('created_at', sevenDaysAgo),
+
+    // Sparkline: daily avg score in last 7 days
+    supabase
+      .from('submissions')
+      .select('percentage, created_at')
+      .not('completed_at', 'is', null)
+      .gte('created_at', sevenDaysAgo),
+
+    // Sparkline: assessment sessions created in last 7 days
+    supabase
+      .from('assessment_sessions')
+      .select('created_at')
+      .gte('created_at', sevenDaysAgo),
+
     // Score trend: completed submissions last 6 months
     supabase
       .from('submissions')
@@ -113,9 +151,24 @@ export default async function AdminDashboardPage() {
     ? Number((percentages.reduce((a, b) => a + b, 0) / percentages.length).toFixed(1))
     : 0;
 
-  // ── Sparkline data (students enrolled per day, last 7 days) ─────────────────
+  // ── Sparkline data (last 7 days each) ────────────────────────────────────────
   const studentSparkline = bucketByDay(
     (recentStudentsRes.data ?? []).map((r) => r.created_at as string),
+    7
+  );
+  const examSparkline = bucketByDay(
+    (recentExamPapersRes.data ?? []).map((r) => r.created_at as string),
+    7
+  );
+  const scoreSparkline = bucketAvgByDay(
+    (recentScoresRes.data ?? []).map((r) => ({
+      ts: r.created_at as string,
+      value: Number(r.percentage),
+    })),
+    7
+  );
+  const sessionSparkline = bucketByDay(
+    (recentSessionsRes.data ?? []).map((r) => r.created_at as string),
     7
   );
 
@@ -163,18 +216,21 @@ export default async function AdminDashboardPage() {
           value={activeExams}
           icon={<BookOpen className="h-4 w-4" />}
           description="Currently LIVE"
+          sparklineData={examSparkline}
         />
         <KPICard
           title="Avg Score"
           value={`${avgScore}%`}
           icon={<TrendingUp className="h-4 w-4" />}
           description="Across all completed submissions"
+          sparklineData={scoreSparkline}
         />
         <KPICard
           title="Live Now"
           value={liveSessions}
           icon={<Radio className="h-4 w-4" />}
           description="Active exam sessions"
+          sparklineData={sessionSparkline}
         />
       </div>
 
