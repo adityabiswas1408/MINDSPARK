@@ -1,22 +1,12 @@
-import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { KPICard } from '@/components/dashboard/kpi-card';
 import { RecentActivityFeed, type ActivityItem } from '@/components/dashboard/recent-activity-feed';
+import { DashboardCharts } from '@/components/dashboard/dashboard-charts';
 import type { ScoreTrendPoint } from '@/components/dashboard/score-trend-chart';
 import type { LevelDistributionPoint } from '@/components/dashboard/level-distribution-chart';
 import { Users, BookOpen, TrendingUp, Radio } from 'lucide-react';
-
-const ScoreTrendChart = dynamic(
-  () => import('@/components/dashboard/score-trend-chart').then((m) => m.ScoreTrendChart),
-  { ssr: false, loading: () => <div className="h-[280px] animate-pulse rounded-lg bg-slate-100" /> }
-);
-
-const LevelDistributionChart = dynamic(
-  () => import('@/components/dashboard/level-distribution-chart').then((m) => m.LevelDistributionChart),
-  { ssr: false, loading: () => <div className="h-[280px] animate-pulse rounded-lg bg-slate-100" /> }
-);
 
 // Bucket an array of ISO timestamp strings into daily counts for the last N days
 function bucketByDay(timestamps: string[], days: number): number[] {
@@ -188,26 +178,8 @@ export default async function AdminDashboardPage() {
         />
       </div>
 
-      {/* Charts row */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="border-slate-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-600">Score Trend (6 months)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScoreTrendChart data={scoreTrend} />
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-600">Students by Level</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <LevelDistributionChart data={levelDist} />
-          </CardContent>
-        </Card>
-      </div>
+      {/* Charts — client component wrapper required for ssr:false */}
+      <DashboardCharts scoreTrend={scoreTrend} levelDist={levelDist} />
 
       {/* Recent Activity */}
       <Card className="border-slate-200">
