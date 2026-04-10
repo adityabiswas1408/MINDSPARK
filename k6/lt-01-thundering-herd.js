@@ -21,8 +21,12 @@
 import ws from 'k6/ws';
 import { check, sleep } from 'k6';
 
+// NOTE: 2500 concurrent users requires Supabase
+// Team plan (~3000 WS connection limit).
+// Current Pro plan supports ~500 concurrent.
+// Upgrade to Team plan before scaling beyond 500.
 export const options = {
-  vus:      2500,
+  vus:      500,
   duration: '30s',
   thresholds: {
     ws_connecting:              ['p(95)<5000'],   // 95% connect within 5s

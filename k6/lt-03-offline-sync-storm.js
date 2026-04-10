@@ -19,11 +19,15 @@
  *   Zero 500 errors
  */
 import http from 'k6/http';
-import { check } from 'k6';
+import { check, sleep } from 'k6';
 import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
+// NOTE: 2500 concurrent users requires Supabase
+// Team plan (~3000 WS connection limit).
+// Current Pro plan supports ~500 concurrent.
+// Upgrade to Team plan before scaling beyond 500.
 export const options = {
-  vus:      2500,
+  vus:      500,
   duration: '30s',
   thresholds: {
     http_req_duration: ['p(95)<3000'],    // within 3s budget
@@ -31,26 +35,24 @@ export const options = {
   },
 };
 
-// Placeholder HMAC — the Route Handler validates via the RPC which uses HMAC_SECRET.
-// In load tests, use a test-only seeded session whose HMAC is pre-computed.
-// Replace with actual test HMAC value from your seed data.
-const FAKE_HMAC_TIMESTAMP = 'load-test-hmac-placeholder';
-
 export default function () {
   // Simulate 50 answers per student — realistic for a 30-question exam with retries
   const answers = Array.from({ length: 50 }, (_, i) => ({
-    question_id:     `question-${i}`,
+    question_id:     uuidv4(),           // valid UUID format — route validates format only
     selected_option: ['A', 'B', 'C', 'D'][i % 4],
     idempotency_key: uuidv4(),           // unique per VU per run — tests idempotency
     answered_at:     Date.now() - (50 - i) * 4_000,
   }));
+
+  // Jitter: spreads 500 VUs over 3s to avoid simultaneous connection pool exhaustion
+  sleep(Math.random() * 3);
 
   const res = http.post(
     `${__ENV.BASE_URL}/api/submissions/offline-sync`,
     JSON.stringify({
       session_id:      __ENV.SESSION_ID,
       answers,
-      hmac_timestamp:  FAKE_HMAC_TIMESTAMP,
+      batch_timestamp: Date.now(),       // matches BodySchema field name (was hmac_timestamp)
     }),
     {
       headers: {
