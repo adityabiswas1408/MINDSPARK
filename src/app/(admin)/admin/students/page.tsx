@@ -1,64 +1,90 @@
 import { createClient } from '@/lib/supabase/server';
-import { EmptyState } from '@/components/shared/empty-state';
-import { Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { requireRole } from '@/lib/auth/rbac';
+import {
+  StudentsTableClient,
+  type StudentRow,
+  type LevelOption,
+} from '@/components/students/students-table-client';
 
-export default async function AdminStudentsPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+const PAGE_SIZE = 20;
+
+export default async function AdminStudentsPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const authResult = await requireRole(['admin', 'teacher']);
+  if ('error' in authResult) return null;
+  const { institutionId } = authResult;
+
   const searchParams = await props.searchParams;
-  const statusParam = searchParams.status === 'active' ? 'active' : undefined;
-  
+
+  const levelFilter = typeof searchParams.level_id === 'string' ? searchParams.level_id : '';
+  const statusFilter = typeof searchParams.status === 'string' ? searchParams.status : '';
+  const page = Math.max(1, parseInt(typeof searchParams.page === 'string' ? searchParams.page : '1', 10));
+
   const supabase = await createClient();
-  let query = supabase.from('students').select('*');
-  
-  if (statusParam === 'active') {
-     query = query.is('deleted_at', null);
+
+  // ── Levels for filter dropdown ───────────────────────────────────────────────
+  const { data: levels } = await supabase
+    .from('levels')
+    .select('id, name, sequence_order')
+    .eq('institution_id', institutionId)
+    .is('deleted_at', null)
+    .order('sequence_order', { ascending: true });
+
+  // ── Build students query ─────────────────────────────────────────────────────
+  let query = supabase
+    .from('students')
+    .select('id, full_name, roll_number, level_id, created_at, deleted_at, levels(id, name)', {
+      count: 'exact',
+    })
+    .eq('institution_id', institutionId);
+
+  if (levelFilter) {
+    query = query.eq('level_id', levelFilter);
   }
 
-  const { data: students } = await query.limit(50);
+  if (statusFilter === 'active') {
+    query = query.is('deleted_at', null);
+  } else if (statusFilter === 'inactive') {
+    query = query.not('deleted_at', 'is', null);
+  }
+
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  const { data: students, count } = await query
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  const safeStudents: StudentRow[] = (students ?? []).map((s) => ({
+    id: s.id as string,
+    full_name: s.full_name as string,
+    roll_number: s.roll_number as string,
+    level_id: s.level_id as string | null,
+    created_at: s.created_at as string,
+    deleted_at: s.deleted_at as string | null,
+    levels: Array.isArray(s.levels)
+      ? (s.levels[0] as { id: string; name: string } | null) ?? null
+      : (s.levels as { id: string; name: string } | null),
+  }));
+
+  const safeLevels: LevelOption[] = (levels ?? []).map((l) => ({
+    id: l.id as string,
+    name: l.name as string,
+    sequence_order: l.sequence_order as number,
+  }));
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-green-800">Students</h1>
-        <Button>Import Students</Button>
-      </div>
-      
-      {!students || students.length === 0 ? (
-        <div className="max-w-xl mx-auto mt-12">
-          <EmptyState 
-            icon={<Users size={48} />}
-            title="No Students Found"
-            description="Import students via CSV to begin."
-            action={<Button variant="outline">Download Template</Button>}
-          />
-        </div>
-      ) : (
-        <div className="border rounded-md bg-card">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Roll Number</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {students.map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell className="font-mono text-primary font-medium">{student.roll_number}</TableCell>
-                  <TableCell>{student.full_name}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${student.deleted_at ? 'bg-slate-100 text-slate-600' : 'bg-green-100 text-green-800'}`}>
-                      {student.deleted_at ? 'Inactive' : 'Active'}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <StudentsTableClient
+        students={safeStudents}
+        levels={safeLevels}
+        totalCount={count ?? 0}
+        page={page}
+        pageSize={PAGE_SIZE}
+        currentLevelFilter={levelFilter}
+        currentStatusFilter={statusFilter}
+      />
     </div>
   );
 }
