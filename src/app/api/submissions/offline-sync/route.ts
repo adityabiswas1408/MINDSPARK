@@ -126,6 +126,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       p_staging_id: stagingRow.id,
       p_hmac_timestamp: hmac_timestamp,
       p_client_ts: batch_timestamp,
+      p_secret: process.env.HMAC_SECRET ?? '',
     });
 
     if (rpcError) {
