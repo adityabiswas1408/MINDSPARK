@@ -248,125 +248,6 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 6: Admin Students Page
-
-**Why this matters:**
-Admin currently cannot view, search, filter, or
-manage student records. The students page is a
-critical operational tool — admins need it to
-check student status, promote students to next
-level, suspend accounts, and access academic history.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /frontend-design — table and profile design
-- /shadcn — table, badge, checkbox, dialog
-- /ui-ux-pro-max — admin operational UX
-
-**Files to read before touching anything:**
-- src/app/(admin)/admin/students/page.tsx
-  — current empty shell
-- src/app/actions/students.ts
-  — existing student actions
-- src/app/(admin)/admin/students/[id]/page.tsx
-  — check if profile page exists
-
-**What currently exists:**
-Students page is an empty shell.
-Student actions may exist for promote/suspend.
-No profile page exists.
-BUG 4 (no storage buckets) affects avatar uploads.
-
-**Changes to make:**
-1. Rewrite students page as Server Component:
-   - Fetch all students with level info
-   - Support filter params: level_id, status
-   - Pagination: 20 per page
-
-2. Filter bar:
-   Level dropdown (fetched from levels table)
-   Status dropdown (ACTIVE / INACTIVE)
-   Clear all filters link
-   Search input (client-side filter by name/roll)
-
-3. Table columns:
-   Checkbox, avatar initials circle (bg from name hash),
-   Student Name (bold), Roll Number, Level name,
-   Status badge (ACTIVE green / INACTIVE grey),
-   View Profile link
-
-4. Bulk action bar (appears when rows selected):
-   "X selected" count
-   Promote button, Suspend button, Export button
-   X to dismiss
-
-5. Student profile page:
-   Create: src/app/(admin)/admin/students/[id]/page.tsx
-   Left panel:
-   - Large avatar/initials circle
-   - Name, status badge, level
-   - Roll number, joined date
-   - "Promote Student" dark green button
-   - "Suspend" red outline button
-   - "Reset Password" grey button
-   - Contact info (email, phone if exists)
-   Right panel (tabs: Academic / History / Settings):
-   Academic tab:
-   - Current GPA large number
-   - GPA trend recharts LineChart
-   - Exam history table (name, score, grade, date,
-     actions menu)
-   - Stats row: attendance %, assignments, skill points
-
-6. Import CSV button — placeholder modal:
-   "CSV import coming soon" message only
-
-7. Add Student button — simple modal:
-   Name, roll number, level select, email
-   Calls createStudent action
-
-**Hard constraints:**
-- BUG 4: storage buckets must exist before
-  avatar upload works — skip upload UI for now,
-  show initials only
-- No adminSupabase in client components
-- All mutations via server actions
-
-**Performance requirement:**
-Table must paginate — never load all students at once.
-At 1240 students (from dashboard KPI): query must
-use institution_id index and return in under 300ms.
-Verify with EXPLAIN ANALYZE.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] /admin/students loads with real student data
-[ ] Filter by Level works — only that level shows
-[ ] Filter by Status works
-[ ] Search filters by name in real time
-[ ] Selecting rows shows bulk action bar
-[ ] View Profile opens /admin/students/[id]
-[ ] Profile page loads with correct student data
-[ ] Promote button calls correct action:
-    SELECT level_id FROM students
-    WHERE roll_number = 'STUDENT-001';
-    Click Promote, verify level_id changed
-[ ] Suspend button changes status to INACTIVE
-[ ] Skeleton visible on Slow 3G for table
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — admin students done,
-move Task 7 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT
-
-
----
 ### TASK 7: Admin Levels — Wire Create Level Button
 
 **Why this matters:**
@@ -449,6 +330,11 @@ git add TASKS.md
 git commit -m "chore: task board — admin levels done,
 move Task 8 to IN PROGRESS"
 git push
+
+---
+
+## UP NEXT
+
 
 ---
 ### TASK 8: Admin Results Page
@@ -1120,6 +1006,12 @@ git push
 ---
 
 ## DONE
+
+### Task 6: Admin Students Page
+Completed: 2026-04-10
+Commit: 3577b7e0
+What was built: Paginated students table with level/status filters, client-side search, checkbox bulk actions (promote/suspend), Add Student modal, and full profile page with academic history tab.
+Key findings: students table uses deleted_at for soft-delete (no status column); levels use sequence_order not sort_order; Base UI DialogTrigger needs render prop not asChild; Select onValueChange returns string|null requiring null guard.
 
 ### Task 5: Admin Dashboard Charts
 Completed: 2026-04-10
