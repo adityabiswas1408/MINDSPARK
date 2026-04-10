@@ -17,68 +17,10 @@
 ---
 
 ## IN PROGRESS
-None.
 
 ---
 
 ## UP NEXT
-
----
-### TASK 1: Exam Submit Flow — Completion Card for EXAM Type
-**Why this matters:**
-When a student clicks "Submit Exam" on an EXAM-type paper, the app calls `submitExam`,
-saves answers, and immediately routes to `/student/dashboard` — the student never sees a
-completion card, their score, or how long they took. The `CompletionCard` component exists
-and is fully built but is only rendered by `AnzanFlashView` (TEST type). EXAM type bypasses
-it entirely. Without this, students have no confirmation their exam was received.
-
-**Files to read before touching anything:**
-- `src/components/exam/exam-page-client.tsx` — where `handleSubmit` calls `submitExam` then `router.push('/student/dashboard')` instead of showing completion card
-- `src/components/exam/exam-vertical-view.tsx` — owns `onSubmit` prop, calls `handleSubmit`, hosts `ConfirmSubmit`; look at how phase transitions work here
-- `src/components/exam/completion-card.tsx` — accepts `visible`, `assessmentType`, `onViewResults`, `onBackToDashboard` props; no score/time props yet
-- `src/components/exam/confirm-submit.tsx` — already wired correctly, no changes needed here
-- `src/app/actions/assessment-sessions.ts` — `submitExam` returns `{ submitted: true, completed_at }` and already writes `student_answers`, creates `submissions` row, closes session
-- `src/stores/exam-session-store.ts` — understand `SUBMITTED` phase and how `setPhase` works
-
-**What currently exists:**
-`exam-page-client.tsx` `handleSubmit` calls `submitExam` then immediately calls `router.push('/student/dashboard')`. There is a TODO comment on line 84 acknowledging this. For TEST type, `AnzanFlashView` transitions to `SUBMITTED` phase and renders `CompletionCard`. For EXAM type there is no equivalent — the card is never shown. `CompletionCard` does not currently display score, correct count, or time taken; it only shows a generic "Exam Submitted" message.
-
-**Changes to make:**
-1. `src/components/exam/completion-card.tsx` — add optional props: `scorePercent?: number`, `correctCount?: number`, `totalCount?: number`, `timeTakenSeconds?: number`. Render these below the checkmark icon: score percentage in large DM Mono font, a row showing "X / Y correct", and time taken formatted as mm:ss.
-2. `src/components/exam/exam-page-client.tsx` — add `const [submitted, setSubmitted] = useState(false)` and `const [completedAt, setCompletedAt] = useState<string | null>(null)`. In `handleSubmit`, after awaiting `submitExam`, set `submitted = true` and store `completedAt` from the result instead of calling `router.push`. Calculate score by counting answers that match correct options. Render `<CompletionCard visible={submitted} assessmentType="EXAM" ... />` at the end of the EXAM branch return.
-3. `src/components/exam/exam-page-client.tsx` — `handleTimeExpired` must do the same: call `submitExam`, set `submitted = true`, show completion card rather than redirecting.
-4. `src/components/exam/exam-page-client.tsx` — `onViewResults` prop of `CompletionCard` must navigate to `/student/results` (not `/student/dashboard`) once that page exists. Use `router.push('/student/results')` — update both TODO comments.
-5. Auto-submit must be idempotent: if `submitExam` returns `session.closed_at` already set (double-fire), still show completion card with that `completed_at` timestamp.
-
-**Hard constraints:**
-- `npm run tsc` must report 0 errors before commit
-- `src/lib/supabase/admin.ts` is already used in the server action — do not call it from any client component
-- No new Supabase migrations
-- Do not add error handling for scenarios that cannot happen (e.g. `submitExam` returning null)
-- All actions return `ActionResult<T>` — check `result.ok` before reading `result.data`
-
-**Performance requirement:**
-Submit must complete within 3 seconds for a 500-question exam at 500 concurrent students. The `submitExam` action uses a single upsert for all answers — do not fan out to individual inserts. Verify that the upsert batch does not hit Supabase row limits (max 1000 rows per upsert call; split if > 500 questions).
-
-**Validator — task is DONE only when ALL pass:**
-- [ ] Frontend: Click "Submit Exam" on an EXAM paper → ConfirmSubmit dialog appears → click "Submit Exam" in dialog → completion card slides up with confetti, shows score percentage and correct count
-- [ ] Frontend: Wait for timer to expire → auto-submit fires → completion card appears (not a redirect to dashboard)
-- [ ] Frontend: Completion card "View Results →" button navigates to `/student/results` (or dashboard until Task 4 is done)
-- [ ] Frontend: "Back to Dashboard" button navigates to `/student/dashboard`
-- [ ] Supabase DB check: `SELECT id, completed_at FROM submissions WHERE session_id = '<session_id>';` — row exists, `completed_at` is not null
-- [ ] Supabase DB check: `SELECT COUNT(*) FROM student_answers WHERE submission_id = '<submission_id>';` — count equals number of questions answered
-- [ ] Supabase DB check: `SELECT closed_at FROM assessment_sessions WHERE id = '<session_id>';` — `closed_at` is not null
-- [ ] Edge case: Click "Submit Exam" twice rapidly — second call is a no-op (`isSubmitting` guard); only one `submissions` row created (upsert on conflict `session_id`)
-- [ ] Edge case: Submit with 0 answers answered — completion card still appears, score shows 0%
-- [ ] Performance: In browser DevTools, confirm network request for `submitExam` completes < 3000ms on a 10-question exam
-- [ ] TypeScript: `npm run tsc` reports 0 errors
-
-**After completing this task:**
-```
-git add TASKS.md
-git commit -m "chore: task board — move Exam Submit Flow to DONE"
-git push
-```
 
 ---
 ### TASK 2: Skeleton Loaders on All Data-Fetching Pages
@@ -1036,6 +978,13 @@ git push
 ---
 
 ## DONE
+
+### TASK 1: Exam Submit Flow — Completion Card for EXAM Type
+**Completed:** Apr 10, 2026
+**What was built:** CompletionCard now renders for EXAM type via `ReactDOM.createPortal` to `document.body` (bypassing layout stacking context). Added `scorePercent`, `correctCount`, `totalCount`, `timeTakenSeconds` props to CompletionCard. `handleSubmit` and `handleTimeExpired` compute score from `correctOption` and set `submitted=true` instead of redirecting. Fixed `submissions` upsert `onConflict` from `'session_id'` to `'session_id,student_id'` to match the composite unique index.
+**Commits:** `6c0dcda3`, `02801df3`, `614814f8`
+
+---
 
 ### Admin Login + Sidebar Navigation
 **Completed:** Apr 2026
