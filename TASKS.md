@@ -209,6 +209,20 @@ Fix: always verify indexes before upsert (see
   DATABASE RULES above)
 Blocks: none currently — fixed in Task 1
 
+### BUG 8: tickerMode reads false until DB column added
+Severity: LOW
+Where: src/app/(student)/student/exams/[id]/page.tsx line ~37
+What happens: ticker mode never activates even if
+  profiles table has ticker_mode column
+Root cause: prop chain is wired but DB fetch is
+  commented out pending schema addition
+Fix: Run in Supabase SQL editor:
+  ALTER TABLE profiles
+  ADD COLUMN IF NOT EXISTS ticker_mode
+  BOOLEAN DEFAULT false;
+  Then uncomment the fetch on line ~37 of page.tsx
+Blocks: nothing critical — ticker mode is enhancement only
+
 ---
 
 After writing the complete file:
