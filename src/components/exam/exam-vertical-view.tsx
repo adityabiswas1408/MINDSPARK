@@ -53,9 +53,13 @@ export function ExamVerticalView({
   const setPhase = useExamSessionStore((s) => s.setPhase);
 
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const [pendingSelection, setPendingSelection] = useState<'A' | 'B' | 'C' | 'D' | null>(null);
 
   const currentQuestion = questions[currentQuestionIndex];
   const answeredCount = Object.keys(answers).length;
+  // Count a pending-but-unconfirmed selection on the current question toward the total
+  const pendingIsNew = pendingSelection !== null && currentQuestion !== undefined && !answers[currentQuestion.id];
+  const displayedAnsweredCount = answeredCount + (pendingIsNew ? 1 : 0);
 
   const handleConfirmAnswer = useCallback(
     (selected: 'A' | 'B' | 'C' | 'D') => {
@@ -161,9 +165,11 @@ export function ExamVerticalView({
 
             {/* MCQ grid */}
             <McqGrid
+              key={currentQuestion.id}
               options={currentQuestion.options}
               onConfirm={handleConfirmAnswer}
               disabled={phase === 'QUESTION_COOLDOWN'}
+              onSelectionChange={setPendingSelection}
             />
 
             {/* Question counter */}
@@ -189,7 +195,7 @@ export function ExamVerticalView({
           setShowSubmitDialog(false);
           onSubmit();
         }}
-        answeredCount={answeredCount}
+        answeredCount={displayedAnsweredCount}
         totalCount={totalQuestions}
       />
     </div>

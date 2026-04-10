@@ -21,6 +21,8 @@ interface McqGridProps {
   showSkip?: boolean;
   /** Disable all interaction (e.g. during cooldown overlay) */
   disabled?: boolean;
+  /** Called whenever the pending selection changes (including cleared) */
+  onSelectionChange?: (key: OptionKey | null) => void;
 }
 
 /**
@@ -39,6 +41,7 @@ export function McqGrid({
   onSkip,
   showSkip = false,
   disabled = false,
+  onSelectionChange,
 }: McqGridProps) {
   const [selectedOption, setSelectedOption] = useState<OptionKey | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -49,8 +52,9 @@ export function McqGrid({
       if (disabled || isCooling) return;
       setSelectedOption(key);
       setShowConfirm(true);
+      onSelectionChange?.(key);
     },
-    [disabled, isCooling]
+    [disabled, isCooling, onSelectionChange]
   );
 
   const handleConfirm = useCallback(() => {
@@ -59,7 +63,8 @@ export function McqGrid({
     onConfirm(selectedOption);
     setSelectedOption(null);
     setShowConfirm(false);
-  }, [selectedOption, disabled, isCooling, startCooldown, onConfirm]);
+    onSelectionChange?.(null);
+  }, [selectedOption, disabled, isCooling, startCooldown, onConfirm, onSelectionChange]);
 
   const handleSkip = useCallback(() => {
     if (disabled || isCooling) return;
@@ -67,7 +72,8 @@ export function McqGrid({
     onSkip?.();
     setSelectedOption(null);
     setShowConfirm(false);
-  }, [disabled, isCooling, startCooldown, onSkip]);
+    onSelectionChange?.(null);
+  }, [disabled, isCooling, startCooldown, onSkip, onSelectionChange]);
 
   return (
     <div data-testid="mcq-grid" className="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
