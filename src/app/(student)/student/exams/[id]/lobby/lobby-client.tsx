@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Wifi } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { initSession } from '@/app/actions/assessment-sessions';
+import { createClient } from '@/lib/supabase/client';
 
 interface LobbyClientProps {
   paperId: string;
@@ -22,6 +23,7 @@ export function LobbyClient({
   consentVerified,
 }: LobbyClientProps) {
   const router = useRouter();
+  const navigated = useRef(false);
   const [timeRemainingMs, setTimeRemainingMs] = useState<number | null>(null);
   const [isOnline, setIsOnline] = useState(true);
   const [isStarting, setIsStarting] = useState(false);
@@ -54,7 +56,10 @@ export function LobbyClient({
 
       if (remaining === 0) {
         // Auto navigate when exam is over
-        router.push('/student/exams');
+        if (!navigated.current) {
+          navigated.current = true;
+          router.push('/student/exams');
+        }
       }
     };
 
@@ -62,6 +67,26 @@ export function LobbyClient({
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, [openedAt, durationMinutes, router]);
+
+  // 30-second polling fallback — catches CLOSED state if realtime broadcast is missed
+  useEffect(() => {
+    const supabase = createClient();
+    const pollIntervalId = setInterval(async () => {
+      const { data } = await supabase
+        .from('exam_papers')
+        .select('status')
+        .eq('id', paperId)
+        .single();
+
+      if (data?.status === 'CLOSED' && !navigated.current) {
+        navigated.current = true;
+        router.push('/student/exams');
+      }
+      // LIVE, PUBLISHED, DRAFT → no-op
+    }, 30000);
+
+    return () => clearInterval(pollIntervalId);
+  }, [paperId, router]);
 
   const handleStart = async () => {
     setIsStarting(true);
