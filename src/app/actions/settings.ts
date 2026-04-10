@@ -5,6 +5,7 @@ import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
 
 interface UpdateSettingsInput {
+  name?:                    string;
   session_timeout_seconds?: number;
   timezone?:                string;
   logo_url?:                string;
@@ -21,6 +22,10 @@ export async function updateSettings(input: UpdateSettingsInput): Promise<Action
   const authResult = await requireRole('admin');
   if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
+
+  if (input.name !== undefined && !input.name.trim()) {
+    return { error: 'VALIDATION_ERROR', message: 'Institution name cannot be empty' };
+  }
 
   if (input.session_timeout_seconds && (input.session_timeout_seconds < 900 || input.session_timeout_seconds > 86400)) {
     return { error: 'VALIDATION_ERROR', message: 'Timeout out of range' };
@@ -45,6 +50,7 @@ export async function updateSettings(input: UpdateSettingsInput): Promise<Action
   }
 
   const updates: Record<string, unknown> = {};
+  if (input.name !== undefined) updates.name = input.name.trim();
   if (input.session_timeout_seconds !== undefined) updates.session_timeout_seconds = input.session_timeout_seconds;
   if (input.timezone !== undefined) updates.timezone = input.timezone;
   if (input.logo_url !== undefined) updates.logo_url = input.logo_url;
@@ -54,7 +60,6 @@ export async function updateSettings(input: UpdateSettingsInput): Promise<Action
   }
 
   if (input.grade_boundaries && input.grade_boundaries.length > 0) {
-    await adminSupabase.from('grade_boundaries').delete().eq('institution_id', institutionId);
     const boundsPayload = input.grade_boundaries.map(b => ({
       institution_id: institutionId,
       assessment_type: b.assessment_type,
@@ -65,7 +70,23 @@ export async function updateSettings(input: UpdateSettingsInput): Promise<Action
       grade: b.grade,
       label: b.label || ''
     }));
-    await adminSupabase.from('grade_boundaries').insert(boundsPayload);
+
+    // Backup existing rows before destructive delete
+    const { data: backup } = await adminSupabase
+      .from('grade_boundaries')
+      .select('institution_id, grade_name, min_percentage, grade, label, assessment_type, min_score, max_score, color_hex')
+      .eq('institution_id', institutionId);
+
+    await adminSupabase.from('grade_boundaries').delete().eq('institution_id', institutionId);
+
+    const { error: insertError } = await adminSupabase.from('grade_boundaries').insert(boundsPayload);
+    if (insertError) {
+      // Attempt restore to prevent data loss
+      if (backup && backup.length > 0) {
+        await adminSupabase.from('grade_boundaries').insert(backup);
+      }
+      return { error: 'DB_ERROR', message: 'Failed to save grade boundaries — previous values restored' };
+    }
   }
 
   await adminSupabase.from('activity_logs').insert({
