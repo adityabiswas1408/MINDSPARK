@@ -140,6 +140,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const resultObj = rpcResult as unknown as { status: string; reason?: string };
 
     if (resultObj?.status === 'rejected') {
+      if (resultObj.reason === 'HMAC_MISMATCH') {
+        return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
+      }
       return NextResponse.json({
         ok: true,
         synced_count: 0,
