@@ -22,6 +22,8 @@ interface ConfirmSubmitProps {
   answeredCount: number;
   /** Total number of questions */
   totalCount: number;
+  /** 1-based indices of unanswered questions */
+  unansweredIndices?: number[];
 }
 
 /**
@@ -36,6 +38,7 @@ export function ConfirmSubmit({
   onConfirm,
   answeredCount,
   totalCount,
+  unansweredIndices = [],
 }: ConfirmSubmitProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const hasUnanswered = answeredCount < totalCount;
@@ -52,11 +55,27 @@ export function ConfirmSubmit({
           <DialogTitle>Submit Exam?</DialogTitle>
           <DialogDescription>
             {hasUnanswered
-              ? `You have answered ${answeredCount} of ${totalCount} questions. Unanswered questions will be marked as skipped.`
+              ? `You have answered ${answeredCount} of ${totalCount} questions.`
               : `You have answered all ${totalCount} questions.`}
             {' '}This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
+
+        {hasUnanswered && unansweredIndices.length > 0 && (
+          <div
+            style={{
+              backgroundColor: '#FEF9C3',
+              border: '1px solid #FDE047',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              fontSize: '13px',
+              color: '#713F12',
+            }}
+          >
+            <span style={{ fontWeight: '600' }}>Unanswered: </span>
+            {unansweredIndices.join(', ')}
+          </div>
+        )}
 
         <DialogFooter>
           <Button
@@ -64,7 +83,7 @@ export function ConfirmSubmit({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            Go Back
+            Review Answers
           </Button>
           <Button
             data-testid="confirm-submit"
@@ -75,7 +94,7 @@ export function ConfirmSubmit({
               color: '#FFFFFF',
             }}
           >
-            {isSubmitting ? 'Submitting…' : 'Submit Exam'}
+            {isSubmitting ? 'Submitting…' : 'Submit Final'}
           </Button>
         </DialogFooter>
       </DialogContent>

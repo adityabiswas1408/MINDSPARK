@@ -61,6 +61,12 @@ export function ExamVerticalView({
   const pendingIsNew = pendingSelection !== null && currentQuestion !== undefined && !answers[currentQuestion.id];
   const displayedAnsweredCount = answeredCount + (pendingIsNew ? 1 : 0);
 
+  const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
+  const unansweredIndices = questions
+    .map((q, i) => ({ q, i }))
+    .filter(({ q }) => !answers[q.id])
+    .map(({ i }) => i + 1);
+
   const handleConfirmAnswer = useCallback(
     (selected: 'A' | 'B' | 'C' | 'D') => {
       if (!currentQuestion) return;
@@ -107,13 +113,45 @@ export function ExamVerticalView({
   const showNavigator = phase !== 'PHASE_2_FLASH';
 
   return (
-    <div className="flex min-h-screen">
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, display: 'flex', backgroundColor: '#FFFFFF' }}>
       {/* Left sidebar — question navigator */}
       {showNavigator && (
         <aside
-          className="sticky top-0 flex h-screen flex-col border-r bg-white"
-          style={{ width: '60px', borderColor: '#E2E8F0' }}
+          className="flex h-full flex-col border-r bg-white"
+          style={{ width: '120px', flexShrink: 0, borderColor: '#E2E8F0', overflowY: 'auto' }}
         >
+          {/* Remaining count */}
+          <div
+            className="border-b px-2 py-3 text-center"
+            style={{ borderColor: '#E2E8F0' }}
+          >
+            <div
+              style={{
+                fontSize: '11px',
+                fontWeight: '700',
+                color: '#475569',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                marginBottom: '2px',
+              }}
+            >
+              Remaining
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono), monospace',
+                fontVariantNumeric: 'tabular-nums',
+                fontSize: '20px',
+                fontWeight: '700',
+                color: unansweredIndices.length === 0 ? '#1A3829' : '#0F172A',
+              }}
+            >
+              {unansweredIndices.length}
+              <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: '400' }}>
+                /{totalQuestions}
+              </span>
+            </div>
+          </div>
           <QuestionNavigator
             items={navItems}
             onNavigate={handleNavigate}
@@ -135,12 +173,16 @@ export function ExamVerticalView({
             <button
               onClick={() => setShowSubmitDialog(true)}
               className="rounded-lg px-3 py-1.5 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A3829]"
-              style={{
+              style={isLastQuestion ? {
                 backgroundColor: '#1A3829',
                 color: '#FFFFFF',
+              } : {
+                backgroundColor: 'transparent',
+                color: '#1A3829',
+                border: '1.5px solid #1A3829',
               }}
             >
-              Submit Exam
+              Finish Exam
             </button>
           </div>
         </header>
@@ -148,20 +190,30 @@ export function ExamVerticalView({
         {/* Question content */}
         {currentQuestion && (
           <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-8">
-            {/* Equation display */}
-            <div
-              className="text-center"
-              style={{
-                fontFamily: 'var(--font-mono), monospace',
-                fontVariantNumeric: 'tabular-nums',
-                fontSize: 'clamp(24px, 4vw, 40px)',
-                color: '#0F172A',
-                lineHeight: '1.4',
-                whiteSpace: 'pre',
-              }}
-            >
-              {currentQuestion.equationDisplay}
-            </div>
+            {/* Equation display — scrolls vertically for long equations */}
+            {(() => {
+              const lines = currentQuestion.equationDisplay.split('\n').length;
+              const fontSize = lines >= 15 ? '20px' : lines >= 10 ? '24px' : 'clamp(24px, 4vw, 40px)';
+              const maxHeight = lines >= 8 ? '40vh' : undefined;
+              return (
+                <div
+                  className="text-center"
+                  style={{
+                    fontFamily: 'var(--font-mono), monospace',
+                    fontVariantNumeric: 'tabular-nums',
+                    fontSize,
+                    color: '#0F172A',
+                    lineHeight: '1.4',
+                    whiteSpace: 'pre',
+                    overflowY: maxHeight ? 'auto' : undefined,
+                    maxHeight,
+                    minWidth: '80px',
+                  }}
+                >
+                  {currentQuestion.equationDisplay}
+                </div>
+              );
+            })()}
 
             {/* MCQ grid */}
             <McqGrid
@@ -171,6 +223,23 @@ export function ExamVerticalView({
               disabled={phase === 'QUESTION_COOLDOWN'}
               onSelectionChange={setPendingSelection}
             />
+
+            {/* Submit button on last question */}
+            {isLastQuestion && (
+              <button
+                onClick={() => setShowSubmitDialog(true)}
+                className="w-full rounded-xl font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A3829]"
+                style={{
+                  maxWidth: '400px',
+                  padding: '16px 24px',
+                  fontSize: '18px',
+                  backgroundColor: '#1A3829',
+                  color: '#FFFFFF',
+                }}
+              >
+                Submit Exam →
+              </button>
+            )}
 
             {/* Question counter */}
             <p
@@ -197,6 +266,7 @@ export function ExamVerticalView({
         }}
         answeredCount={displayedAnsweredCount}
         totalCount={totalQuestions}
+        unansweredIndices={unansweredIndices}
       />
     </div>
   );

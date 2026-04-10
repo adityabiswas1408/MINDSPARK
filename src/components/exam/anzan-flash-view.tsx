@@ -28,6 +28,7 @@ interface AnzanFlashViewProps {
     digitCount: number;
     rowCount: number;
   };
+  tickerMode?: boolean;
   syncStatus: 'synced' | 'offline' | 'error';
   isOffline: boolean;
   onNavigateResults: () => void;
@@ -52,6 +53,7 @@ export function AnzanFlashView({
   sessionId,
   questions,
   anzanConfig,
+  tickerMode = false,
   syncStatus,
   isOffline,
   onNavigateResults,
@@ -63,7 +65,6 @@ export function AnzanFlashView({
   const currentQuestionIndex = useExamSessionStore((s) => s.currentQuestionIndex);
   const totalQuestions = useExamSessionStore((s) => s.totalQuestions);
   const [error, setError] = useState<string | null>(null);
-  const tickerMode = false; // TODO: Wire from session/profile in the future
 
   const {
     currentSequence,

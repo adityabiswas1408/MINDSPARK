@@ -33,6 +33,9 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
 
   if (!session) redirect(`/student/exams/${paperId}/lobby`);
 
+  // ticker_mode: column not yet in schema — defaults false until profiles.ticker_mode is added
+  const tickerMode = false;
+
   // Fetch questions — scoped to this paper, student can only access LIVE papers
   const { data: questionsData } = await supabase
     .from('questions')
@@ -69,6 +72,7 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
           digitCount: paper.anzan_digit_count ?? 1,
           rowCount: paper.anzan_row_count ?? 5,
         }}
+        tickerMode={tickerMode}
       />
     );
   }
@@ -93,6 +97,7 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
       expiresAt={session.expires_at}
       paperType="EXAM"
       examQuestions={examQuestions}
+      tickerMode={tickerMode}
     />
   );
 }

@@ -32,6 +32,7 @@ interface ExamPageClientProps {
   examQuestions?: ExamQuestion[];
   anzanQuestions?: AnzanQuestion[];
   anzanConfig?: { delayMs: number; digitCount: number; rowCount: number };
+  tickerMode?: boolean;
 }
 
 export function ExamPageClient({
@@ -41,6 +42,7 @@ export function ExamPageClient({
   examQuestions = [],
   anzanQuestions = [],
   anzanConfig,
+  tickerMode = false,
 }: ExamPageClientProps) {
   const router = useRouter();
   const initSession = useExamSessionStore((s) => s.initSession);
@@ -128,6 +130,7 @@ export function ExamPageClient({
         sessionId={sessionId}
         questions={anzanQuestions}
         anzanConfig={anzanConfig ?? { delayMs: 1000, digitCount: 1, rowCount: 5 }}
+        tickerMode={tickerMode}
         syncStatus={syncStatus}
         isOffline={!isOnline}
         onNavigateResults={() => {
@@ -141,13 +144,16 @@ export function ExamPageClient({
 
   return (
     <>
-      <ExamVerticalView
-        questions={examQuestions}
-        expiresAt={expiresAt}
-        onSubmit={handleSubmit}
-        onTimeExpired={handleTimeExpired}
-        syncStatus={syncStatus}
-      />
+      {createPortal(
+        <ExamVerticalView
+          questions={examQuestions}
+          expiresAt={expiresAt}
+          onSubmit={handleSubmit}
+          onTimeExpired={handleTimeExpired}
+          syncStatus={syncStatus}
+        />,
+        document.body
+      )}
       {submitted && createPortal(
       <CompletionCard
         visible={submitted}
