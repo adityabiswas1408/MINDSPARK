@@ -1,39 +1,50 @@
 import { createClient } from '@/lib/supabase/server';
-import { EmptyState } from '@/components/shared/empty-state';
-import { Layers } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { requireRole } from '@/lib/auth/rbac';
+import { LevelsClient, type LevelItem } from '@/components/levels/levels-client';
 
 export default async function AdminLevelsPage() {
-  const supabase = await createClient();
-  const { data: levels } = await supabase.from('levels').select('*').order('sequence_order', { ascending: true });
+  const authResult = await requireRole(['admin', 'teacher']);
+  if ('error' in authResult) return null;
+  const { institutionId } = authResult;
 
-  if (!levels || levels.length === 0) {
-    return (
-      <div className="max-w-xl mx-auto mt-12">
-        <EmptyState 
-          icon={<Layers size={48} />}
-          title="No Levels Found"
-          description="Create your first academic level to get started organizing your students and assessments."
-          action={<Button>Create Level</Button>}
-        />
-      </div>
-    );
+  const supabase = await createClient();
+
+  const [levelsRes, studentsRes] = await Promise.all([
+    supabase
+      .from('levels')
+      .select('id, name, sequence_order, deleted_at')
+      .eq('institution_id', institutionId)
+      .order('sequence_order', { ascending: true }),
+
+    supabase
+      .from('students')
+      .select('level_id')
+      .eq('institution_id', institutionId)
+      .is('deleted_at', null),
+  ]);
+
+  const levels = levelsRes.data ?? [];
+
+  // Build enrolled count map
+  const enrolledMap: Record<string, number> = {};
+  for (const s of (studentsRes.data ?? [])) {
+    if (s.level_id) {
+      enrolledMap[s.level_id as string] = (enrolledMap[s.level_id as string] ?? 0) + 1;
+    }
   }
 
+  const levelItems: LevelItem[] = levels.map((l) => ({
+    id: l.id as string,
+    name: l.name as string,
+    sequence_order: l.sequence_order as number,
+    deleted_at: l.deleted_at as string | null,
+    enrolled_count: enrolledMap[l.id as string] ?? 0,
+  }));
+
+  const maxSeq = levelItems.reduce((max, l) => Math.max(max, l.sequence_order), 0);
+  const nextSequenceOrder = maxSeq + 1;
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-green-800">Levels</h1>
-        <Button>Create Level</Button>
-      </div>
-      <div className="space-y-2">
-        {levels.map((level) => (
-          <div key={level.id} className="p-4 bg-card rounded-md shadow-sm border border-slate-200 flex justify-between items-center outline-none focus-within:ring-2 focus-within:ring-green-800">
-            <span className="font-medium text-primary">{level.name}</span>
-            <span className="text-sm text-secondary font-mono">Sequence: {level.sequence_order}</span>
-          </div>
-        ))}
-      </div>
-    </div>
+    <LevelsClient levels={levelItems} nextSequenceOrder={nextSequenceOrder} />
   );
 }

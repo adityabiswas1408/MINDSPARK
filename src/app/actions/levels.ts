@@ -32,3 +32,29 @@ export async function createLevel(input: CreateLevelInput): Promise<ActionResult
 
   return { ok: true, data: { level_id: level.id } };
 }
+
+interface LevelOrderItem {
+  id: string;
+  sequence_order: number;
+}
+
+export async function updateLevelOrder(items: LevelOrderItem[]): Promise<ActionResult<null>> {
+  const authResult = await requireRole('admin');
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
+  const { institutionId } = authResult;
+
+  const results = await Promise.all(
+    items.map((item) =>
+      adminSupabase
+        .from('levels')
+        .update({ sequence_order: item.sequence_order })
+        .eq('id', item.id)
+        .eq('institution_id', institutionId),
+    ),
+  );
+
+  const failed = results.find((r) => r.error);
+  if (failed) return { error: 'INTERNAL_ERROR', message: 'Failed to update level order' };
+
+  return { ok: true, data: null };
+}
