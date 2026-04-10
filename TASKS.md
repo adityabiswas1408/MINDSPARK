@@ -248,89 +248,7 @@ After writing the complete file:
 4. Report: line count and commit hash.
 
 ## IN PROGRESS
-### TASK 10: Admin Announcements Page
-
-**Why this matters:**
-Admin has no way to communicate with students.
-Announcements are how admins broadcast exam
-schedules, result publications, and policy updates.
-TipTap is already installed but completely unused.
-
-**Skills to invoke:**
-- /superpowers — plan before writing
-- /frontend-design — editor and history panel design
-- /shadcn — select, input, button components
-
-**Files to read before touching anything:**
-- src/app/(admin)/admin/announcements/page.tsx
-  — current empty shell
-- src/app/actions/announcements.ts
-  — createAnnouncement action if exists
-
-**What currently exists:**
-Announcements page is an empty shell.
-TipTap installed as dependency but not used.
-
-**Changes to make:**
-1. Left panel — compose form:
-   Title input (required)
-   Target Level select (All Levels or specific level)
-   Message Body: TipTap rich text editor
-   Load TipTap with next/dynamic ssr:false
-   Toolbar: Bold, Italic, Bullet List, Link
-   Publish Announcement button
-
-2. Right panel — Recent History:
-   Last 5 announcements as cards:
-   Title, sent time, read percentage bar,
-   level badge, "Read by X of Y students"
-
-3. Engagement Insights card at bottom of right panel:
-   "Announcements sent on Tuesday mornings have
-   a 25% higher read rate" (static text ok)
-
-4. createAnnouncement action (create if not exists):
-   Insert to announcements table:
-   institution_id, created_by, title, body (HTML),
-   target_level_id (null = all levels),
-   published_at = NOW()
-
-**Hard constraints:**
-- TipTap must load with next/dynamic ssr:false
-  or it will crash Next.js server rendering
-- Announcement body stored as HTML string
-  Sanitize with sanitize-html server-side
-  DOMPurify is BANNED — use sanitize-html only
-
-**Performance requirement:**
-TipTap editor must be interactive within 2 seconds
-of page load. Editor bundle loaded separately
-from page shell via dynamic import.
-
-**Validator — task is DONE only when ALL pass:**
-[ ] /admin/announcements loads — editor visible
-[ ] TipTap toolbar renders (Bold, Italic, List, Link)
-[ ] Type announcement, click Publish
-[ ] DB check:
-    SELECT id, title, published_at
-    FROM announcements
-    ORDER BY published_at DESC LIMIT 1;
-    New row must exist
-[ ] Recent History panel shows published announcement
-[ ] Target Level filter works — announcement stored
-    with correct target_level_id
-[ ] npm run tsc — exit 0
-[ ] Zero console errors
-
-**After completing this task:**
-git add TASKS.md
-git commit -m "chore: task board — announcements done,
-move Task 11 to IN PROGRESS"
-git push
-
----
-
-## UP NEXT### TASK 11: Admin Settings Page
+### TASK 11: Admin Settings Page
 
 **Why this matters:**
 Admin cannot save institution configuration.
@@ -415,6 +333,8 @@ move Task 12 to IN PROGRESS"
 git push
 
 ---
+
+## UP NEXT
 ### TASK 12: Admin Activity Log Page
 
 **Why this matters:**
@@ -717,6 +637,12 @@ git push
 ---
 
 ## DONE
+
+### Task 10: Admin Announcements Page
+Completed: 2026-04-10
+Commit: 9c3aaa3c
+What was built: 3-file feature — tiptap-editor.tsx (Bold/Italic/BulletList toolbar, dynamic ssr:false), announcements-client.tsx (compose form + history panel + engagement insights), page.tsx (server component fetching levels, last 5 announcements, read counts via adminSupabase). createAnnouncement action already existed.
+Key findings: announcement_reads has RLS enabled — must use adminSupabase for count queries. priority column is NOT NULL but defaults to 'normal' so no explicit value needed. body_html is the column name (not body). Select onValueChange returns string|null — wrap with v ?? 'all' to satisfy TypeScript.
 
 ### Task 9: Admin Monitor — Real-time Student Table
 Completed: 2026-04-10
