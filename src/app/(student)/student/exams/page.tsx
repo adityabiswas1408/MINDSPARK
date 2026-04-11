@@ -20,11 +20,13 @@ export default async function StudentExamsPage() {
 
   const levelId = student?.level_id ?? null;
 
-  // Fetch exams for this student's institution + level
+  // Fetch vertical EXAM-type papers for this student's institution +
+  // level. Flash Anzan TEST papers live on /student/tests (separate page).
   let query = supabase
     .from('exam_papers')
     .select('id, title, type, duration_minutes, status, opened_at, closed_at, created_at')
     .eq('institution_id', institutionId)
+    .eq('type', 'EXAM')
     .in('status', ['LIVE', 'PUBLISHED', 'CLOSED']);
 
   if (levelId) query = query.eq('level_id', levelId);

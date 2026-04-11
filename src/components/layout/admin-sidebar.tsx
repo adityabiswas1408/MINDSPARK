@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Users, Layers, ClipboardList,
-  Monitor, BarChart2, Megaphone, FileText,
+  Monitor, BarChart2, Megaphone,
   ActivitySquare, Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,6 @@ const NAV_ITEMS = [
   { href: '/admin/monitor',       label: 'Live Monitor',   icon: Monitor         },
   { href: '/admin/results',       label: 'Results',        icon: BarChart2       },
   { href: '/admin/announcements', label: 'Announcements',  icon: Megaphone       },
-  { href: '/admin/reports',       label: 'Reports',        icon: FileText        },
   { href: '/admin/activity-log',  label: 'Activity Log',   icon: ActivitySquare  },
   { href: '/admin/settings',      label: 'Settings',       icon: Settings        },
 ];
