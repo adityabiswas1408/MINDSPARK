@@ -31,9 +31,25 @@
     --bg-page:    #F8FAFC;
     --bg-card:    #FFFFFF;
     --bg-overlay: rgba(15, 23, 42, 0.4);
-    --clr-green-800:    #1A3829;
+
+    /* ── MINDSPARK BRAND (from abacus-edge-design-spec §28) ── */
     --clr-brand-navy:   #204074;
+    --clr-brand-navy2:  #234176;
+    --clr-brand-blue:   #3A9ED1;
     --clr-brand-orange: #F57A39;
+    --clr-brand-yellow: #F5BE38;
+
+    /* ── FOREST GREEN RAMP (MINDSPARK spec) ── */
+    --clr-green-900: #0D2B1F;
+    --clr-green-800: #1A3829;  /* KPI hero · CTAs · LIVE border · Result score */
+    --clr-green-700: #1E4A35;  /* Button hover */
+    --clr-green-600: #2D6A4F;  /* Chart bars · grade colour */
+    --clr-green-500: #40916C;  /* Correct answers · trend text */
+    --clr-green-400: #52B788;  /* MCQ hover border */
+    --clr-green-300: #74C69D;  /* Timer border · breathing circle */
+    --clr-green-200: #B7E4C7;  /* Active sidebar icon bg */
+    --clr-green-50:  #EFFAF4;  /* Active nav bg · MCQ selected tint · timer bg */
+
     --text-primary:   #0F172A;
     --text-secondary: #475569;
     --text-subtle:    #94A3B8;
@@ -45,10 +61,15 @@
     --text-warning: #854D0E;
     --bg-error:     #FEE2E2;
     --text-error:   #DC2626;
-    --bg-info:      #EFF6FF;
-    --text-info:    #1D4ED8;
+    --bg-info:      #DBEAFE;
+    --text-info:    #1E40AF;
     --bg-live-badge:   #EF4444;
     --text-live-badge: #FFFFFF;
+
+    /* ── SHADOWS (MINDSPARK spec §28) ── */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+    --shadow-lg: 0 10px 32px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
     --bg-timer-normal:     #F0FDF4;
     --border-timer-normal: #86EFAC;
     --text-timer-normal:   #1A3829;
@@ -184,6 +205,16 @@
     0%   { transform: translateY(24px); opacity: 0; }
     100% { transform: translateY(0);    opacity: 1; }
   }
+
+  @keyframes confirm-slide-in {
+    0%   { transform: translateY(8px); opacity: 0; }
+    100% { transform: translateY(0);   opacity: 1; }
+  }
+
+  @keyframes completion-slide-up {
+    0%   { transform: translateY(24px); opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
 }
 
 /* 6. TAILWIND v4 THEME MAPPING */
@@ -206,23 +237,177 @@
   --color-slate-950: #020617;
 
   /* ── MINDSPARK brand colours — generates text-green-800, bg-green-800 etc. ── */
-  --color-green-800:    #1A3829;
+  --color-green-50:  #F0FDF4;
+  --color-green-100: #DCFCE7;
+  --color-green-200: #BBF7D0;
+  --color-green-300: #86EFAC;
+  --color-green-400: #4ADE80;
+  --color-green-500: #22C55E;
+  --color-green-600: #16A34A;
+  --color-green-700: #15803D;
+  --color-green-800: #1A3829;  /* MINDSPARK override — forest green primary */
+  --color-green-900: #14532D;
+
   --color-brand-navy:   #204074;
   --color-brand-orange: #F57A39;
+
+  /* ── Red ramp ── */
+  --color-red-50:  #FEF2F2;
+  --color-red-100: #FEE2E2;
+  --color-red-200: #FECACA;
+  --color-red-300: #FCA5A5;
+  --color-red-400: #F87171;
+  --color-red-500: #EF4444;
+  --color-red-600: #DC2626;
+  --color-red-700: #B91C1C;
+  --color-red-800: #991B1B;
+  --color-red-900: #7F1D1D;
+
+  /* ── Blue ramp ── */
+  --color-blue-50:  #EFF6FF;
+  --color-blue-100: #DBEAFE;
+  --color-blue-200: #BFDBFE;
+  --color-blue-300: #93C5FD;
+  --color-blue-400: #60A5FA;
+  --color-blue-500: #3B82F6;
+  --color-blue-600: #2563EB;
+  --color-blue-700: #1D4ED8;
+  --color-blue-800: #1E40AF;
+  --color-blue-900: #1E3A8A;
+
+  /* ── Amber ramp ── */
+  --color-amber-50:  #FFFBEB;
+  --color-amber-100: #FEF3C7;
+  --color-amber-200: #FDE68A;
+  --color-amber-300: #FCD34D;
+  --color-amber-400: #FBBF24;
+  --color-amber-500: #F59E0B;
+  --color-amber-600: #D97706;
+  --color-amber-700: #B45309;
+  --color-amber-800: #92400E;
+  --color-amber-900: #78350F;
+
+  /* ── Orange ramp ── */
+  --color-orange-50:  #FFF7ED;
+  --color-orange-100: #FFEDD5;
+  --color-orange-200: #FED7AA;
+  --color-orange-300: #FDBA74;
+  --color-orange-400: #FB923C;
+  --color-orange-500: #F97316;
+  --color-orange-600: #EA580C;
+  --color-orange-700: #C2410C;
+  --color-orange-800: #9A3412;
+  --color-orange-900: #7C2D12;
+
+  /* ── Emerald ramp ── */
+  --color-emerald-50:  #ECFDF5;
+  --color-emerald-100: #D1FAE5;
+  --color-emerald-200: #A7F3D0;
+  --color-emerald-300: #6EE7B7;
+  --color-emerald-400: #34D399;
+  --color-emerald-500: #10B981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065F46;
+  --color-emerald-900: #064E3B;
+
+  /* ── Teal ramp ── */
+  --color-teal-50:  #F0FDFA;
+  --color-teal-100: #CCFBF1;
+  --color-teal-200: #99F6E4;
+  --color-teal-300: #5EEAD4;
+  --color-teal-400: #2DD4BF;
+  --color-teal-500: #14B8A6;
+  --color-teal-600: #0D9488;
+  --color-teal-700: #0F766E;
+  --color-teal-800: #115E59;
+  --color-teal-900: #134E4A;
+
+  /* ── Purple ramp ── */
+  --color-purple-50:  #FAF5FF;
+  --color-purple-100: #F3E8FF;
+  --color-purple-200: #E9D5FF;
+  --color-purple-300: #D8B4FE;
+  --color-purple-400: #C084FC;
+  --color-purple-500: #A855F7;
+  --color-purple-600: #9333EA;
+  --color-purple-700: #7E22CE;
+  --color-purple-800: #6B21A8;
+  --color-purple-900: #581C87;
+
+  /* ── Rose ramp ── */
+  --color-rose-50:  #FFF1F2;
+  --color-rose-100: #FFE4E6;
+  --color-rose-200: #FECDD3;
+  --color-rose-300: #FDA4AF;
+  --color-rose-400: #FB7185;
+  --color-rose-500: #F43F5E;
+  --color-rose-600: #E11D48;
+  --color-rose-700: #BE123C;
+  --color-rose-800: #9F1239;
+  --color-rose-900: #881337;
+
+  /* ── Indigo ramp ── */
+  --color-indigo-50:  #EEF2FF;
+  --color-indigo-100: #E0E7FF;
+  --color-indigo-200: #C7D2FE;
+  --color-indigo-300: #A5B4FC;
+  --color-indigo-400: #818CF8;
+  --color-indigo-500: #6366F1;
+  --color-indigo-600: #4F46E5;
+  --color-indigo-700: #4338CA;
+  --color-indigo-800: #3730A3;
+  --color-indigo-900: #312E81;
+
+  /* ── Violet ramp ── */
+  --color-violet-50:  #F5F3FF;
+  --color-violet-100: #EDE9FE;
+  --color-violet-200: #DDD6FE;
+  --color-violet-300: #C4B5FD;
+  --color-violet-400: #A78BFA;
+  --color-violet-500: #8B5CF6;
+  --color-violet-600: #7C3AED;
+  --color-violet-700: #6D28D9;
+  --color-violet-800: #5B21B6;
+  --color-violet-900: #4C1D95;
+
+  /* ── Gray ramp ── */
+  --color-gray-50:  #F9FAFB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-200: #E5E7EB;
+  --color-gray-300: #D1D5DB;
+  --color-gray-400: #9CA3AF;
+  --color-gray-500: #6B7280;
+  --color-gray-600: #4B5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1F2937;
+  --color-gray-900: #111827;
+
+  /* ── Yellow ramp ── */
+  --color-yellow-50:  #FEFCE8;
+  --color-yellow-100: #FEF9C3;
+  --color-yellow-200: #FEF08A;
+  --color-yellow-300: #FDE047;
+  --color-yellow-400: #FACC15;
+  --color-yellow-500: #EAB308;
+  --color-yellow-600: #CA8A04;
+  --color-yellow-700: #A16207;
+  --color-yellow-800: #854D0E;
+  --color-yellow-900: #713F12;
 
   /* ── Page/card backgrounds — generates bg-page, bg-card ── */
   --color-bg-page: #F8FAFC;
   --color-bg-card: #FFFFFF;
 
-  /* ── Semantic state colours ── */
+  /* ── Semantic state colours (spec-aligned) ── */
   --color-success-bg:   #DCFCE7;
   --color-success-text: #166534;
   --color-warning-bg:   #FEF9C3;
   --color-warning-text: #854D0E;
   --color-error-bg:     #FEE2E2;
   --color-error-text:   #DC2626;
-  --color-info-bg:      #EFF6FF;
-  --color-info-text:    #1D4ED8;
+  --color-info-bg:      #DBEAFE;
+  --color-info-text:    #1E40AF;
   --color-live-badge:   #EF4444;
 
   --color-background:                 var(--background);
@@ -319,14 +504,38 @@
   --border:              #E2E8F0;
   --input:               #E2E8F0;
   --ring:                #1A3829;
-  --sidebar:             #1A3829;
-  --sidebar-foreground:  #FFFFFF;
-  --sidebar-primary:     #FFFFFF;
-  --sidebar-primary-foreground: #1A3829;
-  --sidebar-accent:      rgba(255, 255, 255, 0.10);
-  --sidebar-accent-foreground:  #FFFFFF;
-  --sidebar-border:      rgba(255, 255, 255, 0.15);
-  --sidebar-ring:        #FFFFFF;
+  --sidebar:             #FFFFFF;
+  --sidebar-foreground:  #0F172A;
+  --sidebar-primary:     #1A3829;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent:      #F0FDF4;
+  --sidebar-accent-foreground:  #1A3829;
+  --sidebar-border:      #E2E8F0;
+  --sidebar-ring:        #1A3829;
+}
+
+/* ── text-* intent token overrides ──
+   Tailwind v4 `@theme inline` maps `--color-primary` and `--color-secondary`
+   to shadcn brand tokens (forest green and near-white Card surface). These
+   MINDSPARK utility classes predate shadcn and mean "body text colours".
+   Higher-specificity overrides so `text-primary` / `text-secondary` keep
+   meaning body text while shadcn Button/Badge primary+secondary variants
+   still work via `bg-primary` / `bg-secondary` / `text-primary-foreground`
+   / `text-secondary-foreground`. */
+html .text-primary {
+  color: var(--text-primary);
+}
+html .text-secondary {
+  color: var(--text-secondary);
+}
+html .text-subtle {
+  color: var(--text-subtle);
+}
+html .text-danger {
+  color: var(--text-danger);
+}
+html .text-negative {
+  color: var(--text-negative);
 }
 
 /* DARK MODE — light-mode-only in V1, kept for future use */

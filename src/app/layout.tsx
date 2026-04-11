@@ -51,8 +51,9 @@ export default function RootLayout({
         className={cn(
           dmSans.variable,
           dmMono.variable,
-          'font-sans antialiased bg-page text-secondary min-h-screen'
+          'font-sans antialiased bg-page min-h-screen'
         )}
+        style={{ color: 'var(--text-secondary)' }}
       >
         {/*
          * Skip link — WCAG 2.2 SC 2.4.1 (Bypass Blocks).
@@ -61,7 +62,7 @@ export default function RootLayout({
          */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-[9999] bg-white text-[#1A3829] px-4 py-3 shadow-lg rounded-md border-2 border-[#1A3829] outline-none font-semibold text-sm"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-[9999] bg-white text-green-800 px-4 py-3 shadow-lg rounded-md border-2 border-green-800 outline-none font-semibold text-sm"
         >
           Skip to main content
         </a>

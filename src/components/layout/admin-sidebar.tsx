@@ -7,6 +7,7 @@ import {
   Monitor, BarChart2, Megaphone, FileText,
   ActivitySquare, Settings,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { href: '/admin/dashboard',     label: 'Dashboard',      icon: LayoutDashboard },
@@ -27,17 +28,14 @@ export function AdminSidebar() {
   return (
     /* admin-sidebar class in globals.css sets display:flex and hides on mobile.
        We avoid hidden md:flex because of Tailwind v4 cascade ordering bug where
-       display:none from hidden overrides the responsive md:flex rule. */
+       display:none from hidden overrides the responsive md:flex rule.
+       Width 240px per 07_hifi-spec §4.6. */
     <aside
-      className="admin-sidebar w-[260px] h-screen shrink-0 flex-col"
-      style={{ backgroundColor: '#1A3829', borderRight: '1px solid rgba(255,255,255,0.1)' }}
+      className="admin-sidebar w-[240px] h-screen shrink-0 flex-col bg-sidebar border-r border-sidebar-border"
     >
       {/* Logo bar */}
-      <div
-        className="h-16 flex items-center px-6 shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
-      >
-        <h1 className="font-sans font-bold text-[20px] text-white tracking-tight">
+      <div className="h-16 flex items-center px-6 shrink-0 border-b border-sidebar-border">
+        <h1 className="font-sans font-bold text-[20px] text-sidebar-foreground tracking-tight">
           MINDSPARK
         </h1>
       </div>
@@ -50,35 +48,22 @@ export function AdminSidebar() {
       >
         {NAV_ITEMS.map((item) => {
           const isActive = pathname.startsWith(item.href);
+          const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
               aria-current={isActive ? 'page' : undefined}
-              className="flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1"
-              style={
+              className={cn(
+                'nav-transition flex items-center gap-3 px-3 py-2 rounded-[10px] text-[14px] font-medium',
+                'outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1',
+                'no-underline',
                 isActive
-                  ? { backgroundColor: 'rgba(255,255,255,0.92)', color: '#1A3829', textDecoration: 'none', fontWeight: '600' }
-                  : { color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }
-              }
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255,255,255,0.10)';
-                  (e.currentTarget as HTMLAnchorElement).style.color = '#FFFFFF';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent';
-                  (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.85)';
-                }
-              }}
+                  ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
+                  : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+              )}
             >
-              <item.icon
-                className="shrink-0 h-[18px] w-[18px]"
-                aria-hidden="true"
-                style={{ color: isActive ? '#1A3829' : 'rgba(255,255,255,0.70)' }}
-              />
+              <Icon className="shrink-0 h-[18px] w-[18px]" aria-hidden="true" />
               {item.label}
             </Link>
           );

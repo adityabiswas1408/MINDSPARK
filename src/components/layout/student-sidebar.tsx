@@ -6,6 +6,7 @@ import {
   LayoutDashboard, BookOpen, Zap, BarChart2,
   User, Settings, HelpCircle,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { href: '/student/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -25,35 +26,22 @@ export function StudentSidebar() {
 
   const renderLink = (item: { href: string; label: string; icon: React.ElementType }) => {
     const isActive = pathname.startsWith(item.href);
+    const Icon = item.icon;
     return (
       <Link
         key={item.href}
         href={item.href}
         aria-current={isActive ? 'page' : undefined}
-        className="flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1"
-        style={
+        className={cn(
+          'nav-transition flex items-center gap-3 px-3 py-2 rounded-[10px] text-[14px] font-medium',
+          'outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1',
+          'no-underline',
           isActive
-            ? { backgroundColor: 'rgba(255,255,255,0.92)', color: '#1A3829', textDecoration: 'none', fontWeight: '600' }
-            : { color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }
-        }
-        onMouseEnter={(e) => {
-          if (!isActive) {
-            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255,255,255,0.10)';
-            (e.currentTarget as HTMLAnchorElement).style.color = '#FFFFFF';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!isActive) {
-            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent';
-            (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.85)';
-          }
-        }}
+            ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
+            : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+        )}
       >
-        <item.icon
-          className="shrink-0 h-[18px] w-[18px]"
-          aria-hidden="true"
-          style={{ color: isActive ? '#1A3829' : 'rgba(255,255,255,0.70)' }}
-        />
+        <Icon className="shrink-0 h-[18px] w-[18px]" aria-hidden="true" />
         {item.label}
       </Link>
     );
@@ -61,15 +49,13 @@ export function StudentSidebar() {
 
   return (
     <aside
-      className="student-sidebar w-[240px] h-screen shrink-0 flex-col"
-      style={{ backgroundColor: '#1A3829', borderRight: '1px solid rgba(255,255,255,0.1)' }}
+      className="student-sidebar w-[240px] h-screen shrink-0 flex-col bg-sidebar border-r border-sidebar-border"
     >
       {/* Logo */}
-      <div
-        className="h-16 flex items-center px-6 shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
-      >
-        <h1 className="font-sans font-bold text-[20px] text-white tracking-tight">MINDSPARK</h1>
+      <div className="h-16 flex items-center px-6 shrink-0 border-b border-sidebar-border">
+        <h1 className="font-sans font-bold text-[20px] text-sidebar-foreground tracking-tight">
+          MINDSPARK
+        </h1>
       </div>
 
       {/* Main nav */}
@@ -82,7 +68,10 @@ export function StudentSidebar() {
       </nav>
 
       {/* Bottom nav */}
-      <div className="px-3 pb-5 space-y-1" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '12px' }}>
+      <div
+        className="px-3 pb-5 space-y-1 border-t border-sidebar-border"
+        style={{ paddingTop: '12px' }}
+      >
         {BOTTOM_ITEMS.map(renderLink)}
       </div>
     </aside>
