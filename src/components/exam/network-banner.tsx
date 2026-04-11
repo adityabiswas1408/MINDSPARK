@@ -20,11 +20,11 @@ export function ExamNetworkBanner({ isOffline }: ExamNetworkBannerProps) {
     <div
       data-testid="network-banner"
       role="alert"
-      className="fixed top-0 left-0 right-0 z-[9998] flex items-center justify-center px-4 py-2 text-sm font-medium"
+      className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-center px-4 py-3 text-sm font-medium"
       style={{
-        backgroundColor: '#FEF9C3',
-        color: '#854D0E',
-        borderBottom: '1px solid #854D0E',
+        backgroundColor: 'var(--bg-warning)',
+        color: 'var(--text-warning)',
+        borderTop: '4px solid var(--text-warning)',
       }}
     >
       <svg
