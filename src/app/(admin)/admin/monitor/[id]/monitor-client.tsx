@@ -123,37 +123,96 @@ export default function MonitorClient({
     return () => clearInterval(id);
   }, []);
 
-  // Three realtime channels — all cleaned up on unmount
+  // Two realtime channels — Broadcast (exam lifecycle + heartbeat/answers)
+  // and Presence (lobby join/leave). No postgres_changes — banned at scale
+  // per 10_architecture.md §5 Zone 1.
   useEffect(() => {
     const supabase = createClient();
 
-    // 1. Postgres changes on assessment_sessions (filtered to this paper)
-    const dbCh = supabase
-      .channel(`monitor-db-${paperId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'assessment_sessions', filter: `paper_id=eq.${paperId}` },
-        payload => {
-          if (payload.eventType !== 'UPDATE') return;
-          const rec = payload.new as Record<string, unknown>;
-          const sid = rec.student_id as string | undefined;
-          if (!sid) return;
-          setRows(prev =>
-            prev.map(r => r.student_id === sid ? { ...r, last_seen: new Date() } : r)
-          );
-        }
-      )
-      .subscribe();
-
-    // 2. Broadcast on exam:{paperId} — lifecycle events (submitted, exam_closed)
+    // Broadcast channel `exam:{paperId}` — receives lifecycle, heartbeat,
+    // answer_saved, status_change, and submitted events from clients.
     const examCh = supabase
       .channel(`exam:${paperId}`)
+      .on('broadcast', { event: 'heartbeat' }, payload => {
+        const p = (payload.payload ?? {}) as {
+          student_id?: string;
+          question_index?: number;
+          timestamp?: number;
+        };
+        if (!p.student_id) return;
+        const studentId = p.student_id;
+        setRows(prev =>
+          prev.map(r =>
+            r.student_id === studentId
+              ? {
+                  ...r,
+                  last_seen: p.timestamp ? new Date(p.timestamp) : new Date(),
+                  answered_count:
+                    typeof p.question_index === 'number'
+                      ? p.question_index
+                      : r.answered_count,
+                }
+              : r
+          )
+        );
+      })
+      .on('broadcast', { event: 'answer_saved' }, payload => {
+        const p = (payload.payload ?? {}) as {
+          student_id?: string;
+          answered_count?: number;
+        };
+        if (!p.student_id) return;
+        const studentId = p.student_id;
+        setRows(prev =>
+          prev.map(r =>
+            r.student_id === studentId
+              ? {
+                  ...r,
+                  answered_count:
+                    typeof p.answered_count === 'number'
+                      ? p.answered_count
+                      : r.answered_count + 1,
+                  last_seen: new Date(),
+                }
+              : r
+          )
+        );
+      })
+      .on('broadcast', { event: 'submitted' }, payload => {
+        const p = (payload.payload ?? {}) as { student_id?: string };
+        if (!p.student_id) return;
+        const studentId = p.student_id;
+        setRows(prev =>
+          prev.map(r =>
+            r.student_id === studentId
+              ? { ...r, status: 'submitted', last_seen: new Date() }
+              : r
+          )
+        );
+      })
+      .on('broadcast', { event: 'status_change' }, payload => {
+        const p = (payload.payload ?? {}) as {
+          student_id?: string;
+          status?: StudentStatus;
+        };
+        if (!p.student_id || !p.status) return;
+        const studentId = p.student_id;
+        const status = p.status;
+        setRows(prev =>
+          prev.map(r =>
+            r.student_id === studentId
+              ? { ...r, status, last_seen: new Date() }
+              : r
+          )
+        );
+      })
       .on('broadcast', { event: 'lifecycle' }, payload => {
         const p = (payload.payload ?? {}) as Record<string, string>;
         if (p.status === 'submitted' && p.student_id) {
+          const studentId = p.student_id;
           setRows(prev =>
             prev.map(r =>
-              r.student_id === p.student_id
+              r.student_id === studentId
                 ? { ...r, status: 'submitted', last_seen: new Date() }
                 : r
             )
@@ -194,7 +253,6 @@ export default function MonitorClient({
       .subscribe();
 
     return () => {
-      supabase.removeChannel(dbCh);
       supabase.removeChannel(examCh);
       supabase.removeChannel(lobbyCh);
     };

@@ -127,7 +127,7 @@ export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResu
 
   const { data: session } = await supabase
     .from('assessment_sessions')
-    .select('id, student_id, closed_at')
+    .select('id, student_id, paper_id, closed_at')
     .eq('id', input.session_id)
     .single();
 
@@ -153,6 +153,22 @@ export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResu
     selected_option: input.selected_option,
     answered_at:     new Date(input.answered_at).toISOString()
   }, { onConflict: 'idempotency_key' });
+
+  // Broadcast a heartbeat-style 'answer_saved' event on the exam channel so
+  // admin monitor clients update in near-real-time (Zone 2 migration from
+  // postgres_changes to broadcast per 10_architecture.md §5).
+  try {
+    await supabase.channel(`exam:${session.paper_id}`).send({
+      type: 'broadcast',
+      event: 'answer_saved',
+      payload: {
+        student_id: userId,
+        timestamp: Date.now(),
+      },
+    });
+  } catch {
+    // Broadcast is fire-and-forget; never block the answer save on it.
+  }
 
   return { ok: true, data: { saved: true } };
 }
@@ -239,6 +255,22 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
     entity_id: input.session_id,
     action_type: 'SUBMIT_EXAM'
   });
+
+  // Broadcast the submission on the exam channel so the admin monitor
+  // transitions this student to 'submitted' in real-time (Zone 2 migration
+  // from postgres_changes to broadcast per 10_architecture.md §5).
+  try {
+    await supabase.channel(`exam:${session.paper_id}`).send({
+      type: 'broadcast',
+      event: 'submitted',
+      payload: {
+        student_id: userId,
+        timestamp: Date.now(),
+      },
+    });
+  } catch {
+    // Broadcast is fire-and-forget; never block the submission on it.
+  }
 
   return { ok: true, data: { submitted: true, completed_at: sub?.completed_at || now } };
 }
