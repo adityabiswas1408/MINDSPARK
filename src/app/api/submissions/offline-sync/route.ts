@@ -3,6 +3,15 @@ import { createHmac } from 'crypto';
 import { z } from 'zod';
 import { adminSupabase } from '@/lib/supabase/admin';
 
+// Fail-closed: refuse to load the module at all when the HMAC secret is
+// missing. Computing HMACs with an empty key is trivially forgeable, so the
+// previous `process.env.HMAC_SECRET ?? ''` fallback was a silent security hole.
+const HMAC_SECRET: string = (() => {
+  const s = process.env.HMAC_SECRET;
+  if (!s) throw new Error('[security] HMAC_SECRET env var is not set');
+  return s;
+})();
+
 // In-memory rate limiting map
 // Target: 10 requests per student per 60 seconds
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -63,7 +72,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const { session_id, answers, batch_timestamp } = parsed.data;
 
     // Compute HMAC server-side — secret never touches the client
-    const hmac_timestamp = createHmac('sha256', process.env.HMAC_SECRET ?? '')
+    const hmac_timestamp = createHmac('sha256', HMAC_SECRET)
       .update(`${session_id}:${batch_timestamp}`)
       .digest('hex');
 
@@ -126,7 +135,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       p_staging_id: stagingRow.id,
       p_hmac_timestamp: hmac_timestamp,
       p_client_ts: batch_timestamp,
-      p_secret: process.env.HMAC_SECRET ?? '',
+      p_secret: HMAC_SECRET,
     });
 
     if (rpcError) {

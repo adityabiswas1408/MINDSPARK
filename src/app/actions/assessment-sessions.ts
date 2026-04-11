@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
+import { issueExamSeal } from '@/lib/anticheat/clock-guard';
 
 interface InitSessionInput {
   paper_id: string;
@@ -190,7 +191,24 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
     return { ok: true, data: { submitted: true, completed_at: session.closed_at } };
   }
 
-  const seal = 'sealed-' + input.session_id + '-' + Date.now();
+  // Fetch paper duration to compute a real clock-guard HMAC seal.
+  // Previously this was a fake string — the clock-guard validator would
+  // always flag HMAC_MISMATCH on any replay-validation path.
+  const { data: paperRow } = await adminSupabase
+    .from('exam_papers')
+    .select('duration_minutes')
+    .eq('id', session.paper_id)
+    .maybeSingle();
+
+  const durationMs = ((paperRow?.duration_minutes as number | null) ?? 60) * 60_000;
+  const serverTimestamp = Date.now();
+  const seal = issueExamSeal({
+    student_id: userId,
+    paper_id: session.paper_id,
+    server_timestamp: serverTimestamp,
+    duration_ms: durationMs,
+  });
+
   const { data: sub } = await adminSupabase.from('submissions').upsert({
     session_id: input.session_id,
     student_id: userId,
