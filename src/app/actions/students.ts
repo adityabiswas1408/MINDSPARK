@@ -1,5 +1,6 @@
 'use server';
 
+import { randomUUID } from 'crypto';
 import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
@@ -93,9 +94,14 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
   // 1. Create user in Supabase Auth
   const placeholderEmail = `${input.roll_number.toLowerCase()}@student.${institutionId}.invalid`;
   
+  // Cryptographically-random initial password. Admin can subsequently
+  // reset via resetPassword() to hand off a new temp password to the
+  // student. Never log this value.
+  const initialPassword = randomUUID().replace(/-/g, '') + '!Ab1';
+
   const { data: authUser, error: authErr } = await adminSupabase.auth.admin.createUser({
     email: placeholderEmail,
-    password: 'tempPassword123!', // usually auto-generated or forced reset
+    password: initialPassword,
     email_confirm: true,
     user_metadata: { role: 'student' }
   });
