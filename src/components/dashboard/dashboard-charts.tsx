@@ -25,7 +25,7 @@ export function DashboardCharts({ scoreTrend, levelDist }: DashboardChartsProps)
     <div className="grid gap-4 grid-cols-1 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <Card className="border-slate-200">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-600">Score Trend (6 months)</CardTitle>
+          <CardTitle className="text-[18px] font-semibold text-primary">Score Trend (6 months)</CardTitle>
         </CardHeader>
         <CardContent>
           <ScoreTrendChart data={scoreTrend} />
@@ -34,7 +34,7 @@ export function DashboardCharts({ scoreTrend, levelDist }: DashboardChartsProps)
 
       <Card className="border-slate-200">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-600">Students by Level</CardTitle>
+          <CardTitle className="text-[18px] font-semibold text-primary">Students by Level</CardTitle>
         </CardHeader>
         <CardContent>
           <LevelDistributionChart data={levelDist} />

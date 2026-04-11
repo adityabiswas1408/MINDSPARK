@@ -271,7 +271,7 @@ export default async function AdminDashboardPage() {
       {/* Recent Activity */}
       <Card className="border-slate-200">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-600">Recent Activity</CardTitle>
+          <CardTitle className="text-[18px] font-semibold text-primary">Recent Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <RecentActivityFeed activities={activities} />
