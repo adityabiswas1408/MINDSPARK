@@ -21,12 +21,24 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
+  // Fetch the admin's display name for the avatar initials.
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const fullName =
+    (profile?.full_name as string | null) ??
+    (user.user_metadata?.full_name as string | undefined) ??
+    (user.email ?? undefined);
+
   return (
     <div className="flex h-screen w-full bg-bg-page overflow-hidden">
       <AdminClientProvider />
       <AdminSidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <TopHeader title="Admin Dashboard" />
+        <TopHeader title="Admin Dashboard" fullName={fullName} />
         <main className="flex-1 overflow-y-auto p-8 relative isolate">
           {children}
         </main>

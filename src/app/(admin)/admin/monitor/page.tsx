@@ -85,7 +85,7 @@ export default async function AdminMonitorPage() {
                   )}
                 </div>
                 <Link href={`/admin/monitor/${paper.id}`}>
-                  <Button className="w-full bg-[#1A3829] hover:bg-[#1A3829]/90 text-white">
+                  <Button className="w-full bg-green-800 hover:bg-green-700 text-white">
                     Monitor Session
                   </Button>
                 </Link>

@@ -1,6 +1,7 @@
 import { requireRole } from '@/lib/auth/rbac';
 import { createClient } from '@/lib/supabase/server';
 import { ResultsGpaChart } from '@/components/student/results-client';
+import { Inbox } from 'lucide-react';
 
 function gradeBadge(grade: string | null): { bg: string; text: string } {
   switch (grade) {
@@ -99,19 +100,26 @@ export default async function StudentResultsPage() {
       {published.length === 0 ? (
         /* ── Empty state ── */
         <div
+          className="text-center"
           style={{
             padding: '56px 24px',
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #E2E8F0',
-            borderRadius: '12px',
-            textAlign: 'center',
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--color-slate-200)',
+            borderRadius: 'var(--radius-card)',
           }}
         >
-          <div style={{ fontSize: '36px', marginBottom: '12px' }}>📋</div>
-          <p style={{ fontSize: '16px', fontWeight: '600', color: '#0F172A', margin: '0 0 6px 0' }}>
+          <div className="flex items-center justify-center mb-3">
+            <Inbox
+              size={36}
+              strokeWidth={1.5}
+              aria-hidden="true"
+              style={{ color: 'var(--text-subtle)' }}
+            />
+          </div>
+          <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0' }}>
             No results published yet
           </p>
-          <p style={{ fontSize: '14px', color: '#475569', margin: 0 }}>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0 }}>
             Check back after your exam is graded
           </p>
         </div>
@@ -122,34 +130,32 @@ export default async function StudentResultsPage() {
             const pct = Math.round(Number(latestResult.percentage ?? 0));
             return (
               <div
+                className="flex items-center justify-between flex-wrap bg-white"
                 style={{
-                  backgroundColor: '#1A3829',
-                  borderRadius: '16px',
+                  border: '2px solid var(--clr-green-800)',
+                  borderRadius: 'var(--radius-card)',
                   padding: '28px 32px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
                   gap: '24px',
-                  flexWrap: 'wrap',
+                  boxShadow: 'var(--shadow-md)',
                 }}
               >
                 <div style={{ flex: '1 1 200px' }}>
                   <p
+                    className="uppercase"
                     style={{
                       fontSize: '11px',
-                      fontWeight: '700',
-                      color: '#86EFAC',
+                      fontWeight: 700,
+                      color: 'var(--clr-green-600)',
                       letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
                       margin: '0 0 6px 0',
                     }}
                   >
                     Latest Result
                   </p>
-                  <p style={{ fontSize: '20px', fontWeight: '700', color: '#FFFFFF', margin: '0 0 8px 0' }}>
+                  <p style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
                     {latestResult.paper?.title ?? 'Exam'}
                   </p>
-                  <p style={{ fontSize: '12px', color: '#86EFAC', margin: 0 }}>
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0 }}>
                     Published{' '}
                     {new Date(latestResult.result_published_at!).toLocaleDateString('en', {
                       day: 'numeric',
@@ -159,30 +165,31 @@ export default async function StudentResultsPage() {
                   </p>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexShrink: 0 }}>
+                <div className="flex items-center shrink-0" style={{ gap: '20px' }}>
                   {/* Score */}
-                  <div style={{ textAlign: 'center' }}>
+                  <div className="text-center">
                     <div
+                      className="font-mono tabular-nums"
                       style={{
-                        fontFamily: 'var(--font-mono, monospace)',
+                        fontFamily: 'var(--font-mono), monospace',
                         fontVariantNumeric: 'tabular-nums',
                         fontSize: '52px',
-                        fontWeight: '700',
-                        color: '#FFFFFF',
+                        fontWeight: 700,
+                        color: 'var(--clr-green-800)',
                         lineHeight: 1,
                       }}
                     >
                       {pct}
-                      <span style={{ fontSize: '22px', color: '#86EFAC' }}>%</span>
+                      <span style={{ fontSize: '22px', color: 'var(--clr-green-600)' }}>%</span>
                     </div>
                     <p
+                      className="uppercase"
                       style={{
                         fontSize: '10px',
-                        fontWeight: '700',
-                        color: '#86EFAC',
+                        fontWeight: 700,
+                        color: 'var(--text-subtle)',
                         letterSpacing: '0.08em',
                         margin: '6px 0 0 0',
-                        textTransform: 'uppercase',
                       }}
                     >
                       Score
@@ -192,33 +199,34 @@ export default async function StudentResultsPage() {
                   {/* Grade */}
                   {latestResult.grade && (
                     <div
+                      className="text-center"
                       style={{
-                        backgroundColor: 'rgba(255,255,255,0.12)',
-                        borderRadius: '12px',
+                        backgroundColor: 'var(--clr-green-50)',
+                        border: '1px solid var(--clr-green-200)',
+                        borderRadius: 'var(--radius-btn)',
                         padding: '14px 22px',
-                        textAlign: 'center',
-                        backdropFilter: 'blur(4px)',
                       }}
                     >
                       <div
+                        className="font-mono tabular-nums"
                         style={{
-                          fontFamily: 'var(--font-mono, monospace)',
+                          fontFamily: 'var(--font-mono), monospace',
                           fontSize: '36px',
-                          fontWeight: '700',
-                          color: '#FFFFFF',
+                          fontWeight: 700,
+                          color: 'var(--clr-green-800)',
                           lineHeight: 1,
                         }}
                       >
                         {latestResult.grade}
                       </div>
                       <p
+                        className="uppercase"
                         style={{
                           fontSize: '10px',
-                          fontWeight: '700',
-                          color: '#86EFAC',
+                          fontWeight: 700,
+                          color: 'var(--clr-green-700)',
                           letterSpacing: '0.08em',
                           margin: '4px 0 0 0',
-                          textTransform: 'uppercase',
                         }}
                       >
                         Grade

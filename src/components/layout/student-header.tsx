@@ -1,14 +1,12 @@
 'use client';
 
 import { Bell } from 'lucide-react';
-import { useState } from 'react';
 
 interface StudentHeaderProps {
   fullName: string;
 }
 
 export function StudentHeader({ fullName }: StudentHeaderProps) {
-  const [bellHover, setBellHover] = useState(false);
   const initials = fullName
     .split(' ')
     .map((n) => n[0])
@@ -18,56 +16,47 @@ export function StudentHeader({ fullName }: StudentHeaderProps) {
 
   return (
     <header
+      className="flex items-center justify-between shrink-0 bg-card border-b border-slate-200"
       style={{
-        height: '64px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        height: '56px',
         padding: '0 24px',
-        backgroundColor: '#FFFFFF',
-        borderBottom: '1px solid #E2E8F0',
-        flexShrink: 0,
       }}
     >
-      <span style={{ fontSize: '15px', color: '#475569' }}>
+      <span
+        className="font-sans"
+        style={{ fontSize: '15px', color: 'var(--text-secondary)' }}
+      >
         Welcome back,{' '}
-        <strong style={{ color: '#0F172A', fontWeight: '600' }}>{fullName}</strong>
+        <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+          {fullName}
+        </strong>
       </span>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className="flex items-center" style={{ gap: '12px' }}>
         <button
           aria-label="Notifications"
+          className="flex items-center justify-center bg-card border border-slate-200 hover:bg-slate-50 nav-transition"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             width: '36px',
             height: '36px',
             borderRadius: '8px',
-            border: '1px solid #E2E8F0',
-            backgroundColor: bellHover ? '#F8FAFC' : '#FFFFFF',
             cursor: 'pointer',
-            color: '#475569',
+            color: 'var(--text-secondary)',
           }}
-          onMouseEnter={() => setBellHover(true)}
-          onMouseLeave={() => setBellHover(false)}
         >
           <Bell size={16} />
         </button>
 
         <div
+          className="flex items-center justify-center shrink-0 font-sans"
           style={{
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            backgroundColor: '#1A3829',
+            backgroundColor: 'var(--clr-green-800)',
             color: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             fontSize: '13px',
-            fontWeight: '600',
-            flexShrink: 0,
+            fontWeight: 600,
           }}
         >
           {initials}

@@ -144,7 +144,7 @@ export default function AnnouncementsClient({
         <Button
           onClick={handlePublish}
           disabled={isPending}
-          className="w-full bg-[#1A3829] hover:bg-[#1A3829]/90 text-white"
+          className="w-full bg-green-800 hover:bg-green-700 text-white"
         >
           {isPending ? 'Publishing…' : 'Publish Announcement'}
         </Button>
@@ -170,7 +170,7 @@ export default function AnnouncementsClient({
                         {ann.title}
                       </p>
                       {ann.level_name && (
-                        <span className="shrink-0 inline-flex items-center rounded-full bg-[#1A3829]/10 px-2 py-0.5 text-xs font-medium text-[#1A3829]">
+                        <span className="shrink-0 inline-flex items-center rounded-full bg-green-800/10 px-2 py-0.5 text-xs font-medium text-green-800">
                           {ann.level_name}
                         </span>
                       )}
@@ -181,7 +181,7 @@ export default function AnnouncementsClient({
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-[#1A3829] rounded-full transition-[width] duration-500"
+                          className="h-full bg-green-800 rounded-full transition-[width] duration-500"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -197,15 +197,15 @@ export default function AnnouncementsClient({
         </div>
 
         {/* Engagement Insights */}
-        <div className="bg-[#1A3829]/5 rounded-lg border border-[#1A3829]/10 p-4">
+        <div className="bg-green-800/5 rounded-lg border border-green-800/10 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-[#1A3829]" />
-            <h3 className="text-sm font-semibold text-[#1A3829]">Engagement Insights</h3>
+            <TrendingUp className="h-4 w-4 text-green-800" />
+            <h3 className="text-sm font-semibold text-green-800">Engagement Insights</h3>
           </div>
           <p className="text-xs text-slate-600 leading-relaxed">
             Announcements sent on{' '}
             <span className="font-medium">Tuesday mornings</span> have a{' '}
-            <span className="font-medium text-[#1A3829]">25% higher read rate</span> compared to
+            <span className="font-medium text-green-800">25% higher read rate</span> compared to
             other days.
           </p>
         </div>

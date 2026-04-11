@@ -305,7 +305,7 @@ export default function MonitorClient({
           <div className="flex items-center gap-2 min-w-[140px]">
             <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#1A3829] rounded-full transition-[width] duration-500"
+                className="h-full bg-green-800 rounded-full transition-[width] duration-500"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -335,7 +335,7 @@ export default function MonitorClient({
         <div className="text-right">
           <a
             href={`/admin/students/${row.original.student_id}`}
-            className="text-xs text-[#1A3829] hover:underline"
+            className="text-xs text-green-800 hover:underline"
           >
             View Profile
           </a>

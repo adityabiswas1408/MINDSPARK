@@ -16,9 +16,23 @@ import { createClient } from '@/lib/supabase/client';
 interface TopHeaderProps {
   title: string;
   actions?: ReactNode;
+  /** User full name for avatar initials. Falls back to "U" when unknown. */
+  fullName?: string;
 }
 
-export function TopHeader({ title, actions }: TopHeaderProps) {
+function computeInitials(fullName: string | undefined): string {
+  if (!fullName) return 'U';
+  return (
+    fullName
+      .split(' ')
+      .slice(0, 2)
+      .map((w) => w[0] ?? '')
+      .join('')
+      .toUpperCase() || 'U'
+  );
+}
+
+export function TopHeader({ title, actions, fullName }: TopHeaderProps) {
   const router = useRouter();
 
   const handleSignOut = useCallback(async () => {
@@ -28,17 +42,15 @@ export function TopHeader({ title, actions }: TopHeaderProps) {
     router.refresh();
   }, [router]);
 
+  const initials = computeInitials(fullName);
+
   return (
     <header
-      className="h-16 w-full flex items-center justify-between px-8 z-10 shrink-0"
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderBottom: '1px solid #E2E8F0',
-      }}
+      className="h-16 w-full flex items-center justify-between px-8 z-10 shrink-0 bg-card border-b border-slate-200"
     >
       <h2
         className="font-sans text-[20px] font-bold truncate"
-        style={{ color: '#0F172A' }}
+        style={{ color: 'var(--text-primary)' }}
       >
         {title}
       </h2>
@@ -50,39 +62,34 @@ export function TopHeader({ title, actions }: TopHeaderProps) {
           variant="ghost"
           size="icon"
           aria-label="Notifications"
-          style={{ color: '#475569' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           <Bell className="h-5 w-5" aria-hidden="true" />
         </Button>
 
         <div
-          className="h-8 w-px mx-1"
-          style={{ backgroundColor: '#E2E8F0' }}
+          className="h-8 w-px mx-1 bg-slate-200"
           aria-hidden="true"
         />
 
         <DropdownMenu>
           <DropdownMenuTrigger
+            className="flex items-center justify-center font-sans shrink-0 nav-transition"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               width: '36px',
               height: '36px',
               borderRadius: '50%',
-              backgroundColor: '#F1F5F9',
+              backgroundColor: 'var(--clr-green-50)',
               border: 'none',
               cursor: 'pointer',
-              fontFamily: 'var(--font-sans)',
-              fontWeight: '700',
+              fontWeight: 700,
               fontSize: '13px',
-              color: '#1A3829',
+              color: 'var(--clr-green-800)',
               outline: 'none',
-              flexShrink: 0,
             }}
             aria-label="User menu"
           >
-            PS
+            {initials}
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" style={{ minWidth: '160px' }}>
@@ -95,7 +102,7 @@ export function TopHeader({ title, actions }: TopHeaderProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleSignOut}
-              style={{ color: '#DC2626', cursor: 'pointer', fontWeight: '500' }}
+              style={{ color: 'var(--text-error)', cursor: 'pointer', fontWeight: 500 }}
             >
               Sign Out
             </DropdownMenuItem>

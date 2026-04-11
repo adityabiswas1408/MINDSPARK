@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ClipboardList } from 'lucide-react';
 
 interface LiveExam {
   id: string;
@@ -23,6 +24,11 @@ function formatTime(ms: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+/**
+ * Live exam hero card — white surface, 2px forest-green border, per
+ * 07_hifi-spec §6. Previously rendered as a filled dark-green card
+ * which contradicted the spec (inverted theme).
+ */
 export function LiveExamCard({ exam }: LiveExamCardProps) {
   const endTime = exam.opened_at
     ? new Date(exam.opened_at).getTime() + exam.duration_minutes * 60 * 1000
@@ -42,54 +48,59 @@ export function LiveExamCard({ exam }: LiveExamCardProps) {
 
   return (
     <div
+      className="bg-white relative overflow-hidden"
       style={{
-        backgroundColor: '#1A3829',
-        borderRadius: '16px',
+        border: '2px solid var(--clr-green-800)',
+        borderRadius: 'var(--radius-card)',
         padding: '28px 24px',
-        color: '#FFFFFF',
-        position: 'relative',
-        overflow: 'hidden',
+        boxShadow: 'var(--shadow-md)',
       }}
     >
       {/* Top row: LIVE badge + countdown */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+      <div className="flex items-start justify-between mb-5">
         <div
+          className="inline-flex items-center gap-1.5 font-sans font-bold uppercase"
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            backgroundColor: '#EF4444',
-            color: '#FFFFFF',
+            backgroundColor: 'var(--bg-live-badge)',
+            color: 'var(--text-live-badge)',
             fontSize: '11px',
-            fontWeight: '700',
             padding: '4px 10px',
-            borderRadius: '20px',
+            borderRadius: 'var(--radius-pill)',
             letterSpacing: '0.05em',
           }}
         >
           <span
+            className="inline-block rounded-full"
             style={{
               width: '6px',
               height: '6px',
-              borderRadius: '50%',
               backgroundColor: '#FFFFFF',
-              display: 'inline-block',
             }}
           />
           LIVE NOW
         </div>
 
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '10px', fontWeight: '600', color: 'rgba(255,255,255,0.60)', letterSpacing: '0.08em', marginBottom: '2px' }}>
+        <div className="text-right">
+          <div
+            className="font-sans uppercase tracking-wider"
+            style={{
+              fontSize: '10px',
+              fontWeight: 600,
+              color: 'var(--text-subtle)',
+              letterSpacing: '0.08em',
+              marginBottom: '2px',
+            }}
+          >
             TIME LEFT
           </div>
           <div
+            className="font-mono tabular-nums"
             style={{
               fontSize: '22px',
-              fontWeight: '700',
-              fontFamily: 'var(--font-mono, monospace)',
+              fontWeight: 700,
+              fontFamily: 'var(--font-mono), monospace',
               fontVariantNumeric: 'tabular-nums',
-              color: '#FFFFFF',
+              color: 'var(--clr-green-800)',
             }}
           >
             {timeLeft}
@@ -98,11 +109,26 @@ export function LiveExamCard({ exam }: LiveExamCardProps) {
       </div>
 
       {/* Exam title */}
-      <div style={{ marginBottom: '8px' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>
+      <div className="mb-2">
+        <h2
+          className="font-sans"
+          style={{
+            fontSize: '22px',
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            margin: 0,
+          }}
+        >
           {exam.title}
         </h2>
-        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.60)', margin: '4px 0 0 0' }}>
+        <p
+          className="font-sans"
+          style={{
+            fontSize: '13px',
+            color: 'var(--text-secondary)',
+            margin: '4px 0 0 0',
+          }}
+        >
           {exam.type} · {exam.duration_minutes} min
         </p>
       </div>
@@ -110,18 +136,14 @@ export function LiveExamCard({ exam }: LiveExamCardProps) {
       {/* Enter button */}
       <Link
         href={`/student/exams/${exam.id}/lobby`}
+        className="inline-flex items-center gap-1.5 no-underline font-sans font-semibold nav-transition"
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
           marginTop: '20px',
-          backgroundColor: '#FFFFFF',
-          color: '#1A3829',
-          fontWeight: '600',
+          backgroundColor: 'var(--clr-green-800)',
+          color: '#FFFFFF',
           fontSize: '14px',
           padding: '10px 20px',
-          borderRadius: '8px',
-          textDecoration: 'none',
+          borderRadius: 'var(--radius-btn)',
         }}
       >
         Enter Examination Hall →
@@ -130,22 +152,46 @@ export function LiveExamCard({ exam }: LiveExamCardProps) {
   );
 }
 
+/**
+ * Empty state — replaces the previous 📋 emoji with a lucide
+ * ClipboardList icon per CLAUDE.md hard constraint.
+ */
 export function NoLiveExamCard() {
   return (
     <div
+      className="text-center font-sans"
       style={{
-        backgroundColor: '#F8FAFC',
-        border: '2px dashed #E2E8F0',
-        borderRadius: '16px',
+        backgroundColor: 'var(--bg-page)',
+        border: '2px dashed var(--color-slate-200)',
+        borderRadius: 'var(--radius-card)',
         padding: '40px 24px',
-        textAlign: 'center',
       }}
     >
-      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📋</div>
-      <p style={{ fontSize: '15px', fontWeight: '600', color: '#0F172A', margin: '0 0 4px 0' }}>
+      <div className="flex items-center justify-center mb-3">
+        <ClipboardList
+          size={32}
+          strokeWidth={1.5}
+          aria-hidden="true"
+          style={{ color: 'var(--text-subtle)' }}
+        />
+      </div>
+      <p
+        style={{
+          fontSize: '15px',
+          fontWeight: 600,
+          color: 'var(--text-primary)',
+          margin: '0 0 4px 0',
+        }}
+      >
         No live exams right now
       </p>
-      <p style={{ fontSize: '13px', color: '#475569', margin: 0 }}>
+      <p
+        style={{
+          fontSize: '13px',
+          color: 'var(--text-secondary)',
+          margin: 0,
+        }}
+      >
         Your exam will appear here when it goes live.
       </p>
     </div>

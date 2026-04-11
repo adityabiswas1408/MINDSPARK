@@ -258,7 +258,7 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
           <Button
             onClick={handleSaveInstitution}
             disabled={isPendingInst}
-            className="bg-[#1A3829] hover:bg-[#1A3829]/90 text-white"
+            className="bg-green-800 hover:bg-green-700 text-white"
           >
             {isPendingInst ? 'Saving…' : 'Save Institution'}
           </Button>
@@ -291,7 +291,7 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
                   return (
                     <tr key={b.grade_name} className={isOverlap ? 'bg-red-50/50' : ''}>
                       <td className="py-2.5 pr-3">
-                        <span className="inline-flex items-center justify-center w-8 h-7 rounded bg-[#1A3829]/10 text-xs font-semibold text-[#1A3829] font-mono">
+                        <span className="inline-flex items-center justify-center w-8 h-7 rounded bg-green-800/10 text-xs font-semibold text-green-800 font-mono">
                           {b.grade_name}
                         </span>
                       </td>
@@ -333,7 +333,7 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
             <Button
               onClick={handleSaveBoundaries}
               disabled={isPendingBounds || hasOverlap}
-              className="bg-[#1A3829] hover:bg-[#1A3829]/90 text-white"
+              className="bg-green-800 hover:bg-green-700 text-white"
             >
               {isPendingBounds ? 'Saving…' : 'Save Boundaries'}
             </Button>
@@ -364,7 +364,7 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
               role="switch"
               aria-checked={autoArchive}
               onClick={() => setAutoArchive(v => !v)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A3829] focus-visible:ring-offset-2 ${autoArchive ? 'bg-[#1A3829]' : 'bg-slate-200'}`}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-800 focus-visible:ring-offset-2 ${autoArchive ? 'bg-green-800' : 'bg-slate-200'}`}
             >
               <span
                 className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition-transform ${autoArchive ? 'translate-x-5' : 'translate-x-0'}`}
@@ -392,10 +392,10 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
       </div>
 
       {/* Right column — Support card */}
-      <div className="bg-[#1A3829]/5 rounded-lg border border-[#1A3829]/10 p-5 space-y-3">
+      <div className="bg-green-800/5 rounded-lg border border-green-800/10 p-5 space-y-3">
         <div className="flex items-center gap-2">
-          <HelpCircle className="h-4 w-4 text-[#1A3829]" />
-          <h3 className="text-sm font-semibold text-[#1A3829]">Need help with advanced config?</h3>
+          <HelpCircle className="h-4 w-4 text-green-800" />
+          <h3 className="text-sm font-semibold text-green-800">Need help with advanced config?</h3>
         </div>
         <p className="text-xs text-slate-600 leading-relaxed">
           Configure SSO, API access, advanced grade rules, and compliance settings via the developer docs.
@@ -404,7 +404,7 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
           href="https://docs.mindspark.app"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center text-xs font-medium text-[#1A3829] underline underline-offset-2 hover:opacity-80"
+          className="inline-flex items-center text-xs font-medium text-green-800 underline underline-offset-2 hover:opacity-80"
         >
           Open Developer Docs
         </a>

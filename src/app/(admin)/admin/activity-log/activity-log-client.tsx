@@ -251,7 +251,7 @@ export default function ActivityLogClient({
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-[#1A3829]/10 flex items-center justify-center text-xs font-semibold text-[#1A3829] shrink-0">
+                        <div className="h-7 w-7 rounded-full bg-green-800/10 flex items-center justify-center text-xs font-semibold text-green-800 shrink-0">
                           {(log.actor_email?.[0] ?? '?').toUpperCase()}
                         </div>
                         <span className="text-xs text-slate-700">{log.actor_email ?? 'System'}</span>
