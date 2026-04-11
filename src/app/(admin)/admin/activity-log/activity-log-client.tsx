@@ -357,24 +357,9 @@ export default function ActivityLogClient({
         )}
       </div>
 
-      {/* System Status bar */}
-      <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-green-500" />
-          <span className="text-xs font-medium text-slate-500">INDEX_HEALTH</span>
-          <span className="text-xs font-semibold text-slate-800 font-mono">99%</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-blue-500" />
-          <span className="text-xs font-medium text-slate-500">RETENTION</span>
-          <span className="text-xs font-semibold text-slate-800 font-mono">365D</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-amber-500" />
-          <span className="text-xs font-medium text-slate-500">ALERTS</span>
-          <span className="text-xs font-semibold text-slate-800 font-mono">ACTIVE</span>
-        </div>
-      </div>
+      {/* System Status bar — removed per UI_DIAGNOSTIC_REPORT.md Fake
+          Data Inventory. INDEX_HEALTH / RETENTION / ALERTS were
+          hardcoded literals with no DB or metrics backing. */}
     </div>
   );
 }

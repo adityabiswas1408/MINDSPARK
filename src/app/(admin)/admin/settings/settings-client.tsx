@@ -347,38 +347,10 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
           </div>
         </div>
 
-        {/* Data Retention */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-slate-900">Data Retention Policy</h2>
-
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium text-slate-900">Auto-Archive Records</p>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Move inactive student data to cold storage after 12 months
-              </p>
-            </div>
-            {/* Manual toggle — no DB column backing */}
-            <button
-              type="button"
-              role="switch"
-              aria-checked={autoArchive}
-              onClick={() => setAutoArchive(v => !v)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-800 focus-visible:ring-offset-2 ${autoArchive ? 'bg-green-800' : 'bg-slate-200'}`}
-            >
-              <span
-                className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition-transform ${autoArchive ? 'translate-x-5' : 'translate-x-0'}`}
-              />
-            </button>
-          </div>
-
-          <div className="flex items-start gap-2 rounded-md bg-amber-50 border border-amber-200 px-3 py-2.5 text-xs text-amber-800">
-            <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-            <span>
-              Changes to data retention policy require manual configuration. Contact support.
-            </span>
-          </div>
-        </div>
+        {/* Data Retention section removed — the Auto-Archive toggle had
+            no DB column backing and was a cosmetic control that never
+            persisted. Re-introduce when institutions.auto_archive_enabled
+            (or equivalent) is added to the schema. */}
 
         {/* Session Timer */}
         {sessionExpiry !== null && (

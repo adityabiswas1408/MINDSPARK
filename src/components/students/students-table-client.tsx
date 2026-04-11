@@ -20,6 +20,7 @@ import {
   DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog';
 import { X, ChevronLeft, ChevronRight, UserPlus } from 'lucide-react';
+import { toast } from 'sonner';
 
 export interface StudentRow {
   id: string;
@@ -370,7 +371,7 @@ export function StudentsTableClient({
             size="sm"
             variant="outline"
             className="h-8 text-xs"
-            onClick={() => alert('CSV export coming soon')}
+            onClick={() => toast.info('CSV export is coming soon.')}
           >
             Export
           </Button>

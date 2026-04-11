@@ -196,19 +196,9 @@ export default function AnnouncementsClient({
           )}
         </div>
 
-        {/* Engagement Insights */}
-        <div className="bg-green-800/5 rounded-lg border border-green-800/10 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-green-800" />
-            <h3 className="text-sm font-semibold text-green-800">Engagement Insights</h3>
-          </div>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Announcements sent on{' '}
-            <span className="font-medium">Tuesday mornings</span> have a{' '}
-            <span className="font-medium text-green-800">25% higher read rate</span> compared to
-            other days.
-          </p>
-        </div>
+        {/* Engagement Insights — removed per UI_DIAGNOSTIC_REPORT.md
+            Fake Data Inventory. The 25% statistic was hardcoded with no
+            real analytics backing. */}
       </div>
     </div>
   );

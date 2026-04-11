@@ -50,31 +50,10 @@ export default async function StudentExamLobbyPage(props: { params: Promise<{ id
           />
         </div>
       </div>
-
-      {/* BOTTOM BAR */}
-      <div
-        style={{
-          borderTop: '1px solid #E2E8F0',
-          paddingTop: '16px',
-          marginTop: 'auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: '10px',
-          fontWeight: '600',
-          color: '#94A3B8',
-          letterSpacing: '0.05em',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '4px' }}>
-          <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
-          <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
-          <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
-        </div>
-        <div>
-          SESSION ID: {paper.id} · LOBBY: PRE-ASSESSMENT · USER: ACTIVE, STUDENT ROLE
-        </div>
-      </div>
+      {/* Debug footer removed — 'SESSION ID: …' / 'LOBBY: PRE-ASSESSMENT' /
+          'USER: ACTIVE, STUDENT ROLE' exposed UUIDs to screen readers and
+          leaked internal state. Violated CLAUDE.md microcopy rules and
+          08_a11y §5. */}
     </div>
   );
 }

@@ -119,19 +119,14 @@ export function LevelsClient({ levels: initialLevels, nextSequenceOrder }: Level
         </Droppable>
       </DragDropContext>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4 pt-2">
-        <div className="rounded-md border border-slate-200 bg-card p-4 text-center">
+      {/* Stats row — one tile with a real DB metric. The prior
+          'Avg Competencies' and 'Curriculum Density' tiles were fake
+          placeholders (0 / —) with no DB backing. Removed per
+          UI_DIAGNOSTIC_REPORT.md Fake Data Inventory. */}
+      <div className="pt-2">
+        <div className="rounded-md border border-slate-200 bg-card p-4 text-center max-w-[240px]">
           <p className="text-2xl font-bold font-mono tabular-nums text-primary">{totalStudents}</p>
           <p className="text-xs text-slate-500 mt-1">Total Student Load</p>
-        </div>
-        <div className="rounded-md border border-slate-200 bg-card p-4 text-center">
-          <p className="text-2xl font-bold font-mono tabular-nums text-primary">0</p>
-          <p className="text-xs text-slate-500 mt-1">Avg Competencies</p>
-        </div>
-        <div className="rounded-md border border-slate-200 bg-card p-4 text-center">
-          <p className="text-2xl font-bold font-mono tabular-nums text-primary">—</p>
-          <p className="text-xs text-slate-500 mt-1">Curriculum Density</p>
         </div>
       </div>
     </div>
