@@ -820,64 +820,306 @@ Live visual pass: chrome-devtools navigates /admin/dashboard,
 computed background on badges/avatars/status indicators.
 
 ────────────────────────────────────────────────────────
-TIER 4 — FROM-SCRATCH REBUILDS
-Target files: 4 (2 required, 2 product decisions)
+TIER 4 — FROM-SCRATCH REBUILDS + ROUTE CLEANUP
+Target files: 7 (2 rebuilds + 1 build + 1 delete + 1 filter fix
+                 + 2 sidebar nav updates)
 Est. effort: 3–4 days
-Commit message prefix: `feat(profile):` / `feat(lobby):`
+Commit message prefixes:
+  `feat(profile):` — profile card rebuild
+  `feat(lobby):` — lobby breathing circle + 3-state network
+  `feat(tests):` — student tests page build
+  `chore(admin):` — remove /admin/reports route and nav link
+  `fix(exams):` — add EXAM type filter to /student/exams query
 ────────────────────────────────────────────────────────
 
-### STOP-AND-ASK POINT 1: /student/tests and /admin/reports
+### PRE-RESOLVED DECISIONS — NO STOP-AND-ASK
 
-These two routes exist as placeholder pages with sidebar nav links.
-Before building them:
+Per user directive captured in this session. The Tier 4 stop-and-ask
+point from earlier drafts is CANCELLED. Execute the following actions
+in order without asking:
 
-ASK THE USER:
-"The diagnostic surfaced two placeholder routes: /student/tests and
-/admin/reports. Both have sidebar nav links but no spec definition.
-Do you want to:
-(a) Build /student/tests as a 'Practice Tests' page (spec undefined,
-    would need product input on what content it shows)
-(b) Remove the Tests nav link from student sidebar
-(c) Same options for /admin/reports
-Please choose a, b, c per page."
+1. **/admin/reports** → DELETE entirely. Remove the `page.tsx` file.
+   Remove the nav entry from `admin-sidebar.tsx` NAV_ITEMS array.
+   No replacement, no redirect, no branded landing — just gone.
 
-Wait for answer. Then execute per choice.
+2. **/student/tests** → BUILD as a TEST-type mirror of /student/exams.
+   Keep the sidebar nav link. Rebuild the page to show exam papers
+   where `type = 'TEST'` (Flash Anzan papers), grouped into Live /
+   Upcoming / Completed sections with the same card components used
+   by /student/exams.
+
+3. **/student/exams** → ADD filter `type = 'EXAM'` to the query so
+   it only shows vertical-format papers. Currently it shows both
+   types mixed together. The two pages (/exams and /tests) should
+   form a clean parallel split by assessment type.
+
+4. **/student/profile** → BUILD a professional card-design page
+   showing the student's name, roll number, and level. Matches the
+   MINDSPARK design language (forest green + light + DM Sans + DM
+   Mono + radius-card 14px + shadow-md). Full spec in EDIT 1 below.
+
+5. **src/app/not-found.tsx** (optional, defensive) → create a branded
+   404 page catching any other unknown URL. Small, ~30 min. Add only
+   if time permits after the core 4 edits.
 
 ### EDIT 1: src/app/(student)/student/profile/page.tsx — full rebuild
 
-Current: 15-line placeholder.
-Target: full digital ID card per 06_wireframes.md B10 and
-07_hifi-spec.md §6 Student Profile.
+Current: 15-line placeholder (`<p>Profile settings and accessibility flags.</p>`).
 
-Structure:
-1. Server Component fetches: student profile, level, level progress,
-   avatar initials, date of birth, roll number.
-2. Renders a client component `StudentProfileClient` that shows:
-   - Digital ID card: avatar 96px + name + level + roll + DOB + barcode
-     (use `react-barcode` or a simple SVG QR code of the roll number)
-   - Level progress bar: 8px tall, #E2E8F0 track, #1A3829 fill,
-     animated width on mount (600ms ease-out)
-   - "Level X · N% to Level X+1" label
-   - Accessibility section:
-     - Ticker Mode toggle (shadcn Switch)
-     - Checked: `#1A3829` track, white thumb
-     - Persists to `profiles.ticker_mode` on change
-   - **BUT** ticker_mode column does not exist per GOTCHAS.md.
-     Before wiring the toggle, check live DB:
-     ```sql
-     SELECT column_name FROM information_schema.columns
-     WHERE table_name='profiles' AND column_name='ticker_mode';
-     ```
-     If 0 rows: either render the toggle as disabled with a
-     "Coming soon" sublabel, or ADD THE COLUMN via SQL editor
-     (not via migration file per CLAUDE.md) and document.
+Target: a professional, card-based profile page with **just three
+fields** — full name, roll number, and level — styled to match the
+MINDSPARK design language. No Ticker Mode, no level progress bar,
+no barcode, no DOB, no achievements, no password change. Those are
+out of scope for this fix pass.
 
-Commit: `feat(profile): full student profile with digital ID card + level progress + ticker mode toggle`
+PAGE STRUCTURE (Server Component):
+
+```tsx
+import { requireRole } from '@/lib/auth/rbac';
+import { createClient } from '@/lib/supabase/server';
+
+export default async function StudentProfilePage() {
+  const authResult = await requireRole('student');
+  if ('error' in authResult) return null;
+  const { userId } = authResult;
+
+  const supabase = await createClient();
+  const { data: student } = await supabase
+    .from('students')
+    .select('full_name, roll_number, level_id, created_at, levels(name)')
+    .eq('id', userId)
+    .single();
+
+  if (!student) return null;
+
+  const fullName = student.full_name ?? '—';
+  const rollNumber = student.roll_number ?? '—';
+  const levelData = Array.isArray(student.levels)
+    ? student.levels[0]
+    : student.levels;
+  const levelName = levelData?.name ?? 'Level 1';
+  const memberSince = student.created_at
+    ? new Date(student.created_at).toLocaleDateString('en', {
+        day: 'numeric', month: 'long', year: 'numeric',
+      })
+    : '—';
+
+  // Compute avatar initials (first letter of up to 2 words)
+  const initials = fullName
+    .split(' ')
+    .slice(0, 2)
+    .map(w => w[0] ?? '')
+    .join('')
+    .toUpperCase();
+
+  return (
+    <div className="max-w-[560px] mx-auto mt-12 space-y-6">
+      {/* Page heading */}
+      <h1 className="text-[30px] font-bold text-[color:var(--text-primary)]
+                     font-sans tracking-tight">
+        My Profile
+      </h1>
+
+      {/* Hero ID card */}
+      <div
+        className="bg-white rounded-[14px] p-8 flex items-center gap-6"
+        style={{
+          boxShadow: '0 4px 12px rgba(15,23,42,0.08),'
+                   + ' 0 2px 4px rgba(15,23,42,0.04)',
+          border: '1px solid var(--color-slate-200)',
+        }}
+      >
+        {/* Avatar circle */}
+        <div
+          className="flex items-center justify-center shrink-0
+                     rounded-full font-sans"
+          style={{
+            width: '96px',
+            height: '96px',
+            backgroundColor: 'var(--clr-green-800)',
+            color: '#FFFFFF',
+            fontSize: '32px',
+            fontWeight: 700,
+            letterSpacing: '0.02em',
+          }}
+          aria-hidden="true"
+        >
+          {initials}
+        </div>
+
+        {/* Info stack */}
+        <div className="flex-1 min-w-0 space-y-2">
+          {/* Full name */}
+          <h2
+            className="font-sans"
+            style={{
+              fontSize: '24px',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              lineHeight: 1.2,
+              margin: 0,
+            }}
+          >
+            {fullName}
+          </h2>
+
+          {/* Roll number */}
+          <div>
+            <div
+              className="font-sans uppercase tracking-wider"
+              style={{
+                fontSize: '10px',
+                fontWeight: 600,
+                color: 'var(--text-subtle)',
+                letterSpacing: '0.08em',
+                marginBottom: '2px',
+              }}
+            >
+              Candidate ID
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono), monospace',
+                fontSize: '16px',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
+                fontVariantNumeric: 'tabular-nums',
+                letterSpacing: 0,
+              }}
+            >
+              {rollNumber}
+            </div>
+          </div>
+
+          {/* Level pill */}
+          <div
+            className="inline-flex items-center font-sans"
+            style={{
+              backgroundColor: '#EFFAF4',
+              border: '1px solid #B7E4C7',
+              padding: '6px 14px',
+              borderRadius: '999px',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--clr-green-800)',
+              marginTop: '4px',
+            }}
+          >
+            {levelName}
+          </div>
+        </div>
+      </div>
+
+      {/* Meta strip — small secondary card */}
+      <div
+        className="bg-white rounded-[14px] p-5 flex items-center
+                   justify-between gap-4 font-sans"
+        style={{
+          boxShadow: '0 1px 3px rgba(15,23,42,0.06),'
+                   + ' 0 1px 2px rgba(15,23,42,0.04)',
+          border: '1px solid var(--color-slate-200)',
+        }}
+      >
+        <div>
+          <div
+            className="uppercase tracking-wider"
+            style={{
+              fontSize: '10px',
+              fontWeight: 600,
+              color: 'var(--text-subtle)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            Member since
+          </div>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'var(--text-primary)',
+              marginTop: '2px',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {memberSince}
+          </div>
+        </div>
+
+        <div
+          style={{
+            width: '1px',
+            height: '32px',
+            backgroundColor: 'var(--color-slate-200)',
+          }}
+          aria-hidden="true"
+        />
+
+        <div className="text-right">
+          <div
+            className="uppercase tracking-wider"
+            style={{
+              fontSize: '10px',
+              fontWeight: 600,
+              color: 'var(--text-subtle)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            Status
+          </div>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'var(--clr-green-800)',
+              marginTop: '2px',
+            }}
+          >
+            Active
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+NOTES FOR THE IMPLEMENTER:
+
+- **Server Component**, not Client. No interactivity.
+- Uses design tokens via `var(--*)` CSS variables. After Tier 1 fixes
+  the token layer, `var(--clr-green-800)`, `var(--text-primary)`,
+  `var(--text-secondary)`, `var(--text-subtle)`, `var(--color-slate-200)`
+  will all resolve correctly.
+- Avatar initials are computed server-side from the full name.
+- If the student has no roll number (unlikely but possible in seed
+  data), show `—` as a fallback.
+- Level name comes from the joined `levels` table. Supabase JS join
+  syntax is used here — verify the join works before deploy. If the
+  RLS blocks the join, do a second query to fetch the level name by
+  `level_id`.
+- The card has shadow-md (for the hero) and shadow-sm (for the
+  meta strip). These are declared in the spec token sheet but may
+  need to be added to globals.css if not present. Inline
+  `box-shadow` above matches the spec values exactly as a fallback.
+- The `#EFFAF4` green-50 and `#B7E4C7` green-200 hex values should
+  come through after Tier 1 adds the full green ramp. If for some
+  reason they're not in the generated Tailwind classes at the time
+  of this edit, fall back to inline hex (shown in the code above).
+
+Commit: `feat(profile): professional student profile card with name, roll, level`
 
 Verification:
 - Navigate to /student/profile as student
-- evaluate_script: check presence of `.digital-id-card`, check
-  level progress bar width matches computed percentage.
+- evaluate_script assertions:
+  - Hero card `backgroundColor === 'rgb(255, 255, 255)'` (white)
+  - Avatar `backgroundColor === 'rgb(26, 56, 41)'` (green-800)
+  - Avatar `color === 'rgb(255, 255, 255)'` (white initials)
+  - Avatar width 96, height 96
+  - Name h2 fontSize '24px', fontWeight '700'
+  - Roll number fontFamily includes 'DM Mono'
+  - Level pill backgroundColor `rgb(239, 250, 244)` (green-50)
+  - Level pill color `rgb(26, 56, 41)` (green-800)
+  - No console errors on page load
 
 ### EDIT 2: src/app/(student)/student/exams/[id]/lobby/lobby-client.tsx — rewrite
 
@@ -932,23 +1174,291 @@ Verification:
 - Toggle network offline: confirm state transitions through optimal
   → degraded → severed.
 
-### EDIT 3 + 4: /student/tests and /admin/reports
+### EDIT 3: src/app/(student)/student/exams/page.tsx — add EXAM type filter
 
-Per STOP-AND-ASK decision:
-- If (a) build: design and implement per user direction
-- If (b) remove: delete the page.tsx file, remove the nav link from
-  student-sidebar.tsx NAV_ITEMS array (or admin-sidebar.tsx for reports)
+Current: the query shows every exam paper for the student's level,
+regardless of type, mixing EXAM and TEST papers into one list.
 
-Commit: `chore(nav): remove unused /student/tests placeholder route` OR
-       `feat(tests): implement practice tests page per product spec`
+Target: only show papers where `type = 'EXAM'` (vertical format).
+Flash Anzan papers will move to /student/tests (EDIT 4 below).
+
+Find the Supabase query block (around line 23–30):
+
+```tsx
+let query = supabase
+  .from('exam_papers')
+  .select('id, title, type, duration_minutes, status, opened_at, closed_at, created_at')
+  .eq('institution_id', institutionId)
+  .in('status', ['LIVE', 'PUBLISHED', 'CLOSED']);
+
+if (levelId) query = query.eq('level_id', levelId);
+```
+
+Add one line immediately after the `.eq('institution_id', ...)` call:
+
+```tsx
+let query = supabase
+  .from('exam_papers')
+  .select('id, title, type, duration_minutes, status, opened_at, closed_at, created_at')
+  .eq('institution_id', institutionId)
+  .eq('type', 'EXAM')  // ← ADD THIS LINE
+  .in('status', ['LIVE', 'PUBLISHED', 'CLOSED']);
+```
+
+Also update the page heading and empty-state microcopy to
+reflect that this page is now EXAM-specific:
+
+- Heading: `"Exams"` → `"Exams"` (no change, already correct)
+- Empty state title: `"No exams scheduled yet"` → keep
+- Empty state body: `"Your exams will appear here when they're
+  published."` → keep
+
+Commit: `fix(exams): filter /student/exams to show only EXAM type papers`
+
+Verification:
+- Navigate to /student/exams as a student enrolled in a level that
+  has both EXAM and TEST papers in PUBLISHED state.
+- evaluate_script: count cards in each section, confirm no TEST-type
+  paper titles appear.
+- Spot-check: the DB test seed has at least one TEST paper. It must
+  NOT appear on /student/exams.
+
+### EDIT 4: src/app/(student)/student/tests/page.tsx — full build
+
+Current: 15-line placeholder (`<p>No practice tests available.</p>`).
+
+Target: a near-duplicate of `src/app/(student)/student/exams/page.tsx`
+(the newly-filtered version from EDIT 3) with `type = 'TEST'` instead
+of `'EXAM'`. Three-section layout: Live Now / Upcoming / Completed.
+Same card components. Same date badges. Same empty state pattern.
+
+IMPLEMENTATION APPROACH:
+
+1. Copy the entire contents of `src/app/(student)/student/exams/page.tsx`
+   into `src/app/(student)/student/tests/page.tsx`, REPLACING the
+   existing 15-line placeholder.
+
+2. Change the type filter in the query:
+   ```tsx
+   .eq('type', 'EXAM')  // BEFORE
+   .eq('type', 'TEST')  // AFTER
+   ```
+
+3. Change the page heading:
+   ```tsx
+   <h1 className="text-3xl font-bold text-green-800">Exams</h1>
+   // BEFORE
+   <h1 className="text-3xl font-bold text-green-800">Tests</h1>
+   // AFTER
+   ```
+
+4. Change the section headings:
+   ```tsx
+   // "LIVE NOW" section — keep as is (same text works for both types)
+
+   // "UPCOMING" section — keep as is
+
+   // "COMPLETED" section — keep as is
+   ```
+
+5. Change the empty-state microcopy to reflect Flash Anzan:
+   ```tsx
+   // BEFORE:
+   <p>No exams scheduled yet</p>
+   <p>Your exams will appear here when they're published.</p>
+
+   // AFTER:
+   <p>No tests scheduled yet</p>
+   <p>Your Flash Anzan tests will appear here when they're published.</p>
+   ```
+
+6. Update the BookOpen icon in the empty state to Zap (lucide icon)
+   to match the nav icon for Tests:
+   ```tsx
+   import { BookOpen, Zap } from 'lucide-react';
+   // ...
+   <Zap size={24} style={{ color: '#94A3B8' }} />
+   ```
+
+7. All other code, imports, layout, and structure stay identical.
+   The `LiveExamCard` component works for both EXAM and TEST types
+   (it already renders generic title/type/duration, so no changes
+   needed there).
+
+Commit: `feat(tests): build student tests page as type-filtered mirror of exams`
+
+Verification:
+- Navigate to /student/tests as a student enrolled in a level that
+  has at least one TEST paper in PUBLISHED or LIVE state.
+- evaluate_script: confirm the page renders, count cards in each
+  section, confirm no EXAM-type paper titles appear.
+- Confirm sidebar nav link "Tests" still works and leads here.
+
+### EDIT 5: src/app/(admin)/admin/reports/page.tsx — DELETE entirely
+
+This route has no spec definition, no data backing, and no user
+intent. It's a dead placeholder with a misleading nav link. Delete it.
+
+STEPS:
+
+1. **Delete the file** `src/app/(admin)/admin/reports/page.tsx`.
+   Use the Bash tool: `rm "src/app/(admin)/admin/reports/page.tsx"`.
+   Do not leave a redirect shim — after the nav link is removed in
+   step 2, nothing in the app links here anymore.
+
+2. **Remove the nav entry** from
+   `src/components/layout/admin-sidebar.tsx`:
+   - Open the file
+   - Find the NAV_ITEMS array (around line 12)
+   - Find this line:
+     ```tsx
+     { href: '/admin/reports', label: 'Reports', icon: FileText },
+     ```
+   - Delete that line entirely
+   - Also remove the `FileText` import from the lucide-react import
+     at the top of the file IF it is not used anywhere else in the
+     file. Grep first to confirm:
+     ```bash
+     grep -c "FileText" src/components/layout/admin-sidebar.tsx
+     ```
+     If the count is 2 (import + NAV_ITEMS), remove both. If higher,
+     leave the import.
+
+3. Anyone hitting `/admin/reports` after this edit will get Next.js's
+   default 404 response. That is acceptable because (a) the route was
+   only ever reachable from the nav link, and (b) the optional EDIT 6
+   below adds a branded `not-found.tsx` that catches it.
+
+Commit: `chore(admin): remove /admin/reports placeholder route and nav link`
+
+Verification:
+- Bash: `[ ! -f "src/app/(admin)/admin/reports/page.tsx" ] && echo DELETED || echo STILL-EXISTS`
+- Grep: `grep "reports" src/components/layout/admin-sidebar.tsx` → 0 matches
+- Live: navigate to /admin/reports → 404 page renders
+- Live: /admin/dashboard sidebar no longer shows a Reports nav item
+
+### EDIT 6 (OPTIONAL): src/app/not-found.tsx — branded 404
+
+Only build this if time permits after EDITS 1–5 are committed. Not
+a blocker.
+
+Create a new file `src/app/not-found.tsx` as a server component:
+
+```tsx
+import Link from 'next/link';
+import { AlertCircle } from 'lucide-react';
+
+export default function NotFound() {
+  return (
+    <div className="min-h-screen flex items-center justify-center p-8
+                    bg-[color:var(--bg-page)]">
+      <div
+        className="bg-white rounded-[14px] p-12 max-w-[480px] text-center"
+        style={{
+          boxShadow: '0 4px 12px rgba(15,23,42,0.08)',
+          border: '1px solid var(--color-slate-200)',
+        }}
+      >
+        <div
+          className="mx-auto mb-6 flex items-center justify-center rounded-full"
+          style={{
+            width: '64px',
+            height: '64px',
+            backgroundColor: 'var(--bg-warning)',
+          }}
+        >
+          <AlertCircle size={32} style={{ color: 'var(--text-warning)' }} />
+        </div>
+        <h1
+          className="font-sans mb-2"
+          style={{
+            fontSize: '24px',
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+          }}
+        >
+          Page not found
+        </h1>
+        <p
+          className="font-sans mb-6"
+          style={{
+            fontSize: '15px',
+            color: 'var(--text-secondary)',
+            lineHeight: 1.6,
+          }}
+        >
+          The page you were looking for doesn't exist. It may have been
+          moved, renamed, or never existed in the first place.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex items-center font-sans font-semibold"
+          style={{
+            backgroundColor: 'var(--clr-green-800)',
+            color: '#FFFFFF',
+            padding: '12px 24px',
+            borderRadius: '10px',
+            fontSize: '14px',
+            textDecoration: 'none',
+          }}
+        >
+          Back to Home
+        </Link>
+      </div>
+    </div>
+  );
+}
+```
+
+Commit: `feat(routing): add branded 404 page for unknown URLs`
+
+Verification:
+- Navigate to `/admin/foo-bar-nonsense` → branded 404 renders
+- Navigate to `/admin/reports` (deleted in EDIT 5) → branded 404 renders
 
 ### TIER 4 VERIFICATION GATE
 
 - `verify-exam-flow` passes
 - `verify-admin-pages` passes
-- Manual navigation to /student/profile shows a full ID card
+
+**Profile page:**
+- Manual navigation to /student/profile shows:
+  - "My Profile" heading at the top
+  - Hero card with white bg, avatar on left, info on right
+  - Avatar is a 96×96 green circle with the student's initials
+  - Full name at 24px bold
+  - "Candidate ID" label + roll number in DM Mono
+  - Green-50 level pill showing the student's level name
+  - Meta strip card below with "Member since" and "Status: Active"
+- evaluate_script on /student/profile:
+  - Hero card `backgroundColor === 'rgb(255, 255, 255)'`
+  - Avatar circle width = 96, height = 96
+  - Avatar `backgroundColor === 'rgb(26, 56, 41)'`
+  - No hardcoded text like "Profile settings and accessibility flags"
+  - No console errors
+
+**Exams vs Tests split:**
+- /student/exams contains only papers with `type = 'EXAM'`
+- /student/tests contains only papers with `type = 'TEST'`
+- Both pages have Live Now / Upcoming / Completed sections
+- Both pages use the same visual language (date badges, LiveExamCard
+  for LIVE papers, plain card for Upcoming, link card for Completed)
+- Neither page shows "No practice tests available" placeholder text
+- The nav links "Exams" and "Tests" both work from the student sidebar
+
+**Lobby page:**
 - Manual navigation to /student/exams/[id]/lobby shows breathing
-  circle + 3-state network + no fake checklist
+  circle (120px, 4s animation) + 3-state network indicator + no
+  fake camera/secure-browser checklist
+
+**Admin reports removal:**
+- Navigate to /admin/reports → Next.js 404 OR branded not-found.tsx
+- Admin sidebar no longer shows "Reports" nav item
+- `grep -c "admin/reports" src/components/layout/admin-sidebar.tsx`
+  returns 0
+- File `src/app/(admin)/admin/reports/page.tsx` does not exist:
+  `[ ! -f "src/app/(admin)/admin/reports/page.tsx" ] && echo OK`
+- `npm run tsc` still passes after removal (no dangling imports)
 
 ────────────────────────────────────────────────────────
 TIER 5 — POLISH, MICROCOPY, LOW PRIORITY
@@ -1047,9 +1557,7 @@ Stop and ask the user before proceeding if:
    a dimension — report both sources and ask which wins).
 4. A verification gate fails after 2 attempted fixes — stop and
    escalate rather than trying a third approach.
-5. The rebuild of /student/tests or /admin/reports (Tier 4
-   stop-and-ask #1 above).
-6. Any change to `CLAUDE.md`, `GOTCHAS.md`, `TASKS.md` or other
+5. Any change to `CLAUDE.md`, `GOTCHAS.md`, `TASKS.md` or other
    operator docs.
 
 ════════════════════════════════════════════════════════
