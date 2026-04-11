@@ -23,18 +23,31 @@ export function KPICard({ title, value, icon, trend, trendValue, description, sp
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline space-x-2">
-          {/* DM Mono, Tabular Nums precisely applied to the primary number */}
-          <div className="text-3xl font-bold text-primary font-mono tabular-nums leading-none tracking-tight">
+          {/* Forced inline typography — shadcn Card cascade otherwise
+              collapses child text-3xl to text-sm. Spec mono-kpi: 36px 700
+              DM Mono tabular, --text-primary. */}
+          <div
+            className="font-mono tabular-nums"
+            style={{
+              fontFamily: 'var(--font-mono), monospace',
+              fontSize: '36px',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              fontVariantNumeric: 'tabular-nums',
+              lineHeight: 1,
+              letterSpacing: 0,
+            }}
+          >
             {value}
           </div>
-          
+
           {trend && trendValue && (
             <div
               className={cn(
-                "flex items-center text-xs font-medium px-1.5 py-0.5 rounded-full font-mono tabular-nums",
-                trend === 'up' && "bg-green-100 text-green-800",
-                trend === 'down' && "bg-slate-100 text-danger", // Semantic danger token
-                trend === 'neutral' && "bg-slate-100 text-secondary"
+                "flex items-center text-xs font-medium px-1.5 py-0.5 rounded-full font-mono tabular-nums border",
+                trend === 'up' && "bg-green-50 text-green-800 border-green-200",
+                trend === 'down' && "bg-red-50 text-red-700 border-red-200",
+                trend === 'neutral' && "bg-slate-50 text-secondary border-slate-200"
               )}
             >
               {trend === 'up' && <ArrowUpRight className="mr-1 h-3 w-3" strokeWidth={2.5} />}

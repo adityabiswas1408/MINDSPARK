@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { KPICard } from '@/components/dashboard/kpi-card';
+import { LivePulse } from '@/components/dashboard/live-pulse';
 import { RecentActivityFeed, type ActivityItem } from '@/components/dashboard/recent-activity-feed';
 import { DashboardCharts } from '@/components/dashboard/dashboard-charts';
 import type { ScoreTrendPoint } from '@/components/dashboard/score-trend-chart';
@@ -64,6 +65,7 @@ export default async function AdminDashboardPage() {
     scoreTrendRes,
     levelDistRes,
     activityRes,
+    livePulseRes,
   ] = await Promise.all([
     // KPI: total students
     supabase
@@ -139,6 +141,15 @@ export default async function AdminDashboardPage() {
       .eq('institution_id', institutionId)
       .order('timestamp', { ascending: false })
       .limit(10),
+
+    // Live Pulse widget: first LIVE exam paper with its active session count
+    supabase
+      .from('exam_papers')
+      .select('id, title, assessment_sessions(id)')
+      .eq('institution_id', institutionId)
+      .eq('status', 'LIVE')
+      .order('opened_at', { ascending: false })
+      .limit(1),
   ]);
 
   // ── KPI values ──────────────────────────────────────────────────────────────
@@ -198,9 +209,29 @@ export default async function AdminDashboardPage() {
     timestamp: row.timestamp as string,
   }));
 
+  // ── Live Pulse widget data ─────────────────────────────────────────────────
+  const livePulsePaper = (livePulseRes.data ?? [])[0];
+  const livePulseCount = livePulsePaper?.assessment_sessions
+    ? (Array.isArray(livePulsePaper.assessment_sessions)
+        ? livePulsePaper.assessment_sessions.length
+        : 0)
+    : 0;
+  const showLivePulse = livePulsePaper && livePulseCount > 0;
+
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-green-800">Dashboard</h1>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <h1 className="text-3xl font-bold text-green-800">Dashboard</h1>
+        {showLivePulse && livePulsePaper && (
+          <div className="sm:w-[280px]">
+            <LivePulse
+              paperId={livePulsePaper.id as string}
+              examTitle={livePulsePaper.title as string}
+              studentCount={livePulseCount}
+            />
+          </div>
+        )}
+      </div>
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

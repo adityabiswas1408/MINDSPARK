@@ -22,7 +22,7 @@ export interface DashboardChartsProps {
 
 export function DashboardCharts({ scoreTrend, levelDist }: DashboardChartsProps) {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="grid gap-4 grid-cols-1 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <Card className="border-slate-200">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-slate-600">Score Trend (6 months)</CardTitle>
