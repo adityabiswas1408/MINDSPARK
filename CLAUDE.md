@@ -101,6 +101,10 @@ Tables use `@tanstack/react-table`.
 - `src/lib/supabase/admin.ts` banned in `(student)/` routes, client components, hooks
 - `npm run tsc` must report 0 errors before every commit
 - DOMPurify is banned — use `sanitize-html` server-side
+- No emoji in production UI — use lucide-react icons
+- No native `alert()` or `confirm()` — use inline error pill pattern
+- No hardcoded hex colours in components — always use `var(--token-name)` from globals.css
+- No new inline style hex values — check globals.css for the correct token first
 
 ## Design System
 ```
@@ -117,11 +121,20 @@ Font UI:          DM Sans
 Font numbers:     DM Mono (always tabular-nums)
 ```
 
+Token usage rule:
+  ALWAYS: `var(--clr-green-800)`
+  NEVER:  `#1A3829` hardcoded in component files
+  ALWAYS: `var(--radius-card)`
+  NEVER:  `border-radius: 12px` hardcoded
+
 ## Tailwind v4 Notes
 - Colour tokens defined via `@theme inline` in `globals.css` — **not** in `tailwind.config.ts`
 - Slate palette lives in that `@theme inline` block
 - Sidebar uses `.admin-sidebar` CSS class — never `hidden md:flex` (v4 cascade bug)
 - `bg-bg-page`, `bg-green-800`, `border-slate-200` all compile correctly
+- Before using `bg-<color>-<shade>` or `text-<color>-<shade>`, verify the colour scale is declared in the `@theme inline` block. Currently only `slate-*`, `green-800`, and brand names compile. Other scales silently fail (resolve to transparent).
+- `text-secondary` resolves to shadcn `--secondary` (`#F1F5F9`) NOT MINDSPARK `--text-secondary` (`#475569`). Use `style={{ color: 'var(--text-secondary)' }}` instead.
+- Before `animation:` shorthand with a custom keyframe name, grep `globals.css` to confirm the keyframe is defined. Undefined keyframes fail silently — no console error.
 
 ## Before Any DB Operation
 Read GOTCHAS.md database section first.
@@ -473,3 +486,11 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 2. Use `detect_changes` for code review.
 3. Use `get_affected_flows` to understand impact.
 4. Use `query_graph` pattern="tests_for" to check coverage.
+
+## Load Testing Constraints
+Supabase Nano: 200 max concurrent connections (fixed).
+Safe concurrent students at Nano: ~150.
+k6 scripts capped at 500 VUs until compute upgraded.
+LT-02 and LT-03 fail at 500 VUs — known infra limit.
+Not an app bug — a plan-level constraint.
+Resolution: upgrade Supabase compute to Small/Medium.

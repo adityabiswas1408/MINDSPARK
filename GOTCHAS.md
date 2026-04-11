@@ -56,6 +56,63 @@ Use two-query pattern instead:
   1. Fetch submissions, collect paper_ids
   2. Fetch exam_papers with .in('id', paperIds)
 
+### assessment_sessions.status values
+Exact values: 'scheduled' | 'active' | 'completed' | 'cancelled'
+All lowercase. NOT 'LIVE' or 'ACTIVE'.
+'active' = session in progress (not exam_papers.status).
+exam_papers.status = 'LIVE' (uppercase) — different table.
+These two status columns are frequently confused.
+
+### updateStudent silently ignores status field
+updateStudent() TS interface has status field but
+the Supabase update does NOT write it to DB.
+Suspend must call deactivateStudent() — sets deleted_at.
+Never pass status to updateStudent expecting DB change.
+
+### levels.sequence_order not sort_order
+Column is sequence_order (integer) not sort_order.
+UNIQUE constraint on (institution_id, sequence_order).
+Parallel swap of two values fails — use two-phase update:
+  Phase 1: set both to offset values (e.g. +1000)
+  Phase 2: set to final values
+  This avoids unique constraint violation mid-swap.
+
+### activity_logs uses timestamp not created_at
+ORDER BY timestamp DESC — not created_at.
+activity_logs has no created_at column.
+Any query using created_at on activity_logs fails silently.
+
+### grade is free-form text — no enum constraint
+No check constraint on submissions.grade.
+Live values: 'A', null (incomplete/ungraded).
+Grade ordering must be hardcoded client-side:
+  ['F', 'D', 'C', 'B', 'A', 'A+']
+Null grades must be filtered before stats/charts:
+  WHERE grade IS NOT NULL AND completed_at IS NOT NULL
+
+### app.hmac_secret cannot be set via ALTER DATABASE
+Supabase returns permission denied (42501).
+Custom GUC parameter not registered in pg_settings.
+Does not appear when querying pg_settings.
+Solution: pass secret as p_secret TEXT parameter to RPC.
+Route computes HMAC using process.env.HMAC_SECRET.
+RPC uses p_secret directly instead of current_setting().
+
+### Supabase Nano compute hard limits
+Max 200 concurrent client connections (fixed at Nano tier).
+This cannot be changed by configuration — only by upgrade.
+500 concurrent VUs exceed this limit every time.
+Safe concurrent students at Nano: ~150.
+Upgrade to Small or Medium compute for 500+ students.
+PgBouncer is already active at Nano — not the bottleneck.
+
+### exam_papers and assessment_sessions in realtime
+Both tables manually added to supabase_realtime publication.
+If realtime events not firing on these tables — check:
+  SELECT tablename FROM pg_publication_tables
+  WHERE pubname = 'supabase_realtime';
+student_answers also added — check for this too.
+
 ---
 
 ## CSS / Layout
@@ -89,6 +146,27 @@ children regardless of z-index value.
 If a modal/overlay isn't appearing on top: use
 createPortal, not a higher z-index.
 
+### Two styling systems coexist — root cause of drift
+Admin pages: Tailwind utility classes + shadcn tokens.
+Student pages: raw inline style={{}} with hex values.
+No shared token usage. No hover/focus states on inline.
+This is the root cause of visual inconsistency.
+Fix: migrate all inline hex values to var(--token) refs.
+Never add new inline hex values — always use tokens.
+
+### Design tokens defined but not consumed
+globals.css defines --clr-green-800, --radius-card etc.
+Components hardcode #1A3829 inline instead of using tokens.
+Before writing any colour value: check globals.css first.
+Use var(--clr-green-800) not #1A3829.
+Use var(--radius-card) not 12px.
+
+### Tailwind v4 opacity variants unreliable
+text-white/80 and similar opacity variants may not
+compile in Tailwind v4 depending on @theme inline config.
+Use inline style for guaranteed opacity:
+  style={{ color: 'rgba(255,255,255,0.8)' }}
+
 ---
 
 ## React / Next.js
@@ -120,6 +198,20 @@ The exam engine uses exact phase string constants.
 Never use bare strings — always use the constant:
   PHASE_2_FLASH  ← correct
   'FLASH'        ← wrong, breaks phase guard
+
+### TipTap must load via next/dynamic ssr:false
+TipTap accesses browser APIs on import — crashes SSR.
+Always use:
+  const TipTapEditor = dynamic(
+    () => import('./tiptap-editor'),
+    { ssr: false }
+  )
+
+### Recharts ResponsiveContainer needs explicit height
+Without explicit height on parent div, renders at 0px.
+Always wrap in:
+  <div style={{ height: 280 }}>
+    <ResponsiveContainer width="100%" height="100%">
 
 ---
 
@@ -188,3 +280,44 @@ exam_papers(...) nested select only works if a FK exists.
 paper_id on submissions has no FK — use two queries.
 Check pg_constraint or information_schema before assuming
 a join will work.
+
+---
+
+## Fake Data Landmines
+Verified hardcoded values shipping as real data.
+Fix before deployment to real students.
+
+- student/dashboard/page.tsx — "Progress to next level 42%"
+  is a hardcoded literal, not a DB query
+- student/dashboard/page.tsx — Skill Metrics
+  {Logical Reasoning: 88, Speed: 64, Accuracy: 92}
+  are a module-level const — not from DB
+- lobby-client.tsx — Camera & Secure Browser checklist
+  always shows ✓ without running any permission check
+- levels-client.tsx — "Avg Competencies: 0" and
+  "Curriculum Density: —" are hardcoded literals
+- announcements-client.tsx — "Engagement Insights:
+  25% higher read rate" is hardcoded marketing copy
+- settings-client.tsx — Auto-archive toggle has no
+  DB column backing (comment in file confirms this)
+Rule: before rendering any number, percentage, or toggle,
+verify it is backed by a DB column or computation.
+
+---
+
+## HMAC and Security
+
+### HMAC_SECRET cannot be read back from Vercel CLI
+Encrypted env vars return empty string via CLI pull.
+If rotation needed:
+  1. Generate: node -e "require('crypto').randomBytes(32).toString('hex')"
+  2. Set in Vercel dashboard manually (not CLI)
+  3. Set in DB via p_secret RPC parameter approach
+  4. Never paste secret value in any chat message
+  5. Redeploy to pick up new Vercel env var
+
+### k6 scripts use batch_timestamp not hmac_timestamp
+The offline-sync route reads batch_timestamp field.
+Original k6 scripts had wrong field name.
+Always use batch_timestamp in test payloads.
+question_id must be valid UUID — not "question-0" strings.
