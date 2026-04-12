@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { AdminSidebar } from '@/components/layout/admin-sidebar';
 import { TopHeader } from '@/components/layout/top-header';
 import { AdminClientProvider } from '@/components/layout/admin-client-provider';
+import { DevModeBanner } from '@/components/dev/dev-mode-banner';
 
 export default async function AdminLayout({
   children,
@@ -34,7 +35,9 @@ export default async function AdminLayout({
     (user.email ?? undefined);
 
   return (
-    <div className="flex h-screen w-full bg-bg-page overflow-hidden">
+    <div className="flex flex-col h-screen w-full bg-bg-page overflow-hidden">
+      <DevModeBanner role="admin" fullName={fullName} />
+      <div className="flex flex-1 w-full overflow-hidden">
       <AdminClientProvider />
       <AdminSidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -42,6 +45,7 @@ export default async function AdminLayout({
         <main className="flex-1 overflow-y-auto p-8 relative isolate">
           {children}
         </main>
+      </div>
       </div>
     </div>
   );
