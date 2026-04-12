@@ -42,29 +42,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-  const isAdminRoute = pathname.startsWith("/admin/") || pathname === "/admin";
-  const isStudentRoute = pathname.startsWith("/student/") || pathname === "/student";
-  const isProtectedRoute = isAdminRoute || isStudentRoute;
+  const isProtectedRoute =
+    request.nextUrl.pathname.startsWith("/admin/") ||
+    request.nextUrl.pathname.startsWith("/student/");
 
   if (isProtectedRoute && !user) {
-    // DEV AUTO-LOGIN (triple-gated): if the env flag is on AND we're not
-    // in production, redirect unauthenticated protected-route requests to
-    // the dev-auto-login API which signs in the appropriate test user
-    // and bounces back here. Otherwise, fall through to /login.
-    const devAutoLoginEnabled = process.env.DEV_AUTO_LOGIN === "true";
-    const isProduction = process.env.NODE_ENV === "production";
-
-    if (devAutoLoginEnabled && !isProduction) {
-      const role = isAdminRoute ? "admin" : "student";
-      const redirectPath = request.nextUrl.pathname + request.nextUrl.search;
-      const url = request.nextUrl.clone();
-      url.pathname = "/api/dev-auto-login";
-      url.search =
-        `?role=${role}&redirect=${encodeURIComponent(redirectPath)}`;
-      return NextResponse.redirect(url);
-    }
-
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
