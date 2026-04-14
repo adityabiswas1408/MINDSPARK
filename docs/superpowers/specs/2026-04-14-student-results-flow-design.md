@@ -19,7 +19,7 @@
 ## 2. Non-goals
 
 - Trend charts (recharts `ResultsGpaChart`) are **dropped** from the student results page. The unified ledger replaces it. If the user later wants a chart, that is a separate spec.
-- DPM as a metric is **dropped** from every student-facing surface. The `submissions.dpm` column stays in the database for back-fill / future analytics, but no student page reads it.
+- DPM as a metric is **dropped from the platform entirely**. Phase 5.9 of the audit (2026-04-14) confirms: the `submissions.dpm` column will be removed from the database in Task 13 of this plan. No code path reads or writes `dpm`, no UI surfaces it, no analytics consumer needs it for v1. Any future analytics requirement can re-add the column with a fresh schema decision.
 - The Create-Assessment Wizard is unchanged — there is no new field added by this spec.
 - The admin results redesign (`2026-04-13-admin-results-redesign-design.md`) is unchanged except for the addition of the Release Answer Key card called out in §10.
 - No changes to anti-cheat, offline-sync, or the Flash Anzan timing engine.
@@ -58,7 +58,8 @@ The gates are independent on purpose: an admin can publish results immediately a
 - Detail page Score panel uses 64px / 32px.
 - Table cells use 14px / inherit, both mono.
 - The `.pct` CSS class is **repurposed** as the styling hook for the `/total` suffix span (it already has the right colour and size). No CSS rename, only a semantic change.
-- `submissions.percentage` and `submissions.dpm` are **never read** by the new student pages. They remain in the database.
+- `submissions.percentage` is **never read** by the new student pages but stays in the database for backwards compatibility with the older admin results redesign spec.
+- `submissions.dpm` is **dropped entirely** — column removed in Task 13 of the implementation plan. The old admin results page (50-line placeholder) and `src/components/results/results-client.tsx` both currently read `dpm` and must be edited to drop the field before the column drop SQL runs.
 
 ### 3.3 Unified ledger (no pending sub-list)
 
@@ -418,10 +419,10 @@ SET total_questions = (
 WHERE total_questions = 0;
 ```
 
-- **`submissions.dpm`** stays in the schema. It is **never read** by the new student pages, but the column is not dropped — admins may surface it via a separate analytics export later.
+- **`submissions.dpm`** is **dropped entirely** in Task 13 of this plan via `ALTER TABLE submissions DROP COLUMN dpm`. Phase 5.9 of the audit (2026-04-14) confirmed: (a) no code writes to it, (b) `calculate_results` does not compute it, (c) no new student-facing surface reads it, (d) the 6 remaining readers (3 files: old student page, old admin page, `results-client.tsx`) are all replaced or edited by tasks earlier in this plan. The column is removed as a final cleanup step after every reader is gone.
 - **`submissions.percentage`** stays in the schema for the same reason. The new code paths read `score / total_questions` instead.
 - **`exam_papers.result_published_at`** is unaffected. Gate A is per-submission (`submissions.result_published_at`), which is already the only one the publish action writes to.
-- **Migration policy:** per CLAUDE.md, no new migration files. All three statements get applied via the Supabase SQL editor. GOTCHAS.md must be updated with the new columns and the dropped-but-not-deleted DPM/percentage caveat.
+- **Migration policy:** per CLAUDE.md, no new migration files. All statements get applied via the Supabase SQL editor: the 4 column adds in Task 1 (answer_key_released×3 + total_questions), and the 1 column drop in Task 13 (dpm). GOTCHAS.md must be updated with the new columns, the dpm drop, and the `percentage` orphan caveat (percentage stays in schema but is never read by new code).
 - **Pre-flight verification (per CLAUDE.md DB rules):** before running the backfill, run `SELECT COUNT(*) FROM submissions WHERE total_questions = 0;` to record the row count. After the backfill, re-run and confirm 0.
 
 ## 10. Retroactive change to the admin results redesign spec
@@ -478,7 +479,7 @@ None block the spec.
 1. Does the existing `(admin)/admin/assessments/[paperId]/page.tsx` mount path live in `src/app/(admin)/admin/assessments/[id]/page.tsx` or a different sub-route? The plan phase will confirm via grep before placing the Release Answer Key card.
 2. Is the answer-key view section on the admin assessment detail page already a separate component, or inline in `page.tsx`? Determines how the new card is mounted.
 3. Should the existing `ResultsGpaChart` recharts component be deleted or just unused? Leaning delete after grep confirms zero other importers.
-4. The `submissions.dpm` and `submissions.percentage` columns become orphans on the read path. Cleanup task or leave alone?
+4. ~~The `submissions.dpm` and `submissions.percentage` columns become orphans on the read path. Cleanup task or leave alone?~~ **RESOLVED** (Phase 5.9, 2026-04-14): `dpm` is dropped entirely in Task 13. `percentage` stays in the schema for backwards compatibility with the older admin results redesign spec.
 
 ---
 

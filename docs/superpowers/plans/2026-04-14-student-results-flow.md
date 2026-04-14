@@ -1508,47 +1508,199 @@ git commit -m "docs(spec): retroactive note linking admin results to release car
 
 ---
 
-## Task 13: Cleanup — drop the chart, prune orphans
+## Task 13: Cleanup — drop the GPA chart, **drop `submissions.dpm`**, prune orphans
 
 **Files:**
-- Investigate: `src/components/results/results-gpa-chart.tsx` (or wherever the recharts trend chart lives)
-- Possibly delete: the chart file
-- Verify: zero references to `dpm`, `percentage` in any new code
+- Investigate: `src/components/student/results-client.tsx` (the `ResultsGpaChart` student-side component) and `src/components/results/results-client.tsx` (the admin-side results client)
+- Delete: `src/components/student/results-client.tsx` if it's no longer imported after Task 5's page rewrite
+- Modify: `src/components/results/results-client.tsx` — drop all `dpm` references
+- Modify: `src/app/(admin)/admin/results/page.tsx` — drop `dpm` from the `.select` query
+- Modify: `GOTCHAS.md` — note the column drop
+- Create: `db/sql-editor/2026-04-14-drop-submissions-dpm.sql` — the one-line DROP
+- Execute (via Supabase SQL editor): `ALTER TABLE submissions DROP COLUMN dpm`
 
-- [ ] **Step 13.1: Find the chart component**
+> **Phase 5.9 audit update (2026-04-14):** The original draft of this task only dropped the dead GPA chart component. Phase 5 confirmed that Q13 is answered by the user as **"drop dpm entirely"** — not just ignore the column. This task now also removes every reader of `submissions.dpm` and drops the column via SQL. The read-remove-then-drop order is critical: dropping the column first would break the 3 existing readers; removing the readers first makes the drop safe.
+
+### 13.1 Drop the GPA chart (original scope)
+
+- [ ] **Step 13.1.1: Find the chart component**
 
 ```bash
 # Use Grep, not find
 ```
 
-Search the repo for `ResultsGpaChart` and `recharts` imports inside `src/app/(student)/student/results/`. If the only importer was the old `page.tsx` (which Task 5 rewrote), the chart is now dead code.
-
-- [ ] **Step 13.2: Delete if dead**
-
-If grep confirms zero remaining importers:
+Search for `ResultsGpaChart` imports:
 
 ```bash
-git rm src/components/results/results-gpa-chart.tsx  # adjust path
+grep -rn "ResultsGpaChart\|results-client" src/app/
 ```
 
-If there are still importers somewhere unexpected (e.g. the admin dashboard), leave it alone and add a TODO to investigate later.
+Phase 5 verified: only `src/app/(student)/student/results/page.tsx` imports `ResultsGpaChart` from `@/components/student/results-client`. After Task 5 rewrites that page, the import is gone and `src/components/student/results-client.tsx` is dead code.
 
-- [ ] **Step 13.3: Confirm DPM/percentage are read by nothing in the new code**
+- [ ] **Step 13.1.2: Delete the dead student chart file**
 
 ```bash
-# Use Grep against the new files only
+git rm src/components/student/results-client.tsx
 ```
 
+Confirm the deletion compiles:
+
 ```bash
-grep -rn "dpm\|percentage" src/app/\(student\)/student/results/ \
-  src/components/results/ \
-  src/app/actions/results.ts \
-  | grep -v "// "
+npm run tsc
+```
+
+Expected: 0 errors. If tsc errors, something outside the student results flow is still importing the file — investigate before continuing.
+
+### 13.2 Drop the `submissions.dpm` column (Phase 5.9 addition)
+
+- [ ] **Step 13.2.1: Verify the three code readers**
+
+Phase 5 found exactly three files that read `submissions.dpm`:
+
+| File | What reads it |
+|---|---|
+| `src/components/results/results-client.tsx` lines 41, 78, 85, 86, 314, 317 | Admin stats computation and "DPM Avg" KPI card |
+| `src/app/(admin)/admin/results/page.tsx` line 35 | Admin query `.select('id, student_id, percentage, grade, dpm, result_published_at, ...')` |
+| `src/app/(student)/student/results/page.tsx` lines 27, 53, 315, 420 | Old student results page (already replaced by Task 5 in this plan — confirm the file has been rewritten) |
+
+Re-run grep to confirm the current state:
+
+```bash
+grep -rn "\.dpm\|'dpm'\|: dpm\|DPM" src/app/ src/components/ \
+  | grep -v "// " | grep -v "\.test\."
+```
+
+Expected after Task 5 ran: only the two admin-side references remain (`results-client.tsx` and `admin/results/page.tsx`). If the student-side reference is still there, Task 5 didn't fully rewrite the page — stop and reconcile.
+
+- [ ] **Step 13.2.2: Edit `src/components/results/results-client.tsx` — drop every `dpm` reference**
+
+The file currently:
+- Declares `dpm: number | null;` in a row type (line 41)
+- Computes `dpmAvg` in a reducer (lines 78, 85, 86)
+- Renders a "DPM Avg" KPI card (lines 314, 317)
+
+Apply these three edits:
+
+**Edit 1 — row type:**
+
+```diff
+ type SubmissionRow = {
+   id: string;
+   student_id: string;
+   percentage: number | null;
+   grade: string | null;
+-  dpm: number | null;
+   result_published_at: string | null;
+   students: { full_name: string }[] | { full_name: string } | null;
+ };
+```
+
+**Edit 2 — stats reducer:**
+
+```diff
+ const stats = useMemo(() => {
+   const graded = rows.filter(r => r.percentage != null);
+-  if (!graded.length) return { mean: 0, median: 0, dpmAvg: 0 };
++  if (!graded.length) return { mean: 0, median: 0 };
+   const percentages = graded.map(r => Number(r.percentage));
+   const mean = percentages.reduce((a, b) => a + b, 0) / percentages.length;
+   const sorted = [...percentages].sort((a, b) => a - b);
+   const median = sorted[Math.floor(sorted.length / 2)];
+-  const dpmAvg = graded.reduce((sum, s) => sum + (s.dpm ?? 0), 0) / graded.length;
+-  return { mean, median, dpmAvg };
++  return { mean, median };
+ }, [rows]);
+```
+
+**Edit 3 — remove the "DPM Avg" KPI card block entirely:**
+
+Find the JSX block rendering the DPM Avg card (around line 314) and delete the whole card. The surrounding stats row should render one fewer KPI card.
+
+- [ ] **Step 13.2.3: Edit `src/app/(admin)/admin/results/page.tsx` — drop `dpm` from the query**
+
+```diff
+ const { data: rows } = await supabase
+   .from('submissions')
+-  .select('id, student_id, percentage, grade, dpm, result_published_at, students(full_name)')
++  .select('id, student_id, percentage, grade, result_published_at, students(full_name)')
+   .eq(/* … */);
+```
+
+- [ ] **Step 13.2.4: Confirm zero remaining readers**
+
+```bash
+grep -rn "\.dpm\|'dpm'\|: dpm" src/app/ src/components/ \
+  | grep -v "// " | grep -v "\.test\."
+```
+
+Expected: zero matches. If any reference remains, stop and investigate — the column drop in Step 13.2.6 will break that file.
+
+- [ ] **Step 13.2.5: Write the SQL run book**
+
+Create `db/sql-editor/2026-04-14-drop-submissions-dpm.sql`:
+
+```sql
+-- Run via Supabase SQL editor on project ahrnkwuqlhmwenhvnupb.
+-- Spec: docs/superpowers/specs/2026-04-14-student-results-flow-design.md §9.1
+-- Audit: docs/superpowers/audit/2026-04-14-phase1-findings.md Phase 5.9
+-- Date: 2026-04-14
+
+-- ─── Pre-flight ───────────────────────────────────────────────────────────
+-- Confirm no row depends on dpm having a value (it's never written anywhere).
+SELECT COUNT(*) AS with_non_null_dpm
+FROM submissions
+WHERE dpm IS NOT NULL;
+-- Expected: 0 (if > 0, we'd be destroying user data — stop and investigate)
+
+-- ─── Drop ─────────────────────────────────────────────────────────────────
+ALTER TABLE submissions DROP COLUMN dpm;
+
+-- ─── Verification ─────────────────────────────────────────────────────────
+SELECT column_name
+FROM information_schema.columns
+WHERE table_name = 'submissions' AND column_name = 'dpm';
+-- Expected: zero rows
+```
+
+- [ ] **Step 13.2.6: Run the SQL in the Supabase editor**
+
+Open the Supabase dashboard for project `ahrnkwuqlhmwenhvnupb` → SQL editor → paste the file → Run.
+
+Expected:
+- Pre-flight `with_non_null_dpm` returns `0`
+- `ALTER TABLE` succeeds
+- Verification query returns zero rows
+
+**If the pre-flight returns > 0, STOP.** That would mean something somewhere wrote to `dpm` after the Phase 5 audit. Investigate before dropping the column.
+
+- [ ] **Step 13.2.7: Document the drop in GOTCHAS.md**
+
+Append under the database section:
+
+```
+- 2026-04-14: submissions.dpm column DROPPED via SQL editor. Phase 5.9 of the
+  audit confirmed: no code writes to it, calculate_results does not compute it,
+  no new UI surfaces it. The three readers (admin results-client.tsx, admin
+  results/page.tsx query, and the old student results page) were edited to
+  remove all .dpm references before the DROP ran. Any future DPM analytics
+  requirement can re-add the column with a fresh schema decision — do NOT
+  assume the old numeric-nullable shape.
+```
+
+### 13.3 Final orphan scan
+
+- [ ] **Step 13.3.1: Confirm zero orphan references**
+
+```bash
+# Zero dpm anywhere (including comments — we want no mention in the codebase at all)
+grep -rn "dpm\|DPM" src/ | grep -v "\.test\." | grep -v node_modules
 ```
 
 Expected: zero matches.
 
-- [ ] **Step 13.4: Validator**
+Note: `percentage` stays in the codebase — it's still a read path in the admin side. Only `dpm` is dropped.
+
+- [ ] **Step 13.3.2: tsc + lint + unit tests**
 
 ```bash
 npm run tsc
@@ -1556,12 +1708,22 @@ npm run lint
 npx vitest run
 ```
 
-- [ ] **Step 13.5: Commit (if anything was deleted)**
+Expected: 0 errors, 0 warnings, all tests pass.
+
+### 13.4 Commit
+
+- [ ] **Step 13.4.1: Commit**
 
 ```bash
-git add -u
-git commit -m "chore(results): drop ResultsGpaChart — no longer used"
+git add src/components/student/results-client.tsx \
+        src/components/results/results-client.tsx \
+        "src/app/(admin)/admin/results/page.tsx" \
+        db/sql-editor/2026-04-14-drop-submissions-dpm.sql \
+        GOTCHAS.md
+git commit -m "chore(results): drop submissions.dpm column and all readers"
 ```
+
+Note: the `git rm` from Step 13.1.2 is already staged; the `git add` above picks up the modifications to the remaining files.
 
 ---
 

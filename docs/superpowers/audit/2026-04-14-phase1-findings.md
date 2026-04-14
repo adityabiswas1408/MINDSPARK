@@ -1002,6 +1002,91 @@ The two retractions are good news — the engine is more solid than Phase 4 susp
 ### What's still NOT done after Phase 5.8
 
 - **The Task 1.5 plan is patched but not executed.** The actual `time_spent_ms` / `is_correct` / `answered_at` writes do not happen until the user runs the assessment-taking plan.
-- **Open questions Q11 (completion_seal policy) and Q13 (dpm computation location)** — still need user decisions. Q12 (is_correct computation) is now answered: server-side at write time, with re-evaluation via `reEvaluateResults` for question edits.
 - **The `questions.correct_option` data quality issue** — 1 of 4 live questions has NULL `correct_option`. Fixed via documentation only (the spec's §9.3.1 says land `is_correct = FALSE` for these). The data must be cleaned before publishing real results. Logged for Phase 7 follow-up: `ALTER TABLE questions ALTER COLUMN correct_option SET NOT NULL` after backfill.
 - **The `createStudent` cohort_id smell** at `students.ts:121` — Phase 5.5 noted it; not fixed because `createStudent` is admin-only and the column is `uuid NOT NULL`. The cleaner fix is to make `cohort_id` required in `CreateStudentInput`. Logged for the admin-students-flow plan execution.
+
+## Phase 5.9 — Open question resolutions (user locked 2026-04-14)
+
+The user reviewed the Phase 5 findings and locked in answers for Q11 and Q13. Q12 was already resolved by Phase 5.8. These decisions are now authoritative — any future session (Phase 3, Phase 6, Phase 7) should treat them as ground truth and not re-derive.
+
+### Q11 — `submissions.completion_seal` verification policy
+
+**Decision: NEVER actively verify. Keep as forensic write-only evidence.**
+
+Reasoning (recorded for later reference):
+
+The HMAC seal binds `student_id + paper_id + server_timestamp + duration_ms` — **not** `score`, answers, or any grading data. Examining what the seal can protect against:
+
+| Attack | Seal catches it? | Realistic? |
+|---|---|---|
+| Student modifying their own `submissions` row | Yes — but RLS already prevents this | No, RLS blocks it at the DB boundary |
+| Admin tampering post-hoc | No — admin can re-issue the seal | Trusted user, out of threat model |
+| Server compromise | No — secret leaks with the server | Out of threat model |
+| Direct DB write bypassing the app | Yes — seal would mismatch | Attacker can also delete the seal |
+| Student replaying an old submission | No | Already mitigated by `idempotency_key` + unique constraints |
+
+The seal protects against **almost nothing** that isn't already handled by RLS, idempotency keys, or the app/server trust boundary. Adding a verifier would cost:
+- Code complexity in 2 paths (`calculate_results` + `validate_and_migrate_offline_submission`)
+- New failure mode (false-positive HMAC mismatches → refused grading)
+- Maintenance burden if the seal format ever changes
+
+What the seal **does** buy: forensic evidence in disputes. "Did this row exist at the time the student claims they submitted it?" The seal proves yes/no. That's valuable for compliance audits and incident response — but it does not need to be checked live at grading time.
+
+**Implementation consequences (for the next session):**
+
+- Do NOT add a seal verifier to `calculate_results`, `publishResult`, `publishResults`, or `validate_and_migrate_offline_submission`.
+- Add a `// FORENSIC ONLY — never actively verify (Phase 5.9 decision)` comment above the `issueExamSeal` call site in `src/app/actions/assessment-sessions.ts` when that file is next touched (Phase 5 already touched it for the `cohortId` fix; future plan execution should add the comment).
+- Add a paragraph to GOTCHAS.md explaining the forensic-only policy.
+- The seal stays exactly as it is today — written by `submitExam`, read by nothing.
+
+### Q12 — `student_answers.is_correct` computation (resolved by Phase 5.8)
+
+**Decision (carried forward from Phase 5.8): Server-side at write time.**
+
+`submitAnswer` looks up `questions.correct_option` for the single question. `submitExam` batch-fetches via `.in('id', questionIds)` (one round trip per batch). The offline RPC uses a subquery join inside the per-row INSERT. `reEvaluateResults` handles question-edit recomputation.
+
+**NEVER trust a client-supplied `is_correct`** — it must be server-computed. Plan Task 1.5 Step 1.5.6 and 1.5.7 implement this.
+
+### Q13 — `submissions.dpm` — drop entirely
+
+**Decision: DROP the column entirely. Not "defer computing it" — remove from the schema.**
+
+Reasoning:
+
+- The new student-results-flow spec explicitly dropped DPM from the student UI ("drop the dpm entirely").
+- The admin-results-redesign spec doesn't surface DPM either.
+- **No v1 consumer reads `submissions.dpm`.** Computing or retaining it is speculative.
+- Phase 5 confirmed: no code writes it. `calculate_results` does not compute it. The three existing readers (old student page, old admin page, admin `results-client.tsx`) are all being replaced or edited.
+- Keeping dead columns is a maintenance cost and a source of confusion. Drop cleanly.
+- Future analytics needs can re-add the column with a **fresh schema decision** — no commitment to the old numeric-nullable shape.
+
+**Implementation consequences (baked into the student-results-flow plan):**
+
+Task 13 of `docs/superpowers/plans/2026-04-14-student-results-flow.md` is now expanded to:
+
+1. Drop the dead `ResultsGpaChart` student-side chart file (original Task 13 scope).
+2. **Edit `src/components/results/results-client.tsx`** to remove the `dpm` row-type field, the `dpmAvg` reducer computation, and the "DPM Avg" KPI card.
+3. **Edit `src/app/(admin)/admin/results/page.tsx`** to drop `dpm` from the `.select` clause.
+4. **Pre-flight** a repo-wide grep confirming zero remaining `.dpm` / `'dpm'` references outside tests.
+5. **Run** `ALTER TABLE submissions DROP COLUMN dpm` via the Supabase SQL editor, with a pre-flight `SELECT COUNT(*) WHERE dpm IS NOT NULL` that must return 0.
+6. **Update** GOTCHAS.md to record the drop.
+
+The sequencing is critical: the code readers must be edited **before** the SQL DROP runs. Task 13 does them in that order in a single commit.
+
+**Resolution of Phase 1 open question #4:** Phase 1 §13 open question 4 asked "The `submissions.dpm` and `submissions.percentage` columns become orphans on the read path. Cleanup task or leave alone?" — now answered: drop `dpm`, keep `percentage` (still read by the admin side for backwards compatibility with the older admin-results-redesign spec).
+
+### What Phase 5.9 did NOT change
+
+- No code edits. The drop sequence is fully captured in the updated Task 13 of the student-results-flow plan but does not execute until the plan runs.
+- No DB changes. The `ALTER TABLE DROP COLUMN` runs during plan execution, not in this audit pass.
+- No changes to the assessment-taking spec/plan (those were updated in Phase 5.8 for is_correct).
+- Q11 decision is documented but no code has been annotated with the `// FORENSIC ONLY` comment — that happens when the assessment-sessions file is next touched.
+
+### Files modified in Phase 5.9
+
+| File | Change |
+|---|---|
+| `docs/superpowers/specs/2026-04-14-student-results-flow-design.md` | §2 — flipped "DPM stays in DB" to "dropped from platform entirely". §9 — flipped the dpm retention paragraph to describe the drop. §9 Migration Policy — updated to mention the column drop in Task 13. §13 (Open Questions) — marked Q4 as resolved. |
+| `docs/superpowers/plans/2026-04-14-student-results-flow.md` | Task 13 — full rewrite. Now covers both the GPA chart deletion (original scope) AND the dpm drop (Phase 5.9 addition). 10 new sub-steps with code edits for the three reader files, a pre-flight grep, the SQL run book, and GOTCHAS.md update. Single atomic commit. |
+| `C:\Users\ADI\.claude\projects\A--MS-mindspark\memory\project-v1-scope.md` | Added Q11 + Q12 + Q13 decisions under a new "Audit decisions locked in (Phase 5.9, 2026-04-14)" section. |
+| `docs/superpowers/audit/2026-04-14-phase1-findings.md` | This Phase 5.9 section. |
