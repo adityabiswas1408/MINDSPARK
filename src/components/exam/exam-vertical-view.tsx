@@ -76,6 +76,7 @@ export function ExamVerticalView({
         selected_option: selected,
         answered_at: Date.now(),
         idempotency_key: crypto.randomUUID(),
+        time_spent_ms: 0,
       });
 
       // Move to QUESTION_COOLDOWN, then auto-advance

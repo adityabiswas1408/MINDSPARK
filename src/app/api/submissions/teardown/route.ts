@@ -13,6 +13,7 @@ const BodySchema = z.object({
       selected_option: z.enum(['A', 'B', 'C', 'D']).nullable(),
       answered_at: z.number(),
       idempotency_key: z.string().uuid(),
+      time_spent_ms: z.number().int().nonnegative(),
     })
   ),
 });

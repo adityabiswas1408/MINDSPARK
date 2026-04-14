@@ -119,6 +119,7 @@ interface SubmitAnswerInput {
   selected_option: 'A' | 'B' | 'C' | 'D' | null;
   answered_at:     number;
   idempotency_key: string;
+  time_spent_ms:   number;
 }
 
 export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResult<{ saved: true }>> {
@@ -149,12 +150,28 @@ export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResu
 
   const submissionId = sub?.id ?? input.session_id;
 
+  // Server-authoritative is_correct: look up correct_option from questions
+  // and compare against the client-supplied selected_option. NEVER trust a
+  // client-supplied is_correct (it's the primary cheating vector).
+  const { data: questionRow } = await adminSupabase
+    .from('questions')
+    .select('correct_option')
+    .eq('id', input.question_id)
+    .maybeSingle();
+
+  const isCorrect =
+    questionRow?.correct_option != null &&
+    input.selected_option != null &&
+    questionRow.correct_option === input.selected_option;
+
   await adminSupabase.from('student_answers').upsert({
     idempotency_key: input.idempotency_key,
     submission_id:   submissionId,
     question_id:     input.question_id,
     selected_option: input.selected_option,
-    answered_at:     new Date(input.answered_at).toISOString()
+    answered_at:     new Date(input.answered_at).toISOString(),
+    time_spent_ms:   input.time_spent_ms,
+    is_correct:      isCorrect,
   }, { onConflict: 'idempotency_key' });
 
   // Broadcast a heartbeat-style 'answer_saved' event on the exam channel so
@@ -181,6 +198,7 @@ interface Answer {
   selected_option:  'A' | 'B' | 'C' | 'D' | null;
   answered_at:      number;
   idempotency_key:  string;
+  time_spent_ms:    number;
 }
 
 interface SubmitExamInput {
@@ -241,13 +259,36 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
   if (input.final_answers_snapshot && input.final_answers_snapshot.length > 0) {
     // sub was upserted above and its id is the correct submissions FK value
     const submissionRowId = sub?.id ?? input.session_id;
-    const payloads = input.final_answers_snapshot.map(a => ({
-      idempotency_key: a.idempotency_key,
-      submission_id:   submissionRowId,
-      question_id:     a.question_id,
-      selected_option: a.selected_option,
-      answered_at:     new Date(a.answered_at).toISOString()
-    }));
+
+    // Server-authoritative is_correct: batch-fetch correct_option for every
+    // question referenced in the snapshot, then compare against each
+    // client-supplied selected_option. Never trust client-supplied is_correct.
+    const questionIds = input.final_answers_snapshot.map(a => a.question_id);
+    const { data: questionRows } = await adminSupabase
+      .from('questions')
+      .select('id, correct_option')
+      .in('id', questionIds);
+
+    const correctOptionById = new Map<string, string | null>(
+      (questionRows ?? []).map(q => [q.id as string, (q.correct_option as string | null) ?? null])
+    );
+
+    const payloads = input.final_answers_snapshot.map(a => {
+      const correctOption = correctOptionById.get(a.question_id) ?? null;
+      const isCorrect =
+        correctOption != null &&
+        a.selected_option != null &&
+        correctOption === a.selected_option;
+      return {
+        idempotency_key: a.idempotency_key,
+        submission_id:   submissionRowId,
+        question_id:     a.question_id,
+        selected_option: a.selected_option,
+        answered_at:     new Date(a.answered_at).toISOString(),
+        time_spent_ms:   a.time_spent_ms,
+        is_correct:      isCorrect,
+      };
+    });
     await adminSupabase.from('student_answers').upsert(payloads, { onConflict: 'idempotency_key' });
   }
 

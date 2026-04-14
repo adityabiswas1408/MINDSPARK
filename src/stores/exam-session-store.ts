@@ -16,6 +16,7 @@ export interface AnswerPayload {
   selected_option: 'A' | 'B' | 'C' | 'D' | null;
   answered_at: number;
   idempotency_key: string;
+  time_spent_ms: number;
 }
 
 interface ExamSessionState {

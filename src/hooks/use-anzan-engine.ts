@@ -182,6 +182,7 @@ export function useAnzanEngine({
         selected_option: selected,
         answered_at: answeredAt,
         idempotency_key: idempotencyKey,
+        time_spent_ms: 0,
       };
 
       // 1. Write to Zustand (UI reactivity)
@@ -195,6 +196,7 @@ export function useAnzanEngine({
           question_id: currentQuestion.id,
           selected_option: selected,
           answered_at: answeredAt,
+          time_spent_ms: 0,
           synced: false,
           created_at: Date.now(),
         });
@@ -220,6 +222,7 @@ export function useAnzanEngine({
       selected_option: null,
       answered_at: answeredAt,
       idempotency_key: idempotencyKey,
+      time_spent_ms: 0,
     });
 
     try {
@@ -229,6 +232,7 @@ export function useAnzanEngine({
         question_id: currentQuestion.id,
         selected_option: null,
         answered_at: answeredAt,
+        time_spent_ms: 0,
         synced: false,
         created_at: Date.now(),
       });

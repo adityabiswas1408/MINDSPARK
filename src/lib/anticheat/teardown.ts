@@ -52,6 +52,7 @@ async function handlePageHide(): Promise<void> {
           selected_option: a.selected_option,
           answered_at: a.answered_at,
           idempotency_key: a.idempotency_key,
+          time_spent_ms: a.time_spent_ms,
         })),
         client_timestamp: Date.now(),
       }),
