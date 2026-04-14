@@ -2,15 +2,13 @@ import { redirect } from 'next/navigation';
 import { requireRole } from '@/lib/auth/rbac';
 import { createClient } from '@/lib/supabase/server';
 import { ResultsHeroCard } from '@/components/results/results-hero-card';
-import {
-  ResultsLedgerTable,
-  type LedgerTableRow,
-} from '@/components/results/results-ledger-table';
+import { type LedgerTableRow } from '@/components/results/results-ledger-table';
 import {
   NoResultsEmptyState,
   NoLatestPublishedHero,
 } from '@/components/results/empty-states';
 import type { GradeLetter } from '@/components/results/grade-pill';
+import { ResultsListClient } from './results-list-client';
 
 /**
  * Local row shape for the student results list page. Mirrors the
@@ -49,7 +47,12 @@ function toLedgerTableRow(r: LedgerRow): LedgerTableRow {
   };
 }
 
-export default async function StudentResultsPage() {
+export default async function StudentResultsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ filter?: string }>;
+}) {
+  const { filter = 'all' } = await searchParams;
   const auth = await requireRole('student');
   if ('error' in auth) redirect('/login');
   const { userId } = auth;
@@ -147,7 +150,7 @@ export default async function StudentResultsPage() {
         <NoLatestPublishedHero />
       )}
 
-      <ResultsLedgerTable rows={tableRows} />
+      <ResultsListClient initialRows={tableRows} initialFilter={filter} />
     </main>
   );
 }
