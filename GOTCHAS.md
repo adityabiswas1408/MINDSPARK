@@ -124,6 +124,19 @@ student_answers also added — check for this too.
   `dob ?? date_of_birth`. A future cleanup task should pick one. Until then, do not
   drop either column and do not assume either is canonical.
 
+### Results flow — answer-key gate + total_questions (2026-04-14)
+- 2026-04-14: exam_papers.answer_key_released (bool, default false),
+  answer_key_released_at (timestamptz, nullable), answer_key_released_by (uuid,
+  nullable, FK profiles) added via SQL editor (no migration file). Together with
+  submissions.result_published_at, these form the two-gate visibility model for
+  the student results flow.
+- 2026-04-14: submissions.total_questions (int, NOT NULL DEFAULT 0) added and
+  backfilled from COUNT(questions.*) per paper. New code reads this as the
+  denominator for the got/total score format. The columns submissions.percentage
+  and submissions.dpm are now orphan on the read path — kept in the schema for
+  analytics use only.
+- See db/sql-editor/2026-04-14-results-flow-columns.sql.
+
 ---
 
 ## CSS / Layout
