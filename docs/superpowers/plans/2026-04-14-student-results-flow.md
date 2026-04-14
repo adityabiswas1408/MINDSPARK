@@ -76,6 +76,7 @@ These apply to **every** task:
 - **No hardcoded hex colours in components** — use `var(--token-name)` from `globals.css`. The single sanctioned exception is `#991B1B` per the rule above.
 - **Score format is `got/total`** — never percentage. `submissions.percentage` and `submissions.dpm` are read by NOTHING in this plan.
 - **Pre-flight every `UPDATE` / `INSERT` with a matching `SELECT`** (per CLAUDE.md DB Mutations rule).
+- **Visual fidelity protocol:** when a task implements a UI frame from the approved mockup, port the mockup's CSS verbatim into a colocated CSS file (e.g. `./results-list.css` next to the component) and use the mockup's class names in JSX (`<div className="ledger-wrap">`, not `<div className="flex flex-col gap-2">`). Do **NOT** re-express the mockup as Tailwind utility classes — translation is where drift happens. Do **NOT** substitute shadcn components (`Card`, `Avatar`, `Separator`, `Table`) for mockup-styled divs. `Button`, `Input`, `Dialog` from shadcn are the sanctioned exceptions. The mockup lives at `docs/design-mockups/student-results-flow.html` and the Frame numbers in the tasks below (Frame 1 — populated list, Frame 7 — pending, etc.) refer to specific sections of that file. The test of correctness is: open the mockup and the dev server side-by-side and confirm they render identically at 100% zoom before marking any task complete.
 
 ---
 

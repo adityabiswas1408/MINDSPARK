@@ -65,6 +65,7 @@ These are non-negotiable and apply to **every** task:
 - **Server Actions return `ActionResult<T>`** from `src/lib/types/action-result.ts`.
 - **No new Supabase migration files** — DB changes go through the SQL editor and are recorded in `db/sql-editor/`.
 - **`npm run tsc` must be 0 errors** before every commit.
+- **Visual fidelity protocol:** when a task implements a UI frame from an approved mockup, port the mockup's CSS verbatim into a colocated CSS file (e.g. `./assessment-client.css` next to the component) and use the mockup's class names in JSX (`<div className="exam-strip">`, not `<div className="flex items-center">`). Do **NOT** re-express the mockup as Tailwind utility classes — translation is where drift happens. Do **NOT** substitute shadcn components (`Card`, `Avatar`, `Separator`) for mockup-styled divs. `Button`, `Input`, `Dialog` from shadcn are the sanctioned exceptions. The mockup lives at `docs/design-mockups/student-assessment-v5.html` and every frame number in the tasks below refers to a specific section of that file. The test of correctness is: open the mockup and the dev server side-by-side and confirm they render identically at 100% zoom before marking any task complete.
 
 ---
 

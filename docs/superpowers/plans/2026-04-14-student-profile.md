@@ -52,6 +52,7 @@ These apply to **every** task in this plan:
 - **`npm run tsc` must report 0 errors** before every commit.
 - **Never read `students.cohort_id` or `cohorts.*`** anywhere in this plan. The column stays in the DB; the new code does not select it, query it, type it, or render it.
 - **Pre-flight every `UPDATE` / `INSERT` / `ALTER` with a matching `SELECT`** (per CLAUDE.md DB Mutations rule). Already verified for the one `ALTER` in this plan, but the verification command is repeated as Step 1.1 so the implementing engineer re-runs it.
+- **Visual fidelity protocol:** when a task implements a UI frame from the approved mockup, port the mockup's CSS verbatim into a colocated CSS file (e.g. `./profile-card.css` next to the component) and use the mockup's class names in JSX (`<div className="profile-card">`, not `<div className="rounded-xl border">`). Do **NOT** re-express the mockup as Tailwind utility classes — translation is where drift happens. Do **NOT** substitute shadcn components (`Card`, `Avatar`, `Separator`) for mockup-styled divs. `Button` from shadcn is the sanctioned exception, but this plan doesn't need it (profile is read-only — no buttons except the More Info toggle which is a styled `<button>`). The mockup lives at `docs/design-mockups/student-profile.html` and the 3 frames (default, expanded, null-heavy) in the tasks below refer to specific sections of that file. The test of correctness is: open the mockup and the dev server side-by-side and confirm they render identically at 100% zoom before marking any task complete.
 
 ---
 
