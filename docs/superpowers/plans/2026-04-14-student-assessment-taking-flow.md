@@ -166,20 +166,33 @@ git commit -m "db(assessment-engine): add per_question_time_seconds, require_ans
 
 ---
 
-## Task 1.5: `time_spent_ms` propagation chain (8 touchpoints)
+## Task 1.5: `time_spent_ms` + `is_correct` + `answered_at` propagation chain
 
 **Files:**
 - Modify: `src/lib/offline/indexed-db-store.ts`
 - Modify: `src/lib/offline/sync-engine.ts`
 - Modify: `src/lib/anticheat/teardown.ts`
 - Modify: `src/app/api/submissions/offline-sync/route.ts`
-- Modify: `src/app/api/submissions/teardown/route.ts`
+- Modify: `src/app/api/submissions/teardown/route.ts` *(verified by Phase 5 — already uses Zod)*
 - Modify: `src/app/actions/assessment-sessions.ts`
 - Modify: the `validate_and_migrate_offline_submission` Postgres function (via SQL editor)
+- Create: `db/sql-editor/2026-04-14-rpc-validate-offline-submission-update.sql`
 
-> **Why this task exists:** Adding the column in Task 1 is necessary but not sufficient. The value flows from the browser RAF loop through three serialization boundaries (client store → fetch body → Postgres staging payload → RPC → final table). If any layer drops the field, the value silently lands as 0 and we lose the timing data with no error. This task adds the field at every layer in lockstep.
+> **Why this task exists (originally and after Phase 5 expansion):** Adding the `student_answers.time_spent_ms` column in Task 1 is necessary but not sufficient. The value flows from the browser RAF loop through three serialization boundaries (client store → fetch body → Postgres staging payload → RPC → final table). If any layer drops the field, the value silently lands as 0 and we lose the timing data with no error.
+>
+> **Phase 5 audit expansion (2026-04-14):** Phase 5 also confirmed two additional column gaps that this task must fix in lockstep:
+>
+> 1. **`student_answers.is_correct` is NEVER written.** `submitAnswer`, `submitExam`, and the offline RPC all skip it. `calculate_results` reads it. Result: every paper currently scores 0%. **This is the highest-priority fix in the entire assessment-taking plan.**
+> 2. **`student_answers.answered_at` is dropped by the offline RPC.** The column exists and the live actions write it correctly, but the RPC's INSERT clause omits it, so offline answers land with `answered_at = NOW()` (the moment the RPC ran, NOT the actual answer time).
+>
+> All three columns must be patched in the same commit so the chain is never half-deployed.
 
-> **Sacred-rule reminder:** all 8 changes must land in a single commit so the chain is never half-deployed.
+> **Two-flavour chain:**
+> - **`time_spent_ms` is client-originated** — touches all 8 layers (browser store, sync engine, teardown, both Zod schemas, both server actions, RPC).
+> - **`is_correct` is server-computed** — touches only 3 layers (`submitAnswer`, `submitExam`, RPC). NEVER sent by the client (would be a cheating vector).
+> - **`answered_at`** — already in the live actions; only the RPC needs the fix.
+
+> **Sacred-rule reminder:** all changes must land in a single commit so the chain is never half-deployed.
 
 - [ ] **Step 1.5.1: Browser store — `PendingAnswer` interface + Dexie schema bump**
 
@@ -289,9 +302,13 @@ Modify `src/app/api/submissions/teardown/route.ts`. The exact location depends o
 
 If the teardown route does not currently use Zod, mirror the schema from `offline-sync/route.ts` and add the validation. **Do not let the teardown path silently drop validation** — it's the most fragile part of the chain because it fires on `pagehide`.
 
-- [ ] **Step 1.5.6: Live-path server actions — accept and write `time_spent_ms`**
+- [ ] **Step 1.5.6: Live-path server actions — accept `time_spent_ms` and compute `is_correct`**
 
-Modify `src/app/actions/assessment-sessions.ts`. Two interface additions and two upsert payload changes:
+> **Phase 5 audit expansion (2026-04-14):** This step originally only added `time_spent_ms`. Phase 5 confirmed `student_answers.is_correct` is **never written** by ANY code path — `submitAnswer`, `submitExam`, and the offline RPC all skip it. `calculate_results` reads it, so **every paper currently scores 0%**. This step now also computes `is_correct` server-side at insert time. `is_correct` is **never sent by the client** — that would be a cheating vector.
+
+Modify `src/app/actions/assessment-sessions.ts`. Two interface additions and two upsert payload changes, plus a `correct_option` lookup in each action body.
+
+#### Interface changes
 
 ```diff
  interface SubmitAnswerInput {
@@ -304,21 +321,6 @@ Modify `src/app/actions/assessment-sessions.ts`. Two interface additions and two
  }
 ```
 
-In `submitAnswer`, the upsert call:
-
-```diff
-   await adminSupabase.from('student_answers').upsert({
-     idempotency_key: input.idempotency_key,
-     submission_id:   submissionId,
-     question_id:     input.question_id,
-     selected_option: input.selected_option,
-     answered_at:     new Date(input.answered_at).toISOString(),
-+    time_spent_ms:   input.time_spent_ms,
-   }, { onConflict: 'idempotency_key' });
-```
-
-Same for the `Answer` interface used by `submitExam`:
-
 ```diff
  interface Answer {
    question_id:      string;
@@ -329,9 +331,61 @@ Same for the `Answer` interface used by `submitExam`:
  }
 ```
 
-And the `submitExam` upsert payload mapping:
+**Note:** `is_correct` is **NOT** added to either interface. The client never sends it.
+
+#### `submitAnswer` body — fetch `correct_option`, compute `is_correct`, write to upsert
+
+Replace the current upsert call (around line 145 of the existing file) with this expanded version:
 
 ```diff
++  // Look up the correct answer for this question.
++  // Server-authoritative — never trust a client-supplied is_correct value.
++  const { data: questionRow } = await adminSupabase
++    .from('questions')
++    .select('correct_option')
++    .eq('id', input.question_id)
++    .maybeSingle();
++
++  // questions.correct_option may be NULL for questions whose answer key is not
++  // configured yet — in that case is_correct lands as FALSE (the safe default
++  // that does not falsely credit the student). The admin must fix the question
++  // via the wizard before publishing results. See spec §9.3.1.
++  const isCorrect =
++    questionRow?.correct_option != null &&
++    input.selected_option != null &&
++    questionRow.correct_option === input.selected_option;
++
+   await adminSupabase.from('student_answers').upsert({
+     idempotency_key: input.idempotency_key,
+     submission_id:   submissionId,
+     question_id:     input.question_id,
+     selected_option: input.selected_option,
+     answered_at:     new Date(input.answered_at).toISOString(),
++    time_spent_ms:   input.time_spent_ms,
++    is_correct:      isCorrect,
+   }, { onConflict: 'idempotency_key' });
+```
+
+#### `submitExam` body — batch-fetch `correct_option` for all snapshot questions, compute per answer
+
+`submitExam` receives `final_answers_snapshot: Answer[]` — potentially 10–50 answers in one call. Doing one `.select` per answer is wasteful. Batch it:
+
+```diff
+   if (input.final_answers_snapshot && input.final_answers_snapshot.length > 0) {
+     const submissionRowId = sub?.id ?? input.session_id;
++
++    // Batch-fetch the correct_option for every question in the snapshot.
++    // Single round trip regardless of snapshot size.
++    const questionIds = input.final_answers_snapshot.map(a => a.question_id);
++    const { data: questionRows } = await adminSupabase
++      .from('questions')
++      .select('id, correct_option')
++      .in('id', questionIds);
++
++    const correctOptionByQuestionId = new Map<string, string | null>(
++      (questionRows ?? []).map(q => [q.id, q.correct_option ?? null])
++    );
++
      const payloads = input.final_answers_snapshot.map(a => ({
        idempotency_key: a.idempotency_key,
        submission_id:   submissionRowId,
@@ -339,57 +393,29 @@ And the `submitExam` upsert payload mapping:
        selected_option: a.selected_option,
        answered_at:     new Date(a.answered_at).toISOString(),
 +      time_spent_ms:   a.time_spent_ms,
++      is_correct:
++        a.selected_option != null &&
++        correctOptionByQuestionId.get(a.question_id) != null &&
++        correctOptionByQuestionId.get(a.question_id) === a.selected_option,
      }));
+     await adminSupabase.from('student_answers').upsert(payloads, { onConflict: 'idempotency_key' });
+   }
 ```
+
+#### Post-write: cascade re-grade
+
+Because the live path now writes `is_correct` at submit time, the `calculate_results` RPC will read the correct values immediately. **No additional call is needed** in `submitAnswer`/`submitExam` — the existing flow that calls `calculate_results` on result publication will compute correct scores.
 
 - [ ] **Step 1.5.7: RPC — update `validate_and_migrate_offline_submission`**
 
-The RPC reads the staging row's JSON `payload` field and inserts into `student_answers`. It must now also read `time_spent_ms` from each answer object in the JSON and include it in the insert.
+> **Phase 5 audit correction (2026-04-14):** The original draft of this step had the wrong assumed RPC structure. Phase 5 read the actual RPC body via `pg_get_functiondef` and confirmed:
+> - The current INSERT writes only `submission_id, question_id, selected_option, idempotency_key` — **NOT** `answered_at`.
+> - The conflict clause is `ON CONFLICT ON CONSTRAINT student_answers_submission_id_question_id_key DO NOTHING` — **NOT** on `idempotency_key`.
+> - The function uses a procedural `FOR ... LOOP` with per-row `BEGIN ... EXCEPTION` blocks — **NOT** a single set-based INSERT.
+>
+> The correct target for this step is the actual function body documented below.
 
-Run this in the Supabase SQL editor to see the current function definition:
-
-```sql
-SELECT pg_get_functiondef(oid)
-FROM pg_proc
-WHERE proname = 'validate_and_migrate_offline_submission';
-```
-
-Locate the `INSERT INTO student_answers` clause inside the function body. It will currently look something like:
-
-```sql
-INSERT INTO student_answers (
-  idempotency_key, submission_id, question_id, selected_option, answered_at
-)
-SELECT
-  (a->>'idempotency_key')::uuid,
-  v_submission_id,
-  (a->>'question_id')::uuid,
-  a->>'selected_option',
-  to_timestamp((a->>'answered_at')::bigint / 1000.0)
-FROM jsonb_array_elements(v_payload->'answers') AS a
-ON CONFLICT (idempotency_key) DO NOTHING;
-```
-
-Add the new column to both the INSERT clause and the SELECT clause:
-
-```sql
-INSERT INTO student_answers (
-  idempotency_key, submission_id, question_id, selected_option, answered_at, time_spent_ms
-)
-SELECT
-  (a->>'idempotency_key')::uuid,
-  v_submission_id,
-  (a->>'question_id')::uuid,
-  a->>'selected_option',
-  to_timestamp((a->>'answered_at')::bigint / 1000.0),
-  COALESCE((a->>'time_spent_ms')::int, 0)
-FROM jsonb_array_elements(v_payload->'answers') AS a
-ON CONFLICT (idempotency_key) DO NOTHING;
-```
-
-The `COALESCE(..., 0)` defends against any in-flight client that hasn't been updated yet — pre-Phase-4 clients will send no `time_spent_ms` and land as 0 (matching the column default).
-
-Save the new function via `CREATE OR REPLACE FUNCTION ...` in the SQL editor and add a verification SELECT:
+#### Verify the current function body (pre-flight)
 
 ```sql
 SELECT pg_get_functiondef(oid)
@@ -397,20 +423,141 @@ FROM pg_proc
 WHERE proname = 'validate_and_migrate_offline_submission';
 ```
 
-Confirm the `time_spent_ms` column appears in the function source.
+Expected: a `plpgsql` function with the structure shown in the "Current state" block below. If the structure differs significantly, **stop** and reconcile this step with the actual body before patching — the live function may have been edited since this audit was written.
 
-Save the new function definition to `db/sql-editor/2026-04-14-rpc-validate-offline-submission-time-spent.sql` for the audit trail.
+#### Current state (verified 2026-04-14 via `pg_get_functiondef`)
 
-- [ ] **Step 1.5.8: Validator — full round-trip**
+```sql
+-- ABBREVIATED — only the relevant per-answer loop is shown.
+-- The header (HMAC verification, staging row lookup, submission lookup) is unchanged.
+FOR v_answer_obj IN SELECT * FROM jsonb_array_elements(v_staging_row.payload->'answers')
+LOOP
+    BEGIN
+        INSERT INTO student_answers (
+            submission_id,
+            question_id,
+            selected_option,
+            idempotency_key
+        ) VALUES (
+            v_submission_id,
+            (v_answer_obj->>'question_id')::uuid,
+            v_answer_obj->>'selected_option',
+            (v_answer_obj->>'idempotency_key')::uuid
+        )
+        ON CONFLICT ON CONSTRAINT student_answers_submission_id_question_id_key DO NOTHING;
 
-Manual smoke test:
+        v_written_count := v_written_count + 1;
+    EXCEPTION WHEN unique_violation THEN
+        NULL;
+    END;
+END LOOP;
+```
+
+#### Target state — add `answered_at`, `time_spent_ms`, and `is_correct`
+
+Replace the per-row INSERT inside the loop with this expanded version. The body of the function before the loop (HMAC check, staging lookup, etc.) **does not change**.
+
+```sql
+FOR v_answer_obj IN SELECT * FROM jsonb_array_elements(v_staging_row.payload->'answers')
+LOOP
+    BEGIN
+        INSERT INTO student_answers (
+            submission_id,
+            question_id,
+            selected_option,
+            idempotency_key,
+            answered_at,
+            time_spent_ms,
+            is_correct
+        ) VALUES (
+            v_submission_id,
+            (v_answer_obj->>'question_id')::uuid,
+            v_answer_obj->>'selected_option',
+            (v_answer_obj->>'idempotency_key')::uuid,
+            -- Use the client-supplied answered_at (millis since epoch).
+            -- COALESCE to NOW() defends against pre-Phase-5 clients still in flight.
+            COALESCE(
+                to_timestamp((v_answer_obj->>'answered_at')::bigint / 1000.0),
+                NOW()
+            ),
+            -- COALESCE to 0 for pre-Phase-5 clients that send no time_spent_ms.
+            COALESCE((v_answer_obj->>'time_spent_ms')::int, 0),
+            -- Server-authoritative is_correct: NEVER trust a client-supplied value.
+            -- Looks up the canonical correct_option from the questions table.
+            -- If correct_option IS NULL (answer key not configured), is_correct lands
+            -- as FALSE — the safe default that does not falsely credit the student.
+            -- See spec §9.3.1.
+            COALESCE(
+                (v_answer_obj->>'selected_option') = (
+                    SELECT correct_option
+                    FROM questions
+                    WHERE id = (v_answer_obj->>'question_id')::uuid
+                ),
+                FALSE
+            )
+        )
+        ON CONFLICT ON CONSTRAINT student_answers_submission_id_question_id_key DO NOTHING;
+
+        v_written_count := v_written_count + 1;
+    EXCEPTION WHEN unique_violation THEN
+        NULL;
+    END;
+END LOOP;
+```
+
+**Why three COALESCEs:**
+1. `answered_at` — pre-Phase-5 clients send `answered_at` already (it's been in the schema since v0), but defensive in case any in-flight client omits it.
+2. `time_spent_ms` — pre-Phase-5 clients don't know about this field. The COALESCE drops them to `0`, matching the column default.
+3. `is_correct` — if `questions.correct_option IS NULL`, the equality returns NULL (Postgres three-valued logic). The COALESCE forces the result to `FALSE`. Without this, the column would land as NULL and `calculate_results` would skip the row entirely.
+
+#### Save the new function via `CREATE OR REPLACE FUNCTION`
+
+The full updated function (with the unchanged header included) goes into the SQL editor as a single `CREATE OR REPLACE FUNCTION public.validate_and_migrate_offline_submission(...)` statement. Save the full text to `db/sql-editor/2026-04-14-rpc-validate-offline-submission-update.sql` for the audit trail.
+
+#### Verification
+
+```sql
+SELECT pg_get_functiondef(oid)
+FROM pg_proc
+WHERE proname = 'validate_and_migrate_offline_submission';
+```
+
+Confirm the function body now contains: `answered_at`, `time_spent_ms`, `is_correct`, and the `COALESCE(..., FALSE)` join to `questions.correct_option`.
+
+- [ ] **Step 1.5.8: Validator — full round-trip for `time_spent_ms` AND `is_correct`**
+
+> **Phase 5 audit expansion:** the validator now exercises BOTH new columns and proves the live path AND the offline path. The "every paper scores 0%" bug means a passing test must not just check that the columns are populated — it must check that `calculate_results` produces a non-zero score after the round trip.
+
+#### Pre-flight: confirm the test paper has at least one question with a known correct_option
+
+```sql
+SELECT q.id, q.question_text, q.correct_option
+FROM questions q
+JOIN exam_papers p ON p.id = q.paper_id
+WHERE p.status = 'LIVE'
+  AND q.deleted_at IS NULL
+ORDER BY q.order_index
+LIMIT 5;
+```
+
+Pick a test paper where every question has a non-NULL `correct_option`. If the only LIVE paper has questions with NULL `correct_option`, you cannot test scoring — fix the data first via the wizard or pick a different paper.
+
+#### Live path test
 
 1. `npm run dev`
-2. Sign in as a student, start an exam
-3. Answer one question, wait 5 seconds, advance to the next
-4. In Supabase SQL editor:
+2. Sign in as a student, start the test exam.
+3. Answer one question with the **correct** option, wait 5 seconds, advance.
+4. Answer another with the **wrong** option, wait 3 seconds, advance.
+5. Answer a third with the **correct** option (no wait).
+6. Submit the exam.
+7. In Supabase SQL editor:
    ```sql
-   SELECT idempotency_key, time_spent_ms, answered_at
+   SELECT
+     question_id,
+     selected_option,
+     answered_at,
+     time_spent_ms,
+     is_correct
    FROM student_answers
    WHERE submission_id = (
      SELECT id FROM submissions
@@ -419,18 +566,46 @@ Manual smoke test:
    )
    ORDER BY answered_at;
    ```
-5. Confirm `time_spent_ms > 0` for the answered question (should be ~5000 for a 5s wait).
+8. Confirm:
+   - **Row 1:** `time_spent_ms` ≈ 5000, `is_correct = true`
+   - **Row 2:** `time_spent_ms` ≈ 3000, `is_correct = false`
+   - **Row 3:** `time_spent_ms` ≈ 100–500, `is_correct = true`
 
-Then test the offline path:
+#### Offline path test
 
-1. Open DevTools → Network → throttle to **Offline**
-2. Answer another question
-3. Confirm Dexie has a row with `synced: false` and `time_spent_ms` set (DevTools → Application → IndexedDB → mindspark_exam → pendingAnswers)
-4. Restore network
-5. Wait for the sync engine to flush
-6. Re-run the SQL query above and confirm the new row landed with the correct `time_spent_ms`
+1. Open DevTools → Network → throttle to **Offline**.
+2. Start a new exam attempt (or another paper).
+3. Answer a question with the correct option.
+4. Confirm Dexie has the row with `synced: false`, `time_spent_ms` populated, and `selected_option` set (DevTools → Application → IndexedDB → mindspark_exam → pendingAnswers). **Note:** Dexie does NOT store `is_correct` — that's computed server-side by the RPC.
+5. Restore network.
+6. Wait ~10 s for the sync engine to flush.
+7. Re-run the SQL query and confirm the new row landed with the correct `time_spent_ms` AND `is_correct = true`.
 
-If the offline path lands `time_spent_ms = 0` while the live path lands the correct value, the RPC update (Step 1.5.7) is not deployed. Re-check.
+#### End-to-end scoring test (the headline validator)
+
+After both paths land their rows, call `calculate_results` for the test paper:
+
+```sql
+SELECT calculate_results('<test_paper_id>'::uuid);
+
+SELECT id, score, percentage, grade, completed_at
+FROM submissions
+WHERE paper_id = '<test_paper_id>'
+ORDER BY created_at DESC
+LIMIT 5;
+```
+
+Confirm `score > 0` and `percentage > 0` for the test student. **If `score = 0`, the chain is still broken** — re-check Step 1.5.6 (live actions) and Step 1.5.7 (RPC) for missing `is_correct` writes.
+
+#### Failure-mode debugging guide
+
+| Symptom | Likely cause |
+|---|---|
+| `time_spent_ms = 0` on live path | Step 1.5.6 not applied to `submitAnswer`/`submitExam` upsert payload |
+| `time_spent_ms = 0` on offline path only | Step 1.5.7 RPC update not deployed via `CREATE OR REPLACE FUNCTION` |
+| `is_correct = false` on EVERY row including the correct ones | The `correct_option` lookup is failing — verify `questions.correct_option` is populated for the test questions |
+| `is_correct = NULL` on offline path only | The COALESCE in Step 1.5.7 is missing — Postgres three-valued logic returned NULL |
+| `score = 0` despite `is_correct` being correct | `calculate_results` is reading from a different column or filter — re-read its body via `pg_get_functiondef` |
 
 - [ ] **Step 1.5.9: Type-check + lint + tests**
 
@@ -451,8 +626,8 @@ git add src/lib/offline/indexed-db-store.ts \
         src/app/api/submissions/offline-sync/route.ts \
         src/app/api/submissions/teardown/route.ts \
         src/app/actions/assessment-sessions.ts \
-        db/sql-editor/2026-04-14-rpc-validate-offline-submission-time-spent.sql
-git commit -m "feat(assessment-engine): wire time_spent_ms through 8-layer propagation chain"
+        db/sql-editor/2026-04-14-rpc-validate-offline-submission-update.sql
+git commit -m "feat(assessment-engine): wire time_spent_ms + is_correct + answered_at through full propagation chain"
 ```
 
 ---

@@ -317,20 +317,39 @@ ALTER TABLE student_answers
 
 ### 9.1 `time_spent_ms` propagation chain
 
-Adding the column to `student_answers` is **not enough** — the value has to flow from the client, through the offline queue, through both the live and the offline server paths, and into the column. **Eight files / objects** must be updated in lockstep:
+Adding the column to `student_answers` is **not enough** — the value has to flow from the client, through the offline queue, through both the live and the offline server paths, and into the column. The propagation chain has **two flavours**:
 
-| # | Layer | File / object | Change |
-|---|---|---|---|
-| 1 | DB | `student_answers` | `ADD COLUMN time_spent_ms INT NOT NULL DEFAULT 0` (above) |
-| 2 | Browser store | `src/lib/offline/indexed-db-store.ts` | Add `time_spent_ms: number` to `PendingAnswer` interface; bump Dexie schema to v2 |
-| 3 | Browser sync | `src/lib/offline/sync-engine.ts` | Include `time_spent_ms` in the per-answer payload mapping inside `flushOfflineQueue` |
-| 4 | Browser teardown | `src/lib/anticheat/teardown.ts` | Include `time_spent_ms` in the keepalive POST `answers_snapshot` mapping |
-| 5 | Server validation (offline) | `src/app/api/submissions/offline-sync/route.ts` | Add `time_spent_ms: z.number().int().nonnegative()` to the `AnswerSchema` Zod schema |
-| 6 | Server validation (teardown) | `src/app/api/submissions/teardown/route.ts` | Same Zod schema update |
-| 7 | Server actions (live path) | `src/app/actions/assessment-sessions.ts` | Add `time_spent_ms: number` to `SubmitAnswerInput`, write it on the `student_answers.upsert`. Add same field to the `Answer` interface used by `submitExam` and pass it through the upsert payload mapping. |
-| 8 | RPC (DB-side) | `validate_and_migrate_offline_submission` | Update the Postgres function to read `time_spent_ms` from the staging payload JSON and include it in the `INSERT INTO student_answers` clause. |
+- **`time_spent_ms`** — client-originated. Captured by the assessment controller, written by the client into Dexie, sent through every serialization boundary, and finally inserted by both the live actions and the offline RPC. **8 touchpoints.**
+- **`is_correct`** — server-computed. NEVER sent by the client (would be a cheating vector). Computed at insert time by the server from `questions.correct_option`. **3 touchpoints.**
+- **`answered_at`** — already exists on `student_answers` and is written by the live path, but **not by the RPC** — Phase 5 confirmed the RPC's INSERT clause omits it, so offline answers land with `answered_at = now()` (the column default = the time the RPC ran, NOT the actual answer time). The RPC fix in Task 1.5 must add `answered_at` alongside `time_spent_ms`.
 
-**Why the chain matters:** the offline queue path passes answers through three serialization boundaries (browser → fetch → Postgres staging table → RPC → final table). If any one of those boundaries drops the field, the value silently lands as the column default (0) and we lose the timing data without any error. The implementation plan must add all 8 changes in a single task and validate the full round-trip with an integration test.
+Combined chain (10 file/object touchpoints across the three columns):
+
+| # | Layer | File / object | Change for `time_spent_ms` | Change for `is_correct` | Change for `answered_at` |
+|---|---|---|---|---|---|
+| 1 | DB | `student_answers` | `ADD COLUMN time_spent_ms INT NOT NULL DEFAULT 0` | column already exists (`boolean DEFAULT false`); no DDL needed | column already exists; no DDL needed |
+| 2 | Browser store | `src/lib/offline/indexed-db-store.ts` | Add `time_spent_ms: number` to `PendingAnswer`; bump Dexie schema to v2 | — (server-only) | — (already in PendingAnswer) |
+| 3 | Browser sync | `src/lib/offline/sync-engine.ts` | Include `time_spent_ms` in the per-answer payload mapping inside `flushOfflineQueue` | — | — (already mapped) |
+| 4 | Browser teardown | `src/lib/anticheat/teardown.ts` | Include `time_spent_ms` in the keepalive POST `answers_snapshot` mapping | — | — (already mapped) |
+| 5 | Server validation (offline) | `src/app/api/submissions/offline-sync/route.ts` | Add `time_spent_ms: z.number().int().nonnegative()` to `AnswerSchema` | — | — (already in AnswerSchema) |
+| 6 | Server validation (teardown) | `src/app/api/submissions/teardown/route.ts` | Same Zod schema update — Phase 5 verified the route already uses Zod | — | — (already in AnswerSnapshotSchema) |
+| 7 | Server actions (live path) | `src/app/actions/assessment-sessions.ts` | Add `time_spent_ms: number` to `SubmitAnswerInput` and `Answer`; write to upsert payload | **`submitAnswer`:** look up `questions.correct_option` for the answered question_id, compute `is_correct = (correct_option === selected_option)`, include in the upsert payload. **`submitExam`:** batch-fetch `correct_option` for all question_ids in the snapshot via a single `IN` query, build a map, compute per answer | already written by both actions; no change |
+| 8 | RPC (DB-side) | `validate_and_migrate_offline_submission` | Add `time_spent_ms` from `v_answer_obj->>'time_spent_ms'` to the INSERT clause | Add a join-style subquery: `(v_answer_obj->>'selected_option') = (SELECT correct_option FROM questions WHERE id = (v_answer_obj->>'question_id')::uuid)` | Add `answered_at` from `to_timestamp((v_answer_obj->>'answered_at')::bigint / 1000.0)` |
+
+**Why the chain matters:** the offline queue path passes answers through three serialization boundaries (browser → fetch → Postgres staging table → RPC → final table). If any one of those boundaries drops `time_spent_ms` or `answered_at`, the value silently lands as the column default and we lose the data without any error. **`is_correct` is even worse**: today the column is never written by ANY path, which means `calculate_results` reads the default (`false`) for every row and **every paper currently scores 0%**. Phase 5 of the audit confirmed this end-to-end. The implementation plan must add all the changes in a single task (Task 1.5 below) and validate the full round-trip with an integration test that:
+
+1. Submits an answer via the live path → confirms `is_correct`, `time_spent_ms`, and `answered_at` all land correctly.
+2. Submits an answer via the offline path (DevTools → throttle Offline → answer → restore) → confirms the same three columns land correctly via the RPC.
+3. Calls `calculate_results` for the test paper → confirms the resulting `submissions.score` matches the manual count of correctly-answered questions.
+
+If the integration test runs and the score is still 0, one of the layers is dropping `is_correct`.
+
+### 9.3.1 The `correct_option = NULL` edge case
+
+The live DB has at least one question with `correct_option = NULL` (verified 2026-04-14: 1 of 4 questions). For these:
+- The lookup `(selected_option) = (correct_option)` in the SQL or TypeScript path returns NULL/false depending on language.
+- **Recommendation:** treat NULL `correct_option` as "answer key not configured for this question" — `is_correct` lands as `FALSE` (the safe default that does not falsely credit the student), and the admin must fix the data via the wizard before publishing results.
+- A separate cleanup task should add `ALTER TABLE questions ALTER COLUMN correct_option SET NOT NULL` after the live data is cleaned up. **Out of scope for Task 1.5** — flagged as Phase 7 follow-up.
 
 ### 9.2 `initSession` return shape extension
 

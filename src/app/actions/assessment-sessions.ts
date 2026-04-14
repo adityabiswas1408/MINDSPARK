@@ -42,7 +42,10 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
   if (paper.status !== 'LIVE') return { error: 'ASSESSMENT_NOT_LIVE', message: 'Not live.' };
 
   const { data: student } = await supabase.from('students').select('cohort_id').eq('id', userId).single();
-  const cohortId = student?.cohort_id || '';
+  if (!student?.cohort_id) {
+    return { error: 'STUDENT_NOT_ENROLLED', message: 'Student is not enrolled in a cohort.' };
+  }
+  const cohortId = student.cohort_id;
 
   const { data: existingSession } = await supabase
     .from('assessment_sessions')
@@ -91,7 +94,7 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
       started_at: now,
       expires_at: expiresAt,
       scheduled_at: now,
-      cohort_id: cohortId as unknown as string,
+      cohort_id: cohortId,
       status: 'active'
     })
     .select('id')

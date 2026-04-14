@@ -154,7 +154,6 @@ interface UpdateStudentInput {
   level_id?: string;
   cohort_id?: string;
   status?: 'active' | 'suspended' | 'graduated';
-  accessibility_flags?: Record<string, boolean>;
 }
 
 export async function updateStudent(input: UpdateStudentInput): Promise<ActionResult<{ updated: true }>> {
@@ -169,8 +168,7 @@ export async function updateStudent(input: UpdateStudentInput): Promise<ActionRe
     .from('students')
     .update({
       full_name: input.full_name,
-      level_id: input.level_id,
-      accessibility_flags: input.accessibility_flags
+      level_id: input.level_id
     })
     .eq('id', input.student_id)
     .eq('institution_id', institutionId);

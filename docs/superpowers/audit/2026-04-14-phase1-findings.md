@@ -821,3 +821,187 @@ These could have been done in Phase 2 but were left for downstream phases becaus
 - **No DB changes applied.** The corrected SQL run books in the patched specs will run when those specs get implementation plans (Phase 7 + execution).
 - **No new specs written.** Phase 2 only patches existing ones.
 - **No commits yet** — Phase 2 commit follows after this section is written.
+
+---
+
+# Phase 5 — Existing code review
+
+**Date:** 2026-04-14 (continuation, same session)
+**Scope:** Apply the Phase 4.5 / Phase 2.4 deferred fixes, verify the Phase 4.5 claims against live DB and source, sweep all admin/student pages for CLAUDE.md violations.
+
+## Phase 5.1 — Code fixes applied
+
+| File | Lines | Fix |
+|---|---|---|
+| `src/app/actions/students.ts` | 151–175 | Dropped `accessibility_flags?: Record<string, boolean>` from `UpdateStudentInput` interface AND from the `.update({...})` payload. The column does not exist in the live `students` table — every `updateStudent` call would have raised a Postgres `column "accessibility_flags" of relation "students" does not exist` error if the field were ever populated. Today no caller passes the field (verified via grep — only `student_profile-actions.tsx:39` and `students-table-client.tsx:153` call it, both with just `{ student_id, level_id }`), so this is a latent runtime bug closed before it could fire. |
+| `src/app/actions/assessment-sessions.ts` | 44–47, 96 | Replaced `const cohortId = student?.cohort_id || ''` + `cohort_id: cohortId as unknown as string` with a real null guard that returns `{ error: 'STUDENT_NOT_ENROLLED', message: 'Student is not enrolled in a cohort.' }` when the student row has no `cohort_id`. The `assessment_sessions.cohort_id` column is `uuid NOT NULL`, so the previous fallback to `''` would have raised a Postgres `invalid input syntax for type uuid` error if the `students.cohort_id NOT NULL` constraint were ever lifted. Now there's an explicit user-facing abort path with a friendly error code. |
+
+`npm run tsc` → 0 errors after both edits.
+
+## Phase 5.2 — Phase 4.5 claims verified against live state
+
+| Phase 4.5 claim | Verification | Result |
+|---|---|---|
+| `submissions` table doesn't visibly have a unique index on `(session_id, student_id)` | `SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'submissions'` | **REFUTED.** `submissions_session_student_idx` exists as `CREATE UNIQUE INDEX … ON public.submissions USING btree (session_id, student_id)`. The `submitExam` upsert at `assessment-sessions.ts:228–235` is safe. No DB change needed. |
+| `teardown.ts` does NOT use Zod schema validation in the route handler | Read `src/app/api/submissions/teardown/route.ts` | **REFUTED.** The handler imports `zod` (line 2), defines a `BodySchema = z.object({ submission_id, session_id, client_timestamp, answers_snapshot: z.array(z.object({ question_id, selected_option, answered_at, idempotency_key })) })` (lines 6–18), and runs `BodySchema.safeParse(body)` returning `422 VALIDATION_ERROR` on failure (lines 40–47). Phase 1.5 Step 5 was already implemented before Phase 4 was written; the audit doc just missed it. |
+| `validateClockGuard()` exists but isn't called anywhere visible (Q10 — completion_seal verification path) | `grep -r 'validateClockGuard\|verifyExamSeal\|completion_seal' src/` | **CONFIRMED.** `validateClockGuard` is only referenced from `src/lib/anticheat/clock-guard.test.ts`. `completion_seal` is only **written** at `src/app/actions/assessment-sessions.ts:233` — there is no read/verify path anywhere in `src/`. The HMAC seal currently functions as write-only forensic evidence, not as an active validator. **No fix applied** — this is a design question for the user, not a bug: should the seal be verified on result publication? on offline replay? never (forensic-only)? See Phase 5.6. |
+
+## Phase 5.3 — RPC body inspection
+
+### `calculate_results(p_paper_id uuid)`
+
+Read via `pg_get_functiondef`. The function:
+
+1. Loads `institution_id` from `exam_papers`.
+2. Loads `total_q` = `COUNT(*) FROM questions WHERE paper_id = p_paper_id`.
+3. For each completed `submissions` row in the paper (under `FOR UPDATE SKIP LOCKED`):
+   - Counts `student_answers WHERE submission_id = sub.id AND is_correct = TRUE`.
+   - Computes `percentage = (raw_correct / total_q) * 100`.
+   - Looks up the matching `grade_boundaries.grade_name`.
+   - **`UPDATE submissions SET score = v_raw_correct, percentage = v_percentage, grade = v_grade_name, updated_at = NOW()`**.
+
+**Q9 answer:** `submissions.dpm` is **NOT computed in `calculate_results`**. The RPC writes `score`, `percentage`, `grade` only. If `dpm` (digits-per-minute, the speed metric) is to live on `submissions`, it must be either:
+- Added to the RPC (preferred — keeps grading atomic), OR
+- Computed at submission write time in `submitExam` from the `final_answers_snapshot`, OR
+- Computed lazily in the UI from `student_answers.time_spent_ms`.
+
+**Recommendation:** the assessment-taking plan (Task 1) already adds `time_spent_ms` to `student_answers`. Once that lands, extend `calculate_results` to compute `AVG(digits / (time_spent_ms / 60000))` per submission and write the result to a `submissions.dpm` column (also needs to be added). This keeps the grading path atomic and the UI fast.
+
+**Caveat:** the RPC depends on `student_answers.is_correct` being populated. The current `validate_and_migrate_offline_submission` does NOT populate `is_correct` (see below), and `submitAnswer`/`submitExam` also don't set it. This is a pre-existing bug — `calculate_results` will currently score every submission as `0%` because `is_correct` is never written. Flagged for Phase 7 execution.
+
+### `validate_and_migrate_offline_submission(p_staging_id, p_hmac_timestamp, p_client_ts, p_secret)`
+
+Read via `pg_get_functiondef`. The function:
+
+1. Loads the staging row and rejects if missing.
+2. Rejects if `NOW() - to_timestamp(p_client_ts/1000) > 300s` → `TIMESTAMP_EXPIRED`.
+3. Recomputes the expected HMAC (`session_id || ':' || client_ts` keyed by `p_secret`, sha256, hex). Mismatch logs to `activity_logs` and returns `HMAC_MISMATCH`.
+4. Looks up `submissions.id` for this session — raises if missing (the live submission must already exist; staging only carries the answers, not the parent submission).
+5. **For each answer in `payload->'answers'`, INSERTs into `student_answers` with these columns and only these columns:**
+   - `submission_id`
+   - `question_id`
+   - `selected_option`
+   - `idempotency_key`
+6. Conflict on `student_answers_submission_id_question_id_key` → `DO NOTHING` (also catches `unique_violation` exceptions).
+7. Marks the staging row `processed`.
+
+**Q3 answer for Phase 5:** the Phase 4 RPC update is **NOT yet partly in place**. The RPC currently writes only the four columns above. None of the assessment-taking spec's planned columns (`time_spent_ms`, `answered_at`, `is_correct`) are written by this RPC. When Task 1 of the assessment-taking plan runs, the RPC must be updated to also write:
+- `time_spent_ms` from `v_answer_obj->>'time_spent_ms'` (the new column the plan will add)
+- `answered_at` from `v_answer_obj->>'answered_at'` (already a column on `student_answers`)
+- `is_correct` computed at insert time by joining to `questions.correct_option` (without this, `calculate_results` cannot grade — see above)
+
+**Severity:** `is_correct` is the highest-priority addition. Without it, scoring is broken end-to-end. The audit recommends Task 1 of the assessment-taking plan be expanded to include the `is_correct` write in both `submitAnswer`/`submitExam` (online path) and this RPC (offline-replay path).
+
+## Phase 5.4 — Admin / student page sweep
+
+**Method:** grep across `src/app/(admin)/` and `src/app/(student)/` for `requireRole`, `adminSupabase` imports, hardcoded hex colours, `loading.tsx` coverage, and N+1 `await` patterns inside `for`/`forEach` loops.
+
+### requireRole coverage
+
+✅ **All 11 admin pages** call `requireRole('admin')` or `requireRole(['admin','teacher'])` at the top of the Server Component:
+`assessments`, `students`, `students/[id]`, `levels`, `results`, `monitor`, `monitor/[id]`, `announcements`, `settings`, `activity-log`, `dashboard`.
+
+✅ **All 9 student pages** call `requireRole('student')`:
+`consent`, `assessment/[id]`, `exams/[id]`, `results`, `dashboard`, `exams/[id]/lobby`, `profile`, `exams`, `tests`. `(student)/layout.tsx:10` also enforces it as a defence-in-depth check.
+
+### `adminSupabase` boundary
+
+✅ **No `adminSupabase` import in any `(student)/` route, client component, or hook.**
+
+✅ Admin pages that import `adminSupabase` directly (rather than going through actions): `settings/page.tsx`, `announcements/page.tsx`, `activity-log/page.tsx`. All three are inside `(admin)/` and behind `requireRole('admin')` — within policy.
+
+### `loading.tsx` coverage
+
+| Has `loading.tsx` | Missing `loading.tsx` |
+|---|---|
+| admin/dashboard, admin/students, admin/assessments, student/dashboard, student/exams, student/results | admin/{levels, results, monitor, monitor/[id], announcements, settings, activity-log, students/[id]}, student/{tests, profile, consent, exams/[id], exams/[id]/lobby, assessment/[id]} |
+
+**14 routes are missing `loading.tsx`.** This isn't a CLAUDE.md violation (the constraint table in Phase 1 §8.3 explicitly says "no spec discusses loading.tsx coverage"), but per Phase 6 it should be added everywhere — Server Components without `loading.tsx` block on data fetch and show a blank screen on slow networks. Recommend adding skeleton `loading.tsx` to the 14 routes above as part of Phase 6.
+
+### Hardcoded hex colours
+
+CLAUDE.md banned colours (`#FF6B6B`, `#121212`, `#1A1A1A`, `#E0E0E0`): **none found.** ✅
+
+`#991B1B` (the negative-number-only exception): **none found in pages** — only in the engine. ✅
+
+**Pre-existing pattern violations:** the rule "No hardcoded hex colours in components — always use `var(--token-name)`" is **broadly violated across `(student)/` pages**. Every student page uses inline `style={{ color: '#0F172A', backgroundColor: '#F8FAFC' }}` etc. Sample (~80 hits across `student/exams`, `student/tests`, `student/results`, `student/profile`, `student/dashboard`, `student/exams/[id]/lobby`):
+
+- `'#FFFFFF'`, `'#F8FAFC'`, `'#F1F5F9'`, `'#E2E8F0'`, `'#CBD5E1'`, `'#94A3B8'`, `'#475569'`, `'#0F172A'` — slate scale
+- `'#1A3829'` — primary green (banned: should be `var(--clr-green-800)`)
+- `'#EF4444'`, `'#DCFCE7'`, `'#166534'`, `'#FEE2E2'`, `'#DC2626'`, `'#FEF3C7'`, `'#92400E'`, `'#FDE68A'`, `'#FECACA'`, `'#1D4ED8'`, `'#DBEAFE'`, `'#7C3AED'`, `'#EDE9FE'`, `'#854D0E'`, `'#FEF9C3'`, `'#15803D'` — semantic / chart colours
+
+Admin pages are **clean** of hardcoded hex (zero matches in `src/app/(admin)/`).
+
+**Severity:** pre-existing pattern. **Not fixed in Phase 5** because (a) the user has built UIs against these colours and is satisfied with the result, (b) a token sweep would touch every student page, (c) the brand greens and slates would need new tokens declared in `globals.css` first (per CLAUDE.md, only `slate-*`, `green-800`, and brand names compile in Tailwind v4 right now). Logged for a dedicated "design-token migration" task — likely Phase 7 or post-v1.
+
+### N+1 query patterns
+
+Searched for `for (… of …)` and `forEach` blocks containing `await … .from(…)` or `await … .rpc(…)` in admin pages. **None found.** Every loop in admin pages is pure JS aggregation over an already-loaded array (e.g. `levels/page.tsx:30` rolls up student counts after a single `students.select` query; `monitor/page.tsx:43` rolls up session counts the same way; `activity-log/page.tsx:38` builds a `profileMap` after a single `profiles.select`). Server Components consistently `Promise.all([...])` their independent queries.
+
+✅ No N+1 fix needed.
+
+## Phase 5.5 — Side findings (not in scope but worth recording)
+
+- **`student_answers.is_correct` is never written** anywhere in the code path. Neither `submitAnswer`, `submitExam`, nor `validate_and_migrate_offline_submission` populate it. `calculate_results` reads it, so every paper currently scores at `0%`. This is the most important downstream finding from Phase 5 — flagged for Task 1 of the assessment-taking plan.
+- **`submissions.dpm` does not exist as a column** in the live DB and is not written by any RPC. If the speed metric is desired in the UI, the column must be added and `calculate_results` extended.
+- **`createStudent` at `students.ts:121` still has `cohort_id: input.cohort_id as unknown as string`** — the same smell pattern fixed in `assessment-sessions.ts`. Not fixed in Phase 5 because the column on `students` is `uuid NOT NULL` and `createStudent` is admin-only (not user-facing). The cleaner fix is to make `cohort_id` required in `CreateStudentInput`. Logged for the admin-students-flow plan execution.
+
+## Phase 5.6 — Open questions for the user (added to Phase 1 / Phase 4 lists)
+
+- **Q11.** Is `submissions.completion_seal` intended to be **verified** anywhere, or is it forensic-write-only? If it should be verified, where? Candidates:
+  - On `calculate_results` — refuse to grade a submission whose seal doesn't match.
+  - On `validate_and_migrate_offline_submission` — refuse to migrate offline answers whose seal doesn't match.
+  - On admin result publication — flag tampered submissions in a dashboard.
+  - **Never** — the seal is forensic evidence retained for incident response, no live validator. (This is the current behaviour by accident.)
+- **Q12.** Should `student_answers.is_correct` be computed at write time (in `submitAnswer`/`submitExam`/the offline RPC) or lazily in `calculate_results` via a JOIN to `questions`? Write-time keeps `calculate_results` simple and the live monitor accurate; lazy keeps the write path lean. Phase 5 recommends **write-time** to fix the broken scoring path now.
+- **Q13.** Should `dpm` (digits-per-minute) live as a `submissions` column populated by `calculate_results`, or be computed in the UI from `student_answers.time_spent_ms`? Phase 5 recommends **`submissions` column** so the admin Results dashboard doesn't have to re-aggregate per row.
+
+## Phase 5.7 — What did NOT change in Phase 5
+
+- **No DB migrations.** All Phase 5 fixes are TypeScript-only. The `student_answers.is_correct` and `submissions.dpm` work happens during Task 1 execution.
+- **No spec edits.** Phase 5 only touches code and this audit doc. The downstream specs (assessment-taking-flow, admin-results-redesign) already capture the schema work.
+- **No `loading.tsx` files added.** That's a Phase 6 task.
+- **No design-token sweep.** Pre-existing hardcoded-hex pattern documented but not refactored.
+- **No commits yet** — Phase 5 commit follows after the user reviews this section.
+
+## Phase 5.8 — Spec/Plan patches applied (post-Phase-5, same session)
+
+After the user reviewed the Phase 5 findings, the following patches were applied to the assessment-taking spec and plan to bake the `is_correct` fix and the related corrections into the implementation pathway. These patches are downstream consequences of Phase 5's findings, not part of Phase 5's read-only audit.
+
+### Files modified
+
+| File | What changed |
+|---|---|
+| `docs/superpowers/specs/2026-04-14-student-assessment-taking-flow-design.md` §9.1 | Replaced the single 8-touchpoint `time_spent_ms` table with a combined 3-column propagation table covering `time_spent_ms` (8 touchpoints, client-originated), `is_correct` (3 touchpoints, server-computed), and `answered_at` (1 touchpoint, RPC-only fix). Added the explanation that `is_correct` is never sent by the client (cheating vector). Added §9.3.1 "The `correct_option = NULL` edge case" with the recommendation to land `is_correct = FALSE` when the question's answer key is not configured. |
+| `docs/superpowers/plans/2026-04-14-student-assessment-taking-flow.md` Task 1.5 header | Renamed from "`time_spent_ms` propagation chain (8 touchpoints)" to "`time_spent_ms` + `is_correct` + `answered_at` propagation chain". Added the Phase 5 expansion note explaining why all three columns must land in the same commit. Added the two-flavour chain explanation. |
+| ... Step 1.5.6 | Expanded the live-path edits to include the `correct_option` lookup in `submitAnswer` (single query) and the batch `IN` query in `submitExam` (one round trip regardless of snapshot size). Computes `is_correct = (correct_option === selected_option)` server-side, defends against NULL `correct_option` with explicit safe-default logic. |
+| ... Step 1.5.7 | Replaced the entire RPC update step with the **actual** function body verified by Phase 5 via `pg_get_functiondef`. The original draft assumed a set-based INSERT with `ON CONFLICT (idempotency_key)`; the live function uses a procedural `FOR ... LOOP` with `ON CONFLICT ON CONSTRAINT student_answers_submission_id_question_id_key`. The new step shows the current state, the target state (with `answered_at`, `time_spent_ms`, `is_correct` added via subquery join), and three COALESCEs explaining each defensive default. SQL run book renamed to `db/sql-editor/2026-04-14-rpc-validate-offline-submission-update.sql`. |
+| ... Step 1.5.8 | Expanded the manual round-trip validator to test BOTH columns AND the end-to-end scoring path. Added pre-flight check that confirms the test paper has a non-NULL `correct_option`. Added a failure-mode debugging table with 5 symptom → cause mappings. The headline test is now: after the round trip, call `calculate_results` and confirm `score > 0` — proves the entire chain works end-to-end. |
+| ... Step 1.5.10 | Updated commit file list to reference the renamed SQL file and updated the commit message to mention all three columns. |
+
+### Phase 4.5 false alarms — formally retracted
+
+Two of Phase 4.5's "bugs to flag for Phase 5" turned out to be false alarms when Phase 5 actually checked them against the live state (per Phase 5.2 above). For the audit record:
+
+| Phase 4.5 claim | Phase 5.2 verification | Status |
+|---|---|---|
+| Missing unique index on `submissions(session_id, student_id)` | `submissions_session_student_idx` exists | **REFUTED — retracted.** No fix needed; existing engine code is correct. |
+| `teardown.ts` route handler may not have Zod validation | `BodySchema.safeParse` is in place at lines 6–47 | **REFUTED — retracted.** No fix needed; the route was already validated. |
+| `completion_seal` has no verifier | `validateClockGuard` is only called in tests — confirmed write-only forensic evidence | **CONFIRMED.** Open question Q11 documents the design choice. |
+
+The two retractions are good news — the engine is more solid than Phase 4 suspected. The one CONFIRMED issue (`completion_seal` is write-only) is a design question, not a bug to fix.
+
+### Phase 5.8 verification queries (run on live DB during this session)
+
+| Query | Result | Implication |
+|---|---|---|
+| `COUNT(*) FROM questions WHERE deleted_at IS NULL` | 4 questions, 1 with `correct_option IS NULL` | The §9.3.1 NULL-safe-default logic is required — at least one live question would crash the join without it. |
+| `pg_indexes WHERE tablename = 'student_answers'` | 4 indexes including BOTH `student_answers_idempotency_key_key` AND `student_answers_submission_id_question_id_key` | Confirms the dual-conflict-key pattern: live actions upsert on `idempotency_key`, RPC upserts on the composite. Both are valid; the semantics differ but neither is a bug. |
+| `pg_get_functiondef('validate_and_migrate_offline_submission')` | Procedural FOR LOOP, 4-column INSERT, `ON CONFLICT ON CONSTRAINT student_answers_submission_id_question_id_key` | Confirmed the actual RPC structure differs from Phase 4's assumed template. Step 1.5.7 was rewritten to match the real body. |
+
+### What's still NOT done after Phase 5.8
+
+- **The Task 1.5 plan is patched but not executed.** The actual `time_spent_ms` / `is_correct` / `answered_at` writes do not happen until the user runs the assessment-taking plan.
+- **Open questions Q11 (completion_seal policy) and Q13 (dpm computation location)** — still need user decisions. Q12 (is_correct computation) is now answered: server-side at write time, with re-evaluation via `reEvaluateResults` for question edits.
+- **The `questions.correct_option` data quality issue** — 1 of 4 live questions has NULL `correct_option`. Fixed via documentation only (the spec's §9.3.1 says land `is_correct = FALSE` for these). The data must be cleaned before publishing real results. Logged for Phase 7 follow-up: `ALTER TABLE questions ALTER COLUMN correct_option SET NOT NULL` after backfill.
+- **The `createStudent` cohort_id smell** at `students.ts:121` — Phase 5.5 noted it; not fixed because `createStudent` is admin-only and the column is `uuid NOT NULL`. The cleaner fix is to make `cohort_id` required in `CreateStudentInput`. Logged for the admin-students-flow plan execution.
