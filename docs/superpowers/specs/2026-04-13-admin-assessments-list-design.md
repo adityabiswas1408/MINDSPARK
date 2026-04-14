@@ -320,3 +320,36 @@ Earlier specs that this one builds on:
 - `2026-04-12-admin-results-redesign-design.md` — Results Hub pattern that inspired the 6-pill status row and segmented toggle
 - `2026-04-13-admin-students-flow-design.md` — Students list pattern for filter bar layout, empty states, pagination footer
 - `2026-04-13-admin-dashboard-design.md` — Live exam card patterns (red pulse dot, forest green Monitor button)
+
+---
+
+## Backend Dependencies
+
+> Added by Phase 3 of the 2026-04-14 audit (see `docs/superpowers/audit/2026-04-14-phase1-findings.md` §9).
+
+### (a) Database columns touched
+
+All existing columns — no new schema from this spec:
+
+- `exam_papers(id, title, type, status, level_id, duration_minutes, created_at, opened_at, closed_at, archived_at, institution_id)` — main query, status filtering, Live row accent detection.
+- `levels(id, name)` — denormalised level pill on each row card.
+- `questions(paper_id)` — aggregated via `questions(count)` embed for the "20 questions" meta line.
+- `assessment_sessions(paper_id, student_id, closed_at)` — live-row active counts (`student_id IS NOT NULL AND closed_at IS NULL`).
+- `submissions(paper_id, completed_at)` — closed-row submitted counts.
+
+### (b) Server actions called
+
+**None from the list page itself.** Per §9 of the spec, all per-row actions (Edit, Preview, Monitor, View Results) navigate to destination pages which own their own mutations (`publishAssessment`, `forceOpenExam`, `forceCloseExam`, `archiveAssessmentResult`, etc.). The list is a read-only Server Component.
+
+### (c) RPCs / functions referenced
+
+**None.** All queries (§4 data flow + §11 perf notes) go through PostgREST. Paginated at `PAGE_SIZE = 20` with 3 queries per page load.
+
+### (d) Cross-spec dependencies
+
+- **`admin-results-redesign`:** depends on the `exam_papers.archived_at` column added by its §10 migration. Without that column, the Archived pill cannot filter. Plan order: results-redesign migration must land before assessments-list plan executes.
+- **`admin-create-assessment-flow`:** the `exam_papers.scheduled_start_at` / `scheduled_end_at` columns it adds are NOT read by the list page (scheduled state isn't a first-class pill in this spec). The list page still reads `status` only — `scheduled_*` is internal to the scheduler cron.
+- **`admin-live-monitor-flow`:** each Live row's Monitor button navigates to `/admin/monitor/[id]`. No schema coupling.
+- **`admin-results-redesign`:** each Closed/Archived row's "View Results" navigates to `/admin/results/[id]`. No schema coupling.
+- **`admin-create-assessment-flow`:** the "+ Create Assessment" header button opens the wizard defined in that spec. No schema coupling.
+

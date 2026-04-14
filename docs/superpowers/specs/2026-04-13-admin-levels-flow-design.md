@@ -471,3 +471,42 @@ Browser mockups saved in `.superpowers/brainstorm/223-1776020821/content/`:
 - `levels-list.html` — Main levels list page
 - `level-detail.html` — Level Detail page (both Students and Assessments tab states)
 - `level-dialog.html` — Create Level dialog
+
+---
+
+## Backend Dependencies
+
+> Added by Phase 3 of the 2026-04-14 audit (see `docs/superpowers/audit/2026-04-14-phase1-findings.md` §9).
+
+### (a) Database columns touched
+
+All existing columns — no new schema:
+
+- `levels(id, name, sequence_order, deleted_at, institution_id)` — list page + hero card. `sequence_order` is mutated on drag-reorder.
+- `students(id, full_name, roll_number, level_id, institution_id, deleted_at, created_at)` — per-level count on list page, Students tab on detail page.
+- `exam_papers(id, title, type, status, level_id, duration_minutes, archived_at, opened_at, closed_at, institution_id)` — per-level count on list page, Assessments tab grid on detail page.
+- `submissions(paper_id, student_id, completed_at)` — Assessments tab "submitted" mini-stat (client-side aggregate or a future RPC).
+- `activity_logs(action_type)` — `createLevel` / `updateLevelOrder` / `deactivateStudent` / `createStudent` log here as a side-effect of their existing implementations.
+
+### (b) Server actions called
+
+All existing:
+
+- `createLevel({ name })` from `src/app/actions/levels.ts` — Create Level dialog.
+- `updateLevelOrder(orderPairs)` from `src/app/actions/levels.ts` — drag-reorder via `@hello-pangea/dnd`.
+- `deactivateStudent({ student_id })` from `src/app/actions/students.ts` — Students tab row delete.
+- `createStudent(input)` from `src/app/actions/students.ts` — "+ Add Student to Level" dialog (called with a `lockedLevelId` prop that pre-fills `level_id`; the action itself already accepts `level_id` directly).
+- **Create Assessment wizard** — "+ Create Assessment for Level" launches the wizard from `admin-create-assessment-flow` with `level_id` pre-set.
+
+**Per Q4 decision, this spec deliberately does NOT call `updateLevel` or `deleteLevel`.** The audit §4.1 flagged those as missing; Phase 2 re-confirmed that rename/delete are out of scope, so no new actions are required for v1.
+
+### (c) RPCs / functions referenced
+
+**None.** The Assessments tab `submitted` count could be an RPC if N+1 becomes a problem; spec §8 data-flow note leaves that as an implementation-plan decision.
+
+### (d) Cross-spec dependencies
+
+- **`admin-students-flow`:** reuses `CreateStudentDialog` (§10 "Minor extensions") with a `lockedLevelId` prop. Students flow plan must expose that prop.
+- **`admin-create-assessment-flow`:** the "Create Assessment for Level" CTA launches that wizard with `level_id` pre-locked. Create-assessment plan must support the pre-lock hint.
+- **`admin-results-redesign`:** the Assessments tab card click navigates to `/admin/results/[id]` for Published/Closed papers (`/admin/monitor/[id]` for Live, `/admin/assessments/[id]/edit` for Draft). The `is('archived_at', null)` filter reads the column added by that spec's migration.
+

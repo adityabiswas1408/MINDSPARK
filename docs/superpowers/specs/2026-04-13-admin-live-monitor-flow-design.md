@@ -502,3 +502,40 @@ Browser mockup saved at:
 - `2026-04-12-admin-results-redesign-design.md` — destination of "View in Results →" button from Closed Summary, destination of "Answer Sheet →" links from the frozen student table
 - `2026-04-13-admin-dashboard-design.md` — "Active Live Assessments" card section on the Dashboard also links into `/admin/monitor/[id]`, so the Detail page serves two entry points
 - `2026-04-13-admin-assessments-list-design.md` — "Monitor" button on the Live rows also navigates to `/admin/monitor/[id]`, a third entry point into the same detail page
+
+---
+
+## Backend Dependencies
+
+> Added by Phase 3 of the 2026-04-14 audit (see `docs/superpowers/audit/2026-04-14-phase1-findings.md` §9).
+
+### (a) Database columns touched
+
+All existing columns — no new schema:
+
+- `exam_papers(id, title, type, level_id, duration_minutes, opened_at, closed_at, status, institution_id, archived_at)` — Hub list (status=LIVE) + Detail hero + Closed Summary state transition.
+- `assessment_sessions(paper_id, student_id, status, closed_at, started_at)` — per-paper status partition into in-progress / submitted / disconnected / waiting.
+- `submissions(id, session_id, student_id, paper_id, completed_at, score)` — "Submitted" bucket count + Closed Summary final aggregates.
+- `student_answers(submission_id, question_id, selected_option)` — referenced by the post-close "Go to Results →" drill-down, not read by this spec's pages directly.
+- `students(id, full_name, roll_number, level_id, institution_id)` — display names + roll numbers in the real-time table.
+- `levels(name)` — denormalised on the Hub cards and Detail hero.
+
+### (b) Server actions called
+
+- `forceCloseExam({ assessment_id })` from `src/app/actions/assessments.ts` — existing. Called from the Force Close confirmation dialog on the Detail screen.
+
+No other mutations. Everything else is read-only + realtime subscriptions.
+
+### (c) RPCs / functions referenced
+
+- **`get_live_monitor_data`** — existing live DB function (confirmed present in Phase 1 audit §1.7). The Detail page's `monitor-client.tsx` uses this RPC for the in-memory counts memo rather than hand-rolling N+1 queries. The Phase 1 §10 "Things that ARE consistent" entry confirms the RPC is usable as-is.
+- No other RPCs.
+
+### (d) Cross-spec dependencies
+
+- **Supabase realtime infrastructure:** this spec is the primary consumer of the `exam:{paperId}` Broadcast channel (answer events) and the `lobby:{paperId}` Presence channel (join/leave). These channels are produced by the student-assessment-taking flow (`src/lib/anticheat/` + assessment-session code). No schema coupling; runtime contract only.
+- **`admin-dashboard`:** the "Active Live Assessments" card on the dashboard links into `/admin/monitor/[id]`, so this detail page is a shared destination — not a dependency either way.
+- **`admin-assessments-list`:** Live-row "Monitor" button is another entry point. No coupling.
+- **`admin-results-redesign`:** the "Go to Results →" link from the Closed Summary state navigates to `/admin/results/[paperId]`, and "Answer Sheet →" navigates to `/admin/results/[paperId]/students/[studentId]`. Depends on the results-redesign routes existing; no schema coupling.
+- **`admin-create-assessment-flow`:** the `forceOpenExam` action from that spec is the only producer of the `status = 'LIVE'` state this page lists.
+

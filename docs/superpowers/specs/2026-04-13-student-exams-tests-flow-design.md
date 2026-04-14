@@ -512,3 +512,50 @@ Browser mockups in `.superpowers/brainstorm/1234-1776072313/content/`:
 - `2026-04-13-student-dashboard-design.md` — defines the global student sidebar + top header chrome + the LIVE hero card pattern that's reused here on the Live Now tab content
 - `2026-04-12-admin-results-redesign-design.md` — the EXAM/TEST type badge colors (blue / purple) come from the admin Results flow and are kept consistent here on the student side
 - `2026-04-13-admin-live-monitor-flow-design.md` — the red urgency theme + pulsing dot pattern for the Live state was first locked there
+
+---
+
+## Backend Dependencies
+
+### Tables touched
+**Existing columns read:**
+- `students` — `id, full_name, level_id, institution_id, consent_verified, deleted_at` (identity + eligibility gate)
+- `levels` — `id, name, institution_id` (lookup for level-scoped queries)
+- `exam_papers` — `id, title, type, status, level_id, institution_id, opened_at, closed_at, duration_minutes, scheduled_start_at, scheduled_end_at` filtered by `institution_id = student.institution_id AND level_id = student.level_id AND type IN ('EXAM','TEST')`
+- `assessment_sessions` — read (to determine "already joined"/"completed" state) and write on lobby entry (`initSession`): `id, paper_id, student_id, started_at, closed_at`
+- `submissions` — read for the Completed tab: `id, paper_id, student_id, score, percentage, completed_at, result_published_at`
+- `activity_logs` — insert on lobby entry and any `initSession` outcome
+
+**No new columns required.**
+
+### Server actions called
+**Existing (in `src/app/actions/assessment-session.ts` or similar):**
+- `initSession({ paperId }): Promise<ActionResult<{ sessionId: string; paperSnapshot: ... }>>` — called when the student clicks "I'm Ready" in the lobby. Creates or resumes the `assessment_sessions` row, writes `started_at` if new, returns the three additional paper fields (`question_count`, `shuffle_seed`, `flash_config`) required by the assessment-taking flow per memory observation 1796.
+- Navigation helpers reuse the existing `getStudentLiveExam`/`getStudentExamsList`/`getStudentCompletedExams` queries (may be inline SELECTs in Server Components — no dedicated action layer needed for read-only list pages).
+
+**New:** none for v1. Any additions land in the 2026-04-14 student-assessment-taking-flow plan, not here.
+
+### RPCs / functions referenced
+**Existing:**
+- None called directly by the list or detail pages (direct table reads only).
+- `initSession` may be implemented as a Server Action that wraps a future RPC — implementation decision deferred to the assessment-taking-flow plan.
+
+**New:** none.
+
+### Realtime channels
+- **Broadcast** `exam:institution:{institutionId}` with event `exam_live` → list page refresh when any paper flips to LIVE in this institution. Scoped broader than the dashboard's `exam:{paperId}` because the list needs to react to arbitrary paper transitions.
+- **Presence** `lobby:{paperId}` — subscribed from the lobby page to show "other students are here" (optional in v1; Q6 leaves this to implementation). Presence channel is the same namespace the admin-live-monitor-flow spec reads.
+
+### Routes / HTTP endpoints
+- `/student/exams` + `/student/tests` — list pages (5 tab states each)
+- `/student/exams/[id]` + `/student/tests/[id]` — detail pages (read-only info pre-LIVE)
+- `/student/exams/[id]/lobby` + `/student/tests/[id]/lobby` — full-canvas lobby, **mounted inside `(student-focus)` route group created by the 2026-04-14 student-assessment-taking-flow plan, NOT a new group**.
+
+### Cross-spec dependencies
+- **2026-04-14-student-assessment-taking-flow** — owner of the `(student-focus)` layout group + `initSession` server action extensions (3 new paper fields). Hard ordering: that plan creates the group first; this spec mounts its lobby inside it. Memory obs 1795/1796 document the `time_spent_ms` 8-layer propagation chain + `initSession` return-shape contract.
+- **student-dashboard-design** — shares the `exam:{paperId}` Broadcast channel and the LIVE hero card pattern. Dashboard routes students here via the CTA.
+- **admin-create-assessment-flow-design** — producer of `exam_papers.scheduled_start_at`, `scheduled_end_at`, `opened_at`, `status='LIVE'`. The Upcoming tab reads `scheduled_start_at`; Live tab reads `status='LIVE' AND opened_at IS NOT NULL`.
+- **admin-live-monitor-flow-design** — shares the `lobby:{paperId}` Presence channel. Student lobby joins as a presence client; monitor page subscribes as an observer.
+- **admin-results-redesign-design** — owner of `submissions.result_published_at` + `exam_papers.answer_key_released`. Completed tab must honour Gate A (`result_published_at IS NOT NULL`) before showing percentage/grade; otherwise show "Result pending".
+- **admin-levels-flow-design** — `level_id` scoping of all list queries. Students must never see papers from other levels or institutions.
+- **2026-04-14-student-results-flow-design** — destination for the "View Result" link on Completed rows (gated on `result_published_at`).

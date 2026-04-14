@@ -447,3 +447,38 @@ Browser mockup saved at:
 - `2026-04-13-admin-dashboard-design.md` — source of the admin sidebar with Sign Out footer (shared across all admin pages)
 - `2026-04-13-admin-create-assessment-flow-design.md` — pattern for section-card shells and tinted icon chips in form sections
 - `2026-04-13-admin-assessments-list-design.md` — pattern for the EXAM/TEST segmented toggle (same visual treatment on both pages)
+
+---
+
+## Backend Dependencies
+
+### Tables touched
+**Existing columns read/written:**
+- `institutions` — `id, name, timezone, logo_url, session_timeout_seconds`
+- `grade_boundaries` — `id, institution_id, paper_type ('EXAM'|'TEST'), grade, min_percent, max_percent, label`
+- `activity_logs` — insert row with `action_type = 'UPDATE_SETTINGS'`, `user_id`, `institution_id`, `metadata`
+
+**New columns (Phase 2 migration — 3 adds, NOT 4):**
+- `institutions.primary_contact_email text`
+- `institutions.primary_contact_phone text`
+- `institutions.address text`
+- (`logo_url` already exists in live DB — do NOT re-add)
+
+**Storage bucket (new):** `institution-logos` — path `{institution_id}/{timestamp}-{filename}`, public-read, admin-only write per RLS policy scoped to `{institution_id}/` prefix.
+
+### Server actions called
+**Existing (must be extended):**
+- `updateSettings` in `src/app/actions/settings.ts` — extend `UpdateSettingsInput` to include `primary_contact_email`, `primary_contact_phone`, `address`, `logo_url`. Single transaction: UPDATE institutions → DELETE+INSERT grade_boundaries → INSERT activity_logs.
+
+**New:**
+- `uploadInstitutionLogo(formData: FormData): Promise<ActionResult<{ url: string }>>` — size ≤ 2MB, MIME-type whitelist, uploads to `institution-logos` bucket, returns public URL. Alternative: direct client-side upload via Supabase SDK (bucket is public-read) — implementation-plan decision.
+
+### RPCs / functions referenced
+None. Direct table reads/writes only; no `.rpc()` calls.
+
+### Cross-spec dependencies
+- **admin-dashboard-design** — admin sidebar shell (Sign Out footer, layout) is shared across all admin pages including Settings.
+- **admin-create-assessment-flow-design** — section-card shell + tinted icon chip pattern reused for the 3 settings sections.
+- **admin-assessments-list-design** — EXAM/TEST segmented toggle component shared between Grade Boundaries editor and the assessments list filter.
+- **admin-activity-log-design** (dropped from v1 per MEMORY) — `UPDATE_SETTINGS` audit rows are written regardless; the browse-history UI is deferred until the activity-log page is rebuilt post-v1.
+- **admin-results-redesign-design** — grade boundaries edited here are the source of truth for the grade-distribution pie on the results page. Saving new boundaries may invalidate cached `calculate_results` payloads for already-closed papers; results recomputation policy is a results-redesign concern.

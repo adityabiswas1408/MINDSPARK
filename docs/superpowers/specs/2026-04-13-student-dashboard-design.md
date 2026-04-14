@@ -339,3 +339,34 @@ Browser mockup saved at:
 - `2026-04-13-admin-dashboard-design.md` — admin dashboard shares the "operational command center" framing. The student version is the simpler mirror — live action at the top, minimal decoration.
 - `2026-04-12-admin-results-redesign-design.md` — the LIVE hero card's red badge with pulsing dot is the same pattern used for the Live Monitor state.
 - `2026-04-13-admin-create-assessment-flow-design.md` — "Start Session Now" on the Success page is what flips an assessment to LIVE, which is what triggers this dashboard's LIVE state.
+
+---
+
+## Backend Dependencies
+
+### Tables touched
+**Existing columns read (read-only page):**
+- `students` — `id, full_name, level_id, institution_id, consent_verified, deleted_at` (scoped by auth JWT user id)
+- `levels` — `id, name, institution_id` (level lookup for the live query)
+- `exam_papers` — `id, title, type, status, level_id, institution_id, opened_at, duration_minutes, closed_at` filtered by `status = 'LIVE' AND level_id = student.level_id AND institution_id = student.institution_id`
+- No writes. No `student_answers`, no `submissions`, no `assessment_sessions` reads.
+
+**No new columns required.**
+
+### Server actions called
+**None.** The dashboard is a Server Component that reads directly via `createClient()` (server). No Server Actions invoked. Navigation CTA simply `router.push('/student/exams/[id]/lobby')`.
+
+### RPCs / functions referenced
+**None.** Two direct table reads (`.from('students')` + `.from('exam_papers')`). Could be merged into a single `get_student_live_exam()` RPC as a future optimisation — not required for v1.
+
+### Realtime channels
+- **Broadcast** subscription on `exam:{paperId}` with event `exam_live` → `router.refresh()` on receipt. Keeps the card reactive to admin `forceOpenExam` or cron `SCHEDULED_OPEN` without polling.
+- No Presence channel on this page (presence is the lobby's concern).
+
+### Cross-spec dependencies
+- **admin-create-assessment-flow-design** — producer of the LIVE state. Dashboard is the consumer. Hard dependency on the existing `exam_papers.opened_at` + `duration_minutes` columns for countdown math.
+- **admin-live-monitor-flow-design** — shares the same `exam:{paperId}` Broadcast channel namespace. Dashboard only listens; monitor page reads + writes.
+- **2026-04-13-student-exams-tests-flow-design** — owner of the `/student/exams/[id]/lobby` destination the CTA navigates to. Schemas must stay aligned (same live-exam predicate).
+- **admin-levels-flow-design** — source of the `level_id` scoping. Deactivated students (`deleted_at IS NOT NULL`) must not see any LIVE state — enforced by `requireRole('student')` auth gate that rejects deactivated accounts.
+- **admin-results-redesign-design** — not a direct dependency; results live on `/student/results`, not the dashboard. Dashboard explicitly excludes recent-results per Q4 decision.
+- **admin-announcements-design** (dropped v1) — no announcements surface on the student dashboard in v1; Q3/Q4 decisions explicitly cut the upcoming/recent sections.

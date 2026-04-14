@@ -387,3 +387,36 @@ The new dashboard query set should be significantly lighter than the current one
 ## Appendix A — Visual Reference
 
 Browser mockup saved at `.superpowers/brainstorm/223-1776020821/content/dashboard-layout.html`.
+
+---
+
+## Backend Dependencies
+
+> Added by Phase 3 of the 2026-04-14 audit (see `docs/superpowers/audit/2026-04-14-phase1-findings.md` §9). This section is additive and does not change any existing requirements.
+
+### (a) Database columns touched
+
+All existing columns — no new schema:
+
+- `students(id, institution_id, full_name, level_id)` — KPI 1 (`count`), Activity Feed student display name join.
+- `exam_papers(id, title, type, level_id, duration_minutes, institution_id, status, opened_at)` — KPI 2 (count where `status='LIVE'`), Active Live Assessments cards, Activity Feed paper title join.
+- `assessment_sessions(paper_id, student_id, closed_at)` — KPI 3 and per-card active counts (active = `student_id IS NOT NULL AND closed_at IS NULL`).
+- `submissions(id, student_id, paper_id, score, total_questions, completed_at)` — Activity Feed student-completion events, joined to `exam_papers` for the paper title.
+- `activity_logs(id, user_id, institution_id, action_type, entity_type, entity_id, metadata, timestamp)` — Activity Feed admin-event source.
+- `levels(id, name)` — denormalised level label on assessment cards.
+
+### (b) Server actions called
+
+**None.** The dashboard is a read-only Server Component performing direct Supabase reads. No mutations originate here.
+
+### (c) RPCs / functions referenced
+
+**None.** All six queries (§10) use `supabase.from(...)`. If the parallel KPI / feed queries become a latency hotspot, a single `admin_dashboard_payload` RPC could replace them in a future optimisation — not in scope for v1.
+
+### (d) Cross-spec dependencies
+
+- **`admin-activity-log` (dropped from v1):** The "VIEW FULL ACTIVITY LOG →" footer link still navigates to `/admin/activity-log`, which per memory `project-v1-scope.md` is a v0 placeholder. Plan phase must keep the link functional (landing on the existing stub) without blocking on the dropped feature.
+- **`admin-create-assessment-flow`:** The `forceOpenExam` action it exposes is the only producer of the `exam_papers.status = 'LIVE'` state that drives KPI 2 and the Active Live Assessments list. No direct import — runtime dependency only.
+- **`admin-live-monitor-flow`:** Each Active Live Assessment card links into `/admin/monitor/[paperId]` owned by that spec. No schema coupling.
+- **`admin-results-redesign`:** The dashboard filters out archived papers implicitly (`status='LIVE'` cannot coexist with `archived_at IS NOT NULL`), so the `exam_papers.archived_at` column added by the results spec does not need to be read here.
+

@@ -935,3 +935,71 @@ Browser mockup saved at:
 - `2026-04-12-admin-results-redesign-design.md` — source of the pipe-separated sequence format (`245 | -242 | +466`)
 - `2026-04-13-admin-levels-flow-design.md` — "Create Assessment for Level" CTA pre-fills the Level field with `lockedLevelId`
 - `2026-04-13-admin-students-flow-design.md` — inline editing pattern referenced for the "Save Draft keeps you in wizard" behavior
+
+---
+
+## Backend Dependencies
+
+### Tables touched
+**Existing columns read/written:**
+- `exam_papers` — `id, title, description, type, status, level_id, duration_minutes, pass_percentage, institution_id, created_at, created_by, opened_at, closed_at, answer_key_released`
+- `questions` — `id, paper_id, question_type, question_order, option_a, option_b, option_c, option_d, correct_option, content`
+- `levels` — read-only lookup for level dropdown in Step 2 (`id, name, institution_id, sort_order`)
+- `students` — read-only count preview ("X students will be targeted") scoped by selected `level_id`
+- `activity_logs` — insert on create/save-draft/publish/delete-question/reorder
+
+**New columns on `exam_papers` (Phase 2 migration — 5 adds):**
+- `scheduled_start_at timestamptz` (nullable — NULL means manual open via Force Open button)
+- `scheduled_end_at timestamptz` (nullable — NULL means stays open until manually closed)
+- `max_attempts integer NOT NULL DEFAULT 1` (CHECK ≥ 1)
+- `time_limit_mode text NOT NULL DEFAULT 'hard'` (CHECK IN `'hard','soft'`)
+- `randomize_questions boolean NOT NULL DEFAULT false`
+- `description` was previously proposed as an add but **already exists** in live DB — do NOT re-add.
+- `pass_percentage` already exists — wizard writes to it, DB default stays NULL (app-level default of 60 set client-side).
+
+**Time-column disambiguation (preserved, not merged):**
+- `scheduled_start_at` / `scheduled_end_at` — admin-set plan times (wizard)
+- `opened_at` / `closed_at` — runtime timestamps written by `forceOpenExam` or the cron
+
+### Server actions called
+**Existing (verified to be present):**
+- `createAssessment` in `src/app/actions/assessments.ts` — called after Step 1 "Next" to create the DRAFT row with placeholder values. No changes.
+- `publishAssessment` — called from Step 4 "Publish Assessment". DRAFT → PUBLISHED. No changes.
+- `forceOpenExam` — called from Step 5 Published variant "Start Session Now" button. PUBLISHED → LIVE, writes `opened_at = now()`. No changes. **Producer of the LIVE state consumed by admin-live-monitor-flow.**
+- `createQuestion` in `src/app/actions/questions.ts` — already exists (Q1 verification in §13).
+- `deleteQuestion` — already exists.
+- `reorderQuestions` — already exists.
+
+**New (5 actions):**
+- `updateAssessmentDraft({ assessment_id, title, description, level_id, duration_minutes, scheduled_start_at, scheduled_end_at, pass_percentage, max_attempts, time_limit_mode, randomize_questions }): Promise<ActionResult<null>>` — Step 2 save.
+- `getAssessmentDefaults(): Promise<ActionResult<AssessmentDefaults | null>>` — loads institution default level + duration for Step 1 pre-fill.
+- `updateQuestion({ question_id, ... }): Promise<ActionResult<null>>` — Step 3 edits to existing questions.
+- `getAssessmentForEdit({ assessment_id }): Promise<ActionResult<Assessment>>` — resume-draft loader at `/admin/assessments/[id]/edit`.
+- `getTargetStudentCount({ level_id }): Promise<ActionResult<{ count: number }>>` — Step 2 preview counter.
+
+All new actions: `requireRole('admin')` + institution scope + `activity_logs` insert.
+
+### RPCs / functions referenced
+**Existing:** none directly (server actions do direct table ops).
+
+**New cron-backed job (Phase 2 decision — Vercel Cron):**
+- `GET /api/cron/assessment-schedule` — runs every minute, HMAC-verified via `x-vercel-cron` or shared secret header. Two idempotent UPDATEs:
+  1. `UPDATE exam_papers SET status='LIVE', opened_at=now() WHERE status='PUBLISHED' AND scheduled_start_at IS NOT NULL AND scheduled_start_at <= now() AND opened_at IS NULL`
+  2. `UPDATE exam_papers SET status='CLOSED', closed_at=now() WHERE status='LIVE' AND scheduled_end_at IS NOT NULL AND scheduled_end_at <= now() AND closed_at IS NULL`
+- Both transitions log to `activity_logs` with `action_type = 'SCHEDULED_OPEN'` / `'SCHEDULED_CLOSE'`.
+
+### Routes / HTTP endpoints
+- `/admin/assessments/new?step={1..5}` — wizard entry
+- `/admin/assessments/[id]/edit` — draft resume
+- `/api/cron/assessment-schedule` — new Vercel Cron route (above)
+
+### Cross-spec dependencies
+- **admin-assessments-list-design** — entry points "+ Create Assessment" and "Edit Draft". Also consumes the new `scheduled_start_at`/`scheduled_end_at` columns for the "Scheduled" badge on cards.
+- **admin-levels-flow-design** — "Create Assessment for Level" CTA passes `lockedLevelId` query param; wizard must pre-fill Level field and disable it.
+- **admin-students-flow-design** — `level_id` + target student count preview reads the same `students` table (must respect `deleted_at IS NULL` + `institution_id` scope).
+- **admin-live-monitor-flow-design** — consumer of the LIVE state this wizard produces via `forceOpenExam` or cron open-transition. Force Open → navigate to `/admin/monitor/[id]`.
+- **admin-results-redesign-design** — consumer of the CLOSED state this wizard's cron produces. `calculate_results` triggers on CLOSED. `answer_key_released` gate is owned by student-results-flow spec, NOT the wizard (per Phase 2 correction — `show_correct_answers` removed).
+- **2026-04-14-student-results-flow-design** — source of the two-gate release model. Wizard must NOT emit `show_correct_answers` — that responsibility moved entirely to the student-results-flow spec.
+- **admin-dashboard-design** — "Upcoming scheduled assessments" widget reads `scheduled_start_at` for ordering.
+- **admin-settings-design** — Pass percentage default (60) and duration default come from institution settings (future); for v1, hardcoded in the wizard.
+- **admin-activity-log-design** (dropped v1) — `CREATE_ASSESSMENT`, `PUBLISH_ASSESSMENT`, `FORCE_OPEN_EXAM`, `SCHEDULED_OPEN`, `SCHEDULED_CLOSE`, `CREATE_QUESTION`, `UPDATE_QUESTION`, `DELETE_QUESTION`, `REORDER_QUESTIONS` audit rows still written; browse UI deferred.

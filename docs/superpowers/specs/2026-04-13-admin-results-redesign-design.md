@@ -669,3 +669,57 @@ Browser mockups saved in `.superpowers/brainstorm/223-1776020821/content/`:
 - `detail-layout-v3.html` — Result Detail (final)
 - `students-page-v2.html` — Student List (final)
 - `answer-sheet.html` — Student Answer Sheet (final)
+
+---
+
+## Backend Dependencies
+
+### Tables touched
+**Existing columns read:**
+- `exam_papers` — `id, title, type, level_id, duration_minutes, status, created_at, closed_at, result_published_at, answer_key_released, institution_id`
+- `submissions` — `id, student_id, paper_id, session_id, score, total_questions, percentage, completed_at, started_at, result_published_at`
+- `students` — `id, full_name, roll_number, level_id, institution_id, deleted_at`
+- `questions` — `id, paper_id, question_type, question_order, option_a, option_b, option_c, option_d, correct_option, content`
+- `student_answers` — `id, submission_id, question_id, selected_option, is_correct, answered_at, time_spent_ms`
+- `levels` — read-only lookup for level names on hub cards and detail header
+- `activity_logs` — insert on publish/unpublish/archive/unarchive/re-evaluate
+
+**New columns (Phase 2 migration — 1 add):**
+- `exam_papers.archived_at timestamptz nullable` + partial index `WHERE archived_at IS NOT NULL`
+
+**External dependency on another spec's column add:**
+- `submissions.total_questions` — added by `2026-04-14-student-results-flow-design.md §9`. The `results_hub_paper_stats` RPC here SELECTs `MAX(sub.total_questions)`, so the student-results-flow migration must land **before** this spec's plan runs.
+
+### Server actions called
+**Existing (in `src/app/actions/results.ts`):**
+- `publishResult(submissionId)` / `publishResults(paperId)` — sets `submissions.result_published_at = now()`. Drives the Published/Unpublished derivation.
+- `unpublishResult(submissionId)` — clears `result_published_at`.
+- `reEvaluateResults(paperId)` — existing action, no new UI in this redesign; preserved.
+- `calculate_results` is called indirectly via the CLOSED → auto-calculate pipeline (see RPCs).
+
+**New (added to `src/app/actions/results.ts`):**
+- `archiveAssessmentResult(paperId: string): Promise<ActionResult<void>>` — sets `exam_papers.archived_at = now()`, logs `ARCHIVE_RESULT`. Admin-only.
+- `unarchiveAssessmentResult(paperId: string): Promise<ActionResult<void>>` — sets `archived_at = null`, logs `UNARCHIVE_RESULT`. Admin-only.
+
+### RPCs / functions referenced
+**Existing:**
+- `calculate_results(paper_id uuid)` — still runs on `exam_papers.status` transition to CLOSED. Writes per-submission `score`, `percentage`, `total_questions` (after student-results-flow migration). Re-ran on demand via `reEvaluateResults`. Per Phase 5.9 decision Q12, must populate `student_answers.is_correct` server-side at write time.
+
+**New:**
+- `results_hub_counts(p_institution_id uuid, p_type text) RETURNS (published bigint, pending bigint, archived bigint)` — tab-pill counts on the hub page.
+- `results_hub_paper_stats(p_paper_ids uuid[]) RETURNS (paper_id uuid, gave_count bigint, missed_count bigint, total_enrolled bigint, avg_score_num bigint, avg_score_denom bigint)` — per-card stats (gave / missed / avg) for a batch of paper IDs. Avoids N+1.
+
+### Routes / HTTP endpoints
+All via Server Components + Server Actions — no new REST routes. Pages:
+- `/admin/results` — hub
+- `/admin/results/[paperId]` — result detail (KPIs + student list)
+- `/admin/results/[paperId]/students/[studentId]` — answer sheet (shared destination from admin-students-flow detail page)
+
+### Cross-spec dependencies
+- **2026-04-14-student-results-flow-design** — source of `submissions.total_questions` column. **Hard ordering dependency: that spec's migration lands first.** Also defines the two-gate release model (`result_published_at` + `answer_key_released`) that the admin hub surfaces.
+- **admin-assessments-list-design** — shares the EXAM/TEST segmented toggle and the `archived_at` filter. The assessments-list hides `archived_at IS NOT NULL` papers by default; results-hub surfaces them via the Archived pill.
+- **admin-live-monitor-flow-design** — drill-down destination from the monitor's "View Results" link when a paper reaches CLOSED.
+- **admin-settings-design** — grade boundaries edited in Settings are the source of truth for the grade distribution pie and the `grade` column on per-submission rows. Boundary edits may trigger `reEvaluateResults` for CLOSED papers; policy is deferred.
+- **admin-students-flow-design** — detail-page "recent submissions" link into `/admin/results/[paperId]/students/[studentId]`; this spec owns that route.
+- **admin-create-assessment-flow-design** — producer of the rows this page reads; status lifecycle (`DRAFT → PUBLISHED → LIVE → CLOSED → archived`) is owned there for the first four transitions and here for the fifth.
+- **admin-activity-log-design** (dropped v1) — `PUBLISH_RESULT`, `UNPUBLISH_RESULT`, `ARCHIVE_RESULT`, `UNARCHIVE_RESULT`, `REEVALUATE_RESULTS` audit rows are still written; browse UI deferred.

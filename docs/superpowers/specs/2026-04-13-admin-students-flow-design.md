@@ -552,3 +552,52 @@ Browser mockups saved in `.superpowers/brainstorm/223-1776020821/content/`:
 - `students-list-v2.html` — List page + both empty states
 - `student-detail.html` — Detail page (read-only + edit mode)
 - `student-dialogs.html` — Create Student dialog + Import CSV dialog
+
+---
+
+## Backend Dependencies
+
+### Tables touched
+**Existing columns read/written:**
+- `students` — `id, full_name, roll_number, date_of_birth, level_id, cohort_id, institution_id, consent_verified, created_at, deleted_at`
+- `levels` — `id, name, institution_id, sort_order` (read-only lookup for list filter + detail edit mode + create dialog)
+- `cohort_history` — insert new row on cohort change (side-channel in `updateStudent`)
+- `submissions` — read for the "recent submissions" section on detail page (`student_id, paper_id, completed_at, percentage, grade`)
+- `profiles` — updated by `resetPassword` flow (password reset flag)
+- `auth.users` — updated by `resetPassword` via Supabase auth admin API
+- `activity_logs` — insert on every create/update/deactivate/reset-password action
+
+**Deprecated / must NOT touch:**
+- `students.accessibility_flags` — does NOT exist in live DB despite current action code writing to it. **Phase 5 code fix removes the write.**
+- `students.dob` — legacy nullable column; `date_of_birth` is canonical. Dropped in a separate cleanup spec.
+
+**No new columns required.**
+
+### Server actions called
+**Existing (already in `src/app/actions/students.ts` unless noted):**
+- `createStudent` — used by Create Student dialog. Requires `roll_number` NOT NULL per 2026-04-14 student-profile spec.
+- `updateStudent` — used by detail-page edit mode. **Needs Phase 5 fix: stop writing `accessibility_flags`.** Handles cohort change via the `cohort_history` insert side-channel; must update both the row and the history table atomically.
+- `deactivateStudent` — used by the list-row delete icon AND the detail-page Danger Zone.
+- `importStudentsCSV` — used by Import CSV dialog. Backed by the `bulk_import_students` RPC.
+- `resetPassword` — lives in `src/app/actions/auth.ts` (NOT students.ts). Called from detail-page Danger Zone.
+
+**New:** none.
+
+### RPCs / functions referenced
+**Existing:**
+- `bulk_import_students(rows jsonb)` — called by `importStudentsCSV` to insert parsed CSV rows in a single transaction with per-row error collection. Verified to exist in live DB.
+
+**New:** none.
+
+### Routes / HTTP endpoints
+- `GET /api/admin/students/import-template.csv` — static template download (columns: full_name, roll_number, level_name, date_of_birth). **New route handler.**
+- `POST /api/admin/students/import-csv` — accepts multipart/form-data, invokes `importStudentsCSV`, returns `{ imported, skipped, errors[] }`. **New route handler.**
+- `GET /api/admin/students/import-errors/[uploadId].csv` — on-demand error report download. **New route handler.**
+
+### Cross-spec dependencies
+- **admin-levels-flow-design** — `CreateStudentDialog` is reused by the Levels flow with `lockedLevelId` preset; this spec must keep the component's level field optional-but-overridable.
+- **admin-dashboard-design** — sidebar shell shared; "total students" KPI on dashboard reads from the same `students` table and must respect `deleted_at` IS NULL.
+- **admin-results-redesign-design** — detail-page "recent submissions" rows link to `/admin/results/[paperId]/students/[studentId]` (the answer sheet route).
+- **2026-04-14-admin-student-profile-design.md** — source of the `roll_number NOT NULL` requirement and the canonical `date_of_birth` decision; any future `students` column adds (DOB parser, consent trail) must land there first.
+- **admin-create-assessment-flow-design** — the wizard filters target students by `level_id` — levels/students schema must stay consistent (same `institution_id` scoping, same `deleted_at` filter).
+- **admin-activity-log-design** (dropped v1) — `CREATE_STUDENT`, `UPDATE_STUDENT`, `DEACTIVATE_STUDENT`, `RESET_PASSWORD` audit rows are still written; browse UI deferred.
