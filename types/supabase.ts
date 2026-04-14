@@ -957,6 +957,7 @@ export type Database = {
           session_id: string
           student_id: string
           sync_status: string
+          total_questions: number
           updated_at: string
         }
         Insert: {
@@ -975,6 +976,7 @@ export type Database = {
           session_id: string
           student_id: string
           sync_status?: string
+          total_questions?: number
           updated_at?: string
         }
         Update: {
@@ -993,6 +995,7 @@ export type Database = {
           session_id?: string
           student_id?: string
           sync_status?: string
+          total_questions?: number
           updated_at?: string
         }
         Relationships: [
