@@ -724,3 +724,23 @@ html .text-negative {
   padding: 24px 32px 32px;
   background: var(--bg-card);
 }
+
+/* ══════════════ Score fraction (universal got/total) ══════════════ */
+.score-fraction {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  display: inline-block;
+  line-height: 1;
+}
+.score-fraction .pct {
+  color: var(--clr-green-600);
+  font-weight: 700;
+}
+.score-fraction.size-lg { font-size: 64px; }
+.score-fraction.size-lg .pct { font-size: 32px; }
+.score-fraction.size-md { font-size: 52px; }
+.score-fraction.size-md .pct { font-size: 22px; }
+.score-fraction.size-sm { font-size: 14px; }
+.score-fraction.size-sm .pct { font-size: 14px; }
+.score-fraction.dash { color: var(--text-subtle); }
