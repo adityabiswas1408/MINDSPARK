@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, BookOpen, Zap, BarChart2,
-  User, Settings, HelpCircle,
+  User, Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -18,7 +18,6 @@ const NAV_ITEMS = [
 
 const BOTTOM_ITEMS = [
   { href: '/student/settings', label: 'Settings', icon: Settings },
-  { href: '/student/support',  label: 'Support',  icon: HelpCircle },
 ];
 
 export function StudentSidebar() {
