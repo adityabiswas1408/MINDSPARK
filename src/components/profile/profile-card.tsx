@@ -65,6 +65,7 @@ export function ProfileCard(props: ProfileCardProps) {
       <div className="profile-hero">
         <div className="profile-avatar">
           {props.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- fixed-size avatar (96×96) sized by CSS; next/image would require remotePatterns config for the Supabase avatar bucket
             <img src={props.avatarUrl} alt={props.fullName} />
           ) : (
             props.initials
