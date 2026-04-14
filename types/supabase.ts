@@ -380,6 +380,9 @@ export type Database = {
       }
       exam_papers: {
         Row: {
+          answer_key_released: boolean
+          answer_key_released_at: string | null
+          answer_key_released_by: string | null
           anzan_delay_ms: number | null
           anzan_digit_count: number | null
           anzan_row_count: number | null
@@ -402,6 +405,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          answer_key_released?: boolean
+          answer_key_released_at?: string | null
+          answer_key_released_by?: string | null
           anzan_delay_ms?: number | null
           anzan_digit_count?: number | null
           anzan_row_count?: number | null
@@ -424,6 +430,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          answer_key_released?: boolean
+          answer_key_released_at?: string | null
+          answer_key_released_by?: string | null
           anzan_delay_ms?: number | null
           anzan_digit_count?: number | null
           anzan_row_count?: number | null

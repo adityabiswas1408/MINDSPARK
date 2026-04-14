@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
@@ -168,4 +169,81 @@ export async function publishResults(session_ids: string[]): Promise<ActionResul
   });
 
   return { ok: true, data: { published_count: session_ids.length } };
+}
+
+export async function releaseAnswerKey(
+  paperId: string,
+): Promise<ActionResult<{ paperId: string; releasedAt: string }>> {
+  const auth = await requireRole('admin');
+  if ('error' in auth) return { error: auth.error, message: auth.message };
+
+  const releasedAt = new Date().toISOString();
+
+  // Pre-flight: confirm the paper exists in this institution
+  const { data: existing, error: selErr } = await adminSupabase
+    .from('exam_papers')
+    .select('id')
+    .eq('id', paperId)
+    .eq('institution_id', auth.institutionId)
+    .maybeSingle();
+  if (selErr) return { error: 'INTERNAL_ERROR', message: selErr.message };
+  if (!existing) return { error: 'NOT_FOUND', message: 'Paper not found' };
+
+  const { error: updErr } = await adminSupabase
+    .from('exam_papers')
+    .update({
+      answer_key_released: true,
+      answer_key_released_at: releasedAt,
+      answer_key_released_by: auth.userId,
+    })
+    .eq('id', paperId)
+    .eq('institution_id', auth.institutionId);
+  if (updErr) return { error: 'INTERNAL_ERROR', message: 'Failed to release answer key' };
+
+  await adminSupabase.from('activity_logs').insert({
+    user_id: auth.userId,
+    institution_id: auth.institutionId,
+    action_type: 'BULK_RELEASE_ANSWER_KEY',
+    entity_type: 'exam_paper',
+    entity_id: paperId,
+  });
+
+  revalidatePath(`/admin/assessments/${paperId}`);
+  return { ok: true, data: { paperId, releasedAt } };
+}
+
+export async function unreleaseAnswerKey(
+  paperId: string,
+): Promise<ActionResult<{ paperId: string }>> {
+  const auth = await requireRole('admin');
+  if ('error' in auth) return { error: auth.error, message: auth.message };
+
+  // Pre-flight as above
+  const { data: existing, error: selErr } = await adminSupabase
+    .from('exam_papers')
+    .select('id')
+    .eq('id', paperId)
+    .eq('institution_id', auth.institutionId)
+    .maybeSingle();
+  if (selErr) return { error: 'INTERNAL_ERROR', message: selErr.message };
+  if (!existing) return { error: 'NOT_FOUND', message: 'Paper not found' };
+
+  // NB: only flip the boolean. Do NOT clear `_at` / `_by` — keeps the audit trail.
+  const { error: updErr } = await adminSupabase
+    .from('exam_papers')
+    .update({ answer_key_released: false })
+    .eq('id', paperId)
+    .eq('institution_id', auth.institutionId);
+  if (updErr) return { error: 'INTERNAL_ERROR', message: 'Failed to unrelease answer key' };
+
+  await adminSupabase.from('activity_logs').insert({
+    user_id: auth.userId,
+    institution_id: auth.institutionId,
+    action_type: 'BULK_UNRELEASE_ANSWER_KEY',
+    entity_type: 'exam_paper',
+    entity_id: paperId,
+  });
+
+  revalidatePath(`/admin/assessments/${paperId}`);
+  return { ok: true, data: { paperId } };
 }
