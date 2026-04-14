@@ -30,7 +30,10 @@
   :root {
     --bg-page:    #F8FAFC;
     --bg-card:    #FFFFFF;
+    --bg-subtle:  #F8FAFC;  /* Section background tint (e.g. profile More Info bar) */
+    --bg-hover:   #F1F5F9;  /* Hover background for subtle surfaces */
     --bg-overlay: rgba(15, 23, 42, 0.4);
+    --slate-200:  #E2E8F0;  /* MINDSPARK alias for slate-200 (card borders) */
 
     /* ── MINDSPARK BRAND (from abacus-edge-design-spec §28) ── */
     --clr-brand-navy:   #204074;
@@ -48,6 +51,7 @@
     --clr-green-400: #52B788;  /* MCQ hover border */
     --clr-green-300: #74C69D;  /* Timer border · breathing circle */
     --clr-green-200: #B7E4C7;  /* Active sidebar icon bg */
+    --clr-green-100: #D8F1E3;  /* Profile avatar border ring */
     --clr-green-50:  #EFFAF4;  /* Active nav bg · MCQ selected tint · timer bg */
 
     --text-primary:   #0F172A;
@@ -571,4 +575,151 @@ html .text-negative {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border:      oklch(1 0 0 / 10%);
   --sidebar-ring:        oklch(0.556 0 0);
+}
+
+/* ══════════════ Student profile card ══════════════ */
+.profile-card {
+  background: var(--bg-card);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  max-width: 720px;
+  overflow: hidden;
+}
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 32px 28px;
+}
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 9999px;
+  background: var(--clr-green-800);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 3px solid var(--clr-green-100);
+  overflow: hidden;
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.profile-identity { min-width: 0; }
+.profile-name {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.012em;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.profile-role {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.profile-role .dot { color: var(--text-subtle); }
+
+.profile-section {
+  border-top: 1px solid var(--slate-200);
+  padding: 24px 32px;
+}
+.profile-section .section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-subtle);
+  margin-bottom: 16px;
+}
+.profile-card .field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 32px;
+  row-gap: 18px;
+}
+.profile-card .field-row { min-width: 0; }
+.profile-card .field-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.profile-card .field-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+  word-break: break-word;
+}
+.profile-card .field-value.mono {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-variant-numeric: tabular-nums;
+}
+.profile-card .field-value.muted {
+  color: var(--text-subtle);
+  font-style: italic;
+  font-weight: 400;
+}
+.profile-card .verified-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: var(--clr-green-50);
+  color: var(--clr-green-700);
+  border: 1px solid var(--clr-green-200);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.profile-card .verified-pill svg { width: 12px; height: 12px; stroke-width: 2.5; }
+
+.more-info-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--slate-200);
+  border-bottom: 1px solid var(--slate-200);
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  font-family: inherit;
+  border-left: 0;
+  border-right: 0;
+}
+.more-info-toggle:hover { background: var(--bg-hover); }
+.more-info-toggle .label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+.more-info-toggle .chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--text-secondary);
+  stroke-width: 2;
+  transition: transform 0.2s ease;
+}
+.more-info-toggle.expanded .chevron { transform: rotate(180deg); }
+.more-info-section {
+  padding: 24px 32px 32px;
+  background: var(--bg-card);
 }
