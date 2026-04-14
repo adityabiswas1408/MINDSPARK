@@ -33,6 +33,7 @@
     --bg-subtle:  #F8FAFC;  /* Section background tint (e.g. profile More Info bar) */
     --bg-hover:   #F1F5F9;  /* Hover background for subtle surfaces */
     --bg-overlay: rgba(15, 23, 42, 0.4);
+    --slate-100:  #F1F5F9;  /* MINDSPARK alias for slate-100 (skeleton dim bars) */
     --slate-200:  #E2E8F0;  /* MINDSPARK alias for slate-200 (card borders) */
 
     /* ── MINDSPARK BRAND (from abacus-edge-design-spec §28) ── */
