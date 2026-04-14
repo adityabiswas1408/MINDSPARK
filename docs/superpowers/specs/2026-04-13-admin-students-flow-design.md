@@ -547,7 +547,7 @@ src/components/students/students-table-client.tsx     (replaced by new component
 
 ## Appendix A — Visual Reference
 
-Browser mockups saved in `.superpowers/brainstorm/223-1776020821/content/`:
+Browser mockups saved in `docs/design-mockups/`:
 
 - `students-list-v2.html` — List page + both empty states
 - `student-detail.html` — Detail page (read-only + edit mode)

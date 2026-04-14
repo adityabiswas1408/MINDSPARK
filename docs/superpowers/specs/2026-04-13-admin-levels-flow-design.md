@@ -466,7 +466,7 @@ src/components/levels/levels-client.tsx     — DELETE (replaced by levels-list-
 
 ## Appendix A — Visual Reference
 
-Browser mockups saved in `.superpowers/brainstorm/223-1776020821/content/`:
+Browser mockups saved in `docs/design-mockups/`:
 
 - `levels-list.html` — Main levels list page
 - `level-detail.html` — Level Detail page (both Students and Assessments tab states)

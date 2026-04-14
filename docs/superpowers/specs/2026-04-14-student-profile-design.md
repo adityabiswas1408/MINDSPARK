@@ -318,7 +318,7 @@ None block the spec.
 
 ## 13. Approved visual reference
 
-- **Mockup:** `.superpowers/brainstorm/362-1776136481/content/student-profile.html`
+- **Mockup:** `docs/design-mockups/student-profile.html`
 - **Frames:** 3 total (default state, More Info expanded with full data, null-heavy fallback state).
 - **Approved by:** user, 2026-04-14 session.
 - **Post-render adjustments:**

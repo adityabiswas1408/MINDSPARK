@@ -663,7 +663,7 @@ None at the moment. The user has confirmed:
 
 ## Appendix A — Visual Reference
 
-Browser mockups saved in `.superpowers/brainstorm/223-1776020821/content/`:
+Browser mockups saved in `docs/design-mockups/`:
 
 - `hub-layout-v4.html` — Results Hub (final)
 - `detail-layout-v3.html` — Result Detail (final)

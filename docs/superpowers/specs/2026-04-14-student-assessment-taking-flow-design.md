@@ -428,6 +428,6 @@ None of these block the spec — they are for the writing-plans step.
 
 ## 14. Approved visual reference
 
-- **Mockup:** `.superpowers/brainstorm/1798-1776124309/content/student-assessment-v5.html`
+- **Mockup:** `docs/design-mockups/student-assessment-v5.html`
 - **Screens 1 & 2 in mockup:** two table-format preview screens (4 operands + 10 operands) with the tightened spacing — canonical for §5.3, §5.4, and §6.
 - **Approved by:** user, 2026-04-14 session.

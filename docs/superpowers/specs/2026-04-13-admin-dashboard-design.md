@@ -386,7 +386,7 @@ The new dashboard query set should be significantly lighter than the current one
 
 ## Appendix A — Visual Reference
 
-Browser mockup saved at `.superpowers/brainstorm/223-1776020821/content/dashboard-layout.html`.
+Browser mockup saved at `docs/design-mockups/dashboard-layout.html`.
 
 ---
 

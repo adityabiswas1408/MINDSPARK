@@ -9,7 +9,7 @@
 **Tech Stack:** Next.js 15 (App Router, route groups), TypeScript, React 19, Supabase (PostgreSQL), Tailwind v4, lucide-react, Vitest + jsdom, Playwright. RAF-driven countdowns; no `setTimeout`/`setInterval` in any anzan or assessment-flow code.
 
 **Source spec:** `docs/superpowers/specs/2026-04-14-student-assessment-taking-flow-design.md`
-**Approved visual:** `.superpowers/brainstorm/1798-1776124309/content/student-assessment-v5.html`
+**Approved visual:** `docs/design-mockups/student-assessment-v5.html`
 
 ---
 
@@ -1192,7 +1192,7 @@ interface EquationTableProps {
 
 /**
  * Vertical-table equation renderer for the EXAM MCQ view.
- * Visual contract is locked to .superpowers/brainstorm/.../student-assessment-v5.html.
+ * Visual contract is locked to docs/design-mockups/student-assessment-v5.html.
  * #991B1B is the sacred negative-number red — do not change.
  */
 export function EquationTable({ operands, size }: EquationTableProps) {

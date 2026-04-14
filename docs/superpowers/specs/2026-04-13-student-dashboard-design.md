@@ -332,7 +332,7 @@ These chrome changes will be re-referenced by the future Student Exams, Tests, R
 ## Appendix A — Visual Reference
 
 Browser mockup saved at:
-- `.superpowers/brainstorm/223-1776020821/content/student-dashboard.html` — both states (LIVE exam and empty) stacked in one file
+- `docs/design-mockups/student-dashboard.html` — both states (LIVE exam and empty) stacked in one file
 
 ### Earlier admin specs for pattern reference
 

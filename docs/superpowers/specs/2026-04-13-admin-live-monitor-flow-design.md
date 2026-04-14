@@ -495,7 +495,7 @@ None — the rewrite keeps the same file paths but replaces their contents.
 ## Appendix A — Visual Reference
 
 Browser mockup saved at:
-- `.superpowers/brainstorm/223-1776020821/content/live-monitor.html` — all 4 screens stacked (Hub / Detail / Force Close Dialog / Closed Summary)
+- `docs/design-mockups/live-monitor.html` — all 4 screens stacked (Hub / Detail / Force Close Dialog / Closed Summary)
 
 ### Earlier specs this one integrates with
 

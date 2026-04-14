@@ -927,7 +927,7 @@ Recommendation: **route group `(wizard)`** for cleaner structure.
 ## Appendix A — Visual Reference
 
 Browser mockup saved at:
-- `.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html` — All 8 screens (Step 1, Step 2, Step 3a EXAM, Step 3b TEST with Flash Config, Flash Preview Modal, Step 4 Review, Step 5 Success Published, Step 5 Success Draft)
+- `docs/design-mockups/assessment-wizard.html` — All 8 screens (Step 1, Step 2, Step 3a EXAM, Step 3b TEST with Flash Config, Flash Preview Modal, Step 4 Review, Step 5 Success Published, Step 5 Success Draft)
 
 ### Earlier specs referenced
 

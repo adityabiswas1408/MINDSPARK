@@ -440,7 +440,7 @@ Create `institution-logos` bucket in Supabase Storage with:
 ## Appendix A — Visual Reference
 
 Browser mockup saved at:
-- `.superpowers/brainstorm/223-1776020821/content/settings.html` — full page with all 3 sections + sticky save bar in the "dirty state" (3 unsaved changes across Institution & Grade Boundaries)
+- `docs/design-mockups/settings.html` — full page with all 3 sections + sticky save bar in the "dirty state" (3 unsaved changes across Institution & Grade Boundaries)
 
 ### Earlier specs referenced
 

@@ -313,7 +313,7 @@ The existing assessment server actions (createAssessment, publishAssessment, for
 
 Browser mockup saved at:
 
-- `.superpowers/brainstorm/223-1776020821/content/assessments-list.html` — populated view + both empty states
+- `docs/design-mockups/assessments-list.html` — populated view + both empty states
 
 Earlier specs that this one builds on:
 

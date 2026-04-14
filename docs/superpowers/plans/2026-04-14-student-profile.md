@@ -9,7 +9,7 @@
 **Tech Stack:** Next.js 15 (App Router, Server Components), TypeScript, React 19, Supabase (PostgreSQL), Tailwind v4, lucide-react, Vitest + jsdom, Playwright. No `setTimeout`/`setInterval` (no need — there's no timer logic). The only client interaction is a `useState<boolean>` toggle for the More Info disclosure.
 
 **Source spec:** `docs/superpowers/specs/2026-04-14-student-profile-design.md`
-**Approved visual:** `.superpowers/brainstorm/362-1776136481/content/student-profile.html`
+**Approved visual:** `docs/design-mockups/student-profile.html`
 
 ---
 

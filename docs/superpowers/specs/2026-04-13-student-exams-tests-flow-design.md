@@ -494,7 +494,7 @@ When all 3 tabs are 0 (first-time student), the per-tab empty state on the activ
 
 ## Appendix A — Visual Reference
 
-Browser mockups in `.superpowers/brainstorm/1234-1776072313/content/`:
+Browser mockups in `docs/design-mockups/`:
 
 - `student-exams-v2.html` — All 5 list states stacked:
   1. Exams · Live Now tab active (with live exam)

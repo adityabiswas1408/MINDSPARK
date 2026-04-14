@@ -485,7 +485,7 @@ None block the spec.
 
 ## 14. Approved visual reference
 
-- **Mockup:** `.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html`
+- **Mockup:** `docs/design-mockups/student-results-flow.html`
 - **Frames:** 14 total (10 student frames, 2 admin frames, 2 admin confirmation modals).
 - **Score format:** `26/30` — DPM removed from every surface.
 - **Approved by:** user, 2026-04-14 session (after the shell-wrap propagation pass and the DPM-removal decision).

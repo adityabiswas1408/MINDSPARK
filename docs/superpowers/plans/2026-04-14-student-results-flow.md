@@ -9,7 +9,7 @@
 **Tech Stack:** Next.js 15 (App Router, Server Components), TypeScript, React 19, Supabase (PostgreSQL), Tailwind v4, lucide-react, Vitest + jsdom, Playwright. `createPortal` for modals (per CLAUDE.md). No `setTimeout`/`setInterval` in any new code.
 
 **Source spec:** `docs/superpowers/specs/2026-04-14-student-results-flow-design.md`
-**Approved visual:** `.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html`
+**Approved visual:** `docs/design-mockups/student-results-flow.html`
 
 ---
 
