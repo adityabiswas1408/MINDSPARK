@@ -68,13 +68,15 @@ These are non-negotiable and apply to **every** task:
 
 ---
 
-## Task 1: DB columns on `exam_papers`
+## Task 1: DB columns
 
 **Files:**
 - Create: `db/sql-editor/2026-04-14-assessment-config-columns.sql`
 - Modify (later, after manual SQL run): `GOTCHAS.md`
 
-- [ ] **Step 1.1: Verify current schema**
+> **Phase 4 audit correction (2026-04-14):** The original plan listed only 2 column adds. The Phase 1 audit confirmed `student_answers.time_spent_ms` does NOT exist — the original "verify" step was wrong. This task now adds **three** columns total. The propagation chain that wires `time_spent_ms` end-to-end lives in Task 1.5 (new, immediately after this task).
+
+- [ ] **Step 1.1: Verify current schema for all three columns**
 
 Before writing any SQL, confirm what's already there. Run this in the Supabase SQL editor and paste the result into the task notes:
 
@@ -83,21 +85,15 @@ SELECT column_name, data_type, is_nullable, column_default
 FROM information_schema.columns
 WHERE table_name = 'exam_papers'
   AND column_name IN ('per_question_time_seconds', 'require_answer_confirmation');
-```
 
-Expected: zero rows. If either column already exists, stop and update the spec instead of re-adding.
-
-- [ ] **Step 1.2: Verify `student_answers.time_spent_ms`**
-
-```sql
 SELECT column_name, data_type, is_nullable, column_default
 FROM information_schema.columns
 WHERE table_name = 'student_answers' AND column_name = 'time_spent_ms';
 ```
 
-Expected: one row, `int4`, `is_nullable = NO`, default `0`. If missing or wrong, add a Step 1.5 to fix it before continuing.
+Expected: **zero rows for both queries.** If any column already exists, stop and update the spec instead of re-adding.
 
-- [ ] **Step 1.3: Write the SQL run book**
+- [ ] **Step 1.2: Write the SQL run book**
 
 Create `db/sql-editor/2026-04-14-assessment-config-columns.sql`:
 
@@ -106,6 +102,7 @@ Create `db/sql-editor/2026-04-14-assessment-config-columns.sql`:
 -- Spec: docs/superpowers/specs/2026-04-14-student-assessment-taking-flow-design.md
 -- Date: 2026-04-14
 
+-- ─── exam_papers: per-question timer + confirm-button toggle ──────────────
 ALTER TABLE exam_papers
   ADD COLUMN IF NOT EXISTS per_question_time_seconds INT NULL
     CHECK (per_question_time_seconds IS NULL OR per_question_time_seconds BETWEEN 5 AND 600);
@@ -113,37 +110,349 @@ ALTER TABLE exam_papers
 ALTER TABLE exam_papers
   ADD COLUMN IF NOT EXISTS require_answer_confirmation BOOLEAN NOT NULL DEFAULT TRUE;
 
--- Verification
+-- ─── student_answers: per-question elapsed-time capture ───────────────────
+-- Defaults to 0 for existing rows (they pre-date the timing feature).
+-- No backfill required.
+ALTER TABLE student_answers
+  ADD COLUMN IF NOT EXISTS time_spent_ms INT NOT NULL DEFAULT 0;
+
+-- ─── Verification ─────────────────────────────────────────────────────────
 SELECT column_name, data_type, is_nullable, column_default
 FROM information_schema.columns
 WHERE table_name = 'exam_papers'
   AND column_name IN ('per_question_time_seconds', 'require_answer_confirmation')
 ORDER BY column_name;
+
+SELECT column_name, data_type, is_nullable, column_default
+FROM information_schema.columns
+WHERE table_name = 'student_answers' AND column_name = 'time_spent_ms';
 ```
 
-- [ ] **Step 1.4: Run the SQL in the Supabase editor**
+- [ ] **Step 1.3: Run the SQL in the Supabase editor**
 
 Open the Supabase dashboard for project `ahrnkwuqlhmwenhvnupb` → SQL editor → paste the file → Run.
+
 Expected verification output:
+
 ```
-require_answer_confirmation | boolean | NO  | true
 per_question_time_seconds   | integer | YES | NULL
+require_answer_confirmation | boolean | NO  | true
+time_spent_ms               | integer | NO  | 0
 ```
 
-- [ ] **Step 1.5: Document the divergence in GOTCHAS.md**
+If any of the three rows is missing, stop and investigate before continuing.
+
+- [ ] **Step 1.4: Document the new columns in GOTCHAS.md**
 
 Append under the database section:
+
 ```
 - 2026-04-14: exam_papers.per_question_time_seconds (int, nullable, CHECK 5..600) and
   exam_papers.require_answer_confirmation (bool, not null, default TRUE) added via
-  SQL editor (no migration file). See db/sql-editor/2026-04-14-assessment-config-columns.sql.
+  SQL editor (no migration file).
+- 2026-04-14: student_answers.time_spent_ms (int, NOT NULL DEFAULT 0) added via SQL
+  editor. The Phase 1 audit revealed the original spec wrongly assumed this column
+  already existed — it did not. The full client-to-DB propagation chain for this
+  field is implemented in Task 1.5 of the assessment-taking plan.
+- See db/sql-editor/2026-04-14-assessment-config-columns.sql.
 ```
 
-- [ ] **Step 1.6: Commit**
+- [ ] **Step 1.5: Commit**
 
 ```bash
 git add db/sql-editor/2026-04-14-assessment-config-columns.sql GOTCHAS.md
-git commit -m "db(exam_papers): add per_question_time_seconds + require_answer_confirmation"
+git commit -m "db(assessment-engine): add per_question_time_seconds, require_answer_confirmation, time_spent_ms"
+```
+
+---
+
+## Task 1.5: `time_spent_ms` propagation chain (8 touchpoints)
+
+**Files:**
+- Modify: `src/lib/offline/indexed-db-store.ts`
+- Modify: `src/lib/offline/sync-engine.ts`
+- Modify: `src/lib/anticheat/teardown.ts`
+- Modify: `src/app/api/submissions/offline-sync/route.ts`
+- Modify: `src/app/api/submissions/teardown/route.ts`
+- Modify: `src/app/actions/assessment-sessions.ts`
+- Modify: the `validate_and_migrate_offline_submission` Postgres function (via SQL editor)
+
+> **Why this task exists:** Adding the column in Task 1 is necessary but not sufficient. The value flows from the browser RAF loop through three serialization boundaries (client store → fetch body → Postgres staging payload → RPC → final table). If any layer drops the field, the value silently lands as 0 and we lose the timing data with no error. This task adds the field at every layer in lockstep.
+
+> **Sacred-rule reminder:** all 8 changes must land in a single commit so the chain is never half-deployed.
+
+- [ ] **Step 1.5.1: Browser store — `PendingAnswer` interface + Dexie schema bump**
+
+Modify `src/lib/offline/indexed-db-store.ts`:
+
+```diff
+ export interface PendingAnswer {
+   idempotency_key: string;
+   session_id: string;
+   question_id: string;
+   selected_option: 'A' | 'B' | 'C' | 'D' | null;
+   answered_at: number;
++  time_spent_ms: number;
+   synced: boolean;
+   created_at: number;
+ }
+```
+
+Bump the Dexie schema to v2 — adding a non-indexed field does not require a new index, but the version number must increase to trigger Dexie's automatic schema migration:
+
+```diff
+ export class MindsparkOfflineDatabase extends Dexie {
+   pendingAnswers!: EntityTable<PendingAnswer, 'idempotency_key'>;
+
+   constructor() {
+     super('mindspark_exam');
+
+     this.version(1).stores({
+       pendingAnswers: 'idempotency_key, session_id, synced'
+     });
++
++    // v2 — added `time_spent_ms` to PendingAnswer (Phase 4, 2026-04-14).
++    // Schema string is unchanged because the new field is not indexed,
++    // but the version bump is required to migrate existing user databases.
++    this.version(2).stores({
++      pendingAnswers: 'idempotency_key, session_id, synced'
++    });
+   }
+ }
+```
+
+- [ ] **Step 1.5.2: Browser sync — include `time_spent_ms` in the offline-sync payload**
+
+Modify `src/lib/offline/sync-engine.ts`. Find the payload builder around line 60 (`payload = { session_id, answers: answers.map(...) }`) and add the field:
+
+```diff
+       const payload = {
+         session_id:      sessionId,
+         answers:         answers.map((a: PendingAnswer) => ({
+           question_id:     a.question_id,
+           selected_option: a.selected_option,
+           answered_at:     a.answered_at,
++          time_spent_ms:   a.time_spent_ms,
+           idempotency_key: a.idempotency_key,
+         })),
+         batch_timestamp: Date.now(),
+       };
+```
+
+- [ ] **Step 1.5.3: Browser teardown — include `time_spent_ms` in the keepalive POST**
+
+Modify `src/lib/anticheat/teardown.ts`. Find the `answers_snapshot` builder inside `handlePageHide` and add the field:
+
+```diff
+       body: JSON.stringify({
+         session_id: sessionId,
+         answers_snapshot: pendingAnswers.map((a) => ({
+           question_id: a.question_id,
+           selected_option: a.selected_option,
+           answered_at: a.answered_at,
++          time_spent_ms: a.time_spent_ms,
+           idempotency_key: a.idempotency_key,
+         })),
+         client_timestamp: Date.now(),
+       }),
+```
+
+- [ ] **Step 1.5.4: Server validation — extend the offline-sync Zod schema**
+
+Modify `src/app/api/submissions/offline-sync/route.ts`. Find `AnswerSchema`:
+
+```diff
+ const AnswerSchema = z.object({
+   question_id: z.string().uuid(),
+   selected_option: z.enum(['A', 'B', 'C', 'D']).nullable(),
+   answered_at: z.number(),
++  time_spent_ms: z.number().int().nonnegative(),
+   idempotency_key: z.string().uuid(),
+ });
+```
+
+The route handler will then pass the full validated `answers` array (now including `time_spent_ms`) into the staging payload — no other change to the route handler needed because the staging payload is JSON.
+
+- [ ] **Step 1.5.5: Server validation — extend the teardown Zod schema**
+
+Modify `src/app/api/submissions/teardown/route.ts`. The exact location depends on the file's current shape — find the equivalent answer schema and add the same field:
+
+```diff
+ const AnswerSnapshotSchema = z.object({
+   question_id: z.string().uuid(),
+   selected_option: z.enum(['A', 'B', 'C', 'D']).nullable(),
+   answered_at: z.number(),
++  time_spent_ms: z.number().int().nonnegative(),
+   idempotency_key: z.string().uuid(),
+ });
+```
+
+If the teardown route does not currently use Zod, mirror the schema from `offline-sync/route.ts` and add the validation. **Do not let the teardown path silently drop validation** — it's the most fragile part of the chain because it fires on `pagehide`.
+
+- [ ] **Step 1.5.6: Live-path server actions — accept and write `time_spent_ms`**
+
+Modify `src/app/actions/assessment-sessions.ts`. Two interface additions and two upsert payload changes:
+
+```diff
+ interface SubmitAnswerInput {
+   session_id:      string;
+   question_id:     string;
+   selected_option: 'A' | 'B' | 'C' | 'D' | null;
+   answered_at:     number;
++  time_spent_ms:   number;
+   idempotency_key: string;
+ }
+```
+
+In `submitAnswer`, the upsert call:
+
+```diff
+   await adminSupabase.from('student_answers').upsert({
+     idempotency_key: input.idempotency_key,
+     submission_id:   submissionId,
+     question_id:     input.question_id,
+     selected_option: input.selected_option,
+     answered_at:     new Date(input.answered_at).toISOString(),
++    time_spent_ms:   input.time_spent_ms,
+   }, { onConflict: 'idempotency_key' });
+```
+
+Same for the `Answer` interface used by `submitExam`:
+
+```diff
+ interface Answer {
+   question_id:      string;
+   selected_option:  'A' | 'B' | 'C' | 'D' | null;
+   answered_at:      number;
++  time_spent_ms:    number;
+   idempotency_key:  string;
+ }
+```
+
+And the `submitExam` upsert payload mapping:
+
+```diff
+     const payloads = input.final_answers_snapshot.map(a => ({
+       idempotency_key: a.idempotency_key,
+       submission_id:   submissionRowId,
+       question_id:     a.question_id,
+       selected_option: a.selected_option,
+       answered_at:     new Date(a.answered_at).toISOString(),
++      time_spent_ms:   a.time_spent_ms,
+     }));
+```
+
+- [ ] **Step 1.5.7: RPC — update `validate_and_migrate_offline_submission`**
+
+The RPC reads the staging row's JSON `payload` field and inserts into `student_answers`. It must now also read `time_spent_ms` from each answer object in the JSON and include it in the insert.
+
+Run this in the Supabase SQL editor to see the current function definition:
+
+```sql
+SELECT pg_get_functiondef(oid)
+FROM pg_proc
+WHERE proname = 'validate_and_migrate_offline_submission';
+```
+
+Locate the `INSERT INTO student_answers` clause inside the function body. It will currently look something like:
+
+```sql
+INSERT INTO student_answers (
+  idempotency_key, submission_id, question_id, selected_option, answered_at
+)
+SELECT
+  (a->>'idempotency_key')::uuid,
+  v_submission_id,
+  (a->>'question_id')::uuid,
+  a->>'selected_option',
+  to_timestamp((a->>'answered_at')::bigint / 1000.0)
+FROM jsonb_array_elements(v_payload->'answers') AS a
+ON CONFLICT (idempotency_key) DO NOTHING;
+```
+
+Add the new column to both the INSERT clause and the SELECT clause:
+
+```sql
+INSERT INTO student_answers (
+  idempotency_key, submission_id, question_id, selected_option, answered_at, time_spent_ms
+)
+SELECT
+  (a->>'idempotency_key')::uuid,
+  v_submission_id,
+  (a->>'question_id')::uuid,
+  a->>'selected_option',
+  to_timestamp((a->>'answered_at')::bigint / 1000.0),
+  COALESCE((a->>'time_spent_ms')::int, 0)
+FROM jsonb_array_elements(v_payload->'answers') AS a
+ON CONFLICT (idempotency_key) DO NOTHING;
+```
+
+The `COALESCE(..., 0)` defends against any in-flight client that hasn't been updated yet — pre-Phase-4 clients will send no `time_spent_ms` and land as 0 (matching the column default).
+
+Save the new function via `CREATE OR REPLACE FUNCTION ...` in the SQL editor and add a verification SELECT:
+
+```sql
+SELECT pg_get_functiondef(oid)
+FROM pg_proc
+WHERE proname = 'validate_and_migrate_offline_submission';
+```
+
+Confirm the `time_spent_ms` column appears in the function source.
+
+Save the new function definition to `db/sql-editor/2026-04-14-rpc-validate-offline-submission-time-spent.sql` for the audit trail.
+
+- [ ] **Step 1.5.8: Validator — full round-trip**
+
+Manual smoke test:
+
+1. `npm run dev`
+2. Sign in as a student, start an exam
+3. Answer one question, wait 5 seconds, advance to the next
+4. In Supabase SQL editor:
+   ```sql
+   SELECT idempotency_key, time_spent_ms, answered_at
+   FROM student_answers
+   WHERE submission_id = (
+     SELECT id FROM submissions
+     WHERE student_id = '<student_id>'
+     ORDER BY created_at DESC LIMIT 1
+   )
+   ORDER BY answered_at;
+   ```
+5. Confirm `time_spent_ms > 0` for the answered question (should be ~5000 for a 5s wait).
+
+Then test the offline path:
+
+1. Open DevTools → Network → throttle to **Offline**
+2. Answer another question
+3. Confirm Dexie has a row with `synced: false` and `time_spent_ms` set (DevTools → Application → IndexedDB → mindspark_exam → pendingAnswers)
+4. Restore network
+5. Wait for the sync engine to flush
+6. Re-run the SQL query above and confirm the new row landed with the correct `time_spent_ms`
+
+If the offline path lands `time_spent_ms = 0` while the live path lands the correct value, the RPC update (Step 1.5.7) is not deployed. Re-check.
+
+- [ ] **Step 1.5.9: Type-check + lint + tests**
+
+```bash
+npm run tsc
+npm run lint
+npx vitest run src/lib/anzan/ src/lib/anticheat/ src/lib/offline/
+```
+
+Expected: 0 errors, 0 warnings, all anzan/anticheat/offline tests pass.
+
+- [ ] **Step 1.5.10: Commit**
+
+```bash
+git add src/lib/offline/indexed-db-store.ts \
+        src/lib/offline/sync-engine.ts \
+        src/lib/anticheat/teardown.ts \
+        src/app/api/submissions/offline-sync/route.ts \
+        src/app/api/submissions/teardown/route.ts \
+        src/app/actions/assessment-sessions.ts \
+        db/sql-editor/2026-04-14-rpc-validate-offline-submission-time-spent.sql
+git commit -m "feat(assessment-engine): wire time_spent_ms through 8-layer propagation chain"
 ```
 
 ---

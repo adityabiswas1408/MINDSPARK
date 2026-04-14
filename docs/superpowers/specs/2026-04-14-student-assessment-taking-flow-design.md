@@ -293,7 +293,7 @@ Reducers:
 
 ## 9. Database changes
 
-Two new columns on `exam_papers`. One existing column to verify.
+Three column adds — two on `exam_papers`, one on `student_answers`. The `student_answers.time_spent_ms` column triggers an 8-file propagation chain detailed in §9.1.
 
 ```sql
 ALTER TABLE exam_papers
@@ -302,14 +302,53 @@ ALTER TABLE exam_papers
 
 ALTER TABLE exam_papers
   ADD COLUMN require_answer_confirmation BOOLEAN NOT NULL DEFAULT TRUE;
+
+ALTER TABLE student_answers
+  ADD COLUMN time_spent_ms INT NOT NULL DEFAULT 0;
 ```
 
 - `per_question_time_seconds` NULL = no per-question timer for this paper.
 - `require_answer_confirmation` default TRUE matches existing EXAM behaviour; a separate trigger or app-level default will flip it to FALSE when `type = 'TEST'`. That decision happens inside the Create Assessment Wizard, not at the DB level.
+- `student_answers.time_spent_ms` defaults to 0 — existing rows pre-date the timing feature and are correct at 0. **No backfill needed.**
 
-**S1 verification:** `student_answers.time_spent_ms` must exist and be `INT NOT NULL DEFAULT 0`. Confirm in live DB before implementation (per CLAUDE.md DB rules — run a `SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'student_answers'` first).
+**Audit-time correction (Phase 4, 2026-04-14):** the original spec assumed `time_spent_ms` already existed in the live DB and only required verification. The Phase 1 audit confirmed it does NOT exist (`student_answers` columns are `[id, submission_id, question_id, is_correct, created_at, idempotency_key, selected_option, answered_at]`). The column add is now part of this spec.
 
-**Migration policy:** Per CLAUDE.md, no new migration files. Both columns get applied through the Supabase SQL editor. GOTCHAS.md updated with the new columns.
+**Migration policy:** Per CLAUDE.md, no new migration files. All three columns get applied through the Supabase SQL editor. GOTCHAS.md updated with the new columns.
+
+### 9.1 `time_spent_ms` propagation chain
+
+Adding the column to `student_answers` is **not enough** — the value has to flow from the client, through the offline queue, through both the live and the offline server paths, and into the column. **Eight files / objects** must be updated in lockstep:
+
+| # | Layer | File / object | Change |
+|---|---|---|---|
+| 1 | DB | `student_answers` | `ADD COLUMN time_spent_ms INT NOT NULL DEFAULT 0` (above) |
+| 2 | Browser store | `src/lib/offline/indexed-db-store.ts` | Add `time_spent_ms: number` to `PendingAnswer` interface; bump Dexie schema to v2 |
+| 3 | Browser sync | `src/lib/offline/sync-engine.ts` | Include `time_spent_ms` in the per-answer payload mapping inside `flushOfflineQueue` |
+| 4 | Browser teardown | `src/lib/anticheat/teardown.ts` | Include `time_spent_ms` in the keepalive POST `answers_snapshot` mapping |
+| 5 | Server validation (offline) | `src/app/api/submissions/offline-sync/route.ts` | Add `time_spent_ms: z.number().int().nonnegative()` to the `AnswerSchema` Zod schema |
+| 6 | Server validation (teardown) | `src/app/api/submissions/teardown/route.ts` | Same Zod schema update |
+| 7 | Server actions (live path) | `src/app/actions/assessment-sessions.ts` | Add `time_spent_ms: number` to `SubmitAnswerInput`, write it on the `student_answers.upsert`. Add same field to the `Answer` interface used by `submitExam` and pass it through the upsert payload mapping. |
+| 8 | RPC (DB-side) | `validate_and_migrate_offline_submission` | Update the Postgres function to read `time_spent_ms` from the staging payload JSON and include it in the `INSERT INTO student_answers` clause. |
+
+**Why the chain matters:** the offline queue path passes answers through three serialization boundaries (browser → fetch → Postgres staging table → RPC → final table). If any one of those boundaries drops the field, the value silently lands as the column default (0) and we lose the timing data without any error. The implementation plan must add all 8 changes in a single task and validate the full round-trip with an integration test.
+
+### 9.2 `initSession` return shape extension
+
+Today's `initSession` (in `src/app/actions/assessment-sessions.ts`) selects `id, status, duration_minutes, institution_id` from `exam_papers` and returns only `session_id, expires_at, questions`. The assessment-taking flow needs three more fields surfaced:
+
+- `paper.type` — so the controller can route to the pre-flash interstitial for TEST or directly to MCQ for EXAM
+- `paper.per_question_time_seconds` — to drive the per-question countdown
+- `paper.require_answer_confirmation` — to drive the confirm-button toggle
+
+The plan task that extends `initSession` must update the SELECT clause AND the return type AND every consumer.
+
+### 9.3 Question schema — columnar form is canonical
+
+Phase 4 audit confirmed: the existing `initSession` reads from `questions.option_a/b/c/d`, `questions.correct_option`, `questions.equation_display`, and `questions.flash_sequence`. The JSON columns (`questions.options`, `questions.correct_answer`) are **not** consulted by the live code path.
+
+For this spec, the **columnar form is canonical** for all engine-side reads. The answer-sheet renderer in the results-flow spec (Frame 8 / Frame 9) must also read from the columnar form to stay consistent.
+
+A future cleanup spec should drop the unused JSON columns. **Out of scope here** — flagged as Phase 2 follow-up in the audit doc.
 
 ## 10. Retroactive change to the Create Assessment Wizard spec
 
