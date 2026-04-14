@@ -601,3 +601,36 @@ Browser mockups saved in `.superpowers/brainstorm/223-1776020821/content/`:
 - **2026-04-14-admin-student-profile-design.md** — source of the `roll_number NOT NULL` requirement and the canonical `date_of_birth` decision; any future `students` column adds (DOB parser, consent trail) must land there first.
 - **admin-create-assessment-flow-design** — the wizard filters target students by `level_id` — levels/students schema must stay consistent (same `institution_id` scoping, same `deleted_at` filter).
 - **admin-activity-log-design** (dropped v1) — `CREATE_STUDENT`, `UPDATE_STUDENT`, `DEACTIVATE_STUDENT`, `RESET_PASSWORD` audit rows are still written; browse UI deferred.
+
+---
+
+## Query Budget
+
+### List page (`/admin/students`)
+**Target: ≤ 3 queries per page load** regardless of filter/search/page state.
+
+1. `SELECT students.* + levels(id, name) via PostgREST embed + count` — single round-trip with embedded level join. NOT two separate queries.
+2. `SELECT levels` for the filter dropdown — cached in React Query or fetched once per page-level layout.
+3. (Optional) `SELECT count(*) WHERE deleted_at IS NOT NULL` for the "X deactivated" badge — deferred to implementation.
+
+**N+1 risks to avoid:**
+- ❌ Fetching students then looping `.from('levels').select().eq('id', ...)` for each row. Use the embed above.
+- ❌ Fetching cohort names per student on the list page — cohort is not displayed in the 4-column list, skip it entirely.
+
+### Detail page (`/admin/students/[id]`)
+**Target: ≤ 3 queries per page load.**
+
+1. `SELECT students + levels + cohorts` — single PostgREST embed.
+2. `SELECT submissions` for recent-submissions section — `.limit(10)`, ordered by `completed_at DESC`.
+3. (Optional) `SELECT cohort_history` for the cohort timeline — only if UI shows it; otherwise omit.
+
+**N+1 risks to avoid:**
+- ❌ Fetching each submission's `exam_papers.title` separately. Use `select('id, score, percentage, completed_at, exam_papers(id, title)')`.
+
+### Create/Import dialogs
+- `createStudent`: 1 INSERT per call, single round-trip.
+- `importStudentsCSV`: delegates to `bulk_import_students` RPC — **1 round-trip total** regardless of row count. Must not loop `createStudent` per row on the server side.
+
+### Mutations
+- `updateStudent`: max 2 writes (students UPDATE + cohort_history INSERT when cohort changes) in a single transaction. Log to activity_logs is the 3rd write but can be fire-and-forget.
+- `deactivateStudent`: 1 UPDATE + 1 activity_logs INSERT.

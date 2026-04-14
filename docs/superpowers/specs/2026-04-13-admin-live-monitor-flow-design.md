@@ -539,3 +539,31 @@ No other mutations. Everything else is read-only + realtime subscriptions.
 - **`admin-results-redesign`:** the "Go to Results →" link from the Closed Summary state navigates to `/admin/results/[paperId]`, and "Answer Sheet →" navigates to `/admin/results/[paperId]/students/[studentId]`. Depends on the results-redesign routes existing; no schema coupling.
 - **`admin-create-assessment-flow`:** the `forceOpenExam` action from that spec is the only producer of the `status = 'LIVE'` state this page lists.
 
+---
+
+## Query Budget
+
+### List page (`/admin/monitor`)
+**Target: ≤ 2 queries per page load.**
+
+1. `SELECT exam_papers WHERE status = 'LIVE' AND institution_id = $1` with embedded `levels(id, name)` — single PostgREST round-trip.
+2. `results_hub_paper_stats(p_paper_ids uuid[])` equivalent aggregate for live papers — or a new `get_live_exams_overview(p_institution_id)` RPC that returns paper + join_count + submit_count + level_name in one call. Implementation choice deferred to plan.
+
+### Detail page (`/admin/monitor/[id]`)
+**Target: ≤ 2 queries per page load, realtime-driven updates thereafter.**
+
+1. `get_live_monitor_data(p_paper_id uuid)` — **existing RPC** returns paper metadata + all enrolled students + per-student session/submission state + answered-count in a single round-trip. This is the canonical way to populate the live table.
+2. (Optional) initial Presence snapshot via `channel.presenceState()` after subscribing — not a DB query.
+
+**Realtime updates (NOT page-load queries — amortised over the session):**
+- Broadcast events on `exam:{paperId}` update per-row answered count. Must be debounced at 500ms per row to avoid re-rendering the whole table on every keystroke.
+- Presence join/leave events on `lobby:{paperId}` update the "joined" column.
+
+**N+1 risks to avoid:**
+- ❌ Polling `get_live_monitor_data` every 2 seconds as a fallback — use realtime only. If realtime drops, show a "Reconnecting…" banner, do not poll.
+- ❌ Fetching per-student `student_answers` rows individually for the answered-count. The RPC must aggregate server-side.
+- ❌ Looping `students` by id for names — they're already embedded in the RPC return shape.
+
+### Mutations
+- `forceCloseExam`: 1 UPDATE + 1 activity_logs INSERT.
+

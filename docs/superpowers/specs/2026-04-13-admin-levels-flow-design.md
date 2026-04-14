@@ -510,3 +510,35 @@ All existing:
 - **`admin-create-assessment-flow`:** the "Create Assessment for Level" CTA launches that wizard with `level_id` pre-locked. Create-assessment plan must support the pre-lock hint.
 - **`admin-results-redesign`:** the Assessments tab card click navigates to `/admin/results/[id]` for Published/Closed papers (`/admin/monitor/[id]` for Live, `/admin/assessments/[id]/edit` for Draft). The `is('archived_at', null)` filter reads the column added by that spec's migration.
 
+---
+
+## Query Budget
+
+### List page (`/admin/levels`)
+**Target: ≤ 2 queries per page load.**
+
+1. `SELECT levels + student count per level + assessment count per level` — **requires a single new RPC `get_levels_with_counts(p_institution_id uuid)` to avoid N+1**. Naive approach would issue 1 query for levels + 2 queries per level (student count + paper count). For 10 levels that's 21 round-trips.
+2. (Optional) `SELECT count(*) FROM students WHERE level_id IS NULL AND deleted_at IS NULL` for a possible "unassigned students" hint — defer until UI needs it.
+
+**N+1 risks to avoid:**
+- ❌ `levels.map(l => supabase.from('students').select('id', { count: 'exact' }).eq('level_id', l.id))` — explicit anti-pattern. Use the RPC.
+- ❌ Similarly for `exam_papers` counts per level.
+
+**New RPC shape (add to implementation plan):**
+```sql
+CREATE FUNCTION get_levels_with_counts(p_institution_id uuid)
+RETURNS TABLE(level_id uuid, name text, sort_order int, student_count bigint, assessment_count bigint);
+```
+
+### Level detail page (`/admin/levels/[id]`)
+**Target: ≤ 3 queries per page load.**
+
+1. `SELECT levels` — single row by id.
+2. `SELECT students WHERE level_id = $1 AND deleted_at IS NULL` with `.limit(50)` + pagination.
+3. `SELECT exam_papers WHERE level_id = $1 AND archived_at IS NULL` ordered by `created_at DESC`, `.limit(50)`.
+
+### Mutations
+- `createLevel`: 1 INSERT + 1 activity_logs INSERT.
+- `updateLevelOrder`: 1 transaction with batched `UPDATE levels SET sort_order = v.sort_order FROM (VALUES ...) AS v(id, sort_order) WHERE levels.id = v.id`. Must NOT loop `.from('levels').update().eq('id', ...)` per row.
+- `deactivateStudent` / `createStudent` invoked from level-context dialogs inherit the students-flow budget.
+

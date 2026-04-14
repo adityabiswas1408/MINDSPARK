@@ -1003,3 +1003,51 @@ All new actions: `requireRole('admin')` + institution scope + `activity_logs` in
 - **admin-dashboard-design** — "Upcoming scheduled assessments" widget reads `scheduled_start_at` for ordering.
 - **admin-settings-design** — Pass percentage default (60) and duration default come from institution settings (future); for v1, hardcoded in the wizard.
 - **admin-activity-log-design** (dropped v1) — `CREATE_ASSESSMENT`, `PUBLISH_ASSESSMENT`, `FORCE_OPEN_EXAM`, `SCHEDULED_OPEN`, `SCHEDULED_CLOSE`, `CREATE_QUESTION`, `UPDATE_QUESTION`, `DELETE_QUESTION`, `REORDER_QUESTIONS` audit rows still written; browse UI deferred.
+
+---
+
+## Query Budget
+
+### Step 1 (type picker)
+**Target: 0 queries on mount.** Pure client state. On Next click: 1 INSERT via `createAssessment` + 1 activity_logs INSERT.
+
+### Step 2 (details)
+**Target: ≤ 2 queries on mount.**
+
+1. `getAssessmentDefaults()` — institution default level + duration (optionally batched with Step 1 load).
+2. `SELECT levels WHERE institution_id = $1` for the level dropdown.
+3. `getTargetStudentCount({ level_id })` — **debounced**, fires only on level change, not on every keystroke in other fields.
+
+### Step 3 (questions)
+**Target: ≤ 1 query per draft load, amortised writes thereafter.**
+
+1. `SELECT questions WHERE paper_id = $1 ORDER BY question_order` — single round-trip. Questions are paginated client-side only, not server-side (expected ≤ 100 questions per paper).
+2. Per-keystroke edits use local state + debounced `updateQuestion` (500ms). **Never** issue a DB write on every character.
+3. Reorder uses `reorderQuestions` batched write — single RPC/UPDATE for the full new order, not N individual UPDATEs.
+
+**N+1 risks to avoid:**
+- ❌ Fetching each question's options individually — columnar schema means they all come in one row.
+- ❌ `createQuestion` in a loop for CSV/bulk paste — must use a `bulkInsertQuestions` RPC if that feature is added (not in v1).
+
+### Step 4 (review)
+**Target: 0 queries on mount.** Reuses in-memory state from Steps 1–3. Review cards read from the wizard state, not the DB.
+
+### Step 5 (success)
+**Target: 0 queries.** Pure confirmation page.
+
+### Draft resume (`/admin/assessments/[id]/edit`)
+**Target: ≤ 2 queries per page load.**
+
+1. `getAssessmentForEdit({ assessment_id })` — returns paper + all questions in a single RPC or embedded select.
+2. `SELECT levels` for the level dropdown — may be cached from layout.
+
+### Cron (`/api/cron/assessment-schedule`)
+**Target: exactly 2 UPDATEs per run, regardless of affected row count.**
+
+- Open transition: 1 batched UPDATE (all eligible PUBLISHED rows at once).
+- Close transition: 1 batched UPDATE (all eligible LIVE rows at once).
+- Activity log inserts: fire-and-forget, batched as a single INSERT ... SELECT from the RETURNING ids of each UPDATE.
+
+**N+1 risks to avoid:**
+- ❌ Looping affected paper IDs to log activity one at a time. Use INSERT ... SELECT.
+- ❌ Polling `get_live_monitor_data` from the cron — cron has no reason to touch runtime state beyond the two status transitions.

@@ -1090,3 +1090,106 @@ The sequencing is critical: the code readers must be edited **before** the SQL D
 | `docs/superpowers/plans/2026-04-14-student-results-flow.md` | Task 13 — full rewrite. Now covers both the GPA chart deletion (original scope) AND the dpm drop (Phase 5.9 addition). 10 new sub-steps with code edits for the three reader files, a pre-flight grep, the SQL run book, and GOTCHAS.md update. Single atomic commit. |
 | `C:\Users\ADI\.claude\projects\A--MS-mindspark\memory\project-v1-scope.md` | Added Q11 + Q12 + Q13 decisions under a new "Audit decisions locked in (Phase 5.9, 2026-04-14)" section. |
 | `docs/superpowers/audit/2026-04-14-phase1-findings.md` | This Phase 5.9 section. |
+
+---
+
+# Phase 6 — Performance observations (2026-04-14)
+
+## 6.1 loading.tsx coverage — 12 routes added
+
+Phase 5.4 flagged 14 routes without `loading.tsx`. After dropping the two v1-dropped features (announcements, activity-log), 12 routes needed files. All 12 created using the existing `src/components/shared/skeletons.tsx` library + inline Tailwind pulse blocks:
+
+| Route | Skeletons used |
+|---|---|
+| `/admin/levels` | inline cards |
+| `/admin/results` | `KpiCardSkeleton`, `AssessmentCardSkeleton` |
+| `/admin/monitor` | `AssessmentCardSkeleton` |
+| `/admin/monitor/[id]` | `KpiCardSkeleton`, `TableRowSkeleton` |
+| `/admin/settings` | inline sections |
+| `/admin/students/[id]` | `ResultsRowSkeleton` |
+| `/student/tests` | `ExamCardSkeleton` |
+| `/student/profile` | inline card |
+| `/student/consent` | inline card |
+| `/student/exams/[id]` | inline card |
+| `/student/exams/[id]/lobby` | inline breathing-circle placeholder |
+| `/student/assessment/[id]` | inline flash placeholder |
+
+All files are Server Components (no `'use client'`). `npm run tsc` → 0 errors.
+
+## 6.2 Query Budget sections — 4 specs
+
+Added to the four specs flagged in audit §8.2 for N+1 risk:
+
+| Spec | Headline budget |
+|---|---|
+| `2026-04-13-admin-students-flow-design.md` | List ≤ 3 queries; detail ≤ 3; `importStudentsCSV` → single `bulk_import_students` RPC |
+| `2026-04-13-admin-levels-flow-design.md` | List ≤ 2 queries; **requires new `get_levels_with_counts(institution_id)` RPC** to avoid 1 + 2N round-trips |
+| `2026-04-13-admin-live-monitor-flow-design.md` | Detail ≤ 2 queries; realtime-driven updates thereafter; debounce 500ms per row; no polling fallback |
+| `2026-04-13-admin-create-assessment-flow-design.md` | Step 2 ≤ 2; Step 3 ≤ 1 (columnar questions); cron = exactly 2 batched UPDATEs per run |
+
+## 6.3 Production build — per-route bundle sizes
+
+`npm run build` (Next.js 15.5.14, stub env vars to bypass `/api/*` env validator at page-data-collection time; build graph unchanged).
+
+```
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      192 B         102 kB
+├ ○ /_not-found                             1 kB         103 kB
+├ ƒ /admin/activity-log                  5.11 kB         177 kB
+├ ƒ /admin/announcements                 4.88 kB         180 kB
+├ ƒ /admin/assessments                   7.04 kB         154 kB
+├ ƒ /admin/dashboard                     2.11 kB         117 kB
+├ ƒ /admin/levels                        29.2 kB         180 kB
+├ ƒ /admin/monitor                       1.19 kB         120 kB
+├ ƒ /admin/monitor/[id]                  5.99 kB         205 kB
+├ ƒ /admin/results                       10.2 kB         250 kB
+├ ƒ /admin/settings                      5.47 kB         237 kB
+├ ƒ /admin/students                      6.54 kB         187 kB
+├ ƒ /admin/students/[id]                  9.9 kB         178 kB
+├ ○ /login                               1.49 kB         163 kB
+├ ƒ /student/assessment/[id]               682 B         247 kB
+├ ƒ /student/consent                       807 B         103 kB
+├ ƒ /student/dashboard                   2.34 kB         108 kB
+├ ƒ /student/exams                       2.35 kB         108 kB
+├ ƒ /student/exams/[id]                  1.52 kB         248 kB
+├ ƒ /student/exams/[id]/lobby            3.83 kB         179 kB
+├ ƒ /student/profile                       192 B         102 kB
+├ ƒ /student/results                     9.98 kB         223 kB
+└ ƒ /student/tests                       2.35 kB         108 kB
++ First Load JS shared by all             102 kB
+ƒ Middleware                             86.8 kB
+```
+
+## 6.4 Observations
+
+**Shared JS baseline: 102 kB.** Every page pays this. Composed of two chunks: `1255-*.js` (45.7 kB) and `4bd1b696-*.js` (54.2 kB) plus ~2.3 kB other shared chunks. Likely contents: React + Next runtime + shared Supabase client + icons + layout.
+
+**Middleware: 86.8 kB.** Large for middleware — runs on every request. Worth an audit pass to see what got bundled (likely `@supabase/ssr` + cookie helpers + route-matching tables). Not blocking v1 but flagged for Phase 7 roadmap.
+
+**Outliers worth flagging (> 200 kB First Load JS):**
+
+| Route | First Load JS | Likely cause |
+|---|---|---|
+| `/admin/results` | **250 kB** | `recharts` grade distribution + tanstack-table (heaviest admin page) |
+| `/student/exams/[id]` | 248 kB | pulls in assessment engine for preview/pre-lobby state? — worth investigating |
+| `/student/assessment/[id]` | 247 kB | expected — RAF engine + anzan + anti-cheat + offline Dexie store all land here |
+| `/admin/settings` | 237 kB | rich-text editor bundle? Settings page should not need this — investigate |
+| `/student/results` | 223 kB | recharts — expected |
+| `/admin/monitor/[id]` | 205 kB | tanstack-table + Supabase realtime client |
+
+**Admin /levels page is 29.2 kB of route-local JS** — by far the largest route-local bundle (next is /admin/results at 10.2 kB). Likely explanation: `@hello-pangea/dnd` drag-and-drop is imported client-side. Acceptable for v1 but should be lazy-loaded if the page becomes a P95 entry point.
+
+**Under-200 B routes that look suspicious:**
+- `/student/profile` @ 192 B — this is still a placeholder shell. Will grow significantly when profile implementation lands.
+- `/student/assessment/[id]` @ 682 B route-local — deceptively small because the heavy lifting is in the First Load JS shared pool (engine). Real cost is in the 247 kB shared number.
+- `/api/*` routes @ 192 B — expected (Route Handlers ship no client JS).
+
+**No route exceeds 300 kB First Load JS.** Target for v1 performance budget: ≤ 300 kB First Load on every authenticated route. **PASS.**
+
+## 6.5 Phase 6 deliverables summary
+
+- ✅ 12 new `loading.tsx` files (6 admin, 6 student) wired to existing shared skeleton library
+- ✅ 4 Query Budget sections appended to the flagged specs
+- ✅ Production build captured — all 23 routes measured, no errors, no new warnings introduced by Phase 6 changes
+- ✅ `npm run tsc` → 0 errors throughout Phase 6
+- ⏭ Phase 7 (execution roadmap sequencing) reserved for a later Opus 1M session — not attempted here.
