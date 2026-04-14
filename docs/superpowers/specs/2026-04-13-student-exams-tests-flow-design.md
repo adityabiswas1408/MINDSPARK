@@ -458,6 +458,10 @@ The Lobby page is full-canvas. Two options:
 
 Option 1 is cleaner. Recommended.
 
+> **Phase 2 audit note (2026-04-14):** The `(student-focus)` route group is **created by the 2026-04-14 student-assessment-taking-flow plan** (`docs/superpowers/plans/2026-04-14-student-assessment-taking-flow.md` Task 3). This spec's lobby route should mount inside that same group when its plan is written — do NOT create a separate `(student-focus)` layout. The plan dependency is one-way: assessment-taking-flow creates the group, exams-tests-flow reuses it.
+
+> **Phase 2 audit correction (2026-04-14):** §13's "Modified files" entry says `src/app/(student)/layout.tsx — modify — add offline banner + sidebar/topbar from Dashboard spec`. The sidebar and topbar already exist in the live layout (verified by reading `src/app/(student)/layout.tsx`) — wrapped via `<StudentSidebar />` and `<StudentHeader />`. The plan task should say **"verify, do not re-add"** for the sidebar/topbar. The offline banner is a real new addition.
+
 ---
 
 ## 14. Out of Scope

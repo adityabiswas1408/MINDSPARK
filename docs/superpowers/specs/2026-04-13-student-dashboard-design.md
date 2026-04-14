@@ -290,10 +290,14 @@ src/components/student/live-exam-card.tsx                  — DELETE (replaced 
 These are changes to the student layout that this spec depends on but also benefit all other student pages:
 
 ```
-src/app/(student)/layout.tsx                               — add sidebar with Sign Out footer
-src/components/student/student-sidebar.tsx                 — new — 5 main nav items + Help & Support + sidebar footer
-src/components/student/student-topbar.tsx                  — new — 56px bar with welcome text + bell + avatar
+src/app/(student)/layout.tsx                               — wraps the existing sidebar + topbar (already in place)
+src/components/layout/student-sidebar.tsx                  — existing file (NOT src/components/student/...) — 5 main nav items + sidebar footer
+src/components/layout/student-header.tsx                   — existing file — 56px bar with welcome text + bell + avatar
 ```
+
+> **Phase 2 audit correction (2026-04-14):**
+> 1. The original draft pointed at `src/components/student/student-sidebar.tsx` and `src/components/student/student-topbar.tsx`. Neither of those paths exists in the live code. The actual files live in `src/components/layout/student-sidebar.tsx` and `src/components/layout/student-header.tsx`. Plan phase must use the correct paths.
+> 2. The original draft listed "5 main nav items + **Help & Support** + sidebar footer". The Help & Support entry has been **dropped from v1** (per `project-v1-scope.md` memory). The student sidebar now has 5 items: Dashboard, Exams, Tests, My Results, Profile. The 2026-04-14 student-profile plan removes the dangling `Support` entry from `src/components/layout/student-sidebar.tsx`.
 
 These chrome changes will be re-referenced by the future Student Exams, Tests, Results, and Profile specs — they're written here once.
 

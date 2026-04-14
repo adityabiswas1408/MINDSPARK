@@ -283,16 +283,18 @@ Client-side:
 
 ## 9. Database Changes
 
+> **Phase 2 audit correction (2026-04-14):** The original draft listed 4 column adds. The Phase 1 audit confirmed `institutions.logo_url` already exists in the live DB (text, nullable). Removed it. **Net effect: 3 new columns**, not 4.
+
 ### New columns on `institutions`
 
 ```sql
-ALTER TABLE institutions ADD COLUMN logo_url text;
+-- logo_url ALREADY EXISTS in live DB — do NOT re-add.
 ALTER TABLE institutions ADD COLUMN primary_contact_email text;
 ALTER TABLE institutions ADD COLUMN primary_contact_phone text;
 ALTER TABLE institutions ADD COLUMN address text;
 ```
 
-All four are nullable since they're optional. No constraints — admins may leave them blank.
+All three are nullable since they're optional. No constraints — admins may leave them blank.
 
 ### New Supabase Storage bucket
 
@@ -383,12 +385,17 @@ src/app/actions/settings.ts           — extend UpdateSettingsInput with new in
 ### Database migration (via Supabase SQL editor per CLAUDE.md)
 
 ```sql
-ALTER TABLE institutions ADD COLUMN IF NOT EXISTS logo_url text;
+-- logo_url ALREADY EXISTS in live DB — do NOT re-add.
+-- The IF NOT EXISTS guard would make the original ALTER a no-op, but to keep
+-- the run book honest we leave the column out entirely.
 ALTER TABLE institutions ADD COLUMN IF NOT EXISTS primary_contact_email text;
 ALTER TABLE institutions ADD COLUMN IF NOT EXISTS primary_contact_phone text;
 ALTER TABLE institutions ADD COLUMN IF NOT EXISTS address text;
 
--- Storage bucket creation happens via Supabase dashboard, not SQL
+-- Storage bucket creation happens via Supabase dashboard, not SQL.
+-- 🟡 Phase 2 audit TBD: confirm the `institution-logos` bucket exists.
+-- The Phase 1 audit could not verify this from SQL alone — needs a manual
+-- Supabase dashboard check before this spec's plan executes.
 ```
 
 ### Storage bucket setup

@@ -34,6 +34,16 @@ Each level uses a breadcrumb that matches the URL depth. Back links navigate one
 
 ## 3. Status Lifecycle
 
+> **Phase 2 audit cross-references (2026-04-14):**
+>
+> 1. **Two-gate model amendment.** The 2026-04-14 student-results-flow spec (`docs/superpowers/specs/2026-04-14-student-results-flow-design.md`) introduces a **two-gate visibility model** for student results: per-submission `result_published_at` (Gate A) and per-paper `exam_papers.answer_key_released` (Gate B). The lifecycle in this section talks only about Gate A. Gate B is orthogonal — admin can publish results without releasing the answer key. The per-paper detail page (`/admin/results/[paperId]`) MUST host the Release Answer Key card from the student-results-flow spec §5.11–5.14, mounted directly above the existing answer-key view (the read-only question paper section in §6 of this spec).
+>
+> 2. **Per-assessment detail page already exists in two specs.** The student-results-flow plan creates a minimal `/admin/assessments/[id]/page.tsx` containing only the Release Answer Key card. This spec's `/admin/results/[paperId]/page.tsx` is the **richer** version (KPIs + answer-key view + CSV export). When this spec gets an implementation plan, that plan must either: (a) merge the two routes into a single page that combines both, OR (b) keep them separate and accept that the admin has two different surfaces for the same paper. **Recommendation: merge into one route at `/admin/assessments/[id]`** — drop the `/admin/results/[paperId]` path proposed here in favour of the single canonical admin per-assessment route.
+>
+> 3. **`submissions.total_questions` dependency.** The `results_hub_paper_stats` RPC defined in §10 reads `MAX(sub.total_questions)`. That column is added by the 2026-04-14 student-results-flow spec §9. **This spec's plan cannot run before the student-results-flow plan adds the column.**
+>
+> 4. **`archived_at` is independent of the two gates.** The Archived state is admin-only and orthogonal to both Gate A and Gate B. A paper can be archived regardless of its release state.
+
 Assessments on the results hub exist in exactly one of three states at a time. A card can never appear in more than one filter view.
 
 ```

@@ -275,18 +275,22 @@ await updateAssessment({
   assessment_id: wizardState.paper_id,
   title, description, level_id, duration_minutes,
   scheduled_start_at, scheduled_end_at,
-  pass_threshold_percent, max_attempts, time_limit_mode,
-  randomize_questions, show_correct_answers,
+  pass_percentage, max_attempts, time_limit_mode,
+  randomize_questions,
 });
 
 // If "Save as default" toggle is ON:
 await upsertAssessmentDefaults({
-  duration_minutes, pass_threshold_percent, max_attempts, time_limit_mode,
-  randomize_questions, show_correct_answers,
+  duration_minutes, pass_percentage, max_attempts, time_limit_mode,
+  randomize_questions,
 });
 
 router.push('/admin/assessments/new?step=3');
 ```
+
+> **Phase 2 audit correction (2026-04-14):** The original draft of this snippet referenced `pass_threshold_percent` and `show_correct_answers`. Both were removed:
+> - `pass_threshold_percent` → use the existing `exam_papers.pass_percentage` column (numeric, nullable, already in live DB).
+> - `show_correct_answers` → dropped entirely. The "answer key visibility" gate is owned by `exam_papers.answer_key_released` from the 2026-04-14 student-results-flow spec (per its §3.1 two-gate model). The wizard should not have a separate static flag.
 
 ---
 
@@ -603,18 +607,68 @@ This is the "I'm publishing because the students are sitting in front of me righ
 
 ## 12. Database Changes
 
+> **Phase 2 audit correction (2026-04-14):** The original draft of this section had three errors that the Phase 1 audit caught against the live DB:
+> 1. **`description` already exists** in `exam_papers` (text, nullable) — the column add was a false claim and is now removed.
+> 2. **`pass_threshold_percent` collides with the existing `pass_percentage`** column (numeric, nullable). Use the existing column instead of adding a new one — Phase 2 decision is to add the CHECK constraint to `pass_percentage` rather than rename or duplicate.
+> 3. **`show_correct_answers` overlaps semantically with `answer_key_released`** from the 2026-04-14 student-results-flow spec. Drop the new column; the answer-key visibility gate is owned by the results-flow spec's §3.1 two-gate model.
+>
+> Net effect: this section now adds **5 new columns** (down from 8 in the original), and **1 new CHECK constraint** on an existing column.
+
 ### New columns on `exam_papers`
 
 ```sql
-ALTER TABLE exam_papers ADD COLUMN description text;
+-- 1. Scheduled (planned) open/close times — see §12.1 for the "scheduled vs actual" model
 ALTER TABLE exam_papers ADD COLUMN scheduled_start_at timestamptz;
 ALTER TABLE exam_papers ADD COLUMN scheduled_end_at timestamptz;
-ALTER TABLE exam_papers ADD COLUMN pass_threshold_percent integer DEFAULT 60 CHECK (pass_threshold_percent BETWEEN 0 AND 100);
-ALTER TABLE exam_papers ADD COLUMN max_attempts integer DEFAULT 1 CHECK (max_attempts >= 1);
-ALTER TABLE exam_papers ADD COLUMN time_limit_mode text DEFAULT 'hard' CHECK (time_limit_mode IN ('hard', 'grace'));
-ALTER TABLE exam_papers ADD COLUMN randomize_questions boolean DEFAULT false;
-ALTER TABLE exam_papers ADD COLUMN show_correct_answers boolean DEFAULT false;
+
+-- 2. Attempts cap
+ALTER TABLE exam_papers ADD COLUMN max_attempts integer NOT NULL DEFAULT 1
+  CHECK (max_attempts >= 1);
+
+-- 3. Hard vs grace timer mode
+ALTER TABLE exam_papers ADD COLUMN time_limit_mode text NOT NULL DEFAULT 'hard'
+  CHECK (time_limit_mode IN ('hard', 'grace'));
+
+-- 4. Randomize question order at session-start time
+ALTER TABLE exam_papers ADD COLUMN randomize_questions boolean NOT NULL DEFAULT false;
 ```
+
+### Constraint on existing `pass_percentage` column
+
+```sql
+-- pass_percentage is numeric, nullable — already in live DB.
+-- Add the 0..100 range check that the original draft proposed via pass_threshold_percent.
+ALTER TABLE exam_papers
+  ADD CONSTRAINT pass_percentage_range
+  CHECK (pass_percentage IS NULL OR (pass_percentage >= 0 AND pass_percentage <= 100));
+```
+
+The wizard's "Pass percentage" input writes to `exam_papers.pass_percentage` as a `numeric` value. The application-level default is `60` (set client-side by the wizard before insert), but the DB default stays NULL so legacy rows are not touched.
+
+### 12.1 Scheduled vs actual times — semantic model
+
+The `exam_papers` table now has **four** time columns related to opening and closing. They serve two distinct purposes:
+
+| Column | Type | When set | Set by | Meaning |
+|---|---|---|---|---|
+| `scheduled_start_at` | timestamptz | Create time | Admin in wizard Step 2 | Planned future open time. NULL means "manual open via Force Open button." |
+| `scheduled_end_at` | timestamptz | Create time | Admin in wizard Step 2 | Planned future close time. NULL means "stays open until manually closed or duration expires from opened_at." |
+| `opened_at` | timestamptz | Runtime | `forceOpenExam` action OR the cron in §13.5 | Actual time the paper transitioned to LIVE. |
+| `closed_at` | timestamptz | Runtime | `forceCloseExam` action OR the cron in §13.5 | Actual time the paper transitioned to CLOSED. |
+
+The cron job watches `scheduled_start_at` and `scheduled_end_at` and writes `opened_at` and `closed_at` (plus the status flip) at the right time. **They are two distinct concepts**, not duplicates — keep both.
+
+### 12.2 Questions schema — read §9.3 of the assessment-taking spec
+
+The original draft of this spec said:
+
+> The existing wizard uses `question_text`, `options`, `correct_answer`, `marks`, `order_index`. Verify these columns exist. If `options` is stored as JSON, it should be `jsonb` with shape `{ A: string, B: string, C: string, D: string }`.
+
+**This is wrong.** Phase 4 audit confirmed: the live engine code (`initSession` in `src/app/actions/assessment-sessions.ts`) reads from the **columnar form** (`option_a`, `option_b`, `option_c`, `option_d`, `correct_option`), NOT from the JSON form. The JSON columns (`options`, `correct_answer`) exist in the schema but are unused on the read path.
+
+**Canonical for the wizard is the COLUMNAR form.** The Step 3 question editor must write to `option_a/b/c/d`, `correct_option`, `equation_display`, `flash_sequence`. The JSON columns can stay in the schema for now (separate cleanup spec) but the wizard must NOT write to them or the live engine will return stale data.
+
+See `docs/superpowers/specs/2026-04-14-student-assessment-taking-flow-design.md` §9.3 for the full justification.
 
 ### New `assessment_defaults` table (one row per admin user)
 
@@ -623,11 +677,10 @@ CREATE TABLE assessment_defaults (
   user_id uuid PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE,
   institution_id uuid NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
   duration_minutes integer DEFAULT 30,
-  pass_threshold_percent integer DEFAULT 60,
-  max_attempts integer DEFAULT 1,
-  time_limit_mode text DEFAULT 'hard',
+  pass_percentage numeric DEFAULT 60 CHECK (pass_percentage >= 0 AND pass_percentage <= 100),
+  max_attempts integer DEFAULT 1 CHECK (max_attempts >= 1),
+  time_limit_mode text DEFAULT 'hard' CHECK (time_limit_mode IN ('hard', 'grace')),
   randomize_questions boolean DEFAULT false,
-  show_correct_answers boolean DEFAULT false,
   updated_at timestamptz DEFAULT now()
 );
 
@@ -637,9 +690,7 @@ CREATE POLICY "own_defaults" ON assessment_defaults
   FOR ALL USING (user_id = auth.uid());
 ```
 
-### New columns on `questions` (if not already present)
-
-The existing wizard uses `question_text`, `options`, `correct_answer`, `marks`, `order_index`. Verify these columns exist. If `options` is stored as JSON, it should be `jsonb` with shape `{ A: string, B: string, C: string, D: string }`.
+(Phase 2 correction: column was renamed from `pass_threshold_percent` to `pass_percentage` and `show_correct_answers` was removed.)
 
 ---
 
@@ -649,53 +700,113 @@ The existing wizard uses `question_text`, `options`, `correct_answer`, `marks`, 
 
 - **`createAssessment`** — already exists. Used after Step 1 to create the initial DRAFT with placeholder values. No changes needed.
 
-- **`updateAssessment`** — existing action. **Extend** to accept all new Settings fields: `description`, `scheduled_start_at`, `scheduled_end_at`, `pass_threshold_percent`, `max_attempts`, `time_limit_mode`, `randomize_questions`, `show_correct_answers`. Keep the existing `ASSESSMENT_LOCKED` guard that prevents updates when status is LIVE/CLOSED.
+- **`updateAssessment`** — existing action. **Extend** to accept the new Settings fields: `scheduled_start_at`, `scheduled_end_at`, `pass_percentage`, `max_attempts`, `time_limit_mode`, `randomize_questions`. **NOT** `description` (already supported — column has existed since v0). **NOT** `show_correct_answers` (column dropped — see §12 Phase 2 correction). **NOT** `pass_threshold_percent` (use `pass_percentage`). Keep the existing `ASSESSMENT_LOCKED` guard that prevents updates when status is LIVE/CLOSED.
 
 - **`publishAssessment`** — already exists. Called from Step 4 when admin clicks "Publish Assessment". Transitions status DRAFT → PUBLISHED. No changes needed.
 
-- **`forceOpenExam`** — already exists. Called from the "Start Session Now" button on Step 5 published variant. Transitions status PUBLISHED → LIVE. No changes needed.
+- **`forceOpenExam`** — already exists. Called from the "Start Session Now" button on Step 5 published variant. Transitions status PUBLISHED → LIVE and writes `opened_at = now()`. No changes needed.
 
-### New server actions
+- **`forceCloseExam`** — already exists. Used by both the live-monitor flow and (per §13.5) the cron job. Transitions LIVE → CLOSED and writes `closed_at = now()`. No changes needed.
+
+### New server actions (5 total)
 
 ```ts
 // Used by Step 2 "Save as default" toggle
 export async function upsertAssessmentDefaults(input: {
   duration_minutes: number;
-  pass_threshold_percent: number;
+  pass_percentage: number;
   max_attempts: number;
   time_limit_mode: 'hard' | 'grace';
   randomize_questions: boolean;
-  show_correct_answers: boolean;
 }): Promise<ActionResult<null>>
 
 // Used by Step 2 on-load to pre-fill defaults (optional — can also be a Server Component query)
 export async function getAssessmentDefaults(): Promise<ActionResult<AssessmentDefaults | null>>
 
-// Used by Step 3 when admin adds/edits/deletes a question
+// Used by Step 3 when admin adds a question.
+// Q1: createQuestion ALREADY EXISTS in src/app/actions/questions.ts — verify in plan
+// phase whether its current signature accepts an empty placeholder, or whether the
+// wizard needs to call it with default question_text.
 export async function createQuestion(input: {
   paper_id: string;
   order_index: number;
 }): Promise<ActionResult<{ question_id: string }>>
 
+// Used by Step 3 when admin edits a question.
+// 🔴 GAP CONFIRMED IN PHASE 1: this action does NOT exist in the live code
+// (questions.ts has createQuestion / deleteQuestion / reorderQuestions only).
+// The wizard's Step 3 question editor is BLOCKED until this is added.
+// Note the columnar field names — per §12.2, the wizard writes the columnar form
+// (option_a/b/c/d, correct_option), NOT the JSON form.
 export async function updateQuestion(input: {
   question_id: string;
   question_text?: string;
-  options?: { A: string; B: string; C: string; D: string };
-  correct_answer?: 'A' | 'B' | 'C' | 'D';
+  option_a?: string;
+  option_b?: string;
+  option_c?: string;
+  option_d?: string;
+  correct_option?: 'A' | 'B' | 'C' | 'D';
+  equation_display?: string | null;
+  flash_sequence?: number[] | null;
   marks?: number;
 }): Promise<ActionResult<null>>
 
-export async function deleteQuestion(input: {
-  question_id: string;
-}): Promise<ActionResult<null>>
-
-export async function reorderQuestions(input: {
-  paper_id: string;
-  order: Array<{ question_id: string; order_index: number }>;
-}): Promise<ActionResult<null>>
+// Already exists — no change needed.
+// export async function deleteQuestion(input: { question_id: string }): Promise<ActionResult<null>>
+// export async function reorderQuestions(input: { paper_id: string; order: Array<{ question_id: string; order_index: number }> }): Promise<ActionResult<null>>
 ```
 
 All new actions require `requireRole('admin')`, scope to the paper's institution, and log to `activity_logs`.
+
+### 13.5 Scheduled-transition cron job
+
+> **Phase 2 audit addition (2026-04-14):** The original spec proposed `scheduled_start_at` and `scheduled_end_at` columns but **never specified the mechanism** that would actually flip status when the times are reached. Without this section, the columns are dead weight. Phase 2 picks **Vercel Cron** as the implementation (we're already on Vercel and Vercel Cron is the cheapest path with no extra infrastructure).
+
+**Mechanism:** A Vercel Cron job runs every 5 minutes and calls a protected Route Handler that flips status for any papers whose scheduled times have arrived.
+
+#### `vercel.json` (or `vercel.ts`) cron declaration
+
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/assessment-scheduler",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}
+```
+
+**Note:** Vercel Cron only runs on Production deployments (NOT preview deployments). This is acceptable — preview environments don't need automated transitions.
+
+#### `src/app/api/cron/assessment-scheduler/route.ts`
+
+A new Route Handler protected by the `CRON_SECRET` env var (Vercel auto-injects an `Authorization: Bearer ${CRON_SECRET}` header on cron invocations). The handler:
+
+1. Reads `CRON_SECRET` from env, fail-closed if missing.
+2. Verifies the request's `Authorization` header equals `Bearer ${CRON_SECRET}`. Returns 401 otherwise.
+3. **Open transition:** `UPDATE exam_papers SET status = 'LIVE', opened_at = now() WHERE status = 'PUBLISHED' AND scheduled_start_at IS NOT NULL AND scheduled_start_at <= now() AND opened_at IS NULL`. Captures the affected `id`s.
+4. **Close transition:** `UPDATE exam_papers SET status = 'CLOSED', closed_at = now() WHERE status = 'LIVE' AND scheduled_end_at IS NOT NULL AND scheduled_end_at <= now() AND closed_at IS NULL`. Captures the affected `id`s.
+5. For each opened paper: write a `BULK_AUTO_OPEN` activity log row.
+6. For each closed paper: write a `BULK_AUTO_CLOSE` activity log row.
+7. Returns `{ opened: number, closed: number }` for observability.
+
+The handler uses the admin Supabase client (`src/lib/supabase/admin.ts`) — it's a server-only path with no user context, so `requireRole` does not apply. The `CRON_SECRET` check is the auth boundary.
+
+#### Env vars
+
+Add to Vercel project env vars (Production scope):
+
+```
+CRON_SECRET=<random 32+ char string>
+```
+
+#### Failure mode
+
+If the cron handler fails:
+- Vercel logs the failure but does NOT retry within the 5-minute window.
+- The next scheduled run (5 minutes later) will pick up the same papers (the WHERE clauses are idempotent — `opened_at IS NULL` and `closed_at IS NULL` ensure no double-transition).
+- For deeper observability, consider adding a small admin "Scheduler Health" widget that shows the last successful run time. **Out of scope** for this spec.
 
 ---
 

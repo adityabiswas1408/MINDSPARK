@@ -348,8 +348,8 @@ The settings spec §6 (Grade Boundaries) was supposed to design this section but
 | `resetPassword` | auth.ts | ✅ | **Spec mismatch:** students-flow spec says "added if not already present" to students.ts. Actually exists in **auth.ts**. Spec needs the path correction. |
 | `createLevel` | levels.ts | ✅ | |
 | `updateLevelOrder` | levels.ts | ✅ | |
-| `updateLevel` (rename) | levels.ts | ❌ MISSING | levels-flow spec mentions "Edit Level" — would need an action. Spec says "no changes" but the Edit dialog can't function without this. |
-| `deleteLevel` | levels.ts | ❌ MISSING | Same — spec doesn't address how to delete a level |
+| `updateLevel` (rename) | levels.ts | ⚪ N/A | **Phase 2 correction:** levels-flow spec §11 explicitly excludes rename from v1 scope (Q4 brainstorm decision: "Create + Reorder only"). NOT a gap — intentional. |
+| `deleteLevel` | levels.ts | ⚪ N/A | **Phase 2 correction:** same — levels-flow spec §11 explicitly excludes delete from v1 scope. Marked as "future spec if needed". NOT a gap. |
 | `createQuestion` | questions.ts | ✅ | |
 | `updateQuestion` | questions.ts | ❌ MISSING | create-assessment-flow spec defines this in §13 but it's not in the file. Critical for the wizard's Step 3 question editor. |
 | `deleteQuestion` | questions.ts | ✅ | |
@@ -365,16 +365,16 @@ The settings spec §6 (Grade Boundaries) was supposed to design this section but
 | `fetchActivityLogs` | activity-log.ts | ✅ | (activity log dropped from v1) |
 | `exportActivityLogsCsv` | activity-log.ts | ✅ | |
 
-**Summary of missing actions (8):**
+**Summary of missing actions (6 — corrected by Phase 2):**
 1. `archiveAssessment` (admin-results-redesign)
 2. `unarchiveAssessment` (admin-results-redesign)
 3. `releaseAnswerKey` (results-flow — in plan)
 4. `unreleaseAnswerKey` (results-flow — in plan)
-5. `updateLevel` (levels-flow — spec doesn't acknowledge the gap)
-6. `deleteLevel` (levels-flow — same)
-7. `updateQuestion` (create-assessment-flow — defines it but not implemented)
-8. `upsertAssessmentDefaults` + `getAssessmentDefaults` (create-assessment-flow — both missing)
-9. `uploadInstitutionLogo` (settings)
+5. `updateQuestion` (create-assessment-flow — defines it but not implemented)
+6. `upsertAssessmentDefaults` + `getAssessmentDefaults` (create-assessment-flow — both missing)
+7. `uploadInstitutionLogo` (settings)
+
+~~`updateLevel` and `deleteLevel`~~ — **Phase 2 retracted these.** The levels-flow spec §11 deliberately excludes rename/delete from v1 scope. Not gaps.
 
 **Summary of action extensions needed:**
 1. `updateAssessment` — 8 new fields
@@ -761,3 +761,63 @@ The user explicitly asked for assurance that "every feature works and renders on
 - **No `student_answers` ALTER yet** — that lands when the assessment-taking plan is executed (Task 1, after the user reviews this audit).
 - **No RPC update yet** — same. Lands in Task 1.5 of the plan.
 - **The 5 critical findings from Phase 1 §2 remain open** — `description` collision, `pass_percentage`/`pass_threshold_percent` collision, `logo_url` collision, `show_correct_answers` overlap, missing `results_hub_*` RPCs. These are Phase 2 work.
+
+---
+
+# Phase 2 — Resolve contradictions
+
+**Date:** 2026-04-14 (continuation, same session)
+**Scope:** Patched the older 2026-04-13 specs to resolve the contradictions Phase 1 found. Read-only on code. All edits go to spec docs only.
+
+## Phase 2.1 — Spec edits applied
+
+| Spec | Edits | What changed |
+|---|---|---|
+| `2026-04-13-admin-create-assessment-flow-design.md` | 3 | (a) §7 data flow snippet — replaced `pass_threshold_percent` with `pass_percentage`, removed `show_correct_answers`. (b) §12 — full rewrite. Removed false `description` ALTER (column already exists). Replaced `pass_threshold_percent` ALTER with a CHECK constraint on the existing `pass_percentage` column. Removed `show_correct_answers`. Added §12.1 explaining the scheduled-vs-actual time model, §12.2 locking the questions schema canonical form to the COLUMNAR variant. (c) §13 — full rewrite. Removed `show_correct_answers` from `updateAssessment` extension. Updated `upsertAssessmentDefaults` signature. Marked `updateQuestion` as a confirmed gap. Added §13.5 — Vercel Cron job for scheduled transitions with `/api/cron/assessment-scheduler` route, `CRON_SECRET` env var, and idempotent flip logic. |
+| `2026-04-13-admin-settings-design.md` | 2 | §9 — removed `logo_url` from the column add list (it already exists in live DB). §11 — same removal in the second SQL block. Added a TBD note about verifying the `institution-logos` storage bucket exists. |
+| `2026-04-13-admin-students-flow-design.md` | 1 | §11 — full rewrite. Documented the **runtime bug** in `updateStudent` (writes to non-existent `accessibility_flags` column). Fixed the false `resetPassword` path (it's in `auth.ts`, not `students.ts`). Picked `date_of_birth` as canonical over `dob`. Specified the corrected `UpdateStudentInput` shape and the cohort_history side-channel pattern. |
+| `2026-04-13-student-dashboard-design.md` | 1 | "Global chrome" subsection — corrected the sidebar/topbar file paths from `src/components/student/student-{sidebar,topbar}.tsx` to `src/components/layout/student-{sidebar,header}.tsx`. Removed the "Help & Support" nav item from the documented list (dropped from v1 per scope memo). |
+| `2026-04-13-student-exams-tests-flow-design.md` | 1 | "Layout note: hiding the sidebar" subsection — added a Phase 2 note that the `(student-focus)` route group is created by the assessment-taking plan, not this one. Added a correction that the sidebar/topbar already exist in the live layout (the spec said "add", should say "verify"). |
+| `2026-04-13-admin-results-redesign-design.md` | 1 | §3 Status Lifecycle — added 4 cross-reference notes: (1) Two-gate model amendment from the new student-results-flow spec, (2) per-assessment detail page conflict with the new spec's minimal admin route — recommended merge, (3) `submissions.total_questions` dependency on the new spec's column add, (4) `archived_at` independence from the two gates. |
+| `2026-04-13-admin-levels-flow-design.md` | 0 | **No edits.** Phase 1 wrongly claimed `updateLevel` and `deleteLevel` were missing — they're deliberately excluded by Q4 of the locked brainstorm. Audit doc §4.1 retracted the claim. |
+
+## Phase 2.2 — Decisions baked into the spec patches
+
+These were the open questions from Phase 1 §11. Phase 2 used my recommended defaults from the findings doc:
+
+| # | Question | Phase 2 decision | Where it landed |
+|---|---|---|---|
+| Q1 | Cron / scheduled function for `scheduled_start_at` | **Vercel Cron** with `/api/cron/assessment-scheduler` route, `*/5 * * * *` schedule, `CRON_SECRET` env var | create-assessment-flow §13.5 |
+| Q2 | `pass_percentage` vs `pass_threshold_percent` | **Use existing `pass_percentage`** (numeric, nullable) — add CHECK constraint instead of new column | create-assessment-flow §12 |
+| Q3 | `show_correct_answers` | **Drop entirely** — `answer_key_released` from results-flow owns the answer-key gate | create-assessment-flow §12, §13, §7 data flow |
+| Q4 | Questions schema canonical form | **COLUMNAR form** (`option_a/b/c/d`, `correct_option`, `equation_display`, `flash_sequence`) | assessment-taking-flow §9.3 (Phase 4) + create-assessment-flow §12.2 (Phase 2) |
+| Q6 (partial) | `date_of_birth` vs `dob` | **`date_of_birth` is canonical**; `dob` is deprecated; cleanup spec to drop `dob` is logged for later | admin-students-flow §11 |
+
+## Phase 2.3 — Decisions still open (need user input or later phase)
+
+| # | Question | Why still open | Suggested resolution phase |
+|---|---|---|---|
+| Q5 | `grade_boundaries` schema mess (3 columns for "grade letter", 3 for boundary value, 1 for assessment_type) | Need to verify which columns are actually populated and which are dead. Requires DB row-level inspection. | Phase 5 (existing code review) |
+| Q6 (other half) | `students.institution_id` nullable bug | Needs a one-line ALTER + pre-flight count. Not in any spec yet. | Phase 5 (logged) — quick fix candidate |
+| Q7 | Which 2026-04-13 specs to keep / drop further | User-only call. Currently all 8 admin + 2 student specs are still in scope (minus announcements + activity log) | User decision |
+| Q8 | `institution-logos` storage bucket existence | Cannot verify from SQL. Needs Supabase dashboard check. | User check (manual) — note added to admin-settings §11 |
+| Q9 | Where `submissions.dpm` should be populated (action vs RPC) | Need to read `calculate_results` RPC body to know what it currently computes | Phase 5 — read RPC source via `pg_get_functiondef` |
+| Q10 | Where `submissions.completion_seal` is verified | Need to trace the seal validation path through admin-side or offline-sync code | Phase 5 |
+
+## Phase 2.4 — Patches deferred to later phases
+
+These could have been done in Phase 2 but were left for downstream phases because they need either code reads, runtime tooling, or user input that wasn't available:
+
+- **Phase 5:** Fix the `updateStudent` runtime bug (drop `accessibility_flags` from the `.update({...})` payload).
+- **Phase 5:** Read `calculate_results` RPC body and decide where `dpm` is computed.
+- **Phase 5:** Trace `completion_seal` verification path.
+- **Phase 5:** Verify the `submissions` table has a unique index on `(session_id, student_id)` — submitExam upserts on this conflict key.
+- **Phase 6:** Add `loading.tsx` requirements to every older spec.
+- **Phase 7:** Resolve the per-assessment detail page conflict between the new student-results-flow plan (minimal stub) and the older admin-results-redesign spec (richer page).
+
+## Phase 2.5 — What did NOT change in Phase 2
+
+- **No code edits.** Every change is a spec doc edit. The runtime bug in `updateStudent` is documented in the spec but the `.ts` file is untouched.
+- **No DB changes applied.** The corrected SQL run books in the patched specs will run when those specs get implementation plans (Phase 7 + execution).
+- **No new specs written.** Phase 2 only patches existing ones.
+- **No commits yet** — Phase 2 commit follows after this section is written.

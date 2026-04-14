@@ -420,19 +420,61 @@ Rahul Verma,MS-L3-002,Level 3,2012-09-04
 
 ## 11. Database Changes
 
-**None.** The existing `students` table and its related `levels`, `cohorts`, `submissions`, `exam_papers` tables cover everything in this spec.
+> **Phase 2 audit correction (2026-04-14):** The original draft was wrong about three things:
+> 1. **`accessibility_flags` does not exist** as a column on `students` in the live DB. The current `updateStudent` action writes to it anyway — this is a **runtime bug** flagged for Phase 5 to fix in code. The spec must drop the reference.
+> 2. **`resetPassword` lives in `src/app/actions/auth.ts`**, not `src/app/actions/students.ts`. The original spec was wrong about the file path.
+> 3. **The canonical birth-date column is `date_of_birth`**. The students table currently has BOTH `dob` AND `date_of_birth` (date, nullable, both unused by anything except the new student-profile spec). Phase 2 picks `date_of_birth` as canonical going forward; `dob` is deprecated and should be dropped in a separate cleanup spec.
+
+**No new columns required.** The existing `students` table covers everything in this spec.
 
 ### Server actions used
 
-All actions already exist in `src/app/actions/students.ts`:
+- `createStudent` (in `src/app/actions/students.ts`) — used by Create Student dialog. **Verify in plan phase that it requires `roll_number` (NOT NULL per the 2026-04-14 student-profile spec).**
+- `updateStudent` (in `src/app/actions/students.ts`) — used by detail page edit mode. **Needs the fixes in §11.1 below.**
+- `deactivateStudent` (in `src/app/actions/students.ts`) — used by list row delete button AND detail page Danger Zone.
+- `importStudentsCSV` (in `src/app/actions/students.ts`) — used by Import CSV dialog. Backed by the `bulk_import_students` RPC (verified to exist).
+- `resetPassword` (in `src/app/actions/auth.ts` — **not students.ts**) — used by detail page Danger Zone.
 
-- `createStudent` — used by Create Student dialog
-- `updateStudent` — used by detail page edit mode
-- `deactivateStudent` — used by list row delete button AND detail page Danger Zone
-- `importStudentsCSV` — used by Import CSV dialog
-- `resetPassword` (if not already present, added) — used by detail page Danger Zone
+### 11.1 `updateStudent` correction
 
-One small addition: `updateStudent` currently only handles `full_name`, `level_id`, `accessibility_flags`. It needs to also accept `date_of_birth` and `cohort_id` for the edit mode to work fully.
+Current implementation (verified in Phase 2 by reading `src/app/actions/students.ts:160`) writes:
+
+```ts
+.update({
+  full_name: input.full_name,
+  level_id: input.level_id,
+  accessibility_flags: input.accessibility_flags  // 🔴 column doesn't exist
+})
+```
+
+The `accessibility_flags` write is a **runtime bug** — Postgres would reject the UPDATE with a `column "accessibility_flags" does not exist` error if anything called the action with that field set. The action is currently quiet only because the admin students UI is a placeholder shell that doesn't call it.
+
+**Phase 5 must fix the code** by removing the `accessibility_flags` field from `UpdateStudentInput` and the `.update({...})` payload. Phase 2 only updates the spec to match what the action **should** do.
+
+The corrected shape of `updateStudent` (after the Phase 5 code fix):
+
+```ts
+interface UpdateStudentInput {
+  student_id: string;
+  full_name?: string;
+  level_id?: string;
+  date_of_birth?: string | null;
+  gender?: string | null;
+  guardian_name?: string | null;
+  guardian_email?: string | null;
+  guardian_phone?: string | null;
+  grade_section?: string | null;
+  // status moves out — student lifecycle is owned by deactivateStudent, not updateStudent
+}
+```
+
+`cohort_id` changes are handled via the existing **`cohort_history` insert side-channel** in `updateStudent` — that part of the action is correct and stays. The spec calls this out so the engineer doesn't try to add `cohort_id` as a direct column update on `students`.
+
+**Note:** `students.cohort_id` is `uuid NOT NULL` in the live DB. The cohort_history table tracks the change history; the cohort_id column on students always reflects the current cohort. The action mutates BOTH the column AND the history table on cohort change. The corrected action body should:
+
+1. Update the direct columns (full_name, level_id, date_of_birth, etc.)
+2. If `cohort_id` is provided AND differs from the current value: insert a new `cohort_history` row + update `students.cohort_id`
+3. Write an `UPDATE_STUDENT` activity log row
 
 ---
 
