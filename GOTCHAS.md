@@ -355,3 +355,26 @@ The offline-sync route reads batch_timestamp field.
 Original k6 scripts had wrong field name.
 Always use batch_timestamp in test payloads.
 question_id must be valid UUID — not "question-0" strings.
+
+---
+
+## Broken Triggers
+
+### student_answers.update_student_answers_modtime is broken (2026-04-14)
+The trigger `update_student_answers_modtime` runs `update_modified_column()`
+which sets `NEW.updated_at = NOW()` — but `student_answers` has NO
+`updated_at` column. Every UPDATE on `student_answers` errors with
+`ERROR 42703: record "new" has no field "updated_at"`.
+
+Implications:
+- All existing INSERTs via `ON CONFLICT ... DO NOTHING` were fine
+  because DO NOTHING skips the UPDATE path.
+- Any `ON CONFLICT ... DO UPDATE` or standalone `UPDATE student_answers`
+  fails silently in production (or loudly when tested).
+- When running a backfill (e.g. Wave 1 is_correct backfill on
+  2026-04-14), wrap the UPDATE in:
+    ALTER TABLE student_answers DISABLE TRIGGER update_student_answers_modtime;
+    UPDATE ...;
+    ALTER TABLE student_answers ENABLE TRIGGER update_student_answers_modtime;
+Future cleanup (out of Wave 1 scope): either DROP the trigger or ADD
+the `updated_at TIMESTAMPTZ DEFAULT NOW()` column. Pick one.
