@@ -113,6 +113,17 @@ If realtime events not firing on these tables — check:
   WHERE pubname = 'supabase_realtime';
 student_answers also added — check for this too.
 
+### students.roll_number NOT NULL (2026-04-14)
+- 2026-04-14: students.roll_number flipped from nullable to NOT NULL via SQL editor
+  (no migration file). Pre-flight confirmed 0 affected rows. The /student/profile
+  page now treats roll_number as a non-nullable string. The admin Create Student
+  flow must already require this — verify in any future students-flow plan.
+  See db/sql-editor/2026-04-14-student-profile-roll-required.sql.
+- 2026-04-14: students table has TWO date-of-birth columns — `dob` and `date_of_birth`.
+  This duplication predates the profile spec. The profile page reads
+  `dob ?? date_of_birth`. A future cleanup task should pick one. Until then, do not
+  drop either column and do not assume either is canonical.
+
 ---
 
 ## CSS / Layout
