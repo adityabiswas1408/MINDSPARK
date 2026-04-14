@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F1F5F9; color: #0A0F1A; font-size: 16px; line-height: 1.5; padding: 32px 24px; -webkit-font-smoothing: antialiased; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+  .page { display: flex; min-height: 1040px; background: #F8FAFC; }
+
+  /* Sidebar */
+  .sidebar { width: 252px; background: #FFFFFF; border-right: 1px solid #E2E8F0; flex-shrink: 0; display: flex; flex-direction: column; }
+  .logo-bar { height: 68px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: #1A3829; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark svg { width: 20px; height: 20px; color: #FFFFFF; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .nav-section { padding: 16px 12px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; font-size: 16px; font-weight: 500; color: #1E293B; cursor: pointer; position: relative; }
+  .nav-item.active { background: #EFFAF4; color: #1A3829; font-weight: 600; }
+  .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 11px; bottom: 11px; width: 3px; border-radius: 0 3px 3px 0; background: #1A3829; }
+  .nav-icon { width: 20px; height: 20px; stroke-width: 1.75; flex-shrink: 0; }
+  .sidebar-footer { padding: 14px; border-top: 1px solid #E2E8F0; margin-top: auto; }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 15px; font-weight: 600; color: #0A0F1A; }
+  .user-role { font-size: 13px; color: #475569; }
+  .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 15px; font-weight: 500; color: #1E293B; cursor: pointer; }
+  .logout-btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
+
+  /* Top header */
+  .topbar { height: 68px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+  .crumbs { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #334155; }
+  .crumbs strong { color: #0A0F1A; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .icon-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #334155; cursor: pointer; position: relative; }
+  .icon-btn svg { width: 20px; height: 20px; stroke-width: 1.75; }
+  .icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; background: #DC2626; border-radius: 9999px; border: 2px solid #FFFFFF; }
+  .divider-v { width: 1px; height: 22px; background: #E2E8F0; }
+  .top-avatar { width: 38px; height: 38px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; }
+
+  /* Main */
+  .main { flex: 1; padding: 32px 40px 40px; overflow: hidden; }
+
+  /* Page header */
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .h1 { font-size: 30px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.018em; }
+  .h1-meta { font-size: 14px; color: #334155; font-weight: 500; margin-top: 2px; }
+  .header-actions { display: flex; gap: 10px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; height: 42px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent; font-family: inherit; transition: all 150ms; }
+  .btn svg { width: 17px; height: 17px; stroke-width: 1.75; }
+  .btn-primary { background: #1A3829; color: #FFFFFF; box-shadow: 0 1px 3px rgba(26, 56, 41, 0.3); }
+  .btn-primary:hover { background: #0F2319; }
+  .btn-outline { background: #FFFFFF; border-color: #E2E8F0; color: #1E293B; }
+  .btn-outline:hover { border-color: #94A3B8; color: #0A0F1A; background: #F8FAFC; }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 14px; font-weight: 600; }
+  .btn-sm svg { width: 14px; height: 14px; }
+
+  /* Segmented toggle */
+  .segmented {
+    display: inline-flex;
+    padding: 4px;
+    background: #F1F5F9;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border: 1px solid #E2E8F0;
+  }
+  .seg {
+    padding: 10px 28px;
+    font-size: 14px; font-weight: 600;
+    color: #64748B;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .seg.active {
+    background: #FFFFFF;
+    color: #0A0F1A;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.08);
+  }
+  .seg svg { width: 16px; height: 16px; stroke-width: 1.75; }
+  .seg-count {
+    padding: 2px 8px;
+    background: #E2E8F0;
+    color: #334155;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+  }
+  .seg.active .seg-count { background: #EFFAF4; color: #1A3829; }
+
+  /* Status pills row */
+  .pills-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    border-radius: 9999px;
+    font-size: 12px; font-weight: 600; color: #475569;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    cursor: pointer;
+    transition: all 150ms;
+  }
+  .pill:hover { border-color: #CBD5E1; }
+  .pill .count {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    background: #F1F5F9; color: #334155;
+    padding: 1px 8px; border-radius: 9999px;
+    font-size: 11px;
+  }
+  .pill.active {
+    background: #1A3829;
+    border-color: #1A3829;
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(26, 56, 41, 0.2);
+  }
+  .pill.active .count { background: rgba(255, 255, 255, 0.15); color: #FFFFFF; }
+  .pill.pill-live-dot::before {
+    content: ''; width: 6px; height: 6px; border-radius: 9999px; background: #DC2626;
+    margin-right: 2px;
+  }
+  .pill.pill-live-dot.active::before { background: #FFFFFF; }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+  }
+  .search-input-wrap { position: relative; flex: 1; max-width: 460px; }
+  .search-input {
+    width: 100%; height: 40px;
+    padding: 0 14px 0 40px;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 14px; color: #0A0F1A;
+    font-family: inherit;
+  }
+  .search-input::placeholder { color: #475569; }
+  .search-icon-abs {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; color: #475569; pointer-events: none;
+  }
+  .select, .date-filter {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0 12px 0 14px; height: 40px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 500; color: #1E293B;
+    cursor: pointer;
+    justify-content: space-between;
+  }
+  .select { min-width: 160px; }
+  .date-filter { min-width: 180px; }
+  .select svg, .date-filter svg { width: 14px; height: 14px; color: #475569; stroke-width: 2; }
+  .filter-count { margin-left: auto; font-size: 13px; color: #334155; font-weight: 500; font-family: 'DM Mono', monospace; }
+  .filter-count strong { color: #0A0F1A; font-weight: 700; }
+
+  /* Assessment row list */
+  .rows-stack { display: flex; flex-direction: column; gap: 12px; }
+
+  .row-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+    cursor: pointer;
+    transition: all 180ms;
+    position: relative;
+    overflow: hidden;
+  }
+  .row-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: #1A3829;
+    opacity: 0;
+    transition: opacity 180ms;
+  }
+  .row-card:hover {
+    border-color: #1A3829;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    transform: translateY(-1px);
+  }
+  .row-card:hover::before { opacity: 1; }
+  .row-card.row-live { border-color: #FCA5A5; }
+  .row-card.row-live::before { background: #DC2626; opacity: 1; }
+
+  /* Type icon square */
+  .type-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .type-icon svg { width: 20px; height: 20px; stroke-width: 1.75; }
+  .type-icon.exam { background: #EFF6FF; color: #1E3A8A; }
+  .type-icon.test { background: #F5F3FF; color: #6D28D9; }
+
+  /* Row body */
+  .row-body { flex: 1; min-width: 0; }
+  .row-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .badge-draft { background: #F1F5F9; color: #334155; }
+  .badge-published { background: #DCFCE7; color: #14532D; }
+  .badge-published::before { content: ''; width: 5px; height: 5px; border-radius: 9999px; background: #14532D; }
+  .badge-live { background: #FEE2E2; color: #991B1B; }
+  .badge-live::before { content: ''; width: 5px; height: 5px; border-radius: 9999px; background: #DC2626; animation: pulse 2s ease-in-out infinite; }
+  .badge-closed { background: #E2E8F0; color: #475569; }
+  .badge-archived { background: #F1F5F9; color: #64748B; border: 1px dashed #CBD5E1; }
+  .badge-exam { background: #EFF6FF; color: #1E3A8A; border: 1px solid #DBEAFE; }
+  .badge-test { background: #F5F3FF; color: #6D28D9; border: 1px solid #EDE9FE; }
+  .level-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px;
+    background: #EFFAF4;
+    border: 1px solid #B7E4C7;
+    color: #1A3829;
+    border-radius: 9999px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .level-pill svg { width: 10px; height: 10px; stroke-width: 2; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .row-title {
+    font-size: 17px; font-weight: 700;
+    color: #0A0F1A;
+    letter-spacing: -0.012em;
+    margin-bottom: 4px;
+    line-height: 1.25;
+  }
+
+  .row-meta {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: #475569; font-weight: 500;
+    flex-wrap: wrap;
+  }
+  .row-meta .sep { color: #CBD5E1; }
+  .row-meta .item { display: inline-flex; align-items: center; gap: 5px; }
+  .row-meta svg { width: 13px; height: 13px; stroke-width: 1.75; color: #475569; }
+  .row-meta .num { color: #0A0F1A; font-weight: 700; font-family: 'DM Mono', monospace; }
+  .row-meta .date { font-family: 'DM Mono', monospace; font-weight: 500; }
+
+  /* State-specific stat chip */
+  .stat-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+  .stat-chip.active {
+    background: #FEE2E2;
+    color: #991B1B;
+  }
+  .stat-chip.active::before {
+    content: ''; width: 6px; height: 6px; border-radius: 9999px;
+    background: #DC2626;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .stat-chip.submitted {
+    background: #DCFCE7;
+    color: #14532D;
+  }
+
+  /* Right-side action button */
+  .row-right {
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+  }
+  .action-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 0 16px; height: 40px;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    border: 1px solid transparent;
+    transition: all 150ms;
+  }
+  .action-btn svg { width: 14px; height: 14px; stroke-width: 2; }
+  .action-btn.primary-forest {
+    background: #1A3829;
+    color: #FFFFFF;
+    box-shadow: 0 1px 3px rgba(26, 56, 41, 0.3);
+  }
+  .action-btn.primary-forest:hover { background: #0F2319; }
+  .action-btn.primary-red {
+    background: #DC2626;
+    color: #FFFFFF;
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3);
+  }
+  .action-btn.primary-red:hover { background: #B91C1C; }
+  .action-btn.outline {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+    color: #1E293B;
+  }
+  .action-btn.outline:hover { border-color: #1A3829; color: #1A3829; background: #EFFAF4; }
+
+  /* Empty states */
+  .empty-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 64px 24px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+  }
+  .empty-icon-wrap {
+    width: 64px; height: 64px;
+    border-radius: 9999px;
+    background: #F1F5F9;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    color: #475569;
+  }
+  .empty-icon-wrap svg { width: 28px; height: 28px; stroke-width: 1.75; }
+  .empty-title { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; margin-bottom: 8px; }
+  .empty-sub { font-size: 15px; color: #475569; font-weight: 500; max-width: 420px; margin: 0 auto 24px; line-height: 1.5; }
+  .empty-actions { display: inline-flex; gap: 12px; }
+  .empty-card.filtered .empty-icon-wrap { background: #FEF9C3; color: #92400E; }
+  .clear-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #1A3829; font-size: 14px; font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .clear-link svg { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Assessments List — populated view</h2>
+<p class="note">Main list page. EXAM/TEST segmented toggle → Status pills row (6 pills) → Filter bar (search + level + date range) → vertical stack of full-width row cards with context-aware action buttons.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/assessments</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Assessments</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page-header">
+          <div>
+            <div class="h1">Assessments</div>
+            <div class="h1-meta">Create, publish, monitor, and review exams and tests.</div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Assessment</button>
+          </div>
+        </div>
+
+        <!-- Segmented toggle -->
+        <div class="segmented">
+          <div class="seg active">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>
+            EXAM <span class="seg-count">22</span>
+          </div>
+          <div class="seg">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            TEST <span class="seg-count">10</span>
+          </div>
+        </div>
+
+        <!-- Status pills row -->
+        <div class="pills-row">
+          <div class="pill active">All <span class="count">22</span></div>
+          <div class="pill">Draft <span class="count">4</span></div>
+          <div class="pill">Published <span class="count">8</span></div>
+          <div class="pill pill-live-dot">Live <span class="count">2</span></div>
+          <div class="pill">Closed <span class="count">6</span></div>
+          <div class="pill">Archived <span class="count">2</span></div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+          <div class="search-input-wrap">
+            <svg class="search-icon-abs" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" placeholder="Search assessments by title…">
+          </div>
+          <div class="select">All Levels<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="date-filter">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Last 30 days
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="filter-count"><strong>22</strong> assessments</div>
+        </div>
+
+        <!-- Assessment row cards stack -->
+        <div class="rows-stack">
+
+          <!-- LIVE row -->
+          <div class="row-card row-live">
+            <div class="type-icon exam"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/><path d="M9 13h6"/></svg></div>
+            <div class="row-body">
+              <div class="row-top">
+                <span class="badge badge-live">Live</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span>
+              </div>
+              <div class="row-title">Q3 Mental Arithmetic</div>
+              <div class="row-meta">
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="num">30</span> min</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="num">20</span> questions</span>
+                <span class="sep">·</span>
+                <span class="item">Created <span class="date">Apr 8, 2026</span></span>
+                <span class="sep">·</span>
+                <span class="stat-chip active">22 active</span>
+              </div>
+            </div>
+            <div class="row-right">
+              <button class="action-btn primary-red">Monitor<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+            </div>
+          </div>
+
+          <!-- PUBLISHED row -->
+          <div class="row-card">
+            <div class="type-icon exam"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/><path d="M9 13h6"/></svg></div>
+            <div class="row-body">
+              <div class="row-top">
+                <span class="badge badge-published">Published</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 2</span>
+              </div>
+              <div class="row-title">Midterm Arithmetic — Spring</div>
+              <div class="row-meta">
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="num">45</span> min</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="num">25</span> questions</span>
+                <span class="sep">·</span>
+                <span class="item">Created <span class="date">Apr 5, 2026</span></span>
+              </div>
+            </div>
+            <div class="row-right">
+              <button class="action-btn outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button>
+            </div>
+          </div>
+
+          <!-- DRAFT row -->
+          <div class="row-card">
+            <div class="type-icon test"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <div class="row-body">
+              <div class="row-top">
+                <span class="badge badge-draft">Draft</span>
+                <span class="badge badge-test">Test</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span>
+              </div>
+              <div class="row-title">Flash Anzan Speed Drill v2</div>
+              <div class="row-meta">
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="num">15</span> min</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="num">10</span> sequences</span>
+                <span class="sep">·</span>
+                <span class="item">Created <span class="date">Apr 11, 2026</span></span>
+              </div>
+            </div>
+            <div class="row-right">
+              <button class="action-btn primary-forest"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit Draft</button>
+            </div>
+          </div>
+
+          <!-- CLOSED row -->
+          <div class="row-card">
+            <div class="type-icon exam"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/><path d="M9 13h6"/></svg></div>
+            <div class="row-body">
+              <div class="row-top">
+                <span class="badge badge-closed">Closed</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 1</span>
+              </div>
+              <div class="row-title">Baseline Assessment — Cohort A</div>
+              <div class="row-meta">
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="num">15</span> min</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="num">10</span> questions</span>
+                <span class="sep">·</span>
+                <span class="item">Created <span class="date">Mar 28, 2026</span></span>
+                <span class="sep">·</span>
+                <span class="stat-chip submitted">26 / 26 submitted</span>
+              </div>
+            </div>
+            <div class="row-right">
+              <button class="action-btn outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>View Results</button>
+            </div>
+          </div>
+
+          <!-- PUBLISHED row -->
+          <div class="row-card">
+            <div class="type-icon exam"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/><path d="M9 13h6"/></svg></div>
+            <div class="row-body">
+              <div class="row-top">
+                <span class="badge badge-published">Published</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 2</span>
+              </div>
+              <div class="row-title">Fraction Fundamentals</div>
+              <div class="row-meta">
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="num">40</span> min</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="num">22</span> questions</span>
+                <span class="sep">·</span>
+                <span class="item">Created <span class="date">Apr 2, 2026</span></span>
+              </div>
+            </div>
+            <div class="row-right">
+              <button class="action-btn outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button>
+            </div>
+          </div>
+
+          <!-- DRAFT row 2 -->
+          <div class="row-card">
+            <div class="type-icon exam"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/><path d="M9 13h6"/></svg></div>
+            <div class="row-body">
+              <div class="row-top">
+                <span class="badge badge-draft">Draft</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 4</span>
+              </div>
+              <div class="row-title">Advanced Problem Set 01 (untitled)</div>
+              <div class="row-meta">
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="num">—</span> min</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="num">7</span> questions</span>
+                <span class="sep">·</span>
+                <span class="item">Created <span class="date">Apr 12, 2026</span></span>
+              </div>
+            </div>
+            <div class="row-right">
+              <button class="action-btn primary-forest"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit Draft</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Empty State 1 — No assessments at all</h2>
+<p class="note">First-time institution. Full chrome, no filter bar (nothing to filter), welcome card with primary CTA.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/assessments (first-time empty)</div>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Assessments</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page-header">
+          <div>
+            <div class="h1">Assessments</div>
+            <div class="h1-meta">Create, publish, monitor, and review exams and tests.</div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Assessment</button>
+          </div>
+        </div>
+
+        <div class="empty-card">
+          <div class="empty-icon-wrap">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/><path d="M9 13h6"/></svg>
+          </div>
+          <div class="empty-title">No assessments yet</div>
+          <div class="empty-sub">Create your first exam or test to start building your question bank. Students can take them once they're published.</div>
+          <div class="empty-actions">
+            <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Assessment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Empty State 2 — Filtered no-results</h2>
+<p class="note">Filter bar still visible with active filters highlighted. Amber icon. "Clear all filters" link.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/assessments?status=archived&level=L5&search=xyz</div>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Assessments</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page-header">
+          <div>
+            <div class="h1">Assessments</div>
+            <div class="h1-meta">Create, publish, monitor, and review exams and tests.</div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Assessment</button>
+          </div>
+        </div>
+
+        <div class="segmented">
+          <div class="seg active">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>
+            EXAM <span class="seg-count">22</span>
+          </div>
+          <div class="seg">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            TEST <span class="seg-count">10</span>
+          </div>
+        </div>
+
+        <div class="pills-row">
+          <div class="pill">All <span class="count">22</span></div>
+          <div class="pill">Draft <span class="count">4</span></div>
+          <div class="pill">Published <span class="count">8</span></div>
+          <div class="pill pill-live-dot">Live <span class="count">2</span></div>
+          <div class="pill">Closed <span class="count">6</span></div>
+          <div class="pill active">Archived <span class="count">2</span></div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-input-wrap">
+            <svg class="search-icon-abs" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" value="xyz" placeholder="Search assessments by title…">
+          </div>
+          <div class="select" style="background:#EFFAF4;border-color:#B7E4C7;color:#1A3829">Level 5<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="date-filter">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Last 30 days
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="filter-count"><strong>0</strong> assessments</div>
+        </div>
+
+        <div class="empty-card filtered">
+          <div class="empty-icon-wrap">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="12"/><line x1="11" y1="14" x2="11" y2="14"/></svg>
+          </div>
+          <div class="empty-title">No assessments match your filters</div>
+          <div class="empty-sub">Try a different search term, level, or status, or clear the filters to see everything.</div>
+          <div class="empty-actions">
+            <a class="clear-link"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Clear all filters</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

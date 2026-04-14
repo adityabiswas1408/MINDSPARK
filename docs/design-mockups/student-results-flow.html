@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Student Results Flow — all screens</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════ Tokens ══════════════ */
+  :root {
+    --bg-page: #F1F5F9;
+    --bg-card: #FFFFFF;
+    --bg-subtle: #F8FAFC;
+    --bg-hover: #F1F5F9;
+
+    --slate-100: #F1F5F9;
+    --slate-200: #E2E8F0;
+    --slate-300: #CBD5E1;
+
+    --text-primary: #0A0F1A;
+    --text-secondary: #475569;
+    --text-subtle: #94A3B8;
+
+    --clr-green-50:  #EFFAF4;
+    --clr-green-100: #D8F1E3;
+    --clr-green-200: #B7E4C7;
+    --clr-green-500: #52B788;
+    --clr-green-600: #2D6A4F;
+    --clr-green-700: #1F4C37;
+    --clr-green-800: #1A3829;
+
+    --clr-amber-50:  #FEF3C7;
+    --clr-amber-500: #F59E0B;
+    --clr-amber-600: #D97706;
+    --clr-amber-700: #92400E;
+
+    --clr-red-50:  #FEE2E2;
+    --clr-red-500: #EF4444;
+    --clr-red-600: #DC2626;
+    --clr-red-700: #B91C1C;
+
+    --clr-blue-50:   #DBEAFE;
+    --clr-blue-700:  #1D4ED8;
+    --clr-purple-50: #EDE9FE;
+    --clr-purple-700:#7C3AED;
+
+    --radius-card: 14px;
+    --radius-btn: 10px;
+    --shadow-sm: 0 1px 3px rgba(10, 15, 26, 0.04);
+    --shadow-md: 0 8px 24px rgba(10, 15, 26, 0.06);
+    --shadow-lg: 0 12px 32px rgba(10, 15, 26, 0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 32px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: var(--text-primary); }
+  .note { color: var(--text-secondary); margin-bottom: 20px; font-size: 14px; max-width: 900px; }
+
+  .frame {
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 48px;
+  }
+  .frame-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--slate-200);
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    background: var(--bg-subtle);
+  }
+
+  /* ══════════════ Student-focus page shell ══════════════ */
+  .student-page {
+    padding: 32px 40px 48px;
+    background: var(--bg-page);
+    min-height: 620px;
+  }
+  .page-header {
+    margin-bottom: 24px;
+  }
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .page-caption {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  /* ══════════════ Latest Result hero ══════════════ */
+  .hero-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 28px 32px;
+    background: var(--bg-card);
+    border: 2px solid var(--clr-green-800);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 24px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .hero-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--clr-green-600);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .hero-title { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .hero-sub { font-size: 12px; color: var(--text-secondary); }
+  .hero-stats { display: flex; align-items: center; gap: 28px; }
+  .hero-score {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--clr-green-800);
+    line-height: 1;
+  }
+  .hero-score .pct { font-size: 22px; color: var(--clr-green-600); }
+  .hero-score-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-subtle);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    text-align: center;
+  }
+  .hero-grade-pill {
+    padding: 14px 22px;
+    background: var(--clr-green-50);
+    border: 1px solid var(--clr-green-200);
+    border-radius: var(--radius-btn);
+    text-align: center;
+  }
+  .hero-grade-pill .letter {
+    font-family: 'DM Mono', monospace;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--clr-green-800);
+    line-height: 1;
+  }
+  .hero-grade-pill .caption {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--clr-green-700);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ══════════════ Filter chips ══════════════ */
+  .chip-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    padding: 0 14px;
+    height: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-btn);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+  }
+  .chip:hover { border-color: var(--clr-green-500); }
+  .chip.active {
+    background: var(--clr-green-800);
+    border-color: var(--clr-green-800);
+    color: #FFFFFF;
+  }
+
+  /* ══════════════ Academic Ledger ══════════════ */
+  .ledger {
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+  .ledger-wrap { overflow-x: auto; }
+  .ledger table { width: 100%; border-collapse: collapse; min-width: 720px; }
+  .ledger thead tr { background: var(--bg-subtle); }
+  .ledger th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .ledger tbody tr {
+    border-top: 1px solid var(--slate-100);
+    cursor: pointer;
+    transition: background 120ms ease;
+  }
+  .ledger tbody tr:hover { background: var(--bg-hover); }
+  .ledger td {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .ledger td.mono { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+  .ledger td.title { font-weight: 600; color: var(--text-primary); font-size: 14px; }
+  .ledger td.score { font-weight: 700; font-size: 14px; }
+
+  /* ══════════════ Pills ══════════════ */
+  .type-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 9999px;
+    letter-spacing: 0.04em;
+  }
+  .type-pill.exam { background: var(--clr-blue-50); color: var(--clr-blue-700); }
+  .type-pill.test { background: var(--clr-purple-50); color: var(--clr-purple-700); }
+
+  .grade-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 9999px;
+    letter-spacing: 0.02em;
+  }
+  .grade-pill.a-plus, .grade-pill.a { background: var(--clr-green-50); color: var(--clr-green-700); }
+  .grade-pill.b { background: var(--clr-blue-50); color: var(--clr-blue-700); }
+  .grade-pill.c { background: var(--clr-amber-50); color: var(--clr-amber-700); }
+  .grade-pill.f { background: var(--clr-red-50); color: var(--clr-red-600); }
+  .grade-pill.pending { background: var(--clr-amber-50); color: var(--clr-amber-700); display: inline-flex; gap: 4px; align-items: center; }
+  .grade-pill.pending svg { width: 12px; height: 12px; }
+
+  .dash { color: var(--text-subtle); }
+
+  /* ══════════════ Empty states ══════════════ */
+  .empty-card {
+    padding: 64px 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-card);
+    text-align: center;
+  }
+  .empty-card .icon {
+    width: 44px;
+    height: 44px;
+    stroke-width: 1.4;
+    color: var(--text-subtle);
+    margin: 0 auto 14px;
+    display: block;
+  }
+  .empty-card h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .empty-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; max-width: 440px; margin-left: auto; margin-right: auto; }
+  .empty-card .primary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 22px;
+    height: 42px;
+    background: var(--clr-green-800);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-btn);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+  }
+  .empty-card .primary-btn svg { width: 16px; height: 16px; stroke-width: 2.4; }
+
+  .empty-inline {
+    padding: 36px 20px;
+    text-align: center;
+    border: 1px dashed var(--slate-200);
+    border-radius: var(--radius-card);
+    background: var(--bg-subtle);
+  }
+  .empty-inline .icon { width: 32px; height: 32px; color: var(--text-subtle); stroke-width: 1.5; margin: 0 auto 10px; display: block; }
+  .empty-inline p { font-size: 14px; color: var(--text-secondary); margin-bottom: 10px; }
+  .empty-inline .text-btn {
+    background: none;
+    border: none;
+    color: var(--clr-green-800);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 2px 4px;
+  }
+
+  /* ══════════════ Detail page ══════════════ */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    text-decoration: none;
+  }
+  .back-link:hover { color: var(--clr-green-800); }
+  .back-link svg { width: 16px; height: 16px; stroke-width: 2.2; }
+
+  .detail-header .paper-title { font-size: 28px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; line-height: 1.2; }
+  .detail-header .meta-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--text-secondary); }
+  .detail-header .meta-row .dot { color: var(--text-subtle); }
+  .detail-header { margin-bottom: 24px; }
+
+  .score-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-left: 4px solid var(--clr-green-800);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-md);
+    padding: 40px 48px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 72px;
+  }
+  .score-panel.pending {
+    border-left-color: var(--clr-amber-500);
+    padding: 32px 40px;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  .score-panel.pending svg { width: 48px; height: 48px; color: var(--clr-amber-600); stroke-width: 1.6; }
+  .score-panel.pending h3 { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+  .score-panel.pending p { font-size: 14px; color: var(--text-secondary); max-width: 440px; }
+
+  .score-block { text-align: center; }
+  .score-number {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 72px;
+    font-weight: 700;
+    color: var(--clr-green-800);
+    line-height: 1;
+  }
+  .score-number .pct { font-size: 32px; color: var(--clr-green-600); }
+  .score-caption {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-subtle);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .grade-card {
+    padding: 18px 30px;
+    background: var(--clr-green-50);
+    border: 1px solid var(--clr-green-200);
+    border-radius: var(--radius-btn);
+    text-align: center;
+  }
+  .grade-card .letter { font-family: 'DM Mono', monospace; font-size: 72px; font-weight: 700; color: var(--clr-green-800); line-height: 1; }
+  .grade-card .caption {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--clr-green-700);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* Answer Sheet CTA */
+  .cta-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-card);
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: all 140ms ease;
+  }
+  .cta-card:hover {
+    background: var(--clr-green-50);
+    border-color: var(--clr-green-200);
+  }
+  .cta-card .cta-icon { width: 24px; height: 24px; color: var(--clr-green-800); stroke-width: 2; flex-shrink: 0; }
+  .cta-card .cta-body { flex: 1; }
+  .cta-card h4 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+  .cta-card p { font-size: 13px; color: var(--text-secondary); }
+  .cta-card .cta-arrow { width: 20px; height: 20px; color: var(--clr-green-800); stroke-width: 2.2; flex-shrink: 0; }
+
+  .cta-card.locked {
+    background: var(--bg-subtle);
+    cursor: not-allowed;
+  }
+  .cta-card.locked:hover { background: var(--bg-subtle); border-color: var(--slate-200); }
+  .cta-card.locked .cta-icon { color: var(--text-subtle); }
+  .cta-card.locked h4 { color: var(--text-secondary); }
+  .cta-card.locked p { color: var(--text-subtle); }
+  .cta-card.locked .cta-arrow { display: none; }
+
+  /* ══════════════ Answer Sheet ══════════════ */
+  .sheet-header { max-width: 720px; margin: 0 auto 24px; }
+  .sheet-header .title { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .sheet-header .sub { font-size: 14px; color: var(--text-secondary); }
+
+  .question-card {
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-card);
+    padding: 24px 28px;
+    margin: 0 auto 20px;
+    box-shadow: var(--shadow-sm);
+    max-width: 720px;
+  }
+  .question-card .q-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+  }
+  .question-card .q-num { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .question-card .q-type-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Equation table (v5 contract, small size for review) */
+  .table-equation {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid var(--clr-green-800);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(26, 56, 41, 0.08);
+    margin: 0 auto 8px;
+  }
+  .table-equation td {
+    padding: 10px 0;
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1.5px solid var(--text-subtle);
+    background: var(--bg-card);
+    font-weight: 600;
+    font-size: 22px;
+  }
+  .table-equation tr:last-child td { border-bottom: none; }
+  .table-equation .op-col {
+    width: 36px;
+    text-align: right;
+    padding-right: 8px;
+    color: var(--text-secondary);
+    background: var(--slate-100);
+    border-right: 1px solid var(--slate-300);
+    font-weight: 700;
+  }
+  .table-equation .op-col.minus { color: #991B1B; }
+  .table-equation .num-col {
+    text-align: right;
+    padding-left: 10px;
+    padding-right: 20px;
+    color: var(--text-primary);
+    min-width: 100px;
+  }
+  .table-equation .num-col.negative { color: #991B1B; }
+  .table-equation .result-row .op-col {
+    background: var(--clr-green-50);
+    color: var(--clr-green-800);
+    border-top: 2px solid var(--text-primary);
+  }
+  .table-equation .result-row .num-col {
+    background: var(--bg-subtle);
+    color: var(--text-subtle);
+    border-top: 2px solid var(--text-primary);
+  }
+
+  .equation-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 18px; }
+  .equation-caption {
+    font-size: 11px;
+    font-style: italic;
+    color: var(--text-subtle);
+    margin-top: 4px;
+  }
+
+  /* TEST one-line equation */
+  .one-line-eq {
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .one-line-eq .plus { color: var(--text-secondary); margin: 0 4px; }
+  .one-line-eq .minus { color: #991B1B; margin: 0 4px; }
+  .one-line-eq .neg { color: #991B1B; }
+  .one-line-eq .q { color: var(--text-subtle); }
+
+  /* Option tiles (non-interactive on answer sheet) */
+  .options-grid-review {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .option-tile-review {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-radius: 12px;
+    min-height: 56px;
+  }
+  .option-tile-review.correct {
+    border: 2px solid var(--clr-green-800);
+    background: var(--clr-green-50);
+  }
+  .option-tile-review.wrong {
+    border: 2px solid var(--clr-red-500);
+    background: var(--clr-red-50);
+  }
+  .option-tile-review .letter {
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+    background: var(--slate-100);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .option-tile-review.correct .letter { background: var(--clr-green-800); color: #FFFFFF; }
+  .option-tile-review.wrong .letter { background: var(--clr-red-600); color: #FFFFFF; }
+  .option-tile-review .value {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .option-tile-review .state-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 18px;
+    height: 18px;
+    stroke-width: 2.5;
+  }
+  .option-tile-review.correct .state-icon { color: var(--clr-green-800); }
+  .option-tile-review.wrong .state-icon { color: var(--clr-red-600); }
+
+  .answer-caption {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 10px 0 2px;
+  }
+  .answer-caption.correct { color: var(--clr-green-700); display: inline-flex; align-items: center; gap: 4px; }
+  .answer-caption.wrong { color: var(--clr-red-600); }
+  .answer-caption.unanswered { color: var(--text-subtle); font-style: italic; font-weight: 500; }
+  .correct-hint { font-size: 13px; color: var(--clr-green-700); font-weight: 600; }
+  .time-footer {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+  }
+
+  /* Admin release card */
+  .admin-release-card {
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-left: 4px solid var(--text-subtle);
+    border-radius: var(--radius-card);
+    padding: 22px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    max-width: 720px;
+    margin-bottom: 24px;
+  }
+  .admin-release-card.released { border-left-color: var(--clr-green-800); }
+  .admin-release-card .head-icon { width: 24px; height: 24px; stroke-width: 2; flex-shrink: 0; margin-top: 2px; color: var(--text-secondary); }
+  .admin-release-card.released .head-icon { color: var(--clr-green-800); }
+  .admin-release-card .body { flex: 1; }
+  .admin-release-card h4 { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .admin-release-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+  .admin-release-card .action-row { margin-top: 14px; }
+  .admin-release-card .primary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 20px;
+    background: var(--clr-green-800);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-btn);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .admin-release-card .secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 20px;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-btn);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .admin-release-card svg.btn-arrow { width: 16px; height: 16px; stroke-width: 2.4; }
+
+  /* Confirmation dialog (mocked overlay) */
+  .dialog-overlay {
+    position: relative;
+    background: rgba(10, 15, 26, 0.5);
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dialog {
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-lg);
+    padding: 28px 32px;
+    max-width: 520px;
+  }
+  .dialog h3 { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+  .dialog p { font-size: 14px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 12px; }
+  .dialog .warning {
+    padding: 10px 14px;
+    background: var(--clr-amber-50);
+    border-left: 3px solid var(--clr-amber-500);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--clr-amber-700);
+    margin-bottom: 16px;
+  }
+  .dialog .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .dialog .btn-cancel {
+    padding: 0 18px;
+    height: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-btn);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .dialog .btn-confirm {
+    padding: 0 22px;
+    height: 40px;
+    background: var(--clr-green-800);
+    border: none;
+    border-radius: var(--radius-btn);
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .dialog .btn-confirm.amber { background: var(--clr-amber-600); }
+
+  /* Error pill */
+  .error-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--clr-red-50);
+    border: 1px solid var(--clr-red-200, #FECACA);
+    border-radius: var(--radius-btn);
+    margin-bottom: 16px;
+  }
+  .error-pill svg { width: 18px; height: 18px; color: var(--clr-red-600); stroke-width: 2.2; }
+  .error-pill .text { font-size: 13px; font-weight: 600; color: var(--clr-red-700); }
+  .error-pill .retry { font-size: 13px; font-weight: 700; color: var(--clr-green-800); text-decoration: underline; margin-left: auto; cursor: pointer; }
+
+  /* ══════════════ App shell — sidebar + topbar ══════════════ */
+  .page { display: flex; min-height: 880px; background: var(--bg-page); }
+
+  .sidebar { width: 240px; background: #FFFFFF; border-right: 1px solid var(--slate-200); flex-shrink: 0; display: flex; flex-direction: column; }
+  .logo-bar { height: 64px; border-bottom: 1px solid var(--slate-200); display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  .logo-mark { width: 32px; height: 32px; border-radius: 9px; background: var(--clr-green-800); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark svg { width: 18px; height: 18px; color: #FFFFFF; }
+  .logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+  .nav-section { padding: 16px 12px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; font-size: 15px; font-weight: 500; color: #1E293B; cursor: pointer; position: relative; }
+  .nav-item.active { background: var(--clr-green-50); color: var(--clr-green-800); font-weight: 600; }
+  .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 11px; bottom: 11px; width: 3px; border-radius: 0 3px 3px 0; background: var(--clr-green-800); }
+  .nav-icon { width: 18px; height: 18px; stroke-width: 1.75; flex-shrink: 0; }
+  .nav-sep { height: 1px; background: var(--slate-200); margin: 10px 8px; }
+  .sidebar-footer { padding: 14px; border-top: 1px solid var(--slate-200); margin-top: auto; }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 9999px; background: var(--clr-green-800); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .user-role { font-size: 12px; color: var(--text-secondary); }
+  .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 9px 12px; background: #FFFFFF; border: 1px solid var(--slate-200); border-radius: 10px; font-size: 14px; font-weight: 500; color: #1E293B; cursor: pointer; font-family: inherit; }
+  .logout-btn svg { width: 14px; height: 14px; stroke-width: 1.75; }
+
+  .topbar { height: 56px; background: #FFFFFF; border-bottom: 1px solid var(--slate-200); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+  .crumbs { font-size: 14px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; font-weight: 500; }
+  .crumbs strong { color: var(--text-primary); font-weight: 700; }
+  .topbar-welcome { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+  .topbar-welcome strong { color: var(--text-primary); font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .icon-btn { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #334155; cursor: pointer; position: relative; }
+  .icon-btn svg { width: 18px; height: 18px; stroke-width: 1.75; }
+  .top-avatar { width: 36px; height: 36px; border-radius: 9999px; background: var(--clr-green-800); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+
+  .main { flex: 1; padding: 40px 40px; display: flex; justify-content: center; background: var(--bg-page); }
+  .main.modal-bg { padding: 0; align-items: stretch; }
+  .main.modal-bg .dialog-overlay { flex: 1; min-height: 100%; }
+  .main-inner { width: 100%; max-width: 1100px; }
+</style>
+</head>
+<body>
+
+<h1 style="font-size:26px;font-weight:700;margin-bottom:20px;letter-spacing:-0.01em;">Student Results Flow — all screens</h1>
+<p class="note" style="margin-bottom:32px;">11 screens covering List · Detail · Answer Sheet · Admin Release card · Confirmation dialogs. All colours via tokens; <code>#991B1B</code> only appears inside <code>&lt;EquationTable&gt;</code> and the TEST one-line renderer.</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ═════════════════  LIST PAGE  ═════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2>Screen 1 — List page · happy path (mixed published + pending)</h2>
+<p class="note">Hero card showing the latest published result on top. Below it, filter chips (single-select), then one unified Academic Ledger with both published and pending rows. Pending rows show an amber "Pending" pill in the Grade column.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+    <div class="page-header">
+      <div class="page-title">My Results</div>
+      <div class="page-caption">12 results</div>
+    </div>
+
+    <a class="hero-card" href="#">
+      <div>
+        <div class="hero-eyebrow">Latest Result</div>
+        <div class="hero-title">Grade 8 Mental Arithmetic — Final</div>
+        <div class="hero-sub">Published 12 April 2026</div>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-score">26<span class="pct">/30</span></div>
+          <div class="hero-score-label">Score</div>
+        </div>
+        <div class="hero-grade-pill">
+          <div class="letter">A</div>
+          <div class="caption">Grade</div>
+        </div>
+      </div>
+    </a>
+
+    <div class="chip-row">
+      <button class="chip active">All</button>
+      <button class="chip">EXAM</button>
+      <button class="chip">TEST</button>
+      <button class="chip">Pending</button>
+      <button class="chip">Last 30 days</button>
+    </div>
+
+    <div class="ledger">
+      <div class="ledger-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Exam</th>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Duration</th>
+              <th>Score</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="title">Grade 8 Mental Arithmetic — Final</td>
+              <td class="mono">12 Apr 2026</td>
+              <td><span class="type-pill exam">EXAM</span></td>
+              <td class="mono">60 min</td>
+              <td class="mono score">26/30</td>
+              <td><span class="grade-pill a">A</span></td>
+            </tr>
+            <tr>
+              <td class="title">Quick Drill · Week 14</td>
+              <td class="mono">10 Apr 2026</td>
+              <td><span class="type-pill test">TEST</span></td>
+              <td class="mono">5 min</td>
+              <td class="mono score">18/25</td>
+              <td><span class="grade-pill b">B</span></td>
+            </tr>
+            <tr>
+              <td class="title">Mock Exam 3</td>
+              <td class="mono">08 Apr 2026 <span style="display:block;font-size:9px;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">submitted</span></td>
+              <td><span class="type-pill exam">EXAM</span></td>
+              <td class="mono">60 min</td>
+              <td class="mono dash">—</td>
+              <td>
+                <span class="grade-pill pending">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  PENDING
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="title">Grade 8 Mental Arithmetic — Mid-term</td>
+              <td class="mono">01 Apr 2026</td>
+              <td><span class="type-pill exam">EXAM</span></td>
+              <td class="mono">45 min</td>
+              <td class="mono score">47/50</td>
+              <td><span class="grade-pill a-plus">A+</span></td>
+            </tr>
+            <tr>
+              <td class="title">Quick Drill · Week 13</td>
+              <td class="mono">28 Mar 2026</td>
+              <td><span class="type-pill test">TEST</span></td>
+              <td class="mono">5 min</td>
+              <td class="mono score">15/25</td>
+              <td><span class="grade-pill c">C</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 2 — List page · empty state (no submissions)</h2>
+<p class="note">Student has never submitted an exam. Hero and ledger both replaced with a centred card that sends them to the Exams page.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results (empty)</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <div class="page-header">
+      <div class="page-title">My Results</div>
+      <div class="page-caption">0 results</div>
+    </div>
+
+    <div class="empty-card">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+      <h3>No results yet</h3>
+      <p>Take an exam from the Exams page to see your results here.</p>
+      <a class="primary-btn" href="#">
+        Go to Exams
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 3 — List page · filter empty state</h2>
+<p class="note">Student has results but the active filter (here: "Pending") returns zero matches. Hero and chips stay visible; ledger is replaced with a compact "Clear filter" reset.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results · "Pending" chip active, no pending rows</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <div class="page-header">
+      <div class="page-title">My Results</div>
+      <div class="page-caption">0 results</div>
+    </div>
+
+    <a class="hero-card" href="#">
+      <div>
+        <div class="hero-eyebrow">Latest Result</div>
+        <div class="hero-title">Grade 8 Mental Arithmetic — Final</div>
+        <div class="hero-sub">Published 12 April 2026</div>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-score">26<span class="pct">/30</span></div>
+          <div class="hero-score-label">Score</div>
+        </div>
+        <div class="hero-grade-pill">
+          <div class="letter">A</div>
+          <div class="caption">Grade</div>
+        </div>
+      </div>
+    </a>
+
+    <div class="chip-row">
+      <button class="chip">All</button>
+      <button class="chip">EXAM</button>
+      <button class="chip">TEST</button>
+      <button class="chip active">Pending</button>
+      <button class="chip">Last 30 days</button>
+    </div>
+
+    <div class="empty-inline">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      <p>No results match this filter.</p>
+      <button class="text-btn">Clear filter</button>
+    </div>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ═════════════════  DETAIL PAGE  ═══════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2>Screen 4 — Detail page · EXAM published, answer key unlocked</h2>
+<p class="note">Full happy path. Back link, header band (type/duration/date), big score panel with green rail, unlocked Answer Sheet CTA card.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results/sub_01J8A · EXAM · published · answer key released</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <a class="back-link" href="#">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Results
+    </a>
+
+    <div class="detail-header">
+      <h1 class="paper-title">Grade 8 Mental Arithmetic — Final</h1>
+      <div class="meta-row">
+        <span class="type-pill exam">EXAM</span>
+        <span class="dot">·</span>
+        <span>60 min</span>
+        <span class="dot">·</span>
+        <span>Published 12 April 2026</span>
+      </div>
+    </div>
+
+    <div class="score-panel">
+      <div class="score-block">
+        <div class="score-number">26<span class="pct">/30</span></div>
+        <div class="score-caption">Score</div>
+      </div>
+      <div class="grade-card">
+        <div class="letter">A</div>
+        <div class="caption">Grade</div>
+      </div>
+    </div>
+
+    <a class="cta-card" href="#">
+      <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+      <div class="cta-body">
+        <h4>View Answer Sheet</h4>
+        <p>See every question, your answer, and the correct answer.</p>
+      </div>
+      <svg class="cta-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 5 — Detail page · published but answer key locked</h2>
+<p class="note">Score + grade visible, but admin hasn't released the answer key yet. The CTA card is in its locked state — non-interactive, no hover, no arrow.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results/sub_01J8A · EXAM · published · answer_key_released = false</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <a class="back-link" href="#">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Results
+    </a>
+
+    <div class="detail-header">
+      <h1 class="paper-title">Grade 8 Mental Arithmetic — Final</h1>
+      <div class="meta-row">
+        <span class="type-pill exam">EXAM</span>
+        <span class="dot">·</span>
+        <span>60 min</span>
+        <span class="dot">·</span>
+        <span>Published 12 April 2026</span>
+      </div>
+    </div>
+
+    <div class="score-panel">
+      <div class="score-block">
+        <div class="score-number">26<span class="pct">/30</span></div>
+        <div class="score-caption">Score</div>
+      </div>
+      <div class="grade-card">
+        <div class="letter">A</div>
+        <div class="caption">Grade</div>
+      </div>
+    </div>
+
+    <div class="cta-card locked">
+      <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="cta-body">
+        <h4>Answer Sheet Locked</h4>
+        <p>Your teacher hasn't released the answer key yet. Check back later.</p>
+      </div>
+    </div>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 6 — Detail page · TEST published</h2>
+<p class="note">Score panel mirrors the EXAM detail layout — Score + Grade.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results/sub_01J9B · TEST · published</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <a class="back-link" href="#">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Results
+    </a>
+
+    <div class="detail-header">
+      <h1 class="paper-title">Quick Drill · Week 14</h1>
+      <div class="meta-row">
+        <span class="type-pill test">TEST</span>
+        <span class="dot">·</span>
+        <span>5 min</span>
+        <span class="dot">·</span>
+        <span>Published 10 April 2026</span>
+      </div>
+    </div>
+
+    <div class="score-panel">
+      <div class="score-block">
+        <div class="score-number">18<span class="pct">/25</span></div>
+        <div class="score-caption">Score</div>
+      </div>
+      <div class="grade-card">
+        <div class="letter">B</div>
+        <div class="caption">Grade</div>
+      </div>
+    </div>
+
+    <a class="cta-card" href="#">
+      <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+      <div class="cta-body">
+        <h4>View Answer Sheet</h4>
+        <p>See every question, your answer, and the correct answer.</p>
+      </div>
+      <svg class="cta-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 7 — Detail page · pending (awaiting grading)</h2>
+<p class="note">Submission exists but admin hasn't published results. Amber rail, Clock icon, no score rendered. Answer sheet card is implicitly locked (pending implies not graded).</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results/sub_01J8C · EXAM · pending (result_published_at IS NULL)</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <a class="back-link" href="#">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Results
+    </a>
+
+    <div class="detail-header">
+      <h1 class="paper-title">Mock Exam 3</h1>
+      <div class="meta-row">
+        <span class="type-pill exam">EXAM</span>
+        <span class="dot">·</span>
+        <span>60 min</span>
+        <span class="dot">·</span>
+        <span>Submitted 8 April 2026</span>
+      </div>
+    </div>
+
+    <div class="score-panel pending">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <h3>Awaiting grading</h3>
+      <p>Your teacher is reviewing this exam — you'll see your score once it's published.</p>
+    </div>
+
+    <div class="cta-card locked">
+      <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="cta-body">
+        <h4>Answer Sheet Locked</h4>
+        <p>You'll be able to review answers after your teacher grades and releases this exam.</p>
+      </div>
+    </div>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ═════════════════  ANSWER SHEET  ══════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2>Screen 8 — Answer Sheet · EXAM happy path (mixed correct / wrong / unanswered)</h2>
+<p class="note">Vertical scroll of question cards. EXAM questions render the v5 EquationTable. Tiles have four states: correct-and-picked (green + Check), correct-only (green), wrong-pick (crimson + X), neutral. Caption adapts. Time footer with fallback.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results/sub_01J8A/answers · EXAM · unlocked</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <a class="back-link" href="#">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Result
+    </a>
+
+    <div class="sheet-header">
+      <div class="title">Answer Sheet</div>
+      <div class="sub">Grade 8 Mental Arithmetic — Final</div>
+    </div>
+
+    <!-- Q1: correct and picked -->
+    <article class="question-card">
+      <div class="q-head">
+        <span class="q-num">Q1</span>
+        <span class="q-type-label">EXAM</span>
+      </div>
+      <div class="equation-wrap">
+        <table class="table-equation">
+          <tbody>
+            <tr><td class="op-col">&nbsp;</td><td class="num-col">892</td></tr>
+            <tr><td class="op-col minus">−</td><td class="num-col negative">456</td></tr>
+            <tr><td class="op-col">+</td><td class="num-col">124</td></tr>
+            <tr><td class="op-col">+</td><td class="num-col">75</td></tr>
+            <tr class="result-row"><td class="op-col">=</td><td class="num-col">???</td></tr>
+          </tbody>
+        </table>
+        <div class="equation-caption">Question as shown during the exam.</div>
+      </div>
+      <div class="options-grid-review">
+        <div class="option-tile-review"><span class="letter">A</span><span class="value">625</span></div>
+        <div class="option-tile-review"><span class="letter">B</span><span class="value">635</span></div>
+        <div class="option-tile-review correct">
+          <span class="letter">C</span><span class="value">635</span>
+          <svg class="state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="option-tile-review"><span class="letter">D</span><span class="value">655</span></div>
+      </div>
+      <div class="answer-caption correct">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
+        Your answer ✓
+      </div>
+      <div class="time-footer">You took 12.4s</div>
+    </article>
+
+    <!-- Q2: wrong pick -->
+    <article class="question-card">
+      <div class="q-head">
+        <span class="q-num">Q2</span>
+        <span class="q-type-label">EXAM</span>
+      </div>
+      <div class="equation-wrap">
+        <table class="table-equation">
+          <tbody>
+            <tr><td class="op-col">&nbsp;</td><td class="num-col">512</td></tr>
+            <tr><td class="op-col">+</td><td class="num-col">287</td></tr>
+            <tr><td class="op-col minus">−</td><td class="num-col negative">134</td></tr>
+            <tr><td class="op-col">+</td><td class="num-col">96</td></tr>
+            <tr class="result-row"><td class="op-col">=</td><td class="num-col">???</td></tr>
+          </tbody>
+        </table>
+        <div class="equation-caption">Question as shown during the exam.</div>
+      </div>
+      <div class="options-grid-review">
+        <div class="option-tile-review wrong">
+          <span class="letter">A</span><span class="value">751</span>
+          <svg class="state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="option-tile-review correct">
+          <span class="letter">B</span><span class="value">761</span>
+          <svg class="state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="option-tile-review"><span class="letter">C</span><span class="value">771</span></div>
+        <div class="option-tile-review"><span class="letter">D</span><span class="value">781</span></div>
+      </div>
+      <div class="answer-caption wrong">Your answer</div>
+      <div class="correct-hint">Correct answer: B</div>
+      <div class="time-footer">You took 18.9s</div>
+    </article>
+
+    <!-- Q3: unanswered -->
+    <article class="question-card">
+      <div class="q-head">
+        <span class="q-num">Q3</span>
+        <span class="q-type-label">EXAM</span>
+      </div>
+      <div class="equation-wrap">
+        <table class="table-equation">
+          <tbody>
+            <tr><td class="op-col">&nbsp;</td><td class="num-col">634</td></tr>
+            <tr><td class="op-col minus">−</td><td class="num-col negative">221</td></tr>
+            <tr><td class="op-col">+</td><td class="num-col">148</td></tr>
+            <tr><td class="op-col minus">−</td><td class="num-col negative">82</td></tr>
+            <tr class="result-row"><td class="op-col">=</td><td class="num-col">???</td></tr>
+          </tbody>
+        </table>
+        <div class="equation-caption">Question as shown during the exam.</div>
+      </div>
+      <div class="options-grid-review">
+        <div class="option-tile-review"><span class="letter">A</span><span class="value">469</span></div>
+        <div class="option-tile-review"><span class="letter">B</span><span class="value">479</span></div>
+        <div class="option-tile-review correct">
+          <span class="letter">C</span><span class="value">479</span>
+          <svg class="state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="option-tile-review"><span class="letter">D</span><span class="value">489</span></div>
+      </div>
+      <div class="answer-caption unanswered">You did not answer this question.</div>
+      <div class="time-footer">You took — (not recorded)</div>
+    </article>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 9 — Answer Sheet · TEST one-line reconstruction</h2>
+<p class="note">TEST questions store only <code>flash_sequence</code> (no written equation). Rendered as a single centred line with crimson negatives. Caption below explains the student saw these one at a time during the flash.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results/sub_01J9B/answers · TEST · unlocked</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <a class="back-link" href="#">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Result
+    </a>
+
+    <div class="sheet-header">
+      <div class="title">Answer Sheet</div>
+      <div class="sub">Quick Drill · Week 14</div>
+    </div>
+
+    <article class="question-card">
+      <div class="q-head">
+        <span class="q-num">Q1</span>
+        <span class="q-type-label">TEST</span>
+      </div>
+      <div class="equation-wrap">
+        <div class="one-line-eq">
+          12<span class="plus">+</span>45<span class="minus">−</span><span class="neg">8</span><span class="plus">+</span>23 <span class="q">= ?</span>
+        </div>
+        <div class="equation-caption">You saw these numbers one at a time during the flash.</div>
+      </div>
+      <div class="options-grid-review">
+        <div class="option-tile-review wrong">
+          <span class="letter">A</span><span class="value">70</span>
+          <svg class="state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="option-tile-review correct">
+          <span class="letter">B</span><span class="value">72</span>
+          <svg class="state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="option-tile-review"><span class="letter">C</span><span class="value">74</span></div>
+        <div class="option-tile-review"><span class="letter">D</span><span class="value">76</span></div>
+      </div>
+      <div class="answer-caption wrong">Your answer</div>
+      <div class="correct-hint">Correct answer: B</div>
+      <div class="time-footer">You took 8.1s</div>
+    </article>
+
+    <article class="question-card">
+      <div class="q-head">
+        <span class="q-num">Q2</span>
+        <span class="q-type-label">TEST</span>
+      </div>
+      <div class="equation-wrap">
+        <div class="one-line-eq">
+          34<span class="minus">−</span><span class="neg">12</span><span class="plus">+</span>56<span class="plus">+</span>7 <span class="q">= ?</span>
+        </div>
+        <div class="equation-caption">You saw these numbers one at a time during the flash.</div>
+      </div>
+      <div class="options-grid-review">
+        <div class="option-tile-review"><span class="letter">A</span><span class="value">83</span></div>
+        <div class="option-tile-review"><span class="letter">B</span><span class="value">85</span></div>
+        <div class="option-tile-review correct">
+          <span class="letter">C</span><span class="value">85</span>
+          <svg class="state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="option-tile-review"><span class="letter">D</span><span class="value">87</span></div>
+      </div>
+      <div class="answer-caption correct">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
+        Your answer ✓
+      </div>
+      <div class="time-footer">You took 6.2s</div>
+    </article>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 10 — Answer Sheet · locked state</h2>
+<p class="note">Student pasted the URL directly but admin hasn't released the answer key (or the submission is still pending). Centred lock card replaces the whole body.</p>
+
+<div class="frame">
+  <div class="frame-header">/student/results/sub_01J8A/answers · answer_key_released = false</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Exams</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tests</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+        <div class="nav-sep"></div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help &amp; Support</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AS</div><div class="user-info"><div class="user-name">Aditi Sharma</div><div class="user-role">Student · Level 3</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="topbar-welcome">Welcome back, <strong>Aditi Sharma</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AS</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <a class="back-link" href="#">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Result
+    </a>
+
+    <div class="empty-card" style="max-width:520px;margin:40px auto;">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <h3>Answer sheet locked</h3>
+      <p>Your teacher hasn't released the answer key yet. Check back later.</p>
+      <a class="primary-btn" href="#">
+        Back to Result
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ═════════════════  ADMIN RELEASE  ═════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2>Screen 11a — Admin Release card · unreleased state</h2>
+<p class="note">Lives on the admin per-assessment detail page, directly above the answer-key view. Neutral grey rail when unreleased.</p>
+
+<div class="frame">
+  <div class="frame-header">/admin/assessments/pap_01J8A · above the answer-key view</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Assessments</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <div class="admin-release-card">
+      <svg class="head-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="body">
+        <h4>Answer key is hidden from students</h4>
+        <p>Students can see their score and grade, but cannot open the answer sheet for this paper yet.</p>
+        <div class="action-row">
+          <button class="primary-btn">
+            Release answer key
+            <svg class="btn-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 11b — Admin Release card · released state</h2>
+<p class="note">Green rail, CheckCircle icon, timestamp + actor from activity_logs, student unlock count explaining the gate logic interaction.</p>
+
+<div class="frame">
+  <div class="frame-header">/admin/assessments/pap_01J8A · after release</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Assessments</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+
+    <div class="admin-release-card released">
+      <svg class="head-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <div class="body">
+        <h4>Answer key is visible to students</h4>
+        <p>Released on 14 April 2026 by admin@example.com</p>
+        <p>32 of 45 students have an answer sheet unlocked.</p>
+        <div class="action-row">
+          <button class="secondary-btn">Undo release</button>
+        </div>
+      </div>
+    </div>
+
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 12a — Confirmation dialog · release direction</h2>
+<p class="note">Base UI dialog. Primary warning explains the gate logic: only students with published results see the answer sheet. Secondary warning only appears when zero published submissions exist for this paper.</p>
+
+<div class="frame">
+  <div class="frame-header">Release confirmation — over /admin/assessments/pap_01J8A</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Assessments</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main modal-bg">
+        <div class="dialog-overlay">
+      <div class="dialog">
+      <h3>Release answer key for Grade 8 Mental Arithmetic — Final?</h3>
+      <p>Students with published results will be able to see all correct answers and their own choices after you release this. Students whose results haven't been graded yet will still see a locked answer sheet until their individual results are published.</p>
+      <div class="warning">
+        ⚠ None of this paper's results have been published yet. Releasing the answer key now will not affect any students until their results are graded.
+      </div>
+      <div class="actions">
+        <button class="btn-cancel">Cancel</button>
+        <button class="btn-confirm">Release answer key</button>
+      </div>
+    </div>
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 12b — Confirmation dialog · un-release direction</h2>
+<p class="note">Amber confirm button for the destructive-ish action. Copy notes that un-releasing does not retrieve what students already saw.</p>
+
+<div class="frame">
+  <div class="frame-header">Un-release confirmation</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Assessments</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main modal-bg">
+        <div class="dialog-overlay">
+      <div class="dialog">
+      <h3>Undo answer key release for Grade 8 Mental Arithmetic — Final?</h3>
+      <p>Students will no longer be able to see the answer sheet.</p>
+      <p><strong>Note:</strong> students who already opened the answer sheet may have screenshots, notes, or downloads — undoing the release does not retrieve what they already saw.</p>
+      <div class="actions">
+        <button class="btn-cancel">Cancel</button>
+        <button class="btn-confirm amber">Undo release</button>
+      </div>
+    </div>
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
