@@ -137,6 +137,16 @@ student_answers also added — check for this too.
   analytics use only.
 - See db/sql-editor/2026-04-14-results-flow-columns.sql.
 
+### Assessment engine config + timing (2026-04-14)
+- 2026-04-14: exam_papers.per_question_time_seconds (int, nullable, CHECK 5..600) and
+  exam_papers.require_answer_confirmation (bool, not null, default TRUE) added via
+  SQL editor (no migration file).
+- 2026-04-14: student_answers.time_spent_ms (int, NOT NULL DEFAULT 0) added via SQL
+  editor. The Phase 1 audit revealed the original spec wrongly assumed this column
+  already existed — it did not. The full client-to-DB propagation chain for this
+  field is implemented in Task 1.5 of the assessment-taking plan.
+- See db/sql-editor/2026-04-14-assessment-config-columns.sql.
+
 ---
 
 ## CSS / Layout
