@@ -6,10 +6,11 @@
 
 ## 1. Stack & Versions
 - **Runtime & Framework:** Next.js `^15.0.0` (App Router), React `^19.0.0` (*Source: `package.json`*).
-- **Styling:** Tailwind CSS `latest`, `@tailwindcss/postcss`, `tw-animate-css` (*Source: `package.json`*).
+- **Styling:** Tailwind CSS `latest` (unpinned range in `package.json`, currently resolved to `tailwindcss@4.2.2` and `@tailwindcss/postcss@4.2.2`), `tw-animate-css` (*Source: `package.json`, `npm list`*).
 - **Backend / Database:** Supabase (`@supabase/ssr`, `@supabase/supabase-js`, PostgreSQL with 27 migrations in `supabase/migrations/`).
-- **Offline / Local DB:** Dexie `latest` (*Source: `package.json`*).
-- **Test Runners:** Vitest `v4.1.2`, Playwright `^1.59.1` (*Source: `package.json`, `npm run test`*).
+- **Offline / Local DB:** Dexie `latest` (unpinned range in `package.json`, currently resolved to `dexie@4.3.0`) (*Source: `package.json`, `npm list`*).
+- **Test Runners:** Vitest `v4.1.2` (devDependency `latest`, currently resolved to `4.1.2`), Playwright `^1.59.1` (*Source: `package.json`, `npm run test`*).
+- **Dependency Risk Note:** Multiple dependencies in `package.json` are specified with the `"latest"` tag rather than semver ranges. This presents a non-reproducible install risk across fresh machine environments. Range pinning will be reviewed in Phase 5.
 
 ---
 

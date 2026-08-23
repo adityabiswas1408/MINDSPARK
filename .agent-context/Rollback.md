@@ -12,7 +12,7 @@
 ---
 
 ## 2. Safety Tagging Before High-Risk Subsystems
-- Before modifying **Timing Engine** (`src/lib/anzan/`), **Anti-Cheat** (`src/lib/anticheat/`), or **Auth & RBAC** (`src/lib/auth/`, `src/lib/supabase/`), create a git safety tag:
+- Before modifying **Timing Engine** (`src/lib/anzan/`), **Anti-Cheat** (`src/lib/anticheat/`), **Auth & RBAC** (`src/lib/auth/`, `src/lib/supabase/`), or **Offline Sync Pipeline** (`src/app/api/submissions/offline-sync/`, the staging table, and the `validate_and_migrate_offline_submission` RPC), create a git safety tag:
   ```bash
   git tag -a pre-<subsystem>-edit -m "Safe checkpoint before <subsystem> changes"
   ```

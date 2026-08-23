@@ -26,8 +26,16 @@
 - Initializing the 7-file `.agent-context/` system and structured `PHASE-PLAN.md`.
 - Preparing for Phase 1-2 extensive audit and remaining feature wiring.
 
-## What's broken (Evidence-backed)
-- *None currently confirmed broken at runtime level.* (TBD: Detailed functional verification of un-wired UI buttons like "Create Level", full student submission completion flow, TipTap editor integration, and Playwright E2E smoke tests).
+## What's confirmed broken (evidence-backed)
+*None currently confirmed broken at runtime.*
+
+## What's unverified (not yet exercised — absence of evidence is not evidence of correctness)
+- Create Level button wiring
+- Full student submission-completion flow
+- TipTap editor integration
+- Realtime broadcast/presence channels (`exam:{paper_id}`, `lobby:{paper_id}`)
+- Recharts rendering at real dataset volumes
+- Playwright E2E execution
 
 ## What to avoid
 - **NEVER** use `getSession()` for authorization decisions.

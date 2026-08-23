@@ -25,7 +25,7 @@
 
 6. **Additive-Only Migrations** `[VERIFIED]`
    - Applied migrations must never be edited or deleted retroactively. All database schema updates must be introduced as new numbered migration scripts in `supabase/migrations/`.
-   - *Evidence:* Git log confirmed 27 additive migrations with 0 deletions in commit history.
+   - *Evidence:* Git log verified 0 deleted migration files, and per-file commit counts confirm exactly 1 commit for every file across all 27 migrations in `supabase/migrations/` (0 post-creation edits).
 
 7. **Postgres Numeric Type Coercion** `[UNCONFIRMED]`
    - Numeric and decimal outputs from Supabase should be wrapped in `Number(val ?? 0)` to handle string serialization safely. (To be systematically checked across all query mappers in Phase 1-2 audit).
