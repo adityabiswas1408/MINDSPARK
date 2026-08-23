@@ -1,9 +1,9 @@
 # MINDSPARK V1 — API Contract Document
 
 > **Document type:** API Contracts — Technical Planning  
-> **Version:** 1.0  
-> **Output path:** `docs/api-contracts.md`  
-> **Read first:** `docs/fsd.md` · `docs/database.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/12_api-contracts.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/09_fsd.md` · `docs/11_database.md`  
 > **Author role:** Principal API Designer — Next.js Server Actions · Route Handlers · TypeScript-first API design
 
 ---
@@ -286,7 +286,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 ### `POST /api/submissions/offline-sync`
 
 **Type:** Route Handler (NOT Server Action)  
-**Reason:** Called by Dexie.js background sync worker — not from a React form or user gesture. Background sync contexts cannot invoke Server Actions (which require a React render tree). The endpoint needs to be callable from a plain `fetch()` in a service worker or `online` event handler.
+**Reason:** Called by Dexie 4 offline sync logic — not from a React form or user gesture. Background sync contexts cannot invoke Server Actions (which require a React render tree). The endpoint needs to be callable from a plain `fetch()` inside the global `window.addEventListener('online')` handler.
 
 **Auth:** JWT in `Authorization: Bearer <token>` header
 

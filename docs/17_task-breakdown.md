@@ -35,7 +35,7 @@ Total tasks: 196 across 8 phases.
 ---
 
 ## Phase 1 — Database Layer
-> Run ALL 26 migrations before writing any application code. Dependencies are strict — run in order.
+> Run ALL 27 migrations before writing any application code. Dependencies are strict — run in order.
 
 - [ ] `supabase/migrations/001_create_institutions.sql` — `institutions` table.
   Depends: Supabase project exists

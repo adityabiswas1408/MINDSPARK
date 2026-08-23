@@ -1,9 +1,9 @@
 # MINDSPARK V1 — System Architecture Document
 
 > **Document type:** System Architecture — Technical Planning  
-> **Version:** 1.0  
-> **Output path:** `docs/architecture.md`  
-> **Read first:** `docs/prd.md` · `docs/fsd.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/10_architecture.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/09_fsd.md` · `ARCHITECTURE.md`  
 > **Author role:** Principal Systems Architect — Next.js · Supabase · distributed systems · high-concurrency EdTech
 
 ---
@@ -711,7 +711,7 @@ WHERE id = p_session_id;
 │  │   RLS on all    │  │   Broadcast     │  │   JWT + custom       │ │
 │  │   tables        │  │   (zero WAL)    │  │   claims (role)      │ │
 │  │   RPC functions │  │                 │  │                      │ │
-│  │   26 migrations │  │   NO Postgres   │  │   JWT refresh        │ │
+│  │   27 migrations │  │   NO Postgres   │  │   JWT refresh        │ │
 │  │                 │  │   Changes for   │  │   token rotation     │ │
 │  │   Materialized  │  │   exam data     │  │                      │ │
 │  │   view: 300s    │  └─────────────────┘  └──────────────────────┘ │
@@ -725,7 +725,7 @@ WHERE id = p_session_id;
 
 ### Table Dependency Order (migration sequence)
 
-> **Canonical sequence — 26 migrations. Run strictly in order. Never skip.**
+> **Canonical sequence — 27 migrations. Run strictly in order. Never skip.**
 > Matches 11_database.md §16. Table names corrected from old draft names.
 
 ```

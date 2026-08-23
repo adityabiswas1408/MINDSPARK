@@ -1,9 +1,9 @@
 # MINDSPARK Administrator Manual
 
 > **Audience:** Institution administrators managing MINDSPARK day-to-day  
-> **Version:** 1.0 · MINDSPARK V1  
-> **Path:** `docs/manuals/admin-manual.md`  
-> **For technical incidents:** refer to `docs/incident-response.md`
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/23_admin-manual.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `ARCHITECTURE.md`
 
 ---
 

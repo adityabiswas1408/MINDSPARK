@@ -44,6 +44,7 @@
 - **NEVER** modify applied migrations directly; always write new additive migration files.
 - **NEVER** use banned color hex codes (`#FF6B6B`, `#121212`, `#1A1A1A`, `#E0E0E0`).
 - **NEVER** execute `git push` without explicit user permission.
+- **NEVER** start a new phase without reading `GOTCHAS.md` first — known mistakes from earlier phases live there.
 
 ## Immediate next action
 - Wait for user approval on Master Recon, `.agent-context/` generation, and `PHASE-PLAN.md` (Step H Hard Stop).

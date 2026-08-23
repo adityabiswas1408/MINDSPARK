@@ -1,9 +1,9 @@
 # MINDSPARK V1 — HI-FI UI Specification
 
 > **Document type:** Pixel-Precise Visual Specification  
-> **Version:** 1.0  
-> **Output path:** `docs/hifi-spec.md`  
-> **Read first:** `docs/wireframes.md` · `design-system.html` · `docs/prd.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/07_hifi-spec.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/DESIGN.md` · `docs/06_wireframes.md`  
 > **Author role:** Lead UI Designer — forest green light-mode design systems · WCAG 2.2 AAA
 
 ---
@@ -493,6 +493,9 @@ Skip button: Ghost variant, below grid, "Skip this question →"
 ### Student Profile
 
 **Digital ID card:** same spec as B10 wireframe.
+
+**Null Field Fallback Rule:**
+If a non-mandatory profile field (e.g., gender, phone number, alternate email) is null or missing in the database, the UI must render the literal string `"Not mentioned"` in an italicized, muted grey text token (`DM Sans 14px 400 italic, #94A3B8`). Never render empty space or raw `null` literals.
 
 **Level progress bar:**
 ```

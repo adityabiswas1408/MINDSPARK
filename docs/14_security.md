@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Security Design Document
 
 > **Document type:** Security Architecture — Technical Planning  
-> **Version:** 1.0  
-> **Output path:** `docs/security.md`  
-> **Read first:** `docs/architecture.md` · `docs/database.md` · `docs/ia-rbac.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/14_security.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `SECURITY.md` · `docs/10_architecture.md`  
 > **Author role:** Principal Security Engineer — Next.js · Supabase RLS · OWASP Top 10 · child data protection
 
 ---

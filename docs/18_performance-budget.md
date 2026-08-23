@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Performance Budget Document
 
 > **Document type:** Performance Engineering — Build Support  
-> **Version:** 1.0  
-> **Output path:** `docs/performance-budget.md`  
-> **Read first:** `docs/fsd.md` §2 · `docs/architecture.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/18_performance-budget.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/09_fsd.md` · `docs/10_architecture.md`  
 > **Author role:** Principal Performance Engineer — browser rendering · Next.js · real-time web applications
 
 ---

@@ -40,3 +40,4 @@
 4. **Clean Environment Isolation:** `.env` and `.env.local` files must never have credentials removed, corrupted, or exposed in commits.
 5. **Terminal Evidence Requirement:** No task or test is marked "done" or "passing" without live command execution and actual output attached.
 6. **Concise Context Files:** Keep context files trimmed, scannable, and up-to-date. Prune outdated claims rather than appending unbounded text.
+7. **Gotchas Check:** Before starting any phase — recon, audit, or execution — read `GOTCHAS.md` in full. It documents confirmed process mistakes from earlier phases. This is mandatory and takes priority over assuming a prior recon pass was complete.

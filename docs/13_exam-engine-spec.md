@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Technical Specification: Exam Engine
 
 > **Document type:** Technical Specification — Exam Engine  
-> **Version:** 1.0  
-> **Output path:** `docs/exam-engine-spec.md`  
-> **Read first:** `docs/fsd.md` §2 (Flash Anzan Timing Engine)  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/13_exam-engine-spec.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/09_fsd.md`  
 > **Author role:** Principal Frontend Engineer — high-precision browser timing APIs · cryptographic integrity systems
 
 ---
@@ -11,9 +11,10 @@
 ## Table of Contents
 
 1. [RAF Timing Engine](#1-raf-timing-engine)
-2. [HMAC Clock Guard](#2-hmac-clock-guard)
-3. [Number Generator](#3-number-generator)
-4. [Contrast Dampening](#4-contrast-dampening)
+2. [4-Phase Flash Anzan State Machine](#2-4-phase-flash-anzan-state-machine)
+3. [HMAC Clock Guard](#3-hmac-clock-guard)
+4. [Number Generator](#4-number-generator)
+5. [Contrast Dampening](#5-contrast-dampening)
 
 ---
 
@@ -269,7 +270,31 @@ export function useFlashVisibilityGuard(
 
 ---
 
-## 2. HMAC Clock Guard
+## 2. 4-Phase Flash Anzan State Machine
+
+The exam engine orchestrates an interactive flow transitioning through 4 explicit phases per question to guarantee cognitive fairness and distraction-free calculation.
+
+### Phase 1: Get Ready
+- **Purpose:** 3-second preparation countdown.
+- **UI State:** Shows "Get Ready" with a 3, 2, 1 countdown. Allows the student's eyes to focus on the center of the screen.
+
+### Phase 2: Flash Sequence
+- **Purpose:** Execution of the RAF timing engine.
+- **UI State:** Standard light background. Positive numbers remain dark forest green (`#1A3829`) and negative numbers remain red (`#991B1B`). Numbers flash one by one without CSS transitions or animations.
+- **Constraint:** MCQ options, timer bars, and navigation controls are strictly hidden to prevent visual distraction.
+
+### Phase 3: MCQ Selection
+- **Purpose:** Student locks in their computed answer.
+- **UI State:** Displays 4 MCQ choices and a draining horizontal timer bar.
+- **Constraint:** Answers are subject to a 1,200ms anti-double-tap cooldown.
+
+### Phase 4: Confirmation
+- **Purpose:** Instant visual feedback of submission receipt.
+- **UI State:** Brief green checkmark confirming the answer is locked in, before looping back to Phase 1 for the next question.
+
+---
+
+## 3. HMAC Clock Guard
 
 **File:** `src/lib/anticheat/clock-guard.ts` (server-only)  
 **Problem:** A student advances their device's system clock forward → exam timer expires early → student resets clock → effectively gains extra time.

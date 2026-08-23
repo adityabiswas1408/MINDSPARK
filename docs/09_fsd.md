@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Functional Specification Document
 
 > **Document type:** Functional Specification — Technical Planning  
-> **Version:** 1.0  
-> **Output path:** `docs/fsd.md`  
-> **Read first:** `docs/prd.md` · `docs/ia-rbac.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/09_fsd.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/05_ia-rbac.md`  
 > **Author role:** Principal Frontend Architect — high-precision real-time web apps · offline-first · state machines
 
 ---

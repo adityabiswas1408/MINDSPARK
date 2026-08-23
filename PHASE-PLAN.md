@@ -9,7 +9,7 @@
 ## Global Phase Execution Protocol
 Before starting **any** phase:
 1. Create and checkout a dedicated working branch: `phase-<N>-<slug>`.
-2. Read `.agent-context/Handover.md`, `.agent-context/Architecture.md`, and `.agent-context/Constraints.md`.
+2. Read `.agent-context/GOTCHAS.md` (mandatory), `.agent-context/Handover.md`, `.agent-context/Architecture.md`, and `.agent-context/Constraints.md`.
 3. Check `.env.local` integrity.
 
 Upon concluding **any** phase:

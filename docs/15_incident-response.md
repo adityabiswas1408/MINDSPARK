@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Incident Response Plan
 
 > **Document type:** Incident Response — Operational Procedures  
-> **Version:** 1.0  
-> **Output path:** `docs/incident-response.md`  
-> **Read first:** `docs/architecture.md` · `docs/fsd.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/15_incident-response.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/10_architecture.md` · `docs/09_fsd.md`  
 > **Author role:** Site Reliability Engineer — high-stakes assessment platform · zero data-loss requirement
 
 ---
