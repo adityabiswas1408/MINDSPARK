@@ -27,7 +27,7 @@
 - Preparing for Phase 1-2 extensive audit and remaining feature wiring.
 
 ## What's confirmed broken (evidence-backed)
-*None currently confirmed broken at runtime.*
+- **Trigger bug on `student_answers`:** `update_student_answers_modtime` trigger executes `update_modified_column()` setting `NEW.updated_at = NOW()`, but `student_answers` table has no `updated_at` column. Any `UPDATE` or `ON CONFLICT DO UPDATE` on `student_answers` fails with `ERROR 42703 (record "new" has no field "updated_at")`.
 
 ## What's unverified (not yet exercised — absence of evidence is not evidence of correctness)
 - Create Level button wiring
