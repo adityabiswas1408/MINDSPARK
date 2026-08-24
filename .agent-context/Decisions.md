@@ -70,7 +70,7 @@
 - **Date:** 2026-08-24
 - **What:** Default to `requireRole('admin')` for the `createAnnouncement` action, restricting teachers from posting announcements.
 - **Why:** Safest default for broad communication features unless explicit teacher-broadcast requirements exist.
-- **Status:** PROPOSED
+- **Status:** Superseded by DEC-011
 
 ---
 
@@ -78,7 +78,7 @@
 - **Date:** 2026-08-24
 - **What:** Add a dedicated column (`body_json`) to the `announcements` table to preserve the original TipTap JSON structure alongside the sanitized `body_html`.
 - **Why:** Allows announcements to be re-opened and edited losslessly in the TipTap editor rather than relying on HTML parsing.
-- **Status:** PROPOSED
+- **Status:** CONFIRMED
 
 ---
 
@@ -86,7 +86,7 @@
 - **Date:** 2026-08-24
 - **What:** Retain `adminSupabase` for fetching announcements, read counts, and total students in `src/app/(admin)/admin/announcements/page.tsx`.
 - **Why:** While RLS-respecting clients are preferred, querying aggregate read counts and total student populations for the entire institution often exceeds the bounds of standard RLS policies (which may restrict users to their own data or specific cohorts). Using `adminSupabase` here ensures accurate dashboard metrics without complex RLS aggregate workarounds.
-- **Status:** PROPOSED
+- **Status:** DEFERRED — RLS now fixed; re-evaluate scope before Phase 6+
 
 ---
 
@@ -94,4 +94,4 @@
 - **Date:** 2026-08-24
 - **What:** Replaced the global `USING (true)` read policy on `announcements` with a strict `institution_id` scoped policy for all users. Also updated `createAnnouncement` action and RLS to allow teachers to INSERT and SELECT (but not UPDATE/DELETE) announcements within their institution.
 - **Why:** The previous RLS policy created a massive cross-tenant data leak by allowing any authenticated user to read all announcements globally. Teacher write access was added to unblock scoped classroom broadcasts.
-- **Status:** PROPOSED
+- **Status:** CONFIRMED
