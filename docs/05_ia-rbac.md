@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Information Architecture & RBAC Map
 
 > **Document type:** Production Architecture Reference  
-> **Version:** 1.0  
-> **Output path:** `docs/ia-rbac.md`  
-> **Read first:** `docs/prd.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/05_ia-rbac.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `ARCHITECTURE.md`  
 > **Author role:** Principal Frontend Architect — Next.js App Router, Supabase Auth, RBAC
 
 ---
@@ -22,11 +22,12 @@
 
 ## 1. Site Map — All Routes
 
-### Auth Routes (public — no session required)
+### Auth & Consent Routes (Public & Semi-Public)
 
 ```
-/login                     Login page (split-screen — roll number + masked DOB)
-/reset-password            Forced password reset (CSV-imported students only)
+/login                     Login page (email / roll number + password)
+/student/consent           DPDP Guardian Consent Verification & Status Screen
+/api/consent/verify        Cryptographic guardian consent link verification handler
 ```
 
 ### Admin Panel Routes (`/admin/*` — role: admin or teacher)
@@ -36,14 +37,10 @@
 /admin/levels              Curriculum level management (drag-and-drop reorder)
 /admin/students            Student directory (data table, faceted filters)
 /admin/students/[id]       Student profile detail (academic, history, settings)
-/admin/students/import     CSV import wizard (multi-step stepper)
-/admin/assessments         Assessment listing (EXAM / TEST tabs)
-/admin/assessments/new     Assessment creation (type → questions → config)
-/admin/assessments/[id]    Assessment detail (pipeline stepper, question list)
+/admin/assessments         Assessment listing (EXAM / TEST tabs, wizard)
 /admin/monitor             Monitor listing (active / recent exam sessions)
 /admin/monitor/[id]        Live exam monitor (real-time table, heartbeat status)
-/admin/results             Results overview (per-paper listing)
-/admin/results/[id]        Results detail (distribution chart, bulk publish)
+/admin/results             Results overview (per-paper listing, release locks)
 /admin/announcements       Announcement editor (TipTap, target selector)
 /admin/reports             BI reports (time-series, per-level analytics)
 /admin/activity-log        Audit trail (compound filters, JSON diff viewer)
@@ -56,16 +53,15 @@
 ### Student Panel Routes (`/student/*` — role: student)
 
 ```
-/student/dashboard         "Live Now" hero, upcoming assessments, empty state
-/student/exams             Exam listing (3-column grid, live/locked badges)
-/student/exams/[id]        Assessment engine — EXAM type (vertical equations + MCQ)
-/student/tests             Test listing (Flash Anzan cards with config tags)
-/student/tests/[id]        Assessment engine — TEST type (3-phase Flash Anzan)
-/student/lobby/[id]        Pre-assessment lobby (countdown, network check)
-/student/results           Result hub (published highlighted / pending muted)
-/student/results/[id]      Result detail (score, donut chart, review grid)
-/student/profile           Digital ID card, level progress bar
-/student/consent           Guardian consent verification (token-based, accessible pre-login)
+/student/dashboard         "Live Now" hero banner, recent results, calm empty state
+/student/exams             Vertical Abacus exam listing (Live / Upcoming / Completed)
+/student/tests             Flash Anzan test listing (Live / Upcoming / Completed)
+/student/exams/[id]        Pre-live read-only exam info & schedule detail
+/student/exams/[id]/lobby  Distraction-free lobby (breathing circle, countdown, latency check)
+/student/assessment/[id]   Active assessment player (Vertical Abacus & 4-Phase Flash Anzan)
+/student/results           Student results list (instant cards & scores)
+/student/results/[submissionId] Detailed scorecard & admin-release gated answer key
+/student/profile           Student identity hero, collapsible guardian info, null badges
 ```
 
 ### API Route Handlers (`/api/*` — not Server Actions)

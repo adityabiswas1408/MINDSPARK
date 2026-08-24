@@ -1,8 +1,8 @@
 # MINDSPARK Design System
 
 Canonical design spec for the MINDSPARK mental arithmetic assessment
-platform. Derived from `abacus-edge-design-spec (4).html` §28 + the
-07_hifi-spec.md + the Tier 1–5 implementation in `src/`.
+platform. Derived from `docs/MINDSPARK-Mockups-Review.pdf` + the
+`07_hifi-spec.md` + the visual contracts in `docs/design-mockups/`.
 
 Use this file as the source of truth when writing Stitch prompts, new
 components, or new pages. Every token here is already wired in

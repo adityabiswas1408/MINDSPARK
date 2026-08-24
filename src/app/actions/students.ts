@@ -5,13 +5,15 @@ import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
+import { z } from 'zod';
 
-interface ImportStudentsCSVInput {
-  csv_raw: string;
-  level_id: string;
-  cohort_id?: string;
-  dry_run: boolean;
-}
+const ImportStudentsCSVSchema = z.object({
+  csv_raw: z.string(),
+  level_id: z.string().uuid(),
+  cohort_id: z.string().uuid().optional(),
+  dry_run: z.boolean(),
+});
+export type ImportStudentsCSVInput = z.infer<typeof ImportStudentsCSVSchema>;
 
 interface ImportStudentsCSVOutput {
   inserted: number;
@@ -24,8 +26,12 @@ export async function importStudentsCSV(input: ImportStudentsCSVInput): Promise<
   if ('error' in authResult) return { error: authResult.error, message: authResult.message };
   const { userId, institutionId } = authResult;
 
+  const parsed = ImportStudentsCSVSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
   // Enforce 500 rows limit
-  const lines = input.csv_raw.trim().split('\n');
+  const lines = validData.csv_raw.trim().split('\n');
   if (lines.length > 501) { // including header
     return { error: 'QUOTA_EXCEEDED', message: 'Maximum 500 rows per import allowed.' };
   }
@@ -45,14 +51,14 @@ export async function importStudentsCSV(input: ImportStudentsCSVInput): Promise<
     })
     .filter(s => s.roll_number && s.full_name);
 
-  if (input.dry_run) {
+  if (validData.dry_run) {
     return { ok: true, data: { inserted: p_students.length, skipped: 0, errors: [] } };
   }
 
   const { data, error } = await supabase.rpc('bulk_import_students', {
     p_institution_id: institutionId,
-    p_level_id: input.level_id,
-    p_cohort_id: input.cohort_id ?? '',
+    p_level_id: validData.level_id,
+    p_cohort_id: validData.cohort_id ?? '',
     p_students
   });
 
@@ -75,24 +81,29 @@ export async function importStudentsCSV(input: ImportStudentsCSVInput): Promise<
   return { ok: true, data: result };
 }
 
-interface CreateStudentInput {
-  full_name: string;
-  roll_number: string;
-  date_of_birth?: string;
-  level_id: string;
-  cohort_id?: string;
-  send_invite: boolean;
-}
+const CreateStudentSchema = z.object({
+  roll_number: z.string().min(1),
+  full_name: z.string().min(1),
+  date_of_birth: z.string().nullable().optional(),
+  level_id: z.string().uuid(),
+  cohort_id: z.string().uuid().optional(),
+  send_invite: z.boolean().optional(),
+});
+export type CreateStudentInput = z.infer<typeof CreateStudentSchema>;
 
-export async function createStudent(input: CreateStudentInput): Promise<ActionResult<{ student_id: string; profile_id: string }>> {
+export async function createStudent(input: CreateStudentInput): Promise<ActionResult<{ student_id: string }>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
+
+  const parsed = CreateStudentSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
 
   const supabase = await createClient();
 
   // 1. Create user in Supabase Auth
-  const placeholderEmail = `${input.roll_number.toLowerCase()}@student.${institutionId}.invalid`;
+  const placeholderEmail = `${validData.roll_number.toLowerCase()}@student.${institutionId}.invalid`;
   
   // Cryptographically-random initial password. Admin can subsequently
   // reset via resetPassword() to hand off a new temp password to the
@@ -110,28 +121,35 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
   const profileId = authUser.user.id;
 
   // 2. Insert into students table (id = profileId)
+  const { data: existing } = await adminSupabase
+    .from('students')
+    .select('id')
+    .eq('institution_id', institutionId)
+    .eq('roll_number', validData.roll_number)
+    .single();
+
   const { error: studentErr } = await adminSupabase
     .from('students')
     .insert({
       id: profileId,
-      full_name: input.full_name,
-      roll_number: input.roll_number,
-      date_of_birth: input.date_of_birth,
-      level_id: input.level_id,
-      cohort_id: input.cohort_id as unknown as string,
+      full_name: validData.full_name,
+      roll_number: validData.roll_number,
+      date_of_birth: validData.date_of_birth,
+      level_id: validData.level_id,
+      cohort_id: validData.cohort_id as unknown as string,
       institution_id: institutionId
     });
 
-  if (studentErr) {
+  if (studentErr || existing) {
     await adminSupabase.auth.admin.deleteUser(profileId); // rollback auth
     return { error: 'DUPLICATE', message: 'Roll number may already exist' };
   }
 
   // 3. Insert into cohort_history if specified
-  if (input.cohort_id) {
+  if (validData.cohort_id) {
     await adminSupabase.from('cohort_history').insert({
       student_id: profileId,
-      cohort_id: input.cohort_id,
+      cohort_id: validData.cohort_id,
       valid_from: new Date().toISOString()
     });
   }
@@ -145,21 +163,27 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
     action_type: 'CREATE_STUDENT'
   });
 
-  return { ok: true, data: { student_id: profileId, profile_id: profileId } };
+  return { ok: true, data: { student_id: profileId } };
 }
 
-interface UpdateStudentInput {
-  student_id: string;
-  full_name?: string;
-  level_id?: string;
-  cohort_id?: string;
-  status?: 'active' | 'suspended' | 'graduated';
-}
+const UpdateStudentSchema = z.object({
+  id: z.string().uuid(),
+  roll_number: z.string().optional(),
+  full_name: z.string().optional(),
+  date_of_birth: z.string().nullable().optional(),
+  level_id: z.string().uuid().optional(),
+  cohort_id: z.string().uuid().nullable().optional(),
+});
+export type UpdateStudentInput = z.infer<typeof UpdateStudentSchema>;
 
-export async function updateStudent(input: UpdateStudentInput): Promise<ActionResult<{ updated: true }>> {
+export async function updateStudent(input: UpdateStudentInput): Promise<ActionResult<null>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
+
+  const parsed = UpdateStudentSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
 
   const supabase = await createClient();
 
@@ -167,57 +191,64 @@ export async function updateStudent(input: UpdateStudentInput): Promise<ActionRe
   const { error: updateErr } = await supabase
     .from('students')
     .update({
-      full_name: input.full_name,
-      level_id: input.level_id
+      full_name: validData.full_name,
+      level_id: validData.level_id
     })
-    .eq('id', input.student_id)
+    .eq('id', validData.id)
     .eq('institution_id', institutionId);
 
   if (updateErr) return { error: 'VALIDATION_ERROR' };
 
-  if (input.cohort_id) {
+  if (validData.cohort_id !== undefined) {
     // Check if cohort has changed. If so, close current and open new.
     await adminSupabase
       .from('cohort_history')
       .update({ valid_to: new Date().toISOString() })
-      .eq('student_id', input.student_id)
+      .eq('student_id', validData.id)
       .is('valid_to', null);
 
-    await adminSupabase.from('cohort_history').insert({
-      student_id: input.student_id,
-      cohort_id: input.cohort_id,
-      valid_from: new Date().toISOString()
-    });
+    if (validData.cohort_id !== null) {
+      await adminSupabase.from('cohort_history').insert({
+        student_id: validData.id,
+        cohort_id: validData.cohort_id,
+        valid_from: new Date().toISOString()
+      });
+    }
   }
 
   await supabase.from('activity_logs').insert({
     user_id: userId,
     institution_id: institutionId,
     entity_type: 'student',
-    entity_id: input.student_id,
+    entity_id: validData.id,
     action_type: 'UPDATE_STUDENT',
-    metadata: { changes: input } as unknown as Record<string, string>
+    metadata: { changes: validData } as unknown as Record<string, string>
   });
 
-  return { ok: true, data: { updated: true } };
+  return { ok: true, data: null };
 }
 
-interface DeactivateStudentInput {
-  student_id: string;
-  reason?: string;
-}
+const DeactivateStudentSchema = z.object({
+  student_id: z.string().uuid(),
+  reason: z.string().optional(),
+});
+export type DeactivateStudentInput = z.infer<typeof DeactivateStudentSchema>;
 
 export async function deactivateStudent(input: DeactivateStudentInput): Promise<ActionResult<{ deactivated: true }>> {
   const authResult = await requireRole('admin');
-  if ('error' in authResult) return { error: authResult.error, message: authResult.message };
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
+
+  const parsed = DeactivateStudentSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
 
   const supabase = await createClient();
 
   const { error } = await supabase
     .from('students')
     .update({ deleted_at: new Date().toISOString() })
-    .eq('id', input.student_id)
+    .eq('id', validData.student_id)
     .eq('institution_id', institutionId);
 
   if (error) return { error: 'NOT_FOUND' };
@@ -226,9 +257,9 @@ export async function deactivateStudent(input: DeactivateStudentInput): Promise<
     user_id: userId,
     institution_id: institutionId,
     entity_type: 'student',
-    entity_id: input.student_id,
+    entity_id: validData.student_id,
     action_type: 'DEACTIVATE_STUDENT',
-    metadata: { reason: input.reason || null }
+    metadata: { reason: validData.reason || null }
   });
 
   return { ok: true, data: { deactivated: true } };

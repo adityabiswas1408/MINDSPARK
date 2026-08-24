@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Database Design Document
 
 > **Document type:** Database Architecture — Technical Planning  
-> **Version:** 1.0  
-> **Output path:** `docs/database.md`  
-> **Read first:** `docs/prd.md` · `docs/ia-rbac.md` · `docs/architecture.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/11_database.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/05_ia-rbac.md` · `docs/10_architecture.md`  
 > **Author role:** Principal Database Architect — PostgreSQL · Supabase RLS · high-concurrency EdTech
 
 ---
@@ -1352,7 +1352,7 @@ CREATE POLICY "announcement_reads_student_select" ON announcement_reads
 
 ## 16. Migration Sequence
 
-> **Audit update (Batch 1):** Sequence expanded from 23 to 26 migrations. Three tables added: `profiles` (002), `assessment_sessions` (011), `assessment_session_questions` (012). Existing migrations renumbered where FK dependencies require it. All subsequent migrations shifted +1 or +2 accordingly. Run ALL 26 in strict order.
+> **Audit update (Batch 2):** Sequence expanded from 26 to 27 migrations. Migration 027 (`20260325000000_dashboard_aggregates`) adds materialized performance aggregation RPCs for admin dashboard KPIs. Run ALL 27 in strict order.
 
 All migrations are idempotent (`IF NOT EXISTS` guards). Run strictly in order — later migrations have FK dependencies on earlier ones.
 
@@ -1677,7 +1677,7 @@ $$;
 | Partial index on `submissions WHERE completed_at IS NULL` | ✅ §11 indexes |
 | `cohort_history` temporal join RLS with SQL | ✅ §7 — full policy + trigger |
 | `grade_boundaries` — no hardcoded grades | ✅ §10 — SQL lookup pattern documented |
-| All 26 migrations in order with dependency notes | ✅ §16 — updated Batch 1 audit |
+| All 27 migrations in order with dependency notes | ✅ §16 — updated Batch 2 audit |
 | Security Definer function `validate_and_migrate_offline_submission` | ✅ §17 |
 | `bulk_import_students` atomic with `EXCEPTION` handler | ✅ §17 |
 | `calculate_results` — grade from table, not hardcoded | ✅ §17 |

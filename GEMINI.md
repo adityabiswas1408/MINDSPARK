@@ -250,8 +250,8 @@ Phase 0 — Scaffold
   Read: docs/20_devops.md — read completely without truncation
     (GitHub Actions CI/CD · 3 environments · migration deployment rules · rollback)
 
-Phase 1 — Database (26 migrations)
-  Read: docs/11_database.md — read ALL 1,684 lines without truncation before writing migration 001
+Phase 1 — Database (27 migrations)
+  Read: docs/11_database.md — read ALL 1,685 lines without truncation before writing migration 001
 
 Phase 2 — Auth Foundation
   Read: docs/05_ia-rbac.md — read fully without truncation

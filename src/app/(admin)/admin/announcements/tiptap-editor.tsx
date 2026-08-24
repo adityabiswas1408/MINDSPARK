@@ -1,19 +1,34 @@
 'use client';
 
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import Document from '@tiptap/extension-document';
+import Paragraph from '@tiptap/extension-paragraph';
+import Text from '@tiptap/extension-text';
+import BoldExtension from '@tiptap/extension-bold';
+import ItalicExtension from '@tiptap/extension-italic';
+import BulletList from '@tiptap/extension-bullet-list';
+import ListItem from '@tiptap/extension-list-item';
 import { Bold, Italic, List } from 'lucide-react';
 
 interface TipTapEditorProps {
-  onChange: (html: string) => void;
+  onChange: (html: string, json: Record<string, unknown>) => void;
+  initialContent?: string;
 }
 
-export default function TipTapEditor({ onChange }: TipTapEditorProps) {
+export default function TipTapEditor({ onChange, initialContent = '' }: TipTapEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit],
-    content: '',
+    extensions: [
+      Document,
+      Paragraph,
+      Text,
+      BoldExtension,
+      ItalicExtension,
+      BulletList,
+      ListItem,
+    ],
+    content: initialContent,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      onChange(editor.getHTML(), editor.getJSON());
     },
   });
 

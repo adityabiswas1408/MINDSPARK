@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Wireframes Specification
 
 > **Document type:** Structural Layout Reference — text-based wireframes  
-> **Version:** 1.0  
-> **Output path:** `docs/wireframes.md`  
-> **Read first:** `docs/prd.md`, `docs/ia-rbac.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/06_wireframes.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/05_ia-rbac.md`  
 > **Author role:** Lead UX Architect — high-stakes assessment platforms, paediatric UI (ages 6–18)
 
 ---
@@ -458,12 +458,16 @@ Expandable row → JSON diff visualiser shows `before` / `after` payload.
 ┌────────────┬─────────────────────────────────────────────────────┐
 │ ≡ MIND..   │                                                      │
 │  Dashboard │                                                      │
-│  Exam      │         [empty-dashboard.svg — resting abacus]      │
+│  Exam      │       [blue-book.svg OR purple-lightning.svg]        │
 │  Test      │                                                      │
-│  Results   │            { No exams scheduled yet }               │
+│  Results   │            { No sessions scheduled yet }             │
 │  Profile   │        Check back when your teacher posts one.      │
 │            │                                                      │
 └────────────┴─────────────────────────────────────────────────────┘
+
+**Empty State Iconography Rule:**
+- **Exams (Vertical Abacus):** Render `blue-book.svg` empty state icon.
+- **Tests (Flash Anzan):** Render `purple-lightning.svg` empty state icon.
   240px
 ```
 

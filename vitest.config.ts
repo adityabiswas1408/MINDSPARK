@@ -8,6 +8,7 @@ export default defineConfig({
     environment: 'jsdom', // browser APIs (performance.now, requestAnimationFrame)
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
       include: ['src/lib/anzan/**', 'src/lib/anticheat/**', 'src/lib/offline/**'],

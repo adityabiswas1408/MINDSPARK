@@ -1,104 +1,74 @@
 # MINDSPARK Student Guide ✨
 
-> **Who this is for:** Students using MINDSPARK for exams and tests  
-> **Reading level:** Grade 3 · Short sentences · Simple words  
-> **Version:** 1.0
+> **Who this is for:** Students using MINDSPARK for mental arithmetic exams and Flash Anzan tests  
+> **Reading level:** Friendly · Short sentences · Simple words  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)
 
 ---
 
 ## 1. What is MINDSPARK? 🧠
 
-MINDSPARK is your exam app.
+MINDSPARK is your digital arithmetic platform!
 
-Your teacher sets up your exams. You take them here.
+There are two fun calculation modes:
 
-MINDSPARK helps you show what you know in maths.
-
-There are two kinds of assessments:
-
-| Type | What happens |
-|------|-------------|
-| **Exam** | You look at numbers on the screen. You pick the right answer. |
-| **Test** | Numbers flash on the screen very fast. Then you pick the right answer. |
-
-Your teacher decides which one you do. You cannot start one on your own.
+| Type | How It Works | What You Do |
+|------|-------------|-------------|
+| **Vertical Abacus Exam** | A column of numbers neatly stacked on screen. Negative numbers show in red (`-`). | Calculate the total in your head and tap A, B, C, or D. |
+| **Flash Anzan Test** | 4-Phase lightning test: (1) 3-second countdown, (2) Numbers flash rapidly, (3) Pick your answer on the timer bar, (4) Instant checkmark! | Visualize your mental abacus beads and lock in your sum! |
 
 ---
 
-## 2. How to Log In
+## 2. What if the School Wi-Fi Drops? (Don't Worry!) 📶
+
+If the internet goes off during your test, **do NOT panic!**
+1. You will see a friendly yellow notice: *"Working Offline — Answers Saved Locally"*.
+2. You can keep answering every question normally.
+3. As soon as Wi-Fi reconnects, your answers automatically send to your teacher. You will never lose your work!
+
+---
+
+## 3. How to Log In
 
 You need two things to log in:
 
-**1. Your Roll Number**
-This is the number your teacher gave you. It might look like `STU-001`.
-
-**2. Your Date of Birth**
-You type it like this: `2011-04-15`
-That means: Year, then Month, then Day.
+**1. Your Roll Number** (e.g. `STU-001` or your student email)  
+**2. Your Password** (or Date of Birth in `YYYY-MM-DD` format if first time)
 
 ### Steps to Log In
-
 1. Open MINDSPARK on your tablet or computer.
 2. Type your **Roll Number** in the first box.
-3. Type your **Date of Birth** in the second box.
+3. Type your **Password** in the second box.
 4. Tap **Sign In**.
-
-### First Time Logging In
-
-The first time you log in, MINDSPARK will ask you to make a new password.
-
-Your **first password** is your date of birth written as **day, month, year** with no dashes.
-
-For example, if your birthday is 15 April 2011, your first password is: `15042011`
-
-Think of something new you will remember. Write it down somewhere safe.
-
-### If It Does Not Work
-
-- Check your Roll Number. Did you type it exactly right?
-- Check your Date of Birth. Did you use the format `YYYY-MM-DD`?
-- Try again slowly.
-
-If it still does not work, tell your teacher. They can help you.
 
 > 💡 **Tip:** Never share your password with anyone. Not even a friend!
 
 ---
 
-## 3. Your Dashboard
+## 4. Your Dashboard
 
 After you log in, you see your **Dashboard**.
 
-Think of it like your school notice board. It shows what is happening today.
-
-### What You Will See
-
-**A big card at the top:**
-This shows if an exam or test is happening **right now**.
-It has a glowing border. This means: *You can start this one today!*
-
-If you see a padlock 🔒 on a card, that exam is not open yet.
-Your teacher has not started it. Wait for them to open it.
-
-**Cards below:**
-These show exams and tests coming soon.
-They are a bit faded. That means: *Not yet. Be patient!*
-
-**No cards at all?**
-That is fine! It means no exam is happening right now.
-Your teacher will let you know when the next one starts.
+- **Big Green Card at Top:** Shows if an exam is happening **right now**. Tap **Enter Lobby** to start!
+- **Padlock 🔒 on a Card:** The exam is scheduled for later. Wait for your teacher to open it.
+- **Empty Screen?** That's totally normal! It means you have no active tests today.
 
 ---
 
-## 4. Exam — Vertical Format
+## 5. The Exam Lobby & Breathing Circle 🌀
 
-An **Exam** shows you maths equations. You pick the right answer.
+When you tap into an upcoming exam, you enter the **Lobby waiting room**.
 
-### What You Will See
+1. You will see a gentle circle that grows **big**... and then **small**.
+2. **Try breathing with it:** Breathe in when it expands, breathe out when it shrinks. This calms your brain!
+3. Check the network circle: 🟢 Green means your connection is great.
+4. When the countdown hits 0, tap the big **"I'm Ready"** button to start!
 
-A big equation on the screen. It looks just like a paper maths test.
+---
 
-Numbers are stacked on top of each other, like this:
+## 6. Vertical Abacus Exam Mode
+
+An **Exam** shows you numbers stacked in a column, just like math on a blackboard:
 
 ```
    2 3 4
@@ -106,217 +76,56 @@ Numbers are stacked on top of each other, like this:
 −    8 9
 ```
 
-Work it out in your head. Then look at the four answer choices below.
-
-### How to Answer
-
-1. Look at the equation carefully.
-2. Work out the answer in your head.
-3. Tap the answer you think is correct.
-4. Tap **Confirm Answer**.
-5. Tap **Next Question** to move on.
-
-You can also see a **Question List** on the side. It shows all your questions.
-Tap any number to jump to that question.
-
-### The Timer
-
-There is a timer at the top. It counts down.
-
-It changes colour slowly as time gets shorter. Stay calm. Work at your speed.
-
-> 💡 **Tip:** Negative numbers (like −89) appear in red. That means subtract them!
+1. Add and subtract the numbers in your head using your abacus methods.
+2. Tap your answer (A, B, C, or D).
+3. Negative numbers appear in **dark red**. That means subtract them!
+4. Use the **Question Navigator** on the side to jump to any question.
 
 ---
 
-## 5. Test — Flash Anzan
+## 7. Flash Anzan Test Mode ⚡
 
-A **Test** is the Flash Anzan challenge. Numbers flash on the screen very fast.
+Numbers flash on screen in the middle of a dark, clean screen with zero distractions!
 
-Your job is to add them all up in your head. Then pick the right answer.
+- **Phase 1 (Get Ready):** 3-second countdown prepares your eyes.
+- **Phase 2 (The Flash):** Numbers flash rapidly one by one. Keep the running total on your mental abacus beads!
+- **Phase 3 (Choose Answer):** 4 choices appear with a moving timer bar. Tap your total!
+- **Phase 4 (Checkmark):** Green confirmation that your answer is locked in.
 
-There are **three parts** to every Flash Anzan test.
-
----
-
-### Part 1 — Get Ready
-
-You see the first equation. Look at it carefully.
-
-When you are ready, tap **Start Flash**.
+> 💡 **Tip:** Keep your eyes locked on the center dot. If you lose count, make your best guess and get ready for the next flash!
 
 ---
 
-### Part 2 — The Flash ⚡
+## 8. When You Finish
 
-Now the screen goes **mostly blank**.
-
-> **Why does the screen go clean and simple?**
->
-> *The screen goes clean and simple so your brain can focus.*
-> *There is nothing to distract you. Just the number!*
-
-Numbers appear on the screen, one at a time. They flash very fast.
-
-Keep a running total in your head. Like a calculator inside your brain!
-
-> 💡 **Tip:** Your eyes should stay on the middle of the screen.
-> The number always appears there.
-
-The question list on the side goes away when the numbers start flashing — and stays away when you pick your answer too. That is on purpose. It helps you concentrate on just the numbers and the answer choices.
-
-When all the numbers are done, Part 3 begins.
+1. After your last question, tap **Submit Exam**.
+2. Tap **Confirm Submit** in the pop-up box.
+3. You will see your completion score card. Good job! 🎉
 
 ---
 
-### Part 3 — Choose Your Answer
+## 9. Seeing Your Results
 
-Four answer choices appear. Pick the one that matches the total in your head.
+Go to **Results** on the left menu:
 
-Tap your answer. Tap **Confirm**.
-
-Then the next question begins with Part 1 again.
-
----
-
-### What If You Lose Count?
-
-It happens to everyone sometimes! 😊
-
-If you lose count, just make your best guess. Tap any answer. Then move on.
-
-You cannot go back to a flash question. So keep trying on the next one!
+- **Instant Scores:** See your overall percentage, accuracy, and Digits-Per-Minute (DPM) calculation speed.
+- **Answer Sheet Review:** Once your teacher releases the paper, you can tap in to see which questions you got right (🟢) and which ones to practice (🔴).
 
 ---
 
-## 6. If the Internet Stops
+## 10. Your Profile & Ticker Mode ♿
 
-Sometimes the internet takes a little break.
-
-> *Do not worry! MINDSPARK is saving your answers right here on your tablet.*
-> *When the internet comes back, everything gets sent automatically.*
-
-You will see a small banner at the top of the screen. It tells you MINDSPARK is saving locally.
-
-**What should you do?**
-
-Keep going! Keep answering your questions. Do not stop.
-
-MINDSPARK is like a notebook. Even without internet, it writes your answers down. When the internet comes back, it sends everything to your teacher. By itself. You do not have to do anything.
-
-**The small dot in the corner:**
-- 🟢 Green — your answers are saved and sent.
-- 🟡 Amber — saving right now. Almost done!
+Tap your name to view your digital student ID card:
+- Shows your Roll Number, enrolled Level (e.g. Level 1 - Beginner), and progress.
+- **Ticker Mode Switch:** If rapid flashes are too fast or cause eye strain, turn on Ticker Mode to have numbers scroll gently across the screen instead.
 
 ---
 
-## 7. When You Finish
-
-After your last question, tap **Submit Exam**.
-
-A box will pop up asking: *Are you sure?*
-
-Tap **Confirm Submit**.
-
-> *You did it! Your teacher will look at your answers.*
-> *They will share your result soon. Your brain worked hard today! 🧠*
-
-You will see a **completion card**. It says your answers have been received.
-
-After that, you go back to your Dashboard.
-
----
-
-## 8. Seeing Your Result
-
-Go to **Results** in the menu on the left side.
-
-### Two Groups of Results
-
-**Ready to see** (bright cards at the top):
-Your teacher has shared this result. Tap it to see your score! When your teacher shares your result, it appears here automatically — you do not need to refresh the page.
-
-**Not ready yet** (faded cards below):
-Your teacher has not shared this one yet. Do not worry.
-You will see it when your teacher is ready.
-
-> 💡 A small badge that says **New** means you have not looked at this result yet.
-
-### What Your Result Shows
-
-- Your **score** — shown as a big number, like 87%
-- A **donut chart** — shows how much you got right
-- A **review grid** — shows each question and whether you got it right ✓ or not
-
-In the review grid:
-- **Green** = you got it right ✓
-- **Red with a line through it** = the answer was different. The correct answer is shown next to yours.
-
-You can tap **Show Wrong Answers** to see only the ones to practise.
-
----
-
-## 9. Your Profile
-
-Tap your name or the icon in the menu to see your **Profile**.
-
-Your profile is like your **school ID card** for MINDSPARK.
-
-It shows:
-
-- Your name
-- Your Roll Number (in a special code style)
-- Your current **Level** (like Bronze, Silver, Gold)
-- Your date of birth
-
-You cannot change your name, roll number, level, or date of birth yourself. If something looks wrong, tell your teacher.
-
-Your level shows how far you have come in your abacus journey. 🌟
-
-### Ticker Mode ♿
-
-There is one setting you can change: **Ticker Mode**.
-
-If the flashing numbers are hard to follow, turn on Ticker Mode.
-
-Instead of flashing in the middle of the screen, numbers will scroll slowly across the bottom. This can make it easier to keep count.
-
-To turn it on:
-1. Go to your Profile.
-2. Find **Ticker Mode** at the bottom.
-3. Tap the switch to turn it on or off.
-
-> 💡 Ask your teacher if you are not sure whether to use Ticker Mode.
-
----
-
-## Before Your Test — The Breathing Circle 🌀
-
-When you are waiting in the **Lobby** before your test starts, you will see a gentle circle.
-
-It gets **big**... then **small**... then big again.
-
-> *Before your test starts, there is a gentle circle that gets big and small.*
-> *Try breathing with it. In... and out. This helps your brain get ready!*
-
-Breathe in when it gets big.
-Breathe out when it gets small.
-
-Do this a few times. You will feel calmer. Your brain will be ready. ✨
-
----
-
-## Quick Help
+## 11. Quick Help Guide
 
 | What I see | What it means | What to do |
-|------------|-----------|------------|
-| Padlock 🔒 on a card | Not open yet | Wait for your teacher to open it |
-| Amber banner at top | Saving locally — no internet | Keep going! It saves by itself |
-| Timer going amber | Getting close to end | Keep calm, keep answering |
-| Faded result card | Teacher not ready yet | Wait — it will appear soon |
-| "Check your Roll Number" message | Something was typed wrong | Type it again slowly |
-
----
-
-> **Remember:** MINDSPARK is here to help you do your best.
-> If something seems wrong, always ask your teacher. They are here to help. 🧠✨
+|:---|:---|:---|
+| Padlock 🔒 on card | Not open yet | Wait for teacher to start the session |
+| Yellow banner at top | Saving locally (offline) | Keep answering normally! Answers sync when Wi-Fi returns |
+| Red negative numbers | Minus operand | Subtract from your mental abacus sum |
+| Faded result card | Under review | Teacher hasn't released answer sheet yet |

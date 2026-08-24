@@ -44,6 +44,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (authError || !user) {
       return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
     }
+    
+    if (user.app_metadata?.role !== 'student') {
+      return NextResponse.json({ error: 'FORBIDDEN', message: 'Only students can sync submissions' }, { status: 403 });
+    }
 
     // 2. Sliding Window Rate Limiting Logic (Module-level Map)
     const now = Date.now();

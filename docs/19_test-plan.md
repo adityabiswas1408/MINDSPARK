@@ -1,9 +1,9 @@
 # MINDSPARK V1 — Test Plan & Test Cases
 
 > **Document type:** Quality Assurance — Build Support  
-> **Version:** 1.0  
-> **Output path:** `docs/test-plan.md`  
-> **Read first:** `docs/prd.md` · `docs/fsd.md` · `docs/api-contracts.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/19_test-plan.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `TESTING.md` · `docs/12_api-contracts.md`  
 > **Author role:** Principal QA Engineer — Next.js testing · Playwright · Supabase · high-concurrency load testing
 
 ---

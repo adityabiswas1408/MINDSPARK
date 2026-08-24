@@ -48,7 +48,7 @@ SIGN-OFF REQUIRED:
 
 ### Database
 
-- [ ] **All 26 migrations applied to production DB** — run `SELECT version FROM supabase_migrations ORDER BY applied_at;` and confirm migrations 001–026 are present with no gaps. **Migration 025 adds `consent_verified` to `students` (DPDP-legally required). Migration 026 adds `deletion_scheduled_at` to both `submissions` and `activity_logs` (DPDP retention pipeline — required for pg_cron deletion job). All 26 must be present before launch.**
+- [ ] **All 27 migrations applied to production DB** — run `SELECT version FROM supabase_migrations ORDER BY applied_at;` and confirm migrations 001–026 plus `20260325000000_dashboard_aggregates` are present with no gaps. **Migration 025 adds `consent_verified` to `students` (DPDP-legally required). Migration 026 adds `deletion_scheduled_at` to both `submissions` and `activity_logs` (DPDP retention pipeline). Migration 20260325000000 adds `dashboard_aggregates` materialized performance RPCs. All 27 must be present before launch.**
   > Verifier: _______________ | Date: _______________
 
 - [ ] **idempotency_key UNIQUE constraint verified** — in a test exam session, trigger the `submitAnswer` Server Action twice with identical `idempotency_key` values (use a Playwright test or browser console). Confirm: the second call returns success (not an error), and only **one** row appears in `student_answers` for that `idempotency_key`. Confirm: no duplicate row appears in `submissions` for the same session.
@@ -132,7 +132,7 @@ SIGN-OFF REQUIRED:
 
 *Operational gates must be verified jointly by the Technical Lead and Institution Admin.*
 
-- [ ] **CHANGELOG has V1.0.0 entry with all 26 migrations listed** — open `CHANGELOG.md`. Confirm: `## [1.0.0]` section exists with `### Database` subsection listing migrations 001 through 026. All migration names and descriptions present.
+- [ ] **CHANGELOG has V1.0.0 entry with all 27 migrations listed** — open `CHANGELOG.md`. Confirm: `## [1.0.0]` section exists with `### Database` subsection listing migrations 001 through 027. All migration names and descriptions present.
   > Verifier: _______________ | Date: _______________
 
 - [ ] **Incident Response Plan reviewed by on-call technical contact** — the designated on-call engineer has read `docs/incident-response.md` in full, confirmed they understand P0-A (WebSocket failure) and P0-B (DB down) procedures, and acknowledges their on-call obligations.

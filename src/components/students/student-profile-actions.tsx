@@ -36,7 +36,7 @@ export function StudentProfileActions({
   function handlePromote() {
     if (!promoteLevelId || promoteLevelId === currentLevelId) return;
     startTransition(async () => {
-      const result = await updateStudent({ student_id: studentId, level_id: promoteLevelId });
+      const result = await updateStudent({ id: studentId, level_id: promoteLevelId });
       if (!result.ok) {
         setMessage(result.message ?? result.error ?? 'Promote failed.');
       } else {

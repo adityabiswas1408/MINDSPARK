@@ -1,0 +1,209 @@
+﻿{
+    "evaluated_at":  "2026-08-22T12:05:43Z",
+    "mode":  "full",
+    "batch_progress":  {
+                           "total":  33,
+                           "evaluated":  33,
+                           "status":  "completed"
+                       },
+    "skills":  {
+                   "architecture-decision-records":  {
+                                                         "path":  "A:/billsplit/.agents/skills/architecture-decision-records/SKILL.md",
+                                                         "verdict":  "Keep",
+                                                         "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                         "mtime":  "2026-08-22T12:05:43Z"
+                                                     },
+                   "blueprint":  {
+                                     "path":  "A:/billsplit/.agents/skills/blueprint/SKILL.md",
+                                     "verdict":  "Keep",
+                                     "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                     "mtime":  "2026-08-22T12:05:43Z"
+                                 },
+                   "brainstorming":  {
+                                         "path":  "A:/billsplit/.agents/skills/brainstorming/SKILL.md",
+                                         "verdict":  "Keep",
+                                         "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                         "mtime":  "2026-08-22T12:05:43Z"
+                                     },
+                   "brandkit":  {
+                                    "path":  "A:/billsplit/.agents/skills/brandkit/SKILL.md",
+                                    "verdict":  "Keep",
+                                    "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                    "mtime":  "2026-08-22T12:05:43Z"
+                                },
+                   "clarifying-requests":  {
+                                               "path":  "A:/billsplit/.agents/skills/clarifying-requests/SKILL.md",
+                                               "verdict":  "Keep",
+                                               "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                               "mtime":  "2026-08-22T12:05:43Z"
+                                           },
+                   "codebase-onboarding":  {
+                                               "path":  "A:/billsplit/.agents/skills/codebase-onboarding/SKILL.md",
+                                               "verdict":  "Keep",
+                                               "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                               "mtime":  "2026-08-22T12:05:43Z"
+                                           },
+                   "coding-standards":  {
+                                            "path":  "A:/billsplit/.agents/skills/coding-standards/SKILL.md",
+                                            "verdict":  "Keep",
+                                            "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                            "mtime":  "2026-08-22T12:05:43Z"
+                                        },
+                   "context-budget":  {
+                                          "path":  "A:/billsplit/.agents/skills/context-budget/SKILL.md",
+                                          "verdict":  "Keep",
+                                          "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                          "mtime":  "2026-08-22T12:05:43Z"
+                                      },
+                   "design-taste-frontend":  {
+                                                 "path":  "A:/billsplit/.agents/skills/design-taste-frontend/SKILL.md",
+                                                 "verdict":  "Keep",
+                                                 "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                 "mtime":  "2026-08-22T12:05:43Z"
+                                             },
+                   "full-output-enforcement":  {
+                                                   "path":  "A:/billsplit/.agents/skills/full-output-enforcement/SKILL.md",
+                                                   "verdict":  "Keep",
+                                                   "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                   "mtime":  "2026-08-22T12:05:43Z"
+                                               },
+                   "image-to-code":  {
+                                         "path":  "A:/billsplit/.agents/skills/image-to-code/SKILL.md",
+                                         "verdict":  "Keep",
+                                         "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                         "mtime":  "2026-08-22T12:05:43Z"
+                                     },
+                   "imagegen-frontend-mobile":  {
+                                                    "path":  "A:/billsplit/.agents/skills/imagegen-frontend-mobile/SKILL.md",
+                                                    "verdict":  "Keep",
+                                                    "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                    "mtime":  "2026-08-22T12:05:43Z"
+                                                },
+                   "imagegen-frontend-web":  {
+                                                 "path":  "A:/billsplit/.agents/skills/imagegen-frontend-web/SKILL.md",
+                                                 "verdict":  "Keep",
+                                                 "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                 "mtime":  "2026-08-22T12:05:43Z"
+                                             },
+                   "industrial-brutalist-ui":  {
+                                                   "path":  "A:/billsplit/.agents/skills/industrial-brutalist-ui/SKILL.md",
+                                                   "verdict":  "Keep",
+                                                   "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                   "mtime":  "2026-08-22T12:05:43Z"
+                                               },
+                   "inherit-legacy-style":  {
+                                                "path":  "A:/billsplit/.agents/skills/inherit-legacy-style/SKILL.md",
+                                                "verdict":  "Keep",
+                                                "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                "mtime":  "2026-08-22T12:05:43Z"
+                                            },
+                   "intent-driven-coding":  {
+                                                "path":  "A:/billsplit/.agents/skills/intent-driven-coding/SKILL.md",
+                                                "verdict":  "Keep",
+                                                "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                "mtime":  "2026-08-22T12:05:43Z"
+                                            },
+                   "living-docs-governance":  {
+                                                  "path":  "A:/billsplit/.agents/skills/living-docs-governance/SKILL.md",
+                                                  "verdict":  "Keep",
+                                                  "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                  "mtime":  "2026-08-22T12:05:43Z"
+                                              },
+                   "minimalist-ui":  {
+                                         "path":  "A:/billsplit/.agents/skills/minimalist-ui/SKILL.md",
+                                         "verdict":  "Keep",
+                                         "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                         "mtime":  "2026-08-22T12:05:43Z"
+                                     },
+                   "ponytail":  {
+                                    "path":  "A:/billsplit/.agents/skills/ponytail/SKILL.md",
+                                    "verdict":  "Keep",
+                                    "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                    "mtime":  "2026-08-22T12:05:43Z"
+                                },
+                   "ponytail-audit":  {
+                                          "path":  "A:/billsplit/.agents/skills/ponytail-audit/SKILL.md",
+                                          "verdict":  "Keep",
+                                          "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                          "mtime":  "2026-08-22T12:05:43Z"
+                                      },
+                   "ponytail-debt":  {
+                                         "path":  "A:/billsplit/.agents/skills/ponytail-debt/SKILL.md",
+                                         "verdict":  "Keep",
+                                         "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                         "mtime":  "2026-08-22T12:05:43Z"
+                                     },
+                   "ponytail-review":  {
+                                           "path":  "A:/billsplit/.agents/skills/ponytail-review/SKILL.md",
+                                           "verdict":  "Keep",
+                                           "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                           "mtime":  "2026-08-22T12:05:43Z"
+                                       },
+                   "prompt-optimizer":  {
+                                            "path":  "A:/billsplit/.agents/skills/prompt-optimizer/SKILL.md",
+                                            "verdict":  "Keep",
+                                            "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                            "mtime":  "2026-08-22T12:05:43Z"
+                                        },
+                   "receiving-code-review":  {
+                                                 "path":  "A:/billsplit/.agents/skills/receiving-code-review/SKILL.md",
+                                                 "verdict":  "Keep",
+                                                 "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                 "mtime":  "2026-08-22T12:05:43Z"
+                                             },
+                   "redesign-existing-projects":  {
+                                                      "path":  "A:/billsplit/.agents/skills/redesign-existing-projects/SKILL.md",
+                                                      "verdict":  "Keep",
+                                                      "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                      "mtime":  "2026-08-22T12:05:43Z"
+                                                  },
+                   "search-dependencies":  {
+                                               "path":  "A:/billsplit/.agents/skills/search-dependencies/SKILL.md",
+                                               "verdict":  "Keep",
+                                               "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                               "mtime":  "2026-08-22T12:05:43Z"
+                                           },
+                   "skill-stocktake":  {
+                                           "path":  "A:/billsplit/.agents/skills/skill-stocktake/SKILL.md",
+                                           "verdict":  "Keep",
+                                           "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                           "mtime":  "2026-08-22T12:05:43Z"
+                                       },
+                   "stitch-design-taste":  {
+                                               "path":  "A:/billsplit/.agents/skills/stitch-design-taste/SKILL.md",
+                                               "verdict":  "Keep",
+                                               "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                               "mtime":  "2026-08-22T12:05:43Z"
+                                           },
+                   "systematic-debugging":  {
+                                                "path":  "A:/billsplit/.agents/skills/systematic-debugging/SKILL.md",
+                                                "verdict":  "Keep",
+                                                "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                "mtime":  "2026-08-22T12:05:43Z"
+                                            },
+                   "tdd-workflow":  {
+                                        "path":  "A:/billsplit/.agents/skills/tdd-workflow/SKILL.md",
+                                        "verdict":  "Keep",
+                                        "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                        "mtime":  "2026-08-22T12:05:43Z"
+                                    },
+                   "unified-memory":  {
+                                          "path":  "A:/billsplit/.agents/skills/unified-memory/SKILL.md",
+                                          "verdict":  "Keep",
+                                          "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                          "mtime":  "2026-08-22T12:05:43Z"
+                                      },
+                   "verification-before-completion":  {
+                                                          "path":  "A:/billsplit/.agents/skills/verification-before-completion/SKILL.md",
+                                                          "verdict":  "Keep",
+                                                          "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                                          "mtime":  "2026-08-22T12:05:43Z"
+                                                      },
+                   "writing-plans":  {
+                                         "path":  "A:/billsplit/.agents/skills/writing-plans/SKILL.md",
+                                         "verdict":  "Keep",
+                                         "reason":  "Audited, verified canonical SKILL.md format, active in local skill inventory.",
+                                         "mtime":  "2026-08-22T12:05:43Z"
+                                     }
+               }
+}

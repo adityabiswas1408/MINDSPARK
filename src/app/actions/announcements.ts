@@ -5,13 +5,16 @@ import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
 import sanitizeHtml from 'sanitize-html';
+import { z } from 'zod';
 
-interface CreateAnnouncementInput {
-  title:            string;
-  body_html:        string;
-  target_level_id?: string;
-  publish_now:      boolean;
-}
+const CreateAnnouncementSchema = z.object({
+  title: z.string().min(1),
+  body_html: z.string().min(1),
+  body_json: z.record(z.string(), z.any()),
+  target_level_id: z.string().uuid().optional(),
+  publish_now: z.boolean(),
+});
+export type CreateAnnouncementInput = z.infer<typeof CreateAnnouncementSchema>;
 
 interface CreateAnnouncementOutput {
   announcement_id: string;
@@ -19,15 +22,19 @@ interface CreateAnnouncementOutput {
 }
 
 export async function createAnnouncement(input: CreateAnnouncementInput): Promise<ActionResult<CreateAnnouncementOutput>> {
-  const authResult = await requireRole('admin');
+  const authResult = await requireRole(['admin', 'teacher']);
   if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
 
-  if (!input.title || input.title.trim() === '') {
+  const parsed = CreateAnnouncementSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
+  if (!validData.title || validData.title.trim() === '') {
     return { error: 'VALIDATION_ERROR', message: 'Title is required' };
   }
 
-  const cleanHtml = sanitizeHtml(input.body_html, {
+  const cleanHtml = sanitizeHtml(validData.body_html, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3', 'p', 'span']),
     allowedAttributes: {
       ...sanitizeHtml.defaults.allowedAttributes,
@@ -43,24 +50,25 @@ export async function createAnnouncement(input: CreateAnnouncementInput): Promis
   const supabase = await createClient();
 
   // verify level exists if provided
-  if (input.target_level_id) {
+  if (validData.target_level_id) {
     const { data: level } = await supabase
       .from('levels')
       .select('id')
-      .eq('id', input.target_level_id)
+      .eq('id', validData.target_level_id)
       .eq('institution_id', institutionId)
       .single();
     if (!level) return { error: 'NOT_FOUND', message: 'Level not found' };
   }
 
-  const publishedAt = input.publish_now ? new Date().toISOString() : null;
+  const publishedAt = validData.publish_now ? new Date().toISOString() : null;
 
   const { data: announcement, error } = await adminSupabase.from('announcements').insert({
     institution_id: institutionId,
-    title: input.title,
+    title: validData.title,
     body_html: cleanHtml,
+    body_json: validData.body_json,
     content: cleanHtml.replace(/<[^>]*>?/gm, ''), // Stripped version for `content`
-    target_level_id: input.target_level_id || null,
+    target_level_id: validData.target_level_id || null,
     published_at: publishedAt,
     target_audience: ['student', 'teacher'], // or derived
     created_by: userId

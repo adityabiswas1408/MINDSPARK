@@ -1,9 +1,9 @@
 # MINDSPARK V1 — DevOps & Deployment Plan
 
 > **Document type:** DevOps — Build Support  
-> **Version:** 1.0  
-> **Output path:** `docs/devops.md`  
-> **Read first:** `docs/architecture.md` · `docs/database.md`  
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/20_devops.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/10_architecture.md` · `docs/11_database.md`  
 > **Author role:** Senior DevOps Engineer — Vercel · Supabase · GitHub Actions · zero-downtime deployments
 
 ---

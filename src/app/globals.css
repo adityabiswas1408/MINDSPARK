@@ -750,7 +750,7 @@ html .text-negative {
   color: var(--clr-green-600);
   font-weight: 700;
 }
-.score-fraction.size-lg { font-size: 64px; }
+.score-fraction.size-lg { font-size: 72px; }
 .score-fraction.size-lg .pct { font-size: 32px; }
 .score-fraction.size-md { font-size: 52px; }
 .score-fraction.size-md .pct { font-size: 22px; }
@@ -1061,3 +1061,170 @@ html .text-negative {
   padding: 2px 4px;
 }
 .empty-inline .text-btn:hover { text-decoration: underline; }
+
+/* ══════════════ Student Results — detail page ══════════════
+   Ported verbatim from docs/design-mockups/student-results-flow.html
+   Frames 4 (EXAM published, key released), 5 (key locked), 6 (TEST),
+   and 7 (pending submission). */
+.results-detail-shell {
+  display: flex;
+  flex-direction: column;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  text-decoration: none;
+}
+.back-link:hover { color: var(--clr-green-800); }
+.back-link svg { width: 16px; height: 16px; stroke-width: 2.2; }
+
+.detail-header {
+  margin-bottom: 24px;
+}
+.detail-header .paper-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.detail-header .meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.detail-header .meta-row .dot { color: var(--text-subtle); }
+
+.score-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--clr-green-800);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-md);
+  padding: 40px 48px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 72px;
+}
+.score-panel.pending {
+  border-left-color: var(--clr-amber-500);
+  padding: 32px 40px;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+.score-panel.pending svg {
+  width: 48px;
+  height: 48px;
+  color: var(--clr-amber-600);
+  stroke-width: 1.6;
+}
+.score-panel.pending h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.score-panel.pending p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 440px;
+}
+
+.score-block { text-align: center; }
+.score-caption {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-subtle);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.grade-card {
+  padding: 18px 30px;
+  background: var(--clr-green-50);
+  border: 1px solid var(--clr-green-200);
+  border-radius: var(--radius-btn);
+  text-align: center;
+}
+.grade-card .letter {
+  font-family: 'DM Mono', monospace;
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--clr-green-800);
+  line-height: 1;
+}
+.grade-card .caption {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--clr-green-700);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* Answer sheet CTA card (also reused on detail page) */
+.cta-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-card);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.cta-card:hover {
+  background: var(--clr-green-50);
+  border-color: var(--clr-green-200);
+}
+.cta-card .cta-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--clr-green-800);
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+.cta-card .cta-body { flex: 1; }
+.cta-card h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.cta-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.cta-card .cta-arrow {
+  width: 20px;
+  height: 20px;
+  color: var(--clr-green-800);
+  stroke-width: 2.2;
+  flex-shrink: 0;
+}
+.cta-card.locked {
+  background: var(--bg-subtle);
+  cursor: not-allowed;
+}
+.cta-card.locked:hover {
+  background: var(--bg-subtle);
+  border-color: var(--slate-200);
+}
+.cta-card.locked .cta-icon { color: var(--text-subtle); }
+.cta-card.locked h4 { color: var(--text-secondary); }
+.cta-card.locked p { color: var(--text-subtle); }
+.cta-card.locked .cta-arrow { display: none; }

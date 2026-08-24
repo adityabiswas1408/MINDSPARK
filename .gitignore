@@ -98,3 +98,5 @@ t3/
 # Build output and snapshot artifacts
 build-output*.txt
 snap*.md
+
+.env*.local

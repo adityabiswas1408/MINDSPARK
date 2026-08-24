@@ -37,6 +37,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
     }
 
+    if (user.app_metadata?.role !== 'student') {
+      return NextResponse.json({ error: 'FORBIDDEN', message: 'Only students can teardown submissions' }, { status: 403 });
+    }
+
     const body = await req.json();
     const parsed = BodySchema.safeParse(body);
 

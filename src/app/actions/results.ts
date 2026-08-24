@@ -5,10 +5,12 @@ import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
+import { z } from 'zod';
 
-interface PublishResultInput {
-  session_id: string;
-}
+const PublishResultSchema = z.object({
+  session_id: z.string().uuid(),
+});
+export type PublishResultInput = z.infer<typeof PublishResultSchema>;
 
 interface PublishResultOutput {
   published:            true;
@@ -20,13 +22,17 @@ export async function publishResult(input: PublishResultInput): Promise<ActionRe
   if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId, role } = authResult;
 
+  const parsed = PublishResultSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
   const supabase = await createClient();
 
   // Validate session exists
   const { data: session } = await supabase
     .from('submissions')
     .select('id, student_id, completed_at, paper_id, score, grade')
-    .eq('id', input.session_id)
+    .eq('id', validData.session_id)
     .single();
 
   if (!session) return { error: 'NOT_FOUND', message: 'Session not found' };
@@ -43,48 +49,53 @@ export async function publishResult(input: PublishResultInput): Promise<ActionRe
 
   const now = new Date().toISOString();
 
-  await adminSupabase.from('submissions').update({ result_published_at: now }).eq('id', input.session_id);
+  await adminSupabase.from('submissions').update({ result_published_at: now }).eq('id', validData.session_id);
 
   await adminSupabase.from('activity_logs').insert({
     user_id: userId,
     institution_id: institutionId,
     entity_type: 'submissions',
-    entity_id: input.session_id,
+    entity_id: validData.session_id,
     action_type: 'PUBLISH_RESULT'
   });
 
   return { ok: true, data: { published: true, result_published_at: now } };
 }
 
-interface UnpublishResultInput {
-  session_id: string;
-  reason:     string;
-}
+const UnpublishResultSchema = z.object({
+  session_id: z.string().uuid(),
+  reason: z.string().min(1),
+});
+export type UnpublishResultInput = z.infer<typeof UnpublishResultSchema>;
 
 export async function unpublishResult(input: UnpublishResultInput): Promise<ActionResult<{ unpublished: true }>> {
   const authResult = await requireRole('admin');
   if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { userId, institutionId } = authResult;
 
+  const parsed = UnpublishResultSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
   const supabase = await createClient();
 
   const { data: session } = await supabase
     .from('submissions')
     .select('id')
-    .eq('id', input.session_id)
+    .eq('id', validData.session_id)
     .single();
 
   if (!session) return { error: 'NOT_FOUND', message: 'Session not found' };
 
-  await adminSupabase.from('submissions').update({ result_published_at: null }).eq('id', input.session_id);
+  await adminSupabase.from('submissions').update({ result_published_at: null }).eq('id', validData.session_id);
 
   await adminSupabase.from('activity_logs').insert({
     user_id: userId,
     institution_id: institutionId,
     entity_type: 'submissions',
-    entity_id: input.session_id,
+    entity_id: validData.session_id,
     action_type: 'UNPUBLISH_RESULT',
-    metadata: { reason: input.reason }
+    metadata: { reason: validData.reason }
   });
 
   return { ok: true, data: { unpublished: true } };

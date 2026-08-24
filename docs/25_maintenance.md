@@ -1,10 +1,9 @@
 # MINDSPARK Maintenance & Support Plan
 
 > **Owner:** Platform Operations Manager  
-> **Version:** 1.0 · MINDSPARK V1  
-> **Last reviewed:** 2026-03-16  
-> **Next review due:** 2027-03-16 (annually)  
-> **Related docs:** `docs/incident-response.md` · `docs/devops.md`
+> **Version:** 2.0 (Synchronized with `PROJECT_EXPLAINED.md`)  
+> **Output path:** `docs/25_maintenance.md`  
+> **Read first:** `docs/PROJECT_EXPLAINED.md` · `docs/15_incident-response.md` · `docs/20_devops.md`
 
 ---
 
@@ -69,7 +68,7 @@ Senior Technical Lead (phone + Slack)
     │ (infrastructure failure)
     ▼
 Supabase Support (plan-dependent SLA — see §6)
-    │ (billing / account issue)
+    │ (hosting infrastructure)
     ▼
 Vercel Support
 ```

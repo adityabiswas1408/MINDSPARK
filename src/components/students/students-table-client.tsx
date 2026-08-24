@@ -150,7 +150,7 @@ export function StudentsTableClient({
     startBulkTransition(async () => {
       await Promise.all(
         [...selected].map((id) =>
-          updateStudent({ student_id: id, level_id: promoteLevelId }),
+          updateStudent({ id: id, level_id: promoteLevelId }),
         ),
       );
       setSelected(new Set());
@@ -183,7 +183,6 @@ export function StudentsTableClient({
         roll_number: addRoll.trim(),
         date_of_birth: addDob || undefined,
         level_id: addLevelId,
-        send_invite: false,
       });
       if (!result.ok) {
         setAddError(result.message ?? result.error ?? 'Failed to create student.');

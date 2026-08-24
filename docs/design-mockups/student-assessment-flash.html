@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Student Assessment — Flash Anzan (4-Phase Flow)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F1F5F9; color: #0A0F1A; font-size: 16px; line-height: 1.5; padding: 32px 24px; -webkit-font-smoothing: antialiased; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; margin-top: 48px; }
+  h2:first-of-type { margin-top: 0; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+  
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  
+  /* ══ Minimal top strip ══ */
+  .exam-strip { height: 56px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 24px; gap: 20px; flex-shrink: 0; }
+  .strip-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .strip-title { font-size: 13px; font-weight: 600; color: #334155; }
+  .progress-label { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #475569; padding: 4px 10px; background: #F1F5F9; border-radius: 9999px; }
+  
+  .strip-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .timer-primary { display: flex; align-items: center; gap: 8px; padding: 6px 16px; background: #EFFAF4; border: 1px solid #B7E4C7; border-radius: 10px; }
+  .timer-primary-label { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-primary-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 700; color: #1A3829; letter-spacing: -0.03em; line-height: 1; }
+  
+  .strip-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .sync-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 9999px; font-size: 11px; font-weight: 600; color: #475569; }
+  .sync-pill::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: #1A3829; }
+  
+  /* ══ Phase Container ══ */
+  .exam-page { min-height: 600px; display: flex; flex-direction: column; position: relative; }
+  .phase-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+  
+  /* ══ Phase 1: Get Ready ══ */
+  .p1-title { font-size: 24px; font-weight: 700; color: #334155; margin-bottom: 16px; }
+  .p1-countdown { font-family: 'DM Mono', monospace; font-size: 84px; font-weight: 700; color: #1A3829; line-height: 1; }
+  
+  /* ══ Phase 2: Flash ══ */
+  .frame.flash-mode .exam-strip { display: none; } /* Strip hidden during flash */
+  .p2-number {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(96px, 30vh, 180px);
+    font-weight: 700;
+    color: #1A3829; /* Positive number (Dark Forest Green) */
+    line-height: 1;
+    transition: none; /* Crucial: no CSS transitions on flash */
+  }
+  .p2-number.negative { color: #991B1B; }
+  
+  /* ══ Phase 3: MCQ ══ */
+  .mcq-inner { width: 100%; max-width: 720px; }
+  .mcq-prompt { font-size: 20px; font-weight: 600; color: #0A0F1A; text-align: center; margin-bottom: 32px; }
+  .timer-bar-wrapper { width: 100%; height: 6px; background: #E2E8F0; border-radius: 9999px; overflow: hidden; margin-bottom: 32px; }
+  .timer-bar-fill { height: 100%; background: #F57A39; width: 65%; border-radius: 9999px; }
+  
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .option-tile {
+    background: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    min-height: 92px; /* Meets 64px touch target constraint */
+  }
+  .option-tile:hover { border-color: #52B788; background: #F0FDF4; }
+  .option-tile.selected { border-color: #1A3829; border-width: 3px; background: #EFFAF4; box-shadow: 0 4px 12px rgba(26, 56, 41, 0.08); }
+  
+  .option-letter {
+    width: 42px; height: 42px;
+    border-radius: 9999px;
+    background: #F1F5F9;
+    color: #475569;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700;
+  }
+  .option-tile.selected .option-letter { background: #1A3829; color: #FFFFFF; }
+  .option-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #0A0F1A;
+    letter-spacing: -0.02em;
+  }
+  
+  /* ══ Phase 4: Confirmation ══ */
+  .p4-check {
+    width: 120px; height: 120px;
+    border-radius: 9999px;
+    background: #DCFCE7;
+    color: #166534;
+    display: flex; align-items: center; justify-content: center;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .p4-check svg { width: 64px; height: 64px; stroke-width: 3; }
+  @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+</style>
+</head>
+<body>
+
+<h2>Flash Anzan — 4-Phase Interactive Flow</h2>
+<p class="note">This mockup details the 4 canonical states of the Flash Anzan exam engine as documented in <code>docs/13_exam-engine-spec.md</code>.</p>
+
+<!-- PHASE 1 -->
+<h2>Phase 1: Get Ready</h2>
+<p class="note">A 3-second countdown to prepare the student visually for the center of the screen.</p>
+<div class="frame">
+  <div class="exam-page">
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Flash Anzan Test</div>
+        <div class="progress-label">Q 3/20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <div class="timer-primary-label">Time Remaining</div>
+          <div class="timer-primary-value">04:45</div>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Synced</div>
+      </div>
+    </div>
+    
+    <div class="phase-main">
+      <div class="p1-title">Get Ready</div>
+      <div class="p1-countdown">3</div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 2 -->
+<h2>Phase 2: Flash Sequence</h2>
+<p class="note">The RAF timing loop takes over. The top nav strip is hidden to completely eliminate distraction. Numbers flash sequentially with <strong>zero CSS transitions</strong>. Example below shows a negative operand in crimson <code>#991B1B</code>.</p>
+<div class="frame flash-mode">
+  <div class="exam-page">
+    <div class="phase-main" style="padding:0; overflow:hidden;">
+      <span class="p2-number negative" aria-live="off" aria-atomic="true">−48</span>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 3 -->
+<h2>Phase 3: MCQ Selection</h2>
+<p class="note">Post-flash, the UI reverts to light mode. The 4 MCQ choices appear with a draining timer bar. Minimum touch target of 64px is enforced by <code>min-height: 92px</code> on the tiles.</p>
+<div class="frame">
+  <div class="exam-page">
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Flash Anzan Test</div>
+        <div class="progress-label">Q 3/20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <div class="timer-primary-label">Time Remaining</div>
+          <div class="timer-primary-value">04:40</div>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Synced</div>
+      </div>
+    </div>
+    
+    <div class="phase-main">
+      <div class="mcq-inner">
+        <div class="mcq-prompt">What was the final total?</div>
+        
+        <div class="timer-bar-wrapper">
+          <div class="timer-bar-fill"></div>
+        </div>
+        
+        <div class="options-grid">
+          <div class="option-tile"><div class="option-letter">A</div><div class="option-value">124</div></div>
+          <div class="option-tile selected"><div class="option-letter">B</div><div class="option-value">132</div></div>
+          <div class="option-tile"><div class="option-letter">C</div><div class="option-value">148</div></div>
+          <div class="option-tile"><div class="option-letter">D</div><div class="option-value">156</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 4 -->
+<h2>Phase 4: Confirmation</h2>
+<p class="note">Brief green checkmark confirming the 1,200ms anti-double-tap lock has registered the answer, before immediately looping back to Phase 1.</p>
+<div class="frame">
+  <div class="exam-page">
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Flash Anzan Test</div>
+        <div class="progress-label">Q 3/20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <div class="timer-primary-label">Time Remaining</div>
+          <div class="timer-primary-value">04:38</div>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Synced</div>
+      </div>
+    </div>
+    
+    <div class="phase-main">
+      <div class="p4-check">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
