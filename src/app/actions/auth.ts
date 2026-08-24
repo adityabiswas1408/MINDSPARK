@@ -4,10 +4,12 @@ import { randomUUID } from 'crypto';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
+import { z } from 'zod';
 
-interface ResetPasswordInput {
-  user_id: string;
-}
+const ResetPasswordSchema = z.object({
+  user_id: z.string().uuid(),
+});
+export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 
 interface ResetPasswordOutput {
   reset: true;
@@ -28,12 +30,16 @@ export async function resetPassword(
   }
   const { userId, institutionId } = authResult;
 
+  const parsed = ResetPasswordSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
   // Generate a cryptographically-random 32-char temp password with guaranteed
   // inclusion of upper/lower/digit/symbol so it passes common password policies.
   // Never log this value; never persist it anywhere other than the auth row.
   const tempPassword = randomUUID().replace(/-/g, '') + '!Ab1';
 
-  const { error } = await adminSupabase.auth.admin.updateUserById(input.user_id, {
+  const { error } = await adminSupabase.auth.admin.updateUserById(validData.user_id, {
     password: tempPassword,
   });
 
@@ -43,13 +49,13 @@ export async function resetPassword(
   await adminSupabase
     .from('profiles')
     .update({ forced_password_reset: true })
-    .eq('id', input.user_id);
+    .eq('id', validData.user_id);
 
   await adminSupabase.from('activity_logs').insert({
     user_id: userId,
     institution_id: institutionId,
     entity_type: 'profiles',
-    entity_id: input.user_id,
+    entity_id: validData.user_id,
     action_type: 'RESET_PASSWORD',
     // Deliberately no password in metadata.
   });

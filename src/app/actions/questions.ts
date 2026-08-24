@@ -3,16 +3,24 @@
 import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
+import { z } from 'zod';
 
-interface CreateQuestionInput {
-  paper_id: string;
-  question_type: 'mcq' | 'fill_blank' | 'flash_anzan';
-  question_text: string;
-  options: { A: string; B: string; C: string; D: string } | null;
-  correct_answer: string;
-  marks: number;
-  order_index: number;
-}
+const CreateQuestionSchema = z.object({
+  paper_id: z.string().uuid(),
+  question_type: z.enum(['mcq', 'fill_blank', 'flash_anzan']),
+  question_text: z.string().min(1),
+  options: z.object({
+    A: z.string(),
+    B: z.string(),
+    C: z.string(),
+    D: z.string(),
+  }).nullable(),
+  correct_answer: z.string(),
+  marks: z.number().positive(),
+  order_index: z.number().min(0),
+});
+
+export type CreateQuestionInput = z.infer<typeof CreateQuestionSchema>;
 
 export async function createQuestion(
   input: CreateQuestionInput
@@ -20,6 +28,10 @@ export async function createQuestion(
   const authResult = await requireRole(['admin', 'teacher']);
   if ('error' in authResult) return { error: authResult.error };
   const { userId, institutionId } = authResult;
+
+  const parsed = CreateQuestionSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR' };
+  const validData = parsed.data;
 
   const supabase = await createClient();
 
@@ -38,13 +50,13 @@ export async function createQuestion(
   const { data: question, error: insertErr } = await supabase
     .from('questions')
     .insert({
-      paper_id: input.paper_id,
-      question_type: input.question_type,
-      question_text: input.question_text,
-      options: input.options,
-      correct_answer: { value: input.correct_answer },
-      marks: input.marks,
-      order_index: input.order_index,
+      paper_id: validData.paper_id,
+      question_type: validData.question_type,
+      question_text: validData.question_text,
+      options: validData.options,
+      correct_answer: { value: validData.correct_answer },
+      marks: validData.marks,
+      order_index: validData.order_index,
     })
     .select('id')
     .single();
@@ -101,16 +113,26 @@ export async function reorderQuestions(
 ): Promise<ActionResult<{ reordered: true }>> {
   const authResult = await requireRole(['admin', 'teacher']);
   if ('error' in authResult) return { error: authResult.error };
+  const { institutionId } = authResult;
 
+  const ReorderSchema = z.object({
+    paper_id: z.string().uuid(),
+    ordered_ids: z.array(z.string().uuid()),
+  });
+  
+  const parsed = ReorderSchema.safeParse({ paper_id, ordered_ids });
+  if (!parsed.success) return { error: 'VALIDATION_ERROR' };
+  
+  const validData = parsed.data;
   const supabase = await createClient();
 
-  await Promise.all(
-    ordered_ids.map((id, index) =>
+  const phase1 = await Promise.all(
+    validData.ordered_ids.map((id, index) =>
       supabase
         .from('questions')
         .update({ order_index: index })
         .eq('id', id)
-        .eq('paper_id', paper_id)
+        .eq('paper_id', validData.paper_id)
     )
   );
 

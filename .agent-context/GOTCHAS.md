@@ -64,6 +64,67 @@
 - **How to catch it next time:** Maintain an explicit registry of critical, state-mutating subsystems in `Constraints.md` and ensure `Rollback.md` references the complete registry.
 - **Status:** Fixed this phase
 
+### GOTCHA-006: Evidence Before Status Change
+- **Category:** Process Gate
+- **First observed:** Phase 3 Verification, 2026-08-23
+- **What happened:** A finding's severity was downgraded in the same document edit that introduced the unverified claim justifying it.
+- **Recurrence risk:** High. We might claim a test passed and mark a task "Done" simultaneously before actually running the test.
+- **How to catch it next time:** Paste evidence, review it, *then* change the status as a separate, later edit.
+
+---
+
+### GOTCHA-007: Stale Gate Questions on Revisions
+- **Category:** Process Gate
+- **First observed:** Phase 3 Verification, 2026-08-23
+- **What happened:** A document ending in an approval question ("Do you approve moving to Phase 3?") was revised twice with new evidence, but the trailing question was left unchanged, creating a paradox where the document asked to approve a phase it already claimed was complete.
+- **Recurrence risk:** High. 
+- **How to catch it next time:** Any document ending in an approval question must have that question re-evaluated and corrected on every single edit.
+
+---
+
+### GOTCHA-008: Partial List Reconciliation (Silent Omissions)
+- **Category:** Scope Coverage
+- **First observed:** Phase 3 Verification, 2026-08-23
+- **What happened:** When closing out a tracked list of items, only the addressed items were given explicit statuses.
+- **Recurrence risk:** High. 
+- **How to catch it next time:** Reconciliation is all-or-nothing-visible. Every item gets an explicit status. Silent omission reads as "handled."
+
+---
+
+### GOTCHA-009: Vague Deferrals
+- **Category:** Process Gate
+- **First observed:** Phase 3 Verification, 2026-08-23
+- **What happened:** "Deferred to Phase N" was used without specifying if Phase N actually exists.
+- **Recurrence risk:** High.
+- **How to catch it next time:** Cite a real phase number that exists in `PHASE-PLAN.md`, or mark it explicitly unscheduled.
+
+---
+
+### GOTCHA-010: Implicit Status Vocabulary
+- **Category:** Communication
+- **First observed:** Phase 3 Verification, 2026-08-23
+- **What happened:** Prose tense was used to imply stage (e.g. "fail to initialize" vs "failed to initialize").
+- **Recurrence risk:** High.
+- **How to catch it next time:** Use explicit vocabulary: `PROPOSED` → `APPROVED` → `EXECUTING` → `APPLIED` (has terminal evidence) → `VERIFIED` (independently reviewed) → `CLOSED`.
+
+---
+
+### GOTCHA-011: Static Code Review Blindness
+- **Category:** Evidence Standard
+- **First observed:** Phase 1-2 Master Recon, 2026-08-23
+- **What happened:** Static review alone missed live-DB schema drift, a broken trigger, and fake-data placeholders.
+- **Recurrence risk:** High.
+- **How to catch it next time:** Every phase's recon step includes at least one live-system check (DB query, actual render, actual run) alongside static review.
+
+---
+
+### GOTCHA-012: Deferring Quick Verifications
+- **Category:** Process Gate
+- **First observed:** Phase 3 Verification, 2026-08-23
+- **What happened:** A 5-minute grep check (Constraints #7) was deferred twice.
+- **Recurrence risk:** High.
+- **How to catch it next time:** If a check is flagged as fast (a grep, a single query), it gets done in that same run — not deferred.
+
 ---
 
 ## Part 2: Codebase Runtime Gotchas

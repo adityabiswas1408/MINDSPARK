@@ -54,6 +54,7 @@ export default function AnnouncementsClient({
   const [title, setTitle] = useState('');
   const [targetLevelId, setTargetLevelId] = useState<string>('all');
   const [bodyHtml, setBodyHtml] = useState('');
+  const [bodyJson, setBodyJson] = useState<Record<string, unknown>>({});
   const [editorKey, setEditorKey] = useState(0);
   const [isPending, startTransition] = useTransition();
   const [history, setHistory] = useState<AnnouncementCard[]>(recentAnnouncements);
@@ -72,6 +73,7 @@ export default function AnnouncementsClient({
       const result = await createAnnouncement({
         title: title.trim(),
         body_html: bodyHtml,
+        body_json: bodyJson,
         target_level_id: targetLevelId === 'all' ? undefined : targetLevelId,
         publish_now: true,
       });
@@ -94,6 +96,7 @@ export default function AnnouncementsClient({
         setTitle('');
         setTargetLevelId('all');
         setBodyHtml('');
+        setBodyJson({});
         setEditorKey(k => k + 1);
       } else {
         toast.error('message' in result ? (result as { message?: string }).message ?? 'Failed to publish' : 'Failed to publish');
@@ -138,7 +141,7 @@ export default function AnnouncementsClient({
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-slate-700">Message</label>
-          <TipTapEditor key={editorKey} onChange={setBodyHtml} />
+          <TipTapEditor key={editorKey} onChange={(html, json) => { setBodyHtml(html); setBodyJson(json); }} />
         </div>
 
         <Button

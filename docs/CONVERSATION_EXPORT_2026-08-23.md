@@ -645,7 +645,7 @@ The PDF has been completely rebuilt with standardized brand colors and the exact
 
 ### Updated PDF Files
 - **[`C:\Users\ADI\Downloads\MINDSPARK-Mockups-Review.pdf`](file:///C:/Users/ADI/Downloads/MINDSPARK-Mockups-Review.pdf)** *(67 pages, 64 mockups)*
-- **[`A:\MS\MINDSPARK — Final Mockups.pdf`](file:///A:/MS/MINDSPARK%20%E2%80%94%20Final%20Mockups.pdf)** *(Workspace copy, 67 pages)*
+- **[`A:\MS\MINDSPARK — Final Mockups.pdf`](file:///A:/MS/mindspark/docs/MINDSPARK-Mockups-Review.pdf)** *(Workspace copy, 67 pages)*
 
 ---
 
@@ -1336,7 +1336,7 @@ All **61 non-development clutter files and folders** have been moved out of [`A:
 └────────────────────────────┴───────────────┴────────────────────────────────┘
 ```
 
-An itemized log has been saved to [`A:\MS\mindspark\docs\CLEANUP_MANIFEST.txt`](file:///A:/MS/mindspark/docs/CLEANUP_MANIFEST.txt).
+An itemized log has been saved to [`A:\MS\mindspark\docs\CLEANUP_MANIFEST.txt`](CLEANUP_MANIFEST.txt (Archived)).
 
 ---
 

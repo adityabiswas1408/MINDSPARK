@@ -5,10 +5,12 @@ import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
 import { issueExamSeal } from '@/lib/anticheat/clock-guard';
+import { z } from 'zod';
 
-interface InitSessionInput {
-  paper_id: string;
-}
+const InitSessionSchema = z.object({
+  paper_id: z.string().uuid(),
+});
+export type InitSessionInput = z.infer<typeof InitSessionSchema>;
 
 interface InitSessionOutput {
   session_id: string;
@@ -29,12 +31,16 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
   if ('error' in authResult) return { error: authResult.error, message: authResult.message };
   const { userId, institutionId } = authResult;
 
+  const parsed = InitSessionSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
   const supabase = await createClient();
 
   const { data: paper, error: paperErr } = await supabase
     .from('exam_papers')
     .select('id, status, duration_minutes, institution_id')
-    .eq('id', input.paper_id)
+    .eq('id', validData.paper_id)
     .single();
 
   if (paperErr || !paper) return { error: 'ASSESSMENT_NOT_FOUND', message: 'Paper not found.' };
@@ -51,14 +57,14 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
     .from('assessment_sessions')
     .select('id, expires_at')
     .eq('student_id', userId)
-    .eq('paper_id', input.paper_id)
+    .eq('paper_id', validData.paper_id)
     .is('closed_at', null)
     .single();
 
   const { data: questionsData } = await adminSupabase
     .from('questions')
     .select('id, equation_display, flash_sequence, option_a, option_b, option_c, option_d')
-    .eq('paper_id', input.paper_id)
+    .eq('paper_id', validData.paper_id)
     .order('order_index', { ascending: true });
 
   const formattedQuestions = (questionsData || []).map(q => ({

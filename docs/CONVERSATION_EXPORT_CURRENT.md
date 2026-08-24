@@ -92,7 +92,7 @@ PREVIIOUSLY WE WERE DONE WITH THE DOCUMENTATION I WANT YOU TO PREP A SUMMERIZE A
 
 I have created the summary you requested! 
 
-I compiled all the essential details from `PROJECT.md`, `ARCHITECTURE.md`, `STATE.md`, and the main PRD into a single, comprehensive context primer. It is saved in the new artifact: [mindspark_context_primer.md](file:///C:/Users/ADI/.gemini/antigravity-ide/brain/7bd8a1f7-2e9a-44b5-be32-76885fb67a9c/mindspark_context_primer.md).
+I compiled all the essential details from `PROJECT.md`, `ARCHITECTURE.md`, `STATE.md`, and the main PRD into a single, comprehensive context primer. It is saved in the new artifact: [mindspark_context_primer.md](mindspark_context_primer.md (Archived)).
 
 This primer covers:
 1. **Business Context & Non-Technical Goals:** Target audience (students, DPDP compliance), core flows, and the difference between Exams and Tests.
@@ -346,9 +346,9 @@ I have generated all 55 individual skill zip files built specifically to meet th
 ### Key Files in this Folder:
 - [`prompt-optimizer.zip`](file:///a:/MS/mindspark/exported_skills_zip/claude_upload_ready/prompt-optimizer.zip)
 - [`project-context-system.zip`](file:///a:/MS/mindspark/exported_skills_zip/claude_upload_ready/project-context-system.zip)
-- [`living-docs-governance.zip`](file:///a:/MS/mindspark/exported_skills_zip/claude_upload_ready/living-docs-governance.zip)
-- [`full-output-enforcement.zip`](file:///a:/MS/mindspark/exported_skills_zip/claude_upload_ready/full-output-enforcement.zip)
-- [`frontend-design.zip`](file:///a:/MS/mindspark/exported_skills_zip/claude_upload_ready/frontend-design.zip)
+- [`living-docs-governance.zip`](living-docs-governance.zip (Archived))
+- [`full-output-enforcement.zip`](full-output-enforcement.zip (Archived))
+- [`frontend-design.zip`](frontend-design.zip (Archived))
 - [`tdd-workflow.zip`](file:///a:/MS/mindspark/exported_skills_zip/claude_upload_ready/tdd-workflow.zip)
 - [`supabase.zip`](file:///a:/MS/mindspark/exported_skills_zip/claude_upload_ready/supabase.zip)
 - ...and all other 48 skills.

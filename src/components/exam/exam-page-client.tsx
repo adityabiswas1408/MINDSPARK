@@ -9,6 +9,10 @@ import { AnzanFlashView } from '@/components/exam/anzan-flash-view';
 import { CompletionCard } from '@/components/exam/completion-card';
 import { submitExam } from '@/app/actions/assessment-sessions';
 import type { SyncStatus } from '@/components/exam/sync-indicator';
+import { startTabMonitor, stopTabMonitor } from '@/lib/anticheat/tab-monitor';
+import { registerTeardownListener, removeTeardownListener } from '@/lib/anticheat/teardown';
+import { startSyncEngine, stopSyncEngine } from '@/lib/offline/sync-engine';
+import { initStorageProbe } from '@/lib/offline/storage-probe';
 
 interface ExamQuestion {
   id: string;
@@ -55,10 +59,15 @@ export function ExamPageClient({
   const [scorePercent, setScorePercent] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [timeTakenSeconds, setTimeTakenSeconds] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
   const examStartRef = useRef(Date.now());
 
   const totalQuestions =
     paperType === 'EXAM' ? examQuestions.length : anzanQuestions.length;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     initSession(sessionId, paperType, totalQuestions);
@@ -72,6 +81,18 @@ export function ExamPageClient({
       setPhase('PHASE_3_MCQ');
     }
     // TEST: stop at LOBBY — AnzanFlashView picks up from there
+
+    // Init anti-cheat and offline infrastructure
+    initStorageProbe();
+    startSyncEngine();
+    startTabMonitor();
+    registerTeardownListener();
+
+    return () => {
+      stopTabMonitor();
+      removeTeardownListener();
+      stopSyncEngine();
+    };
   }, [sessionId, paperType, totalQuestions, initSession, setPhase]);
 
   const syncingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -154,7 +175,7 @@ export function ExamPageClient({
 
   return (
     <>
-      {createPortal(
+      {isMounted && createPortal(
         <ExamVerticalView
           questions={examQuestions}
           expiresAt={expiresAt}
@@ -164,7 +185,7 @@ export function ExamPageClient({
         />,
         document.body
       )}
-      {submitted && createPortal(
+      {isMounted && submitted && createPortal(
       <CompletionCard
         visible={submitted}
         assessmentType="EXAM"

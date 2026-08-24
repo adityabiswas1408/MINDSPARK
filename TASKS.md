@@ -1,30 +1,5 @@
-Create the file A:\MS\mindspark\TASKS.md with the 
-complete contents below. Overwrite any existing file.
-Read CLAUDE.md first. Then write this file exactly
-as specified. Do not summarise. Do not skip sections.
-
-After writing, run:
-Get-Content A:\MS\mindspark\TASKS.md | Measure-Object -Line
-Report line count. Must exceed 600 lines.
-
-Then commit:
-git add TASKS.md
-git commit -m "chore: comprehensive TASKS.md rewrite — all tasks, validators, skill invocations"
-git push
-
-Installed packages confirmed:
-recharts, @tanstack/react-table, @hello-pangea/dnd,
-@tiptap/react, @tiptap/starter-kit, dexie,
-sanitize-html, lucide-react, zustand, zod,
-date-fns, papaparse, lottie-react
-Skip all package verification.
-
-════════════════════════════════════════════════════════
-FILE CONTENTS — write everything below exactly
-════════════════════════════════════════════════════════
-
 # MINDSPARK — Master Task Board
-# Last updated: 2026-04-10
+# Last updated: 2026-08-23
 # Rule: Top item in UP NEXT is always the next task.
 
 ---
@@ -630,8 +605,3 @@ What to do:
   AND closed_at IS NULL;
   Expected: 0 (all sessions closed)
   If > 0: manually close and investigate why
-
-════════════════════════════════════════════════════════
-END OF FILE
-════════════════════════════════════════════════════════
-

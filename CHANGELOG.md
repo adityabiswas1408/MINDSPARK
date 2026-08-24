@@ -50,7 +50,7 @@ Initial production release. Complete MINDSPARK V1 platform.
 
 ### Database
 
-#### Schema (26 Migrations — run in strict order 001→026)
+#### Schema (27 Migrations — run in strict order 001→027)
 
 - **001** `create_institutions` — `institutions` table (name, timezone, session_timeout_seconds, branding).
   Additive: YES. Rollback: `supabase/rollbacks/001_rollback_create_institutions.sql`
@@ -137,6 +137,9 @@ Initial production release. Complete MINDSPARK V1 platform.
 
 - **026** `add_deletion_scheduled` — `ALTER TABLE submissions ADD COLUMN deletion_scheduled_at TIMESTAMPTZ` and `ALTER TABLE activity_logs ADD COLUMN deletion_scheduled_at TIMESTAMPTZ`. **DPDP retention pipeline** — `pg_cron` marks rows for scheduled erasure; `execute_scheduled_deletions()` Security Definer function runs deletion in FK-safe order (`student_answers` first, then `submissions`, then `activity_logs`).
   Additive: YES. Rollback: `supabase/rollbacks/026_rollback_add_deletion_scheduled.sql`
+
+- **027** `20260325000000_dashboard_aggregates` — Creates materialized performance aggregation RPCs for the admin dashboard KPI cards and sparkline charts. Provides pre-computed institutional metrics (active students, average scores, session counts) refreshed via `pg_cron` every 5 minutes during active exam periods.
+  Additive: YES. Rollback: Drop the aggregation functions via `DROP FUNCTION IF EXISTS dashboard_aggregates();`
 
 ### Security
 

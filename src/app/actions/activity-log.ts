@@ -3,6 +3,7 @@
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { adminSupabase } from '@/lib/supabase/admin';
+import { z } from 'zod';
 
 const PAGE_SIZE = 50;
 
@@ -19,13 +20,22 @@ export interface ActivityLogRow {
   actor_name: string | null;
 }
 
-export interface FetchLogsInput {
-  page?: number;
-  actionType?: string;
-  userSearch?: string;
-  dateFrom?: string;
-  dateTo?: string;
-}
+const LogActionSchema = z.object({
+  action_type: z.string().min(1),
+  entity_type: z.string().min(1),
+  entity_id: z.string().uuid().optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
+});
+export type LogActionInput = z.infer<typeof LogActionSchema>;
+
+const FetchLogsSchema = z.object({
+  page: z.number().int().min(1).optional(),
+  actionType: z.string().optional(),
+  userSearch: z.string().optional(),
+  dateFrom: z.string().optional(), // Could be more strict with ISO string validation
+  dateTo: z.string().optional(),
+});
+export type FetchLogsInput = z.infer<typeof FetchLogsSchema>;
 
 export async function fetchActivityLogs(
   input: FetchLogsInput = {}
@@ -34,7 +44,11 @@ export async function fetchActivityLogs(
   if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
   const { institutionId } = authResult;
 
-  const { page = 1, actionType, userSearch, dateFrom, dateTo } = input;
+  const parsed = FetchLogsSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
+  const { page = 1, actionType, userSearch, dateFrom, dateTo } = validData;
   const offset = (page - 1) * PAGE_SIZE;
 
   // Resolve userSearch → user_ids first (can't filter on joined column in PostgREST)

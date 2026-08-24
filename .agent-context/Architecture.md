@@ -31,11 +31,13 @@
 - **Session Resolution:** Strictly calls `supabase.auth.getUser()`. Never trusts client JWT payloads directly (*Source: `src/lib/auth/rbac.ts#L16-L20`*).
 - **Role Derivation:** Derived strictly from `user.app_metadata.role` (`'student' | 'teacher' | 'admin'`) (*Source: `src/lib/auth/rbac.ts#L25-L35`*).
 - **Service Role Isolation:** `src/lib/supabase/admin.ts` (`adminSupabase`) is restricted to server actions, server routes, admin server components, and test mocks (*Source: `grep_search supabase/admin`*).
+- **API Route Gap:** `/api/submissions/offline-sync` and `/teardown` do not enforce RBAC roles (missing `app_metadata.role === 'student'` check) (*Source: Audit*).
 
 ---
 
 ## 4. Server Actions Pattern
 - **Location:** `src/app/actions/*.ts` (`activity-log.ts`, `announcements.ts`, `assessment-sessions.ts`, `assessments.ts`, `auth.ts`, `levels.ts`, `questions.ts`, `results.ts`, `settings.ts`, `students.ts`).
+- **Data Validation (Vulnerability):** No Zod runtime schemas exist for payload validation. User input is blindly trusted against TypeScript interfaces (*Source: Audit*).
 - **Error Handling:** Mutations return typed action result objects (`{ ok: true, data: T }` or `{ ok: false, error: string }`).
 - **Conflict Resolution:** Submissions upserted with `{ onConflict: 'session_id,student_id' }` (*Source: `src/app/actions/assessment-sessions.ts#L255`*).
 
@@ -51,6 +53,7 @@
 ## 6. Anti-Cheat Subsystem
 - **Clock Drift & Tampering:** `src/lib/anticheat/clock-guard.ts` verifies client timestamps against cryptographic bounds (*Source: `clock-guard.test.ts`*).
 - **Teardown & Visibility:** `src/lib/anticheat/tab-monitor.ts` and `src/app/api/submissions/teardown/route.ts` record and handle tab switches and page unload events.
+- **Coverage Gap:** Anti-cheat is exclusively wired into `use-anzan-engine.ts`. Standard exams (`EXAM`/`TEST`) bypass these mechanisms entirely (*Source: Audit*).
 
 ---
 

@@ -25,7 +25,7 @@ Upon concluding **any** phase:
 | :--- | :--- | :--- | :--- |
 | **1–2** | Recon + Ranked Deep Audit | `project-takeover-recovery` (`.agents/skills/project-takeover-recovery/SKILL.md`), `codebase-onboarding`, `ponytail-audit`, `inherit-legacy-style` | `extensive_codebase_audit.md` produced, user sign-off |
 | **3** | Critical Security & Data Fixes | `systematic-debugging` (`.agents/skills/systematic-debugging/SKILL.md`), `karpathy-guidelines`, `tdd-workflow` | `tsc` 0 errors, security tests pass, `.env` diffed clean |
-| **4** | Orphaned Code & Audit-Identified Defect Cleanup | `systematic-debugging`, `full-output-enforcement` | Verified working routes, dead code removed |
+| **4** | Admin Announcements TipTap Editor | `writing-plans`, `minimalist-ui` | **CLOSED** |
 | **5** | Next.js Upgrade (15 → 16.3+) | `search-dependencies`, `verification-before-completion` | Full build + test suite green on updated runtime |
 | **6** | Core Engine Hardening (Timing & Anti-Cheat) | `karpathy-guidelines`, `tdd-workflow` | Timing engine <5ms jitter verified, clock guard green |
 | **7** | State & Storage Refactor (Dexie & Hydration) | `inherit-legacy-style`, `ponytail-audit` | Local storage sync & state lifecycles verified |
@@ -37,7 +37,7 @@ Upon concluding **any** phase:
 | **9.5** | Feature: Admin Students Roster Table | `writing-plans`, `minimalist-ui` | Roster search, pagination, and student profile drawer |
 | **9.6** | Feature: Admin Realtime Live Monitor Table | `writing-plans`, `tdd-workflow` | Presence/broadcast state updates live during active test |
 | **9.7** | Feature: Admin Dashboard Charts (Recharts) | `writing-plans`, `design-taste-frontend` | Dynamic aggregate metrics & charts render smoothly |
-| **9.8** | Feature: Admin Announcements TipTap Editor | `writing-plans`, `minimalist-ui` | Rich text formatted announcements create & display |
+| **9.8** | Orphaned Code & Audit-Identified Defect Cleanup | `systematic-debugging`, `full-output-enforcement` | Verified working routes, dead code removed |
 | **9.9** | Feature: Admin Settings Forms | `writing-plans`, `minimalist-ui` | Institution profile & timing settings save cleanly |
 | **9.10** | Feature: Admin Activity Log Audit Trail | `writing-plans`, `minimalist-ui` | Security & exam events filterable by type and user |
 | **Final** | Staging Deployment & 5-Gate Checklist | `verification-before-completion` | 5-gate pre-launch checklist verified, staging live |
@@ -75,16 +75,16 @@ Upon concluding **any** phase:
 
 ---
 
-### Phase 4: Orphaned Code & Audit-Identified Defect Cleanup
-- **Goal:** Clean up unused imports, dead handlers, or orphaned components discovered in the Phase 1–2 audit. (Note: Step C confirmed `/api/sync` and missing `/admin/` prefixes are already resolved).
+### Phase 4: Admin Announcements TipTap Editor
+- **Goal:** Integrate TipTap WYSIWYG editor for admin announcements, ensuring it loads safely without SSR crashes.
 - **Entry Criteria:** Phase 3 complete and clean.
 - **Skills:**
-  - `systematic-debugging` (`.agents/skills/systematic-debugging/SKILL.md`)
-  - `full-output-enforcement` (`.agents/skills/full-output-enforcement/SKILL.md`)
+  - `writing-plans` (`.agents/skills/writing-plans/SKILL.md`)
+  - `minimalist-ui` (`.agents/skills/minimalist-ui/SKILL.md`)
 - **Context Files:**
-  - *Reads:* `.agent-context/Handover.md`
-  - *Updates:* `.agent-context/Handover.md`, `.agent-context/Architecture.md`
-- **Exit Gate:** Zero dead code paths, all routes verified intact.
+  - *Reads:* `.agent-context/Handover.md`, `.agent-context/GOTCHAS.md`
+  - *Updates:* `.agent-context/Handover.md`
+- **Exit Gate:** Rich text formatted announcements can be created, saved securely (with RBAC and sanitization), and displayed correctly.
 
 ---
 
@@ -147,7 +147,7 @@ Upon concluding **any** phase:
 - **Phase 9.5:** Admin Students Table (`writing-plans`, `minimalist-ui`)
 - **Phase 9.6:** Admin Monitor Realtime Table (`writing-plans`, `tdd-workflow`)
 - **Phase 9.7:** Admin Dashboard Charts (`writing-plans`, `design-taste-frontend`)
-- **Phase 9.8:** Admin Announcements TipTap Integration (`writing-plans`, `minimalist-ui`)
+- **Phase 9.8:** Orphaned Code & Audit-Identified Defect Cleanup (`systematic-debugging`, `full-output-enforcement`)
 - **Phase 9.9:** Admin Settings Forms (`writing-plans`, `minimalist-ui`)
 - **Phase 9.10:** Admin Activity Log Table (`writing-plans`, `minimalist-ui`)
 

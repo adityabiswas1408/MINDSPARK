@@ -4,28 +4,34 @@ import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ActionResult } from '@/lib/types/action-result';
 import { REOPEN_WINDOW_MS } from '@/lib/constants';
+import { z } from 'zod';
 
-interface CreateAssessmentInput {
-  title: string;
-  type: 'EXAM' | 'TEST';
-  duration_minutes: number;
-  level_id: string;   
-}
+const CreateAssessmentSchema = z.object({
+  title: z.string().min(1),
+  type: z.enum(['EXAM', 'TEST']),
+  duration_minutes: z.number().int().positive(),
+  level_id: z.string().uuid(),
+});
+export type CreateAssessmentInput = z.infer<typeof CreateAssessmentSchema>;
 
 export async function createAssessment(input: CreateAssessmentInput): Promise<ActionResult<{ assessment_id: string }>> {
   const authResult = await requireRole(['admin', 'teacher']);
   if ('error' in authResult) return { error: authResult.error, message: authResult.message };
   const { userId, institutionId } = authResult;
 
+  const parsed = CreateAssessmentSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
   const supabase = await createClient();
 
   const { data: assessment, error } = await supabase
     .from('exam_papers')
     .insert({
-      title: input.title,
-      type: input.type,
-      duration_minutes: input.duration_minutes,
-      level_id: input.level_id,
+      title: validData.title,
+      type: validData.type,
+      duration_minutes: validData.duration_minutes,
+      level_id: validData.level_id,
       institution_id: institutionId,
       status: 'DRAFT',
       created_by: userId
@@ -46,16 +52,21 @@ export async function createAssessment(input: CreateAssessmentInput): Promise<Ac
   return { ok: true, data: { assessment_id: assessment.id } };
 }
 
-interface UpdateAssessmentInput {
-  assessment_id: string;
-  title?: string;
-  duration_minutes?: number;
-}
+const UpdateAssessmentSchema = z.object({
+  assessment_id: z.string().uuid(),
+  title: z.string().min(1).optional(),
+  duration_minutes: z.number().int().positive().optional(),
+});
+export type UpdateAssessmentInput = z.infer<typeof UpdateAssessmentSchema>;
 
 export async function updateAssessment(input: UpdateAssessmentInput): Promise<ActionResult<{ updated: true }>> {
   const authResult = await requireRole(['admin', 'teacher']);
   if ('error' in authResult) return { error: authResult.error, message: authResult.message };
   const { userId, institutionId } = authResult;
+
+  const parsed = UpdateAssessmentSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
 
   const supabase = await createClient();
 
@@ -71,12 +82,13 @@ export async function updateAssessment(input: UpdateAssessmentInput): Promise<Ac
     return { error: 'ASSESSMENT_LOCKED' };
   }
 
+  const updates: Record<string, unknown> = {};
+  if (validData.title !== undefined) updates.title = validData.title;
+  if (validData.duration_minutes !== undefined) updates.duration_minutes = validData.duration_minutes;
+
   const { error: updateErr } = await supabase
     .from('exam_papers')
-    .update({
-      title: input.title,
-      duration_minutes: input.duration_minutes
-    })
+    .update(updates)
     .eq('id', input.assessment_id);
 
   if (updateErr) return { error: 'VALIDATION_ERROR' };

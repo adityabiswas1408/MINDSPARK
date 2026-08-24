@@ -26,6 +26,7 @@
 ## What's in progress
 - Phase 4.5 Blocker Resolution: Migration `20260824000000` applied successfully to remote production database via MCP (local Docker remains unreachable). Admin test assertion strengthened.
 - Phase 4.7 RLS Remediation: Replaced global read leak on `announcements` with strict `institution_id` scoping via migration `20260825000000_fix_announcements_rls.sql` applied directly to remote via MCP. Added teacher INSERT/SELECT permissions. **WARNING**: Migrations 20260824 and 20260825 ran entirely outside the normal local Docker pipeline. Reconciling this migration history locally remains a critical still-open follow-up.
+- Phase 4.8 Institution ID Audit: `auth.users` coverage audited directly on remote. Both existing seed users (`student-001@mindspark.local`, `admin@mindspark.test`) have a valid `institution_id`. No gaps found.
 
 ## What's confirmed broken (evidence-backed)
 - **Trigger bug on `student_answers`:** `update_student_answers_modtime` trigger executes `update_modified_column()` setting `NEW.updated_at = NOW()`, but `student_answers` table has no `updated_at` column.
