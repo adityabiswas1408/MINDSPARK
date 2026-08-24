@@ -3,36 +3,39 @@
 > **Protocol Note:** This file is rewritten every session to maintain a concise, evidence-backed summary of current reality. Never append old conversational logs here.
 
 ## Last updated
-2026-08-23T15:40:00+05:30 (Master Recon & Context Initialization)
+2026-08-24 (Phase 4 Close-Out)
 
 ## Where things actually stand
 - **Codebase Health:** Clean TypeScript build (`npm run tsc` exited with code 0).
-- **Test Suite:** 7 test suites passing (49/49 unit/integration tests green via `vitest run`).
-- **Database Migrations:** 27 migrations present in `supabase/migrations/`, verified additive-only in git history.
-- **Rogue Route / Prefix Audit:** `/api/sync` confirmed non-existent in repo. All admin routes are correctly nested under `src/app/(admin)/admin/`.
-- **RBAC & Security:** Server actions strictly guarded with `requireRole()` using `supabase.auth.getUser()`. `adminSupabase` restricted to server handlers, server actions, and admin pages.
-- **Timing & Visual Engine:** `src/lib/anzan/` verified free of `setTimeout`/`setInterval`. Frame timing governed by delta timing.
+- **Test Suite:** 8 test suites passing (51/51 unit/integration tests green via `vitest run`).
+- **Database Migrations:** 28 migrations present in `supabase/migrations/` (added rich text support for announcements).
+- **RBAC & Security:** Server actions strictly guarded with `requireRole()` using `supabase.auth.getUser()`. TipTap inputs sanitized via `isomorphic-dompurify`.
+- **Timing & Visual Engine:** `src/lib/anzan/` verified free of `setTimeout`/`setInterval`.
 
 ## What's done
-- Base database schema and 27 migrations.
+- Base database schema and 28 migrations.
 - Flash Anzan timing engine (`src/lib/anzan/timing-engine.ts`) & number generator.
 - Anti-cheat sub-system (`src/lib/anticheat/clock-guard.ts`, teardown & tab monitor).
 - Offline sync engine and staging table RPC handler.
 - Core admin pages (`dashboard`, `assessments`, `levels`, `monitor`, `results`, `settings`, `students`, `announcements`, `activity-log`).
+- Admin Announcements UI wired with a dynamically loaded, isolated TipTap editor.
+- Announcements server action (`createAnnouncement`) fully secured with Zod schema and XSS sanitization.
 - Student exam flow (`lobby`, `assessment/[id]`, `results`).
-- Unit tests for timing engine, clock guard, profile helpers, results actions, and score components.
+- Unit tests for timing engine, clock guard, profile helpers, results actions, score components, and announcements action.
 
 ## What's in progress
-- Initializing the 7-file `.agent-context/` system and structured `PHASE-PLAN.md`.
-- Preparing for Phase 1-2 extensive audit and remaining feature wiring.
+- Phase 4.5 Blocker Resolution: Migration `20260824000000` is still blocked (Docker unreachable). Admin test assertion strengthened.
 
 ## What's confirmed broken (evidence-backed)
-- **Trigger bug on `student_answers`:** `update_student_answers_modtime` trigger executes `update_modified_column()` setting `NEW.updated_at = NOW()`, but `student_answers` table has no `updated_at` column. Any `UPDATE` or `ON CONFLICT DO UPDATE` on `student_answers` fails with `ERROR 42703 (record "new" has no field "updated_at")`.
+- **Trigger bug on `student_answers`:** `update_student_answers_modtime` trigger executes `update_modified_column()` setting `NEW.updated_at = NOW()`, but `student_answers` table has no `updated_at` column.
+- **Server Action Validation:** Most files in `src/app/actions/` trust user input directly via TS interfaces without Zod runtime validation schemas (except `announcements.ts`).
+- **API Route RBAC:** `/api/submissions/offline-sync` and `teardown` do not check `app_metadata.role === 'student'`.
+- **Anti-Cheat Bypass:** Standard exams (`EXAM`/`TEST`) do not wire up `clock-guard`, `tab-monitor`, or `teardown`.
+- **SSR Hydration Error:** `exam-page-client.tsx` accesses `document.body` synchronously for `createPortal`, which will crash on SSR.
 
 ## What's unverified (not yet exercised — absence of evidence is not evidence of correctness)
 - Create Level button wiring
 - Full student submission-completion flow
-- TipTap editor integration
 - Realtime broadcast/presence channels (`exam:{paper_id}`, `lobby:{paper_id}`)
 - Recharts rendering at real dataset volumes
 - Playwright E2E execution
@@ -44,7 +47,7 @@
 - **NEVER** modify applied migrations directly; always write new additive migration files.
 - **NEVER** use banned color hex codes (`#FF6B6B`, `#121212`, `#1A1A1A`, `#E0E0E0`).
 - **NEVER** execute `git push` without explicit user permission.
-- **NEVER** start a new phase without reading `GOTCHAS.md` first — known mistakes from earlier phases live there.
+- **NEVER** start a new phase without reading `GOTCHAS.md` first.
 
 ## Immediate next action
-- Wait for user approval on Master Recon, `.agent-context/` generation, and `PHASE-PLAN.md` (Step H Hard Stop).
+- Wait for user approval to close Phase 4 and move to Phase 5.
