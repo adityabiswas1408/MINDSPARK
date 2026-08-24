@@ -47,3 +47,51 @@
   5. **Zero active broken runtime paths / Pre-launch checklist (5 gates):** `STILL OPEN / SCHEDULED` (Scheduled for Phase 8 / Final Pre-Launch Phase).
 - **Why:** Establishes an unambiguous, empirical baseline for all historically documented action items.
 - **Status:** VERIFIED & RECONCILED
+
+---
+
+### DEC-006: clock-guard `validateClockGuard` (Deferred Decision)
+- **Date:** 2026-08-23
+- **What:** `validateClockGuard` exists as an anti-cheat mechanism, but is intentionally never invoked during live exam sessions or on submission. It acts strictly as a post-hoc forensic log via `completion_seal`. 
+- **Why:** To prevent legitimate intermittent connectivity issues from instantly terminating exams.
+- **Status:** DEFERRED (Open product decision — not a bug)
+
+---
+
+### DEC-007: Phase 3 Verification Tests (Missing Coverage)
+- **Date:** 2026-08-23
+- **What:** API route RBAC tests (`offline-sync`/`teardown`) and Zod schema rejection tests on server actions were not added during Phase 3 execution.
+- **Why:** Unit testing Next.js App Router API routes and server actions requires a heavier testing harness that is better suited for Phase 8.
+- **Status:** OUTSTANDING (Tracked for Phase 8)
+
+---
+
+### DEC-008: Announcements Role Authorization
+- **Date:** 2026-08-24
+- **What:** Default to `requireRole('admin')` for the `createAnnouncement` action, restricting teachers from posting announcements.
+- **Why:** Safest default for broad communication features unless explicit teacher-broadcast requirements exist.
+- **Status:** PROPOSED
+
+---
+
+### DEC-009: Preserve TipTap JSON format
+- **Date:** 2026-08-24
+- **What:** Add a dedicated column (`body_json`) to the `announcements` table to preserve the original TipTap JSON structure alongside the sanitized `body_html`.
+- **Why:** Allows announcements to be re-opened and edited losslessly in the TipTap editor rather than relying on HTML parsing.
+- **Status:** PROPOSED
+
+---
+
+### DEC-010: Admin Announcements Page Data Fetching (RLS Bypass)
+- **Date:** 2026-08-24
+- **What:** Retain `adminSupabase` for fetching announcements, read counts, and total students in `src/app/(admin)/admin/announcements/page.tsx`.
+- **Why:** While RLS-respecting clients are preferred, querying aggregate read counts and total student populations for the entire institution often exceeds the bounds of standard RLS policies (which may restrict users to their own data or specific cohorts). Using `adminSupabase` here ensures accurate dashboard metrics without complex RLS aggregate workarounds.
+- **Status:** PROPOSED
+
+---
+
+### DEC-011: Announcements RLS Institution Scoping & Teacher Access
+- **Date:** 2026-08-24
+- **What:** Replaced the global `USING (true)` read policy on `announcements` with a strict `institution_id` scoped policy for all users. Also updated `createAnnouncement` action and RLS to allow teachers to INSERT and SELECT (but not UPDATE/DELETE) announcements within their institution.
+- **Why:** The previous RLS policy created a massive cross-tenant data leak by allowing any authenticated user to read all announcements globally. Teacher write access was added to unblock scoped classroom broadcasts.
+- **Status:** PROPOSED

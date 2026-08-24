@@ -30,8 +30,8 @@ const fromMock = adminSupabase.from as unknown as Mock;
 describe('createAnnouncement', () => {
   beforeEach(() => vi.resetAllMocks());
 
-  it('rejects a caller without the admin role', async () => {
-    requireRoleMock.mockResolvedValue({ error: 'FORBIDDEN', message: 'no admin' });
+  it('rejects a caller without the admin or teacher role', async () => {
+    requireRoleMock.mockResolvedValue({ error: 'FORBIDDEN', message: 'Role \'student\' is not permitted' });
     
     const result = await createAnnouncement({
       title: 'Hello',
@@ -40,8 +40,35 @@ describe('createAnnouncement', () => {
       publish_now: false
     });
     
-    expect(requireRoleMock).toHaveBeenCalledWith('admin');
+    expect(requireRoleMock).toHaveBeenCalledWith(['admin', 'teacher']);
     expect((result as { error: string }).error).toBe('FORBIDDEN');
+  });
+
+  it('allows a caller with the teacher role', async () => {
+    requireRoleMock.mockResolvedValue({
+      userId: 'user_t',
+      role: 'teacher',
+      institutionId: 'inst_1',
+    });
+
+    const insertChain = {
+      select: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({ data: { id: 'ann_teacher' }, error: null })
+    };
+    const fromChain = { insert: vi.fn().mockReturnValue(insertChain) };
+    const fromChainActivity = { insert: vi.fn().mockResolvedValue({ error: null }) };
+    
+    fromMock.mockReturnValueOnce(fromChain).mockReturnValueOnce(fromChainActivity);
+
+    const result = await createAnnouncement({
+      title: 'Teacher Announce',
+      body_html: '<p>Homework</p>',
+      body_json: {},
+      publish_now: true
+    });
+
+    expect(requireRoleMock).toHaveBeenCalledWith(['admin', 'teacher']);
+    expect((result as { ok: boolean }).ok).toBe(true);
   });
 
   it('strips a real XSS payload from body_html', async () => {
