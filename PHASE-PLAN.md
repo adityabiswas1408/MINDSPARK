@@ -84,7 +84,11 @@ Upon concluding **any** phase:
 - **Context Files:**
   - *Reads:* `.agent-context/Handover.md`, `.agent-context/GOTCHAS.md`
   - *Updates:* `.agent-context/Handover.md`
-- **Exit Gate:** Rich text formatted announcements can be created, saved securely (with RBAC and sanitization), and displayed correctly.
+- **Exit Gate:** **CLOSED** (Rich text formatted announcements can be created, saved securely, and displayed correctly)
+- **Deferred Items:**
+  - **Teacher Route & UI:** Scaffold the `(teacher)` route group and teacher-facing announcements UI.
+  - **DEC-010 Re-scope:** Re-evaluate the `adminSupabase` bypass for dashboard aggregates once RLS boundaries settle before Phase 6+.
+  - **Migration Reconciliation:** Reconcile the local Docker migration history with the two remote-only MCP migrations (`20260824000000`, `20260825000000`).
 
 ---
 

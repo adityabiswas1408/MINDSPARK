@@ -21,12 +21,13 @@
 - Admin Announcements UI wired with a dynamically loaded, isolated TipTap editor.
 - Announcements server action (`createAnnouncement`) fully secured with Zod schema and XSS sanitization.
 - Student exam flow (`lobby`, `assessment/[id]`, `results`).
-- Unit tests for timing engine, clock guard, profile helpers, results actions, score components, and announcements action.
+## Phase 4 Status: CLOSED
+All core requirements for Phase 4 (Admin Announcements TipTap Editor) have been fully verified and merged to `main`. 
 
-## What's in progress
-- Phase 4.5 Blocker Resolution: Migration `20260824000000` applied successfully to remote production database via MCP (local Docker remains unreachable). Admin test assertion strengthened.
-- Phase 4.7 RLS Remediation: Replaced global read leak on `announcements` with strict `institution_id` scoping via migration `20260825000000_fix_announcements_rls.sql` applied directly to remote via MCP. Added teacher INSERT/SELECT permissions. **WARNING**: Migrations 20260824 and 20260825 ran entirely outside the normal local Docker pipeline. Reconciling this migration history locally remains a critical still-open follow-up.
-- Phase 4.8 Institution ID Audit: `auth.users` coverage audited directly on remote. Both existing seed users (`student-001@mindspark.local`, `admin@mindspark.test`) have a valid `institution_id`. No gaps found.
+### Deferred Items (Must carry forward)
+- **Teacher Route & UI:** Scaffold the `(teacher)` route group and teacher-facing announcements UI. The current RBAC allows teachers to author announcements, but the interface does not exist yet.
+- **DEC-010 Re-scope:** Re-evaluate the `adminSupabase` bypass for dashboard aggregates once RLS boundaries settle before Phase 6+.
+- **Migration Reconciliation:** Local Docker is unreachable, so migrations `20260824000000` and `20260825000000` were applied directly to remote via MCP. Reconciling this local migration history remains a critical open follow-up.
 
 ## What's confirmed broken (evidence-backed)
 - **Trigger bug on `student_answers`:** `update_student_answers_modtime` trigger executes `update_modified_column()` setting `NEW.updated_at = NOW()`, but `student_answers` table has no `updated_at` column.
