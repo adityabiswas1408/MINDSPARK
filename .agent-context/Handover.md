@@ -23,21 +23,6 @@
 - Student exam flow (`lobby`, `assessment/[id]`, `results`).
 - Upgraded Next.js to 16.3.2, migrated `middleware.ts` to `proxy.ts`, enforced secure edge routing.
 - **Phase 5.1 (Next.js Update):** CLOSED
-- **Phase 5.2 (Database Security Audit):** CLOSED
-- **Phase 5.3 (Tech Debt & Stability):** CLOSED
-- **Phase 6 (Core Engine Hardening):** CLOSED
-- **Phase 7 (State & Storage Refactor):** CLOSED
-
-### Deferred Items (Must carry forward)
-- **Teacher Route & UI:** Scaffold the `(teacher)` route group and teacher-facing announcements UI. The current RBAC allows teachers to author announcements, but the interface does not exist yet.
-- **DEC-010 Re-scope:** Re-evaluate the `adminSupabase` bypass for dashboard aggregates once RLS boundaries settle before Phase 6+.
-- **Migration Reconciliation:** Local Docker is unreachable, so migrations `20260824000000` and `20260825000000` were applied directly to remote via MCP. Reconciling this local migration history remains a critical open follow-up.
-
-## What's confirmed broken (evidence-backed)
-- **Phase 5.3: Tech Debt & Stability (CLOSED)**
-   - **Trigger Fix (ALREADY FIXED):** The `updated_at` column is confirmed to exist, so the trigger no longer crashes.
-   - **Database Indexing (APPLIED):** Created migration for `institution_id` index on `students` for multi-tenant RLS efficiency and applied it to the DB.
-   - **SSR Hydration Fix (FALSE ALARM):** Exam UI uses `createPortal` with an `isMounted` guard inside `useEffect()`, which is perfectly SSR-safe.
    - **Zod Validation (APPLIED):** Added strict Zod schemas and `.safeParse()` to `assessment-sessions.ts` (securing `submitAnswer` and `submitExam`), backed by negative-path tests.
 - **Phase 5.3b: Core Engine Hardening & Anti-Cheat (CLOSED)**
    - **Anti-Cheat Wiring (SHIPPED AHEAD OF REVIEW):** `clock-guard`, `tab-monitor`, and `teardown` were fully wired into the standard `EXAM` and `TEST` flows and a DB migration applied out of band. A retroactive evidence pack was produced in [walkthrough.md](file:///C:/Users/ADI/.gemini/antigravity-ide/brain/6b0d6a93-9716-45d3-9e6c-21a2ea68f46d/walkthrough.md) for review.
@@ -137,3 +122,7 @@
 - Phase 9.1 (Submit -> Completion Flow) is CLOSED (Instant-score display deferred to Phase 9.3 release gate).
 - Phase X (TEST Lifecycle & Anti-Cheat Remediation) is CLOSED (Fixed EXAM vs TEST parity gaps, offline-sync schema and RPC missing is_correct/anti_cheat_flags).
 - EXAM-flow Dexie persistence is deferred to a future phase.
+- **Phase 9.2 (Results Security Fix & UI)** is **CLOSED**.
+  - RLS policies applied across `submissions`, `student_answers`, and `questions` with complex RLS join fixes for `exam_papers`.
+  - Created Answer Sheet Viewer UI.
+- **Phase 10 (P0 Load Tests & Launch Prep)** is **NEXT**.

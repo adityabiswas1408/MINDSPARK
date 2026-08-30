@@ -152,8 +152,7 @@ describe('results server actions', () => {
       const paperMock = { id: 'p1', status: 'CLOSED', institution_id: validInstId };
       (createClient as Mock).mockResolvedValue({ from: vi.fn().mockReturnValue(buildSelectChain(paperMock)) });
       
-      const subChain = { select: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: [{id:'sub1'}] }) }) };
-      fromMock.mockReturnValueOnce(subChain).mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      fromMock.mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
       (adminSupabase.rpc as Mock).mockResolvedValue({ error: null });
       
       const result = await reEvaluateResults({ assessment_id: 'p1', reason: 'test' });
