@@ -51,21 +51,49 @@ export async function importStudentsCSV(input: ImportStudentsCSVInput): Promise<
     })
     .filter(s => s.roll_number && s.full_name);
 
+  // 1. Gate: Check for duplicate roll numbers
+  const rollNumbers = p_students.map(s => s.roll_number);
+  const { data: existing } = await adminSupabase
+    .from('students')
+    .select('roll_number')
+    .eq('institution_id', institutionId)
+    .in('roll_number', rollNumbers);
+
+  const existingRollNumbers = new Set((existing || []).map(s => s.roll_number));
+  
+  const toInsert: typeof p_students = [];
+  const errors: ImportStudentsCSVOutput['errors'] = [];
+  let skipped = 0;
+
+  p_students.forEach((s, idx) => {
+    if (existingRollNumbers.has(s.roll_number)) {
+      skipped++;
+      errors.push({ row: idx + 2, reason: 'Roll number already exists in this institution' });
+    } else {
+      toInsert.push(s);
+    }
+  });
+
   if (validData.dry_run) {
-    return { ok: true, data: { inserted: p_students.length, skipped: 0, errors: [] } };
+    return { ok: true, data: { inserted: toInsert.length, skipped, errors } };
   }
 
   const { data, error } = await supabase.rpc('bulk_import_students', {
     p_institution_id: institutionId,
     p_cohort_id: validData.cohort_id ?? '',
-    p_rows: p_students
+    p_rows: toInsert
   });
 
   if (error) {
     return { error: 'INTERNAL_ERROR', message: 'Bulk import failed.' };
   }
 
-  const result = data as unknown as ImportStudentsCSVOutput;
+  const rpcResult = data as unknown as { inserted: number; skipped: number; errors: any[] };
+  const result: ImportStudentsCSVOutput = {
+    inserted: rpcResult.inserted,
+    skipped: skipped + rpcResult.skipped,
+    errors: [...errors, ...rpcResult.errors]
+  };
 
   if (!input.dry_run && result.inserted > 0) {
     await supabase.from('activity_logs').insert({
@@ -96,12 +124,27 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
   const { userId, institutionId } = authResult;
 
   const parsed = CreateStudentSchema.safeParse(input);
-  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  if (!parsed.success) {
+    console.error("ZOD ERROR:", parsed.error);
+    return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  }
   const validData = parsed.data;
 
   const supabase = await createClient();
 
-  // 1. Create user in Supabase Auth
+  // 1. Gate: Check for duplicate roll number before doing anything
+  const { data: existing } = await adminSupabase
+    .from('students')
+    .select('id')
+    .eq('institution_id', institutionId)
+    .eq('roll_number', validData.roll_number)
+    .maybeSingle();
+
+  if (existing) {
+    return { error: 'DUPLICATE', message: 'Roll number already exists in this institution' };
+  }
+
+  // 2. Create user in Supabase Auth
   const placeholderEmail = `${validData.roll_number.toLowerCase()}@student.${institutionId}.invalid`;
   
   // Cryptographically-random initial password. Admin can subsequently
@@ -119,14 +162,23 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
   if (authErr || !authUser.user) return { error: 'VALIDATION_ERROR', message: authErr?.message };
   const profileId = authUser.user.id;
 
-  // 2. Insert into students table (id = profileId)
-  const { data: existing } = await adminSupabase
-    .from('students')
-    .select('id')
-    .eq('institution_id', institutionId)
-    .eq('roll_number', validData.roll_number)
-    .single();
+  // 2.5 Insert into profiles table
+  const { error: profileErr } = await adminSupabase
+    .from('profiles')
+    .insert({
+      id: profileId,
+      institution_id: institutionId,
+      role: 'student',
+      email: placeholderEmail,
+      full_name: validData.full_name
+    });
 
+  if (profileErr) {
+    await adminSupabase.auth.admin.deleteUser(profileId);
+    return { error: 'INTERNAL_ERROR', message: `Failed to create profile: ${profileErr.message}` };
+  }
+
+  // 3. Insert into students table (id = profileId)
   const { error: studentErr } = await adminSupabase
     .from('students')
     .insert({
@@ -139,9 +191,9 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
       institution_id: institutionId
     });
 
-  if (studentErr || existing) {
-    await adminSupabase.auth.admin.deleteUser(profileId); // rollback auth
-    return { error: 'DUPLICATE', message: 'Roll number may already exist' };
+  if (studentErr) {
+    await adminSupabase.auth.admin.deleteUser(profileId); // cascade deletes profiles row too
+    return { error: 'INTERNAL_ERROR', message: 'Failed to create student.' };
   }
 
   // 3. Insert into cohort_history if specified

@@ -23,6 +23,7 @@ export default async function AdminStudentsPage(props: {
 
   const levelFilter = typeof searchParams.level_id === 'string' ? searchParams.level_id : '';
   const statusFilter = typeof searchParams.status === 'string' ? searchParams.status : '';
+  const searchFilter = typeof searchParams.q === 'string' ? searchParams.q : '';
   const page = Math.max(1, parseInt(typeof searchParams.page === 'string' ? searchParams.page : '1', 10));
 
   const supabase = await createClient();
@@ -42,6 +43,11 @@ export default async function AdminStudentsPage(props: {
       count: 'exact',
     })
     .eq('institution_id', institutionId);
+
+  if (searchFilter) {
+    // Escape % and _ if necessary, but ilike supports wildcards. Just wrap in %.
+    query = query.or(`full_name.ilike.%${searchFilter}%,roll_number.ilike.%${searchFilter}%`);
+  }
 
   if (levelFilter) {
     query = query.eq('level_id', levelFilter);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useTransition } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { updateStudent, deactivateStudent, createStudent } from '@/app/actions/students';
@@ -80,7 +81,6 @@ export function StudentsTableClient({
   const pathname = usePathname();
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [search, setSearch] = useState('');
   const [promoteLevelId, setPromoteLevelId] = useState('');
   const [isBulkPending, startBulkTransition] = useTransition();
 
@@ -93,22 +93,15 @@ export function StudentsTableClient({
   const [addError, setAddError] = useState('');
   const [isAddPending, startAddTransition] = useTransition();
 
-  // Client-side search
-  const filtered = useMemo(() => {
-    if (!search.trim()) return students;
-    const q = search.toLowerCase();
-    return students.filter(
-      (s) =>
-        s.full_name.toLowerCase().includes(q) ||
-        s.roll_number.toLowerCase().includes(q),
-    );
-  }, [students, search]);
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const currentSearch = searchParams?.get('q') || '';
+  const [search, setSearch] = useState(currentSearch);
 
-  const allSelected =
-    filtered.length > 0 && filtered.every((s) => selected.has(s.id));
+  // We no longer filter client-side. The students prop contains only the current page of matching results.
+  const allSelected = students.length > 0 && students.every((s) => selected.has(s.id));
 
   function toggleAll() {
-    setSelected(allSelected ? new Set() : new Set(filtered.map((s) => s.id)));
+    setSelected(allSelected ? new Set() : new Set(students.map((s) => s.id)));
   }
 
   function toggleOne(id: string) {
@@ -124,6 +117,7 @@ export function StudentsTableClient({
     const current: Record<string, string> = {
       level_id: currentLevelFilter,
       status: currentStatusFilter,
+      q: currentSearch,
       page: String(page),
     };
     const merged = { ...current, ...updates };
@@ -136,6 +130,11 @@ export function StudentsTableClient({
   function setFilter(key: string, value: string) {
     router.push(buildUrl({ [key]: value, page: '1' }));
   }
+
+  // Handle debounce search
+  const handleSearchChange = useDebouncedCallback((val: string) => {
+    router.push(buildUrl({ q: val, page: '1' }));
+  }, 300);
 
   function goToPage(p: number) {
     router.push(buildUrl({ page: String(p) }));
@@ -288,7 +287,10 @@ export function StudentsTableClient({
         <Input
           placeholder="Search name or roll number…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            handleSearchChange(e.target.value);
+          }}
           className="h-9 w-64 text-sm"
         />
         <Select
@@ -408,7 +410,7 @@ export function StudentsTableClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.length === 0 ? (
+            {students.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={8}
@@ -418,7 +420,7 @@ export function StudentsTableClient({
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((student) => {
+              students.map((student) => {
                 const isActive = student.deleted_at === null;
                 const colour = avatarColour(student.full_name);
                 return (
