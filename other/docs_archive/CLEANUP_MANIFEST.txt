@@ -1,0 +1,66 @@
+=== MINDSPARK CLEANUP MANIFEST ===
+
+Folders moved to A:\MS\other\mindspark_clutter:
+  [DIR]  .adal
+  [DIR]  .agent
+  [DIR]  .augment
+  [DIR]  .codebuddy
+  [DIR]  .commandcode
+  [DIR]  .continue
+  [DIR]  .cortex
+  [DIR]  .crush
+  [DIR]  .factory
+  [DIR]  .goose
+  [DIR]  .iflow
+  [DIR]  .junie
+  [DIR]  .kilocode
+  [DIR]  .kiro
+  [DIR]  .kode
+  [DIR]  .mcpjam
+  [DIR]  .mux
+  [DIR]  .neovate
+  [DIR]  .openhands
+  [DIR]  .pi
+  [DIR]  .playwright-mcp
+  [DIR]  .pochi
+  [DIR]  .qoder
+  [DIR]  .qwen
+  [DIR]  .roo
+  [DIR]  .superpowers
+  [DIR]  .trae
+  [DIR]  .vibe
+  [DIR]  .windsurf
+  [DIR]  .zencoder
+  [DIR]  T1
+  [DIR]  T2
+  [DIR]  TASK 5
+  [DIR]  client-deliverables
+  [DIR]  k6-results
+  [DIR]  new convo
+  [DIR]  playwright-report
+  [DIR]  playwright-results
+  [DIR]  skills
+  [DIR]  t3
+
+Files moved to A:\MS\other\mindspark_clutter:
+  [FILE] UI_DIAGNOSTIC_REPORT.md
+  [FILE] audit-admin-dom.js
+  [FILE] audit-admin-dom.json
+  [FILE] audit-admin-results.json
+  [FILE] audit-admin.js
+  [FILE] audit-student-dom.js
+  [FILE] audit-student-dom.json
+  [FILE] build-output.txt
+  [FILE] build-output2.txt
+  [FILE] build-output3.txt
+  [FILE] build-output4.txt
+  [FILE] build-output5.txt
+  [FILE] fetch-css.js
+  [FILE] fetch-prod-css.js
+  [FILE] mindspark_diagnostic_audit_v2.md
+  [FILE] snap.md
+  [FILE] snap2.md
+  [FILE] snap3.md
+  [FILE] snap4.md
+  [FILE] stack-audit.md
+  [FILE] vitest_output.txt

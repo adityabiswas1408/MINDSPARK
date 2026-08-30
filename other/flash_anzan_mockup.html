@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Anzan Mockup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          /* Page & surfaces */
+          --page:    #F8FAFC;
+          --card:    #FFFFFF;
+          --border:  #E2E8F0;
+          --bmd:     #CBD5E1;
+
+          /* Text */
+          --t1: #0F172A;
+          --t2: #475569;
+          --t3: #94A3B8;
+
+          /* Green ramp — UI primary */
+          --g900: #0D2B1F;
+          --g800: #1A3829;
+          --g700: #1E4A35;
+          --g600: #2D6A4F;
+          --g500: #1A3829;
+          --g400: #52B788;
+          --g300: #74C69D;
+          --g200: #B7E4C7;
+          --g50:  #EFFAF4;
+
+          /* Brand */
+          --ms-navy:   #204074;
+          --ms-orange: #F57A39;
+
+          /* Semantic */
+          --live:  #EF4444;
+          --ok-bg: #DCFCE7; --ok-tx: #166534;
+          --wn-bg: #FEF9C3; --wn-tx: #854D0E;
+          --er-bg: #FEE2E2; --er-tx: #991B1B;
+          --in-bg: #DBEAFE; --in-tx: #1E40AF;
+
+          /* Flash contrast — positive numbers */
+          --ff-std-tx:  #0F172A; --ff-std-bg:  #FFFFFF; /* delay ≥ 500ms */
+          --ff-mid-tx:  #1E293B; --ff-mid-bg:  #F8FAFC; /* delay = 300ms */
+          --ff-fast-tx: #334155; --ff-fast-bg: #F1F5F9; /* delay < 300ms */
+
+          /* Negative arithmetic numbers — ONLY use on arithmetic operands */
+          --s-neg: #991B1B;
+
+          /* Typography */
+          --f:  'DM Sans',  sans-serif;
+          --fm: 'DM Mono', monospace;
+
+          /* Shadows */
+          --s1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+          --s2: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+          --s3: 0 10px 32px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+
+          /* Radii */
+          --r1: 4px; --r2: 6px; --r3: 10px; --r4: 14px; --r5: 18px; --rf: 9999px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: var(--page);
+            font-family: var(--f);
+        }
+        .fm {
+            font-family: var(--fm);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            background: #FFFFFF;
+        }
+
+        /* Screen 0 (Get Ready + Countdown) */
+        #screen-0 {
+            background: var(--page);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #screen-0 h1 {
+            font-family: var(--f);
+            font-size: 48px;
+            font-weight: 600;
+            color: var(--t1);
+            margin: 0 0 24px 0;
+        }
+        #countdown-digit {
+            font-family: var(--fm);
+            font-size: 8vw;
+            font-weight: 600;
+            color: var(--g800);
+            font-variant-numeric: tabular-nums;
+            transition: none !important;
+        }
+        .cd-dots {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .cd-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--t3);
+            transition: none !important;
+        }
+        .mockup-skip-cd {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            font-family: var(--fm);
+            font-size: 11px;
+            color: #CBD5E1;
+            cursor: pointer;
+        }
+
+        /* Screen 2 (Flash) */
+        #screen-2 {
+            background: var(--ff-std-bg);
+        }
+        #flash-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--fm);
+            font-size: 30vh;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            transition: none !important;
+        }
+
+        /* Screen 3 (MCQ) */
+        #screen-3 {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .mcq-wrap {
+            max-width: 520px;
+            width: 100%;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+        }
+        .mcq-title {
+            font-family: var(--f);
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--t1);
+            margin: 0 0 8px 0;
+            text-align: center;
+        }
+        .mcq-prog {
+            font-family: var(--f);
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--t2);
+            margin: 0 0 32px 0;
+            text-align: center;
+        }
+        .mcq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 32px;
+        }
+        .mcq-opt {
+            min-height: 72px;
+            padding: 18px 16px;
+            background: #FFFFFF;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r3);
+            box-shadow: var(--s1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: none; /* No hover animation per spec */
+        }
+        .mcq-opt:hover {
+            border-color: var(--g400);
+        }
+        .mcq-opt.selected {
+            border: 3px solid var(--g800);
+            background: var(--g50);
+        }
+        .mcq-opt.selected .opt-lbl,
+        .mcq-opt.selected .opt-val {
+            color: var(--g800);
+        }
+        /* Confirmed states per spec */
+        .mcq-opt.confirmed-correct {
+            border: 2px solid var(--g500);
+            background: var(--ok-bg);
+        }
+        .mcq-opt.confirmed-correct .opt-lbl,
+        .mcq-opt.confirmed-correct .opt-val {
+            color: var(--ok-tx);
+        }
+        .mcq-opt.confirmed-incorrect {
+            border: 2px solid #DC2626; /* Using #DC2626 per Acceptance Check rule 11 */
+            background: var(--er-bg);
+        }
+        .mcq-opt.confirmed-incorrect .opt-lbl,
+        .mcq-opt.confirmed-incorrect .opt-val {
+            color: #DC2626;
+        }
+        .opt-lbl {
+            font-family: var(--f);
+            font-size: 13px;
+            color: var(--t2);
+            margin-right: 8px;
+        }
+        .opt-val {
+            font-family: var(--fm);
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--t1);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .timer-svg {
+            width: 36px;
+            height: 36px;
+            transform: rotate(-90deg);
+        }
+        .timer-lbl {
+            font-family: var(--f);
+            font-size: 14px;
+            color: var(--t2);
+        }
+        .timer-lbl strong {
+            font-family: var(--fm);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .btn-conf {
+            width: 100%;
+            background: var(--g800);
+            color: #FFFFFF;
+            font-family: var(--f);
+            font-size: 15px;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: var(--r3);
+            border: none;
+            cursor: pointer;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .btn-skip {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--t3);
+            font-family: var(--f);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: var(--rf);
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Screen 4 (Submitted) */
+        #screen-4 {
+            background: var(--page);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: var(--r5);
+            box-shadow: var(--s3);
+            padding: 40px 48px;
+            max-width: 480px;
+            width: 90%;
+            transform: translateY(0);
+        }
+        .chk {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--ok-bg);
+            color: var(--g500);
+            font-size: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-family: var(--f);
+        }
+        .s-title {
+            font-family: var(--f);
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--t1);
+            text-align: center;
+            margin: 20px 0 8px 0;
+        }
+        .s-sub {
+            font-family: var(--f);
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--t2);
+            text-align: center;
+            margin: 0;
+        }
+        .stats {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        .pill {
+            font-family: var(--f);
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: var(--rf);
+            border: 1px solid var(--border);
+        }
+        .p-ans {
+            background: var(--g50);
+            color: var(--g800);
+        }
+        .p-skp {
+            background: #F8FAFC;
+            color: var(--t2);
+        }
+        .p-sub {
+            background: var(--ok-bg);
+            color: var(--ok-tx);
+            border-color: transparent;
+        }
+        .cta {
+            margin-top: 28px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        .btn-p {
+            background: var(--g800);
+            color: #FFFFFF;
+            padding: 12px 24px;
+            border-radius: var(--r3);
+            border: none;
+            font-family: var(--f);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-s {
+            background: #FFFFFF;
+            color: var(--t1);
+            border: 1.5px solid var(--bmd);
+            padding: 12px 24px;
+            border-radius: var(--r3);
+            font-family: var(--f);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Mockup Toolbar */
+        #toolbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 36px;
+            background: #0F172A;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-family: var(--fm);
+            font-size: 11px;
+            color: #94A3B8;
+            z-index: 1000;
+        }
+        .t-btn {
+            cursor: pointer;
+        }
+        .t-btn:hover {
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Screen 0: Get Ready + Countdown -->
+    <div id="screen-0" class="screen">
+        <h1>Get Ready</h1>
+        <div id="countdown-digit">3</div>
+        <div class="cd-dots">
+            <div class="cd-dot" id="cd-dot-1"></div>
+            <div class="cd-dot" id="cd-dot-2"></div>
+            <div class="cd-dot" id="cd-dot-3"></div>
+        </div>
+        <div class="mockup-skip-cd" onclick="skipTo('flash')">Skip countdown &rarr;</div>
+    </div>
+
+    <!-- Screen 2: Flash Number Display -->
+    <div id="screen-2" class="screen">
+        <div id="flash-number" aria-hidden="true"></div>
+        <div class="mockup-skip-cd" onclick="skipTo('mcq')">Skip sequence &rarr;</div>
+    </div>
+
+    <!-- Screen 3: MCQ Answering -->
+    <div id="screen-3" class="screen">
+        <div class="mcq-wrap">
+            <div class="mcq-title">What was the total?</div>
+            <div class="mcq-prog">Question <span class="fm" id="mcq-q-curr">1</span> of <span class="fm">3</span></div>
+            
+            <div class="mcq-grid" id="mcq-grid">
+                <!-- Dynamically populated -->
+            </div>
+            
+            <div class="timer-wrap">
+                <svg class="timer-svg" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="16.5" fill="none" stroke="var(--border)" stroke-width="3" />
+                    <circle cx="18" cy="18" r="16.5" fill="none" stroke="var(--g300)" stroke-width="3" stroke-dasharray="103.67" stroke-dashoffset="0" id="timer-ring" />
+                </svg>
+                <div class="timer-lbl" id="timer-label">Next question in <strong>5s</strong></div>
+            </div>
+            
+            <button class="btn-conf" id="btn-conf"></button>
+            <button class="btn-skip" id="btn-skip">Skip this question</button>
+        </div>
+    </div>
+
+    <!-- Screen 4: Submitted Confirmation -->
+    <div id="screen-4" class="screen">
+        <div class="card" id="card">
+            <div class="chk">&#10003;</div>
+            <div class="s-title">Assessment Submitted</div>
+            <div class="s-sub">Your answers have been saved.</div>
+            <div class="stats">
+                <div class="pill p-ans" id="stat-ans"><span class="fm">3</span> of <span class="fm">3</span> Answered</div>
+                <div class="pill p-skp" id="stat-skp"><span class="fm">0</span> Skipped</div>
+                <div class="pill p-sub">Submitted</div>
+            </div>
+            <div class="cta">
+                <button class="btn-p">View Results</button>
+                <button class="btn-s">Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mockup Developer Toolbar -->
+    <div id="toolbar">
+        <div id="t-phase">INTERSTITIAL</div>
+        <div id="t-q">Q1/3</div>
+        <div class="t-btn" id="t-skip" onclick="skipFromToolbar()">Skip to next state &rarr;</div>
+    </div>
+
+    <script>
+        // Use exact required sample data
+        const questions = [
+            {
+                sequence: [47, 23, 61, 38, 52],
+                options: [
+                    { label: 'A', value: 219 },
+                    { label: 'B', value: 221 },
+                    { label: 'C', value: 224 },
+                    { label: 'D', value: 228 }
+                ]
+            },
+            {
+                sequence: [15, -8, 34, -12, 29],
+                options: [
+                    { label: 'A', value: 54 },
+                    { label: 'B', value: 60 },
+                    { label: 'C', value: 58 },
+                    { label: 'D', value: 62 }
+                ]
+            },
+            {
+                sequence: [73, 46, -25, 81, 19],
+                options: [
+                    { label: 'A', value: 190 },
+                    { label: 'B', value: 196 },
+                    { label: 'C', value: 194 },
+                    { label: 'D', value: 198 }
+                ]
+            }
+        ];
+
+        const totalQuestions = 3;
+        let currentQuestion = 0;
+        let answers = [null, null, null];
+        let phase = 'getready'; // 'getready' | 'flash' | 'mcq' | 'submitted'
+        
+        // Timer manager to ensure clean state transitions
+        let timerIds = [];
+        let intervalIds = [];
+        function setSafeTimeout(cb, delay) { 
+            let id = setTimeout(cb, delay); 
+            timerIds.push(id); 
+            return id; 
+        }
+        function setSafeInterval(cb, delay) { 
+            let id = setInterval(cb, delay); 
+            intervalIds.push(id); 
+            return id; 
+        }
+        function clearAllTimers() {
+            timerIds.forEach(clearTimeout);
+            intervalIds.forEach(clearInterval);
+            timerIds = []; 
+            intervalIds = [];
+        }
+
+        // Screen transitioning
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'flex';
+            updateToolbar();
+        }
+
+        // State Machine Router
+        function setPhase(newPhase) {
+            phase = newPhase;
+            clearAllTimers();
+            
+            if (phase === 'getready') {
+                showScreen('screen-0');
+                runGetReady();
+            } else if (phase === 'flash') {
+                showScreen('screen-2');
+                runFlash();
+            } else if (phase === 'mcq') {
+                showScreen('screen-3');
+                runMCQ();
+            } else if (phase === 'submitted') {
+                showScreen('screen-4');
+                runSubmitted();
+            }
+        }
+
+        // Mockup specific skips
+        function skipTo(targetPhase) {
+            setPhase(targetPhase);
+        }
+        
+        function skipFromToolbar() {
+            if (phase === 'getready') setPhase('flash');
+            else if (phase === 'mcq') advanceFromMCQ();
+        }
+
+        function updateToolbar() {
+            const tb = document.getElementById('toolbar');
+            if (phase === 'flash') {
+                tb.style.display = 'none';
+            } else {
+                tb.style.display = 'flex';
+                document.getElementById('t-phase').textContent = phase.toUpperCase();
+                document.getElementById('t-q').textContent = `Q${currentQuestion + 1}/${totalQuestions}`;
+                document.getElementById('t-skip').style.display = (phase === 'submitted') ? 'none' : 'block';
+            }
+        }
+
+        // --- Phase implementations ---
+
+        function runGetReady() {
+            const cd = document.getElementById('countdown-digit');
+            const d1 = document.getElementById('cd-dot-1');
+            const d2 = document.getElementById('cd-dot-2');
+            const d3 = document.getElementById('cd-dot-3');
+            
+            cd.textContent = '3';
+            d1.style.backgroundColor = 'var(--g800)';
+            d2.style.backgroundColor = 'var(--t3)';
+            d3.style.backgroundColor = 'var(--t3)';
+            
+            setSafeTimeout(() => {
+                cd.textContent = '2';
+                d1.style.backgroundColor = 'var(--t3)';
+                d2.style.backgroundColor = 'var(--g800)';
+            }, 1000);
+            
+            setSafeTimeout(() => {
+                cd.textContent = '1';
+                d2.style.backgroundColor = 'var(--t3)';
+                d3.style.backgroundColor = 'var(--g800)';
+            }, 2000);
+            
+            setSafeTimeout(() => setPhase('flash'), 3000);
+        }
+
+        function runFlash() {
+            const el = document.getElementById('flash-number');
+            el.textContent = '';
+            
+            const seq = questions[currentQuestion].sequence;
+            let idx = 0;
+            
+            function showNum(n) {
+                el.textContent = n;
+                if (n < 0) {
+                    el.style.color = 'var(--s-neg)';
+                } else {
+                    el.style.color = 'var(--ff-std-tx)';
+                }
+            }
+            
+            // Show first number immediately
+            showNum(seq[idx]);
+            
+            // Loop for remainder
+            let iv = setSafeInterval(() => {
+                idx++;
+                if (idx < seq.length) {
+                    showNum(seq[idx]);
+                } else {
+                    // Sequence done
+                    clearInterval(iv);
+                    el.textContent = ''; // Blank screen for 300ms
+                    setSafeTimeout(() => setPhase('mcq'), 300);
+                }
+            }, 450); // Flash speed = 450ms per number
+        }
+
+        let selectedOptionIndex = null;
+        let mcqTimeRemaining = 5;
+        
+        function runMCQ() {
+            selectedOptionIndex = null;
+            mcqTimeRemaining = 5;
+            const isLast = (currentQuestion === totalQuestions - 1);
+            
+            document.getElementById('mcq-q-curr').textContent = currentQuestion + 1;
+            
+            const grid = document.getElementById('mcq-grid');
+            grid.innerHTML = '';
+            
+            // Prevent mis-taps via 1200ms pointer-events block
+            grid.style.pointerEvents = 'none';
+            setSafeTimeout(() => {
+                grid.style.pointerEvents = 'auto';
+            }, 1200);
+            
+            // Render options
+            questions[currentQuestion].options.forEach((opt, idx) => {
+                const cell = document.createElement('div');
+                cell.className = 'mcq-opt';
+                cell.innerHTML = `<span class="opt-lbl">(${opt.label})</span><span class="opt-val">${opt.value}</span>`;
+                cell.onclick = () => selectOption(idx);
+                grid.appendChild(cell);
+            });
+            
+            // Setup buttons
+            const btnConf = document.getElementById('btn-conf');
+            btnConf.style.display = 'none';
+            btnConf.textContent = isLast ? 'Confirm & Submit Exam →' : 'Confirm Answer →';
+            btnConf.onclick = handleConfirm;
+            
+            document.getElementById('btn-skip').onclick = handleSkip;
+            
+            // Timer setup
+            updateTimerDisplay(isLast);
+            const ring = document.getElementById('timer-ring');
+            ring.style.transition = 'none';
+            ring.style.strokeDashoffset = '0';
+            
+            // Force reflow then apply transition to animate SVG ring
+            setSafeTimeout(() => {
+                ring.style.transition = 'stroke-dashoffset 5s linear';
+                ring.style.strokeDashoffset = '103.67';
+            }, 50);
+            
+            // Start countdown
+            setSafeInterval(() => {
+                mcqTimeRemaining--;
+                if (mcqTimeRemaining >= 0) {
+                    updateTimerDisplay(isLast);
+                }
+                
+                if (mcqTimeRemaining === 0) {
+                    // Timer expired
+                    if (selectedOptionIndex !== null) {
+                        handleConfirm();
+                    } else {
+                        handleSkip();
+                    }
+                }
+            }, 1000);
+        }
+
+        function selectOption(idx) {
+            selectedOptionIndex = idx;
+            const cells = document.querySelectorAll('.mcq-opt');
+            cells.forEach((cell, i) => {
+                if (i === idx) {
+                    cell.classList.add('selected');
+                } else {
+                    cell.classList.remove('selected');
+                }
+            });
+            
+            document.getElementById('btn-conf').style.display = 'block';
+            updateTimerDisplay(currentQuestion === totalQuestions - 1);
+        }
+
+        function updateTimerDisplay(isLast) {
+            const lbl = document.getElementById('timer-label');
+            if (selectedOptionIndex !== null) {
+                lbl.innerHTML = `Auto-confirming in <strong>${mcqTimeRemaining}s</strong>`;
+            } else {
+                if (isLast) {
+                    lbl.innerHTML = `Submit exam in <strong>${mcqTimeRemaining}s</strong>`;
+                } else {
+                    lbl.innerHTML = `Next question in <strong>${mcqTimeRemaining}s</strong>`;
+                }
+            }
+        }
+
+        function handleConfirm() {
+            // Records answer and advances instantly per spec
+            answers[currentQuestion] = questions[currentQuestion].options[selectedOptionIndex].label;
+            advanceFromMCQ();
+        }
+        
+        function handleSkip() {
+            answers[currentQuestion] = null;
+            advanceFromMCQ();
+        }
+        
+        function advanceFromMCQ() {
+            // Advance logic
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                setPhase('getready');
+            } else {
+                setPhase('submitted');
+            }
+        }
+
+        function runSubmitted() {
+            const ansCount = answers.filter(a => a !== null).length;
+            const skpCount = totalQuestions - ansCount;
+            
+            document.getElementById('stat-ans').innerHTML = `<span class="fm">${ansCount}</span> of <span class="fm">${totalQuestions}</span> Answered`;
+            document.getElementById('stat-skp').innerHTML = `<span class="fm">${skpCount}</span> Skipped`;
+            
+            // Animate card up
+            const card = document.getElementById('card');
+            card.style.transition = 'none';
+            card.style.transform = 'translateY(20px)';
+            card.style.opacity = '0';
+            
+            setSafeTimeout(() => {
+                card.style.transition = 'transform 350ms ease-out, opacity 350ms ease-out';
+                card.style.transform = 'translateY(-8px)';
+                card.style.opacity = '1';
+            }, 50);
+        }
+
+        // Initialize flow on load
+        window.onload = () => {
+            setPhase('getready');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Anzan Config - MINDSPARK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Page & surfaces */
+            --page: #F8FAFC;
+            --card: #FFFFFF;
+            --border: #E2E8F0;
+            --bmd: #CBD5E1;
+
+            /* Text */
+            --t1: #0F172A;
+            --t2: #475569;
+            --t3: #94A3B8;
+
+            /* Green ramp — UI primary */
+            --g900: #0D2B1F;
+            --g800: #1A3829;
+            --g700: #1E4A35;
+            --g600: #2D6A4F;
+            --g500: #40916C;
+            --g400: #52B788;
+            --g300: #74C69D;
+            --g200: #B7E4C7;
+            --g50: #EFFAF4;
+
+            /* Typography */
+            --f: 'DM Sans', sans-serif;
+            --fm: 'DM Mono', monospace;
+
+            /* Shadows & Radii */
+            --s1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+            --s2: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+            --r2: 6px; --r3: 10px; --r4: 14px; --rf: 9999px;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0;
+            background: var(--page);
+            font-family: var(--f);
+            color: var(--t1);
+            min-height: 100vh;
+        }
+
+        /* Topnav */
+        .topnav {
+            background: var(--g800);
+            color: #FFFFFF;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: var(--s1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topnav-logo {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        .topnav-logo span { font-weight: 400; opacity: 0.6; }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        /* Wizard Header */
+        .wizard-header {
+            margin-bottom: 32px;
+        }
+        .wizard-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+        }
+        .wizard-steps {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--t3);
+        }
+        .step.active {
+            color: var(--g800);
+        }
+        .step.completed {
+            color: var(--t1);
+        }
+        .step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1.5px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+        .step.active .step-num {
+            border-color: var(--g800);
+            background: var(--g800);
+            color: #FFFFFF;
+        }
+        .step.completed .step-num {
+            border-color: var(--t1);
+            background: var(--t1);
+            color: #FFFFFF;
+        }
+        .step-sep {
+            width: 24px;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Panel */
+        .panel {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: var(--r4);
+            box-shadow: var(--s1);
+            padding: 32px;
+        }
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 24px 0;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--t1);
+        }
+        .form-hint {
+            font-size: 12px;
+            color: var(--t3);
+            margin-bottom: 12px;
+        }
+        
+        /* Select & Input */
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--bmd);
+            border-radius: var(--r2);
+            font-family: var(--f);
+            font-size: 14px;
+            color: var(--t1);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        select:focus, input[type="number"]:focus {
+            border-color: var(--g500);
+        }
+
+        /* Chips */
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .chip {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--r3);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--t2);
+            cursor: pointer;
+            background: #FFFFFF;
+            transition: all 0.2s;
+        }
+        .chip:hover {
+            border-color: var(--g300);
+        }
+        .chip.active {
+            border-color: var(--g800);
+            background: var(--g50);
+            color: var(--g800);
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            background: var(--g900);
+            color: #FFFFFF;
+            padding: 32px;
+            border-radius: var(--r4);
+            position: sticky;
+            top: 80px;
+        }
+        .preview-title {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--g400);
+            margin: 0 0 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .preview-title::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            background: var(--g400);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--g400);
+        }
+        .preview-box {
+            background: #FFFFFF;
+            border-radius: var(--r3);
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+            color: var(--t1);
+        }
+        .preview-num {
+            font-family: var(--fm);
+            font-size: 48px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+        .preview-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        .stat-lbl { color: var(--t3); }
+        .stat-val { font-weight: 600; font-family: var(--fm); }
+
+        /* Actions */
+        .actions {
+            margin-top: 32px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--r3);
+            font-family: var(--f);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-sec {
+            background: #FFFFFF;
+            border: 1.5px solid var(--bmd);
+            color: var(--t1);
+        }
+        .btn-pri {
+            background: var(--g800);
+            color: #FFFFFF;
+        }
+        .btn-pri:hover {
+            background: var(--g900);
+        }
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topnav">
+        <div class="topnav-logo">MINDSPARK <span>ADMIN</span></div>
+    </div>
+
+    <div class="container">
+        <div class="wizard-header">
+            <h1 class="wizard-title">Create Flash Anzan Exam</h1>
+            <div class="wizard-steps">
+                <div class="step completed"><div class="step-num">&#10003;</div> Basic Details</div>
+                <div class="step-sep"></div>
+                <div class="step active"><div class="step-num">2</div> Flash Configuration</div>
+                <div class="step-sep"></div>
+                <div class="step"><div class="step-num">3</div> Review & Publish</div>
+            </div>
+        </div>
+
+        <div class="layout">
+            <div class="panel">
+                <h2 class="panel-title">Sequence & Timing Parameters</h2>
+                
+                <div class="two-col">
+                    <div class="form-group">
+                        <label class="form-label">Number Range</label>
+                        <div class="form-hint">Number of digits for each flash.</div>
+                        <div class="chip-group">
+                            <div class="chip">1-digit</div>
+                            <div class="chip active">2-digit</div>
+                            <div class="chip">3-digit</div>
+                            <div class="chip">Mixed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Sequence Length</label>
+                        <div class="form-hint">Total numbers flashed per question.</div>
+                        <select>
+                            <option>3 numbers</option>
+                            <option selected>5 numbers</option>
+                            <option>10 numbers</option>
+                            <option>15 numbers</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">Flash Speed</label>
+                    <div class="form-hint">Duration each number remains on screen. Faster speeds increase difficulty.</div>
+                    <div class="chip-group">
+                        <div class="chip">700ms (Slow)</div>
+                        <div class="chip active">450ms (Standard)</div>
+                        <div class="chip">300ms (Fast)</div>
+                        <div class="chip">Custom</div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">Display Style</label>
+                    <div class="form-hint">Visual treatment of the numbers during the flash sequence.</div>
+                    <div class="chip-group">
+                        <div class="chip active">Standard (Dark text on light)</div>
+                        <div class="chip">High Contrast (White on dark)</div>
+                        <div class="chip">Large Font</div>
+                    </div>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--border); margin: 32px 0;">
+
+                <h2 class="panel-title" style="border:none; padding:0; margin-bottom: 24px;">Flow Control</h2>
+
+                <div class="two-col">
+                    <div class="form-group">
+                        <label class="form-label">Pre-Flash Countdown</label>
+                        <div class="form-hint">Time given to focus before first number.</div>
+                        <select>
+                            <option selected>3 seconds</option>
+                            <option>5 seconds</option>
+                            <option>None</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Answer Time Limit</label>
+                        <div class="form-hint">Seconds allowed to select the final answer.</div>
+                        <div class="chip-group">
+                            <div class="chip active">5s</div>
+                            <div class="chip">10s</div>
+                            <div class="chip">15s</div>
+                            <div class="chip">Unlimited</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-sec">Save Draft</button>
+                    <button class="btn btn-pri">Continue to Review &rarr;</button>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div class="preview-title">Student Experience</div>
+                
+                <div class="preview-box">
+                    <div class="preview-num">47</div>
+                </div>
+                
+                <div class="preview-stats">
+                    <div class="stat-row">
+                        <span class="stat-lbl">Format</span>
+                        <span class="stat-val">2-digit, 5 numbers</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-lbl">Flash Duration</span>
+                        <span class="stat-val">450ms</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-lbl">Total Sequence Time</span>
+                        <span class="stat-val">2.25s</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-lbl">Wait before start</span>
+                        <span class="stat-val">3s</span>
+                    </div>
+                    <div class="stat-row" style="border: none; padding-bottom: 0;">
+                        <span class="stat-lbl">Answer Window</span>
+                        <span class="stat-val">5s</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

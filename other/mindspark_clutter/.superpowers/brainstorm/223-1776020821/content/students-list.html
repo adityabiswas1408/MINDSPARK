@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F1F5F9;
+    color: #0A0F1A;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 32px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+  .page { display: flex; min-height: 900px; background: #F8FAFC; }
+
+  /* Sidebar */
+  .sidebar { width: 252px; background: #FFFFFF; border-right: 1px solid #E2E8F0; flex-shrink: 0; display: flex; flex-direction: column; }
+  .logo-bar { height: 68px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: #1A3829; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark svg { width: 20px; height: 20px; color: #FFFFFF; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .nav-section { padding: 16px 12px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; font-size: 16px; font-weight: 500; color: #1E293B; cursor: pointer; position: relative; }
+  .nav-item.active { background: #EFFAF4; color: #1A3829; font-weight: 600; }
+  .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 11px; bottom: 11px; width: 3px; border-radius: 0 3px 3px 0; background: #1A3829; }
+  .nav-icon { width: 20px; height: 20px; stroke-width: 1.75; flex-shrink: 0; }
+  .sidebar-footer { padding: 14px; border-top: 1px solid #E2E8F0; margin-top: auto; }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 15px; font-weight: 600; color: #0A0F1A; }
+  .user-role { font-size: 13px; color: #475569; }
+  .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 15px; font-weight: 500; color: #1E293B; cursor: pointer; }
+  .logout-btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
+
+  /* Top header */
+  .topbar { height: 68px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+  .crumbs { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #334155; }
+  .crumbs strong { color: #0A0F1A; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .icon-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #334155; cursor: pointer; position: relative; }
+  .icon-btn svg { width: 20px; height: 20px; stroke-width: 1.75; }
+  .icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; background: #DC2626; border-radius: 9999px; border: 2px solid #FFFFFF; }
+  .divider-v { width: 1px; height: 22px; background: #E2E8F0; }
+  .top-avatar { width: 38px; height: 38px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; }
+
+  /* Main */
+  .main { flex: 1; padding: 32px 40px 40px; overflow: hidden; }
+
+  /* Page header */
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .h1 { font-size: 30px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.018em; }
+  .h1-meta { font-size: 14px; color: #334155; font-weight: 500; margin-top: 2px; }
+  .header-actions { display: flex; gap: 10px; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0 18px; height: 42px;
+    border-radius: 10px;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; border: 1px solid transparent;
+    font-family: inherit;
+    transition: all 150ms;
+  }
+  .btn svg { width: 17px; height: 17px; stroke-width: 1.75; }
+  .btn-primary { background: #1A3829; color: #FFFFFF; box-shadow: 0 1px 3px rgba(26, 56, 41, 0.3); }
+  .btn-primary:hover { background: #0F2319; }
+  .btn-outline { background: #FFFFFF; border-color: #E2E8F0; color: #1E293B; }
+  .btn-outline:hover { border-color: #94A3B8; color: #0A0F1A; background: #F8FAFC; }
+  .btn-sm { height: 34px; padding: 0 14px; font-size: 13px; font-weight: 600; }
+  .btn-sm svg { width: 14px; height: 14px; }
+  .btn-icon {
+    width: 34px; height: 34px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: #FFFFFF; border-color: #E2E8F0; color: #475569;
+    border-radius: 10px;
+  }
+  .btn-icon.danger:hover { background: #FEE2E2; border-color: #FECACA; color: #991B1B; }
+  .btn-icon svg { width: 16px; height: 16px; }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+  }
+  .search-input-wrap { position: relative; flex: 1; max-width: 460px; }
+  .search-input {
+    width: 100%; height: 40px;
+    padding: 0 14px 0 40px;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 14px; color: #0A0F1A;
+    font-family: inherit;
+  }
+  .search-input::placeholder { color: #475569; }
+  .search-icon-abs {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; color: #475569; pointer-events: none;
+  }
+  .select {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0 12px 0 14px; height: 40px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 500; color: #1E293B;
+    cursor: pointer;
+    min-width: 160px;
+    justify-content: space-between;
+  }
+  .select svg { width: 14px; height: 14px; color: #475569; stroke-width: 2; }
+  .filter-count { margin-left: auto; font-size: 13px; color: #334155; font-weight: 500; font-family: 'DM Mono', monospace; }
+  .filter-count strong { color: #0A0F1A; font-weight: 700; }
+
+  /* Table card */
+  .table-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.06);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+  th {
+    padding: 14px 22px;
+    text-align: left;
+    font-size: 13px; font-weight: 700;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  th.roll { width: 160px; }
+  th.level { width: 140px; }
+  th.actions { width: 180px; text-align: right; }
+  td {
+    padding: 16px 22px;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 15px;
+    color: #1E293B;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFBFC; }
+  tbody tr { cursor: default; }
+
+  .roll-cell { color: #475569; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 14px; }
+  .name-cell { display: flex; align-items: center; gap: 12px; }
+  .student-avatar {
+    width: 36px; height: 36px; border-radius: 9999px;
+    background: #1A3829; color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .name-text { font-size: 15px; font-weight: 600; color: #0A0F1A; }
+  .level-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px;
+    background: #EFFAF4;
+    border: 1px solid #B7E4C7;
+    color: #1A3829;
+    border-radius: 9999px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .level-pill svg { width: 12px; height: 12px; stroke-width: 2; }
+  .action-cell { text-align: right; }
+  .action-row { display: inline-flex; gap: 8px; }
+
+  /* Pagination */
+  .pagination {
+    padding: 16px 22px;
+    border-top: 1px solid #F1F5F9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FAFBFC;
+  }
+  .pagination-info { font-size: 13px; color: #334155; font-weight: 500; }
+  .pagination-info strong { color: #0A0F1A; font-weight: 700; font-family: 'DM Mono', monospace; }
+  .pagination-controls { display: flex; align-items: center; gap: 8px; }
+  .page-btn {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    color: #475569;
+    font-size: 13px; font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .page-btn.active { background: #1A3829; color: #FFFFFF; border-color: #1A3829; }
+  .page-btn svg { width: 14px; height: 14px; stroke-width: 2; }
+
+  /* ═══════════════════════════════════════════ */
+  /* Empty states */
+  .empty-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 64px 24px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+  }
+  .empty-icon-wrap {
+    width: 64px; height: 64px;
+    border-radius: 9999px;
+    background: #F1F5F9;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    color: #475569;
+  }
+  .empty-icon-wrap svg { width: 28px; height: 28px; stroke-width: 1.75; }
+  .empty-title { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; margin-bottom: 8px; }
+  .empty-sub { font-size: 15px; color: #475569; font-weight: 500; max-width: 420px; margin: 0 auto 24px; line-height: 1.5; }
+  .empty-actions { display: inline-flex; gap: 12px; }
+
+  /* Filtered empty variant */
+  .empty-card.filtered .empty-icon-wrap { background: #FEF9C3; color: #92400E; }
+  .empty-card.filtered .empty-sub { max-width: 360px; }
+  .clear-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #1A3829; font-size: 14px; font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .clear-link svg { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Students List — populated view</h2>
+<p class="note">Main list page. Title + "+ Add Student" and "Import CSV" buttons on the right. Filter bar below with search + level + status dropdowns. Table with 4 columns: Roll No. | Name | Level | Actions. Each row has "View" button + delete icon button. Pagination footer.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/students</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Students</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page-header">
+          <div>
+            <div class="h1">Students</div>
+            <div class="h1-meta">Manage enrolled students, add new entries, and import rosters.</div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import CSV</button>
+            <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Student</button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-input-wrap">
+            <svg class="search-icon-abs" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" placeholder="Search by name or roll number…">
+          </div>
+          <div class="select">All Levels<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="select">All Statuses<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="filter-count"><strong>247</strong> students</div>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th class="roll">Roll No.</th>
+                <th>Name</th>
+                <th class="level">Level</th>
+                <th class="actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="roll-cell">MS-L3-001</td>
+                <td><div class="name-cell"><div class="student-avatar">AS</div><div class="name-text">Aditi Sharma</div></div></td>
+                <td><span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span></td>
+                <td class="action-cell"><div class="action-row"><button class="btn btn-outline btn-sm"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button><button class="btn btn-icon danger"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td class="roll-cell">MS-L3-002</td>
+                <td><div class="name-cell"><div class="student-avatar">RV</div><div class="name-text">Rahul Verma</div></div></td>
+                <td><span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span></td>
+                <td class="action-cell"><div class="action-row"><button class="btn btn-outline btn-sm"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button><button class="btn btn-icon danger"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td class="roll-cell">MS-L2-015</td>
+                <td><div class="name-cell"><div class="student-avatar">PP</div><div class="name-text">Priya Patel</div></div></td>
+                <td><span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 2</span></td>
+                <td class="action-cell"><div class="action-row"><button class="btn btn-outline btn-sm"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button><button class="btn btn-icon danger"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td class="roll-cell">MS-L3-004</td>
+                <td><div class="name-cell"><div class="student-avatar">AS</div><div class="name-text">Arjun Singh</div></div></td>
+                <td><span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span></td>
+                <td class="action-cell"><div class="action-row"><button class="btn btn-outline btn-sm"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button><button class="btn btn-icon danger"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td class="roll-cell">MS-L1-022</td>
+                <td><div class="name-cell"><div class="student-avatar">SI</div><div class="name-text">Sneha Iyer</div></div></td>
+                <td><span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 1</span></td>
+                <td class="action-cell"><div class="action-row"><button class="btn btn-outline btn-sm"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button><button class="btn btn-icon danger"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td class="roll-cell">MS-L2-007</td>
+                <td><div class="name-cell"><div class="student-avatar">KM</div><div class="name-text">Kabir Mehta</div></div></td>
+                <td><span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 2</span></td>
+                <td class="action-cell"><div class="action-row"><button class="btn btn-outline btn-sm"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button><button class="btn btn-icon danger"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td class="roll-cell">MS-L3-009</td>
+                <td><div class="name-cell"><div class="student-avatar">VK</div><div class="name-text">Vikram Kapoor</div></div></td>
+                <td><span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span></td>
+                <td class="action-cell"><div class="action-row"><button class="btn btn-outline btn-sm"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button><button class="btn btn-icon danger"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></div></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <div class="pagination-info">Showing <strong>1–7</strong> of <strong>247</strong></div>
+            <div class="pagination-controls">
+              <button class="page-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">…</button>
+              <button class="page-btn">13</button>
+              <button class="page-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Empty State 1 — No students at all</h2>
+<p class="note">Shown when the institution has never added a student. Welcoming, actionable.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/students (first-time empty)</div>
+  <div class="page">
+    <aside class="sidebar" style="visibility:hidden"></aside>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar" style="visibility:hidden"></div>
+      <div class="main" style="padding-top:60px">
+        <div class="page-header">
+          <div>
+            <div class="h1">Students</div>
+            <div class="h1-meta">Manage enrolled students, add new entries, and import rosters.</div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import CSV</button>
+            <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Student</button>
+          </div>
+        </div>
+
+        <div class="empty-card">
+          <div class="empty-icon-wrap">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="empty-title">No students yet</div>
+          <div class="empty-sub">Add your first student one at a time, or import a full roster from a CSV file to get started.</div>
+          <div class="empty-actions">
+            <button class="btn btn-outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import CSV</button>
+            <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Student</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Empty State 2 — Filtered no-results</h2>
+<p class="note">Shown when the admin's filters return zero results. Different icon, different message, "Clear filters" link.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/students?search=xyz&amp;level=L5</div>
+  <div class="page">
+    <aside class="sidebar" style="visibility:hidden"></aside>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar" style="visibility:hidden"></div>
+      <div class="main" style="padding-top:60px">
+        <div class="page-header">
+          <div>
+            <div class="h1">Students</div>
+            <div class="h1-meta">Manage enrolled students, add new entries, and import rosters.</div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import CSV</button>
+            <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Student</button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-input-wrap">
+            <svg class="search-icon-abs" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" value="xyz" placeholder="Search by name or roll number…">
+          </div>
+          <div class="select" style="background:#EFFAF4;border-color:#B7E4C7;color:#1A3829">Level 5<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="select">All Statuses<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="filter-count"><strong>0</strong> students</div>
+        </div>
+
+        <div class="empty-card filtered">
+          <div class="empty-icon-wrap">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="12"/><line x1="11" y1="14" x2="11" y2="14"/></svg>
+          </div>
+          <div class="empty-title">No students match your filters</div>
+          <div class="empty-sub">Try a different search term or level, or clear the filters to see all students.</div>
+          <div class="empty-actions">
+            <a class="clear-link"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Clear all filters</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

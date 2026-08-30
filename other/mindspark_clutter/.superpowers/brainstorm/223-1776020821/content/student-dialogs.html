@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F1F5F9;
+    color: #0A0F1A;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 32px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+
+  .stage {
+    position: relative;
+    min-height: 680px;
+    background: rgba(10, 15, 26, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .stage::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #F8FAFC;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  /* Dialog base */
+  .dialog {
+    position: relative;
+    background: #FFFFFF;
+    border-radius: 18px;
+    box-shadow: 0 24px 64px rgba(10, 15, 26, 0.3);
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .dialog-create { max-width: 520px; }
+  .dialog-import { max-width: 580px; }
+
+  /* Dialog header */
+  .dialog-head {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid #F1F5F9;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .dialog-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .dialog-icon svg { width: 20px; height: 20px; stroke-width: 1.75; }
+  .dialog-icon.green { background: #EFFAF4; color: #1A3829; }
+  .dialog-icon.blue { background: #EFF6FF; color: #1E3A8A; }
+  .dialog-title-wrap { flex: 1; min-width: 0; }
+  .dialog-title { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; margin-bottom: 3px; }
+  .dialog-sub { font-size: 14px; color: #475569; font-weight: 500; }
+  .close-btn {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: #334155;
+    flex-shrink: 0;
+  }
+  .close-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+
+  /* Dialog body */
+  .dialog-body { padding: 24px 28px; }
+
+  /* Form fields */
+  .field-group { margin-bottom: 18px; }
+  .field-group:last-child { margin-bottom: 0; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field-label {
+    display: block;
+    font-size: 13px; font-weight: 700;
+    color: #334155;
+    margin-bottom: 7px;
+    letter-spacing: 0.01em;
+  }
+  .field-label .req { color: #DC2626; margin-left: 2px; }
+  .field-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 15px;
+    color: #0A0F1A;
+    font-family: inherit;
+  }
+  .field-input:focus { outline: none; border-color: #1A3829; box-shadow: 0 0 0 3px rgba(26, 56, 41, 0.08); }
+  .field-input::placeholder { color: #94A3B8; }
+  .field-select {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 15px;
+    color: #0A0F1A;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .field-select.placeholder { color: #94A3B8; }
+  .field-select svg { width: 16px; height: 16px; color: #475569; stroke-width: 2; }
+  .field-help {
+    font-size: 12px; color: #475569; font-weight: 500;
+    margin-top: 6px;
+  }
+
+  /* Dialog footer */
+  .dialog-foot {
+    padding: 18px 28px;
+    background: #FAFBFC;
+    border-top: 1px solid #F1F5F9;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0 18px; height: 42px;
+    border-radius: 10px;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; border: 1px solid transparent;
+    font-family: inherit;
+    transition: all 150ms;
+  }
+  .btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
+  .btn-primary { background: #1A3829; color: #FFFFFF; box-shadow: 0 1px 3px rgba(26, 56, 41, 0.3); }
+  .btn-outline { background: #FFFFFF; border-color: #E2E8F0; color: #1E293B; }
+  .btn-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #1A3829; font-size: 13px; font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .btn-link svg { width: 14px; height: 14px; stroke-width: 2; }
+
+  /* Import CSV specific */
+  .upload-zone {
+    border: 2px dashed #CBD5E1;
+    background: #F8FAFC;
+    border-radius: 14px;
+    padding: 36px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 150ms;
+    margin-bottom: 18px;
+  }
+  .upload-zone:hover { border-color: #1A3829; background: #EFFAF4; }
+  .upload-icon {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #1A3829;
+    margin-bottom: 14px;
+  }
+  .upload-icon svg { width: 24px; height: 24px; stroke-width: 1.75; }
+  .upload-title { font-size: 16px; font-weight: 700; color: #0A0F1A; margin-bottom: 4px; }
+  .upload-sub { font-size: 13px; color: #475569; font-weight: 500; }
+  .upload-hint {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; color: #334155; font-weight: 600;
+    padding: 4px 10px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 9999px;
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+  }
+  .upload-hint svg { width: 12px; height: 12px; stroke-width: 2; }
+
+  .template-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px;
+    background: #EFF6FF;
+    border: 1px solid #DBEAFE;
+    border-radius: 12px;
+    margin-bottom: 4px;
+  }
+  .template-info { display: flex; align-items: center; gap: 12px; }
+  .template-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: #FFFFFF;
+    border: 1px solid #DBEAFE;
+    display: flex; align-items: center; justify-content: center;
+    color: #1E3A8A;
+  }
+  .template-icon svg { width: 18px; height: 18px; stroke-width: 1.75; }
+  .template-text { }
+  .template-title { font-size: 14px; font-weight: 700; color: #1E3A8A; margin-bottom: 2px; }
+  .template-desc { font-size: 12px; color: #334155; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Create Student Dialog</h2>
+<p class="note">Opens when admin clicks "+ Add Student" on the list page. 4 fields: Full Name, Roll Number, Level, Date of Birth. Dialog over a darkened backdrop.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: Create Student dialog over /admin/students</div>
+  <div class="stage">
+
+    <div class="dialog dialog-create">
+      <div class="dialog-head">
+        <div class="dialog-icon green">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        </div>
+        <div class="dialog-title-wrap">
+          <div class="dialog-title">Add New Student</div>
+          <div class="dialog-sub">Create a single student entry. You can edit more details later on the profile page.</div>
+        </div>
+        <button class="close-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+
+      <div class="dialog-body">
+        <div class="field-group">
+          <label class="field-label">Full Name<span class="req">*</span></label>
+          <input class="field-input" placeholder="e.g. Aditi Sharma">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Roll Number<span class="req">*</span></label>
+          <input class="field-input" placeholder="e.g. MS-L3-025">
+          <div class="field-help">Must be unique within your institution. Uppercase letters and numbers only.</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label">Level<span class="req">*</span></label>
+            <div class="field-select placeholder">Select level…<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label">Date of Birth</label>
+            <input class="field-input" type="text" placeholder="DD / MM / YYYY">
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-foot">
+        <button class="btn btn-outline">Cancel</button>
+        <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Create Student</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Import CSV Dialog</h2>
+<p class="note">Opens when admin clicks "Import CSV". Dashed upload zone + template download callout. After upload, an error report appears in place of the upload zone (not shown in this mock).</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: Import CSV dialog over /admin/students</div>
+  <div class="stage">
+
+    <div class="dialog dialog-import">
+      <div class="dialog-head">
+        <div class="dialog-icon blue">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="dialog-title-wrap">
+          <div class="dialog-title">Import Students from CSV</div>
+          <div class="dialog-sub">Upload a CSV file to create multiple students at once. Download the template first to ensure the correct format.</div>
+        </div>
+        <button class="close-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+
+      <div class="dialog-body">
+
+        <!-- Template row -->
+        <div class="template-row">
+          <div class="template-info">
+            <div class="template-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="template-text">
+              <div class="template-title">Download CSV Template</div>
+              <div class="template-desc">4 columns: full_name, roll_number, level_name, date_of_birth</div>
+            </div>
+          </div>
+          <button class="btn btn-outline" style="height:36px;padding:0 14px;font-size:13px;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            template.csv
+          </button>
+        </div>
+
+        <!-- Upload zone -->
+        <div style="margin-top:18px">
+          <div class="upload-zone">
+            <div class="upload-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div class="upload-title">Drop your CSV here, or click to browse</div>
+            <div class="upload-sub">Maximum file size: 5 MB</div>
+            <div class="upload-hint">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              .csv only
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="dialog-foot">
+        <button class="btn btn-outline">Cancel</button>
+        <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload &amp; Import</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

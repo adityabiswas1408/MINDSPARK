@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F1F5F9; color: #0A0F1A; font-size: 16px; line-height: 1.5; padding: 32px 24px; -webkit-font-smoothing: antialiased; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+  .page { display: flex; min-height: 1080px; background: #F8FAFC; position: relative; }
+
+  /* Sidebar */
+  .sidebar { width: 252px; background: #FFFFFF; border-right: 1px solid #E2E8F0; flex-shrink: 0; display: flex; flex-direction: column; }
+  .logo-bar { height: 68px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: #1A3829; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark svg { width: 20px; height: 20px; color: #FFFFFF; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .nav-section { padding: 16px 12px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; font-size: 16px; font-weight: 500; color: #1E293B; cursor: pointer; position: relative; }
+  .nav-item.active { background: #EFFAF4; color: #1A3829; font-weight: 600; }
+  .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 11px; bottom: 11px; width: 3px; border-radius: 0 3px 3px 0; background: #1A3829; }
+  .nav-icon { width: 20px; height: 20px; stroke-width: 1.75; flex-shrink: 0; }
+  .sidebar-footer { padding: 14px; border-top: 1px solid #E2E8F0; margin-top: auto; }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 15px; font-weight: 600; color: #0A0F1A; }
+  .user-role { font-size: 13px; color: #475569; }
+  .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 15px; font-weight: 500; color: #1E293B; cursor: pointer; }
+  .logout-btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
+
+  /* Top header */
+  .topbar { height: 68px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+  .crumbs { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #334155; }
+  .crumbs strong { color: #0A0F1A; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .icon-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #334155; cursor: pointer; position: relative; }
+  .icon-btn svg { width: 20px; height: 20px; stroke-width: 1.75; }
+  .icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; background: #DC2626; border-radius: 9999px; border: 2px solid #FFFFFF; }
+  .divider-v { width: 1px; height: 22px; background: #E2E8F0; }
+  .top-avatar { width: 38px; height: 38px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; }
+
+  /* Main — centered single column */
+  .main { flex: 1; padding: 32px 40px 96px; overflow-y: auto; }
+  .main-inner { max-width: 860px; margin: 0 auto; }
+
+  /* Page header */
+  .page-header { margin-bottom: 28px; }
+  .h1 { font-size: 30px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.018em; margin-bottom: 6px; }
+  .h1-meta { font-size: 15px; color: #334155; font-weight: 500; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; height: 42px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent; font-family: inherit; transition: all 150ms; }
+  .btn svg { width: 17px; height: 17px; stroke-width: 1.75; }
+  .btn-primary { background: #1A3829; color: #FFFFFF; box-shadow: 0 1px 3px rgba(26, 56, 41, 0.3); }
+  .btn-outline { background: #FFFFFF; border-color: #E2E8F0; color: #1E293B; }
+  .btn-ghost { background: transparent; color: #475569; }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 14px; font-weight: 600; }
+  .btn-sm svg { width: 14px; height: 14px; }
+
+  /* Section card */
+  .section-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+    margin-bottom: 20px;
+  }
+  .section-head {
+    padding: 18px 24px;
+    border-bottom: 1px solid #F1F5F9;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-icon svg { width: 18px; height: 18px; stroke-width: 2; }
+  .section-icon.blue { background: #EFF6FF; color: #1E3A8A; }
+  .section-icon.green { background: #EFFAF4; color: #1A3829; }
+  .section-icon.amber { background: #FEF3C7; color: #92400E; }
+  .section-title-wrap { flex: 1; min-width: 0; }
+  .section-title { font-size: 17px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; margin-bottom: 2px; }
+  .section-sub { font-size: 13px; color: #475569; font-weight: 500; }
+  .section-body { padding: 22px 24px; }
+
+  /* Form fields */
+  .field-group { margin-bottom: 18px; }
+  .field-group:last-child { margin-bottom: 0; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field-label {
+    display: block;
+    font-size: 13px; font-weight: 700;
+    color: #334155;
+    margin-bottom: 7px;
+  }
+  .field-label .req { color: #DC2626; margin-left: 2px; }
+  .field-label .optional { color: #94A3B8; font-weight: 500; margin-left: 4px; }
+  .field-input, .field-select, .field-textarea {
+    width: 100%;
+    padding: 0 14px;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 15px;
+    color: #0A0F1A;
+    font-family: inherit;
+  }
+  .field-input, .field-select { height: 42px; }
+  .field-textarea { padding: 10px 14px; min-height: 80px; resize: vertical; }
+  .field-input:focus, .field-textarea:focus { outline: none; border-color: #1A3829; box-shadow: 0 0 0 3px rgba(26, 56, 41, 0.08); }
+  .field-input::placeholder, .field-textarea::placeholder { color: #94A3B8; }
+  .field-select {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .field-select svg { width: 14px; height: 14px; color: #475569; stroke-width: 2; }
+  .field-help { font-size: 12px; color: #475569; font-weight: 500; margin-top: 6px; }
+  .field-suffix { display: flex; align-items: center; gap: 10px; }
+  .field-suffix .field-input { flex: 1; }
+  .field-suffix-text { font-size: 14px; color: #475569; font-weight: 500; white-space: nowrap; }
+
+  /* Logo uploader */
+  .logo-uploader {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px;
+    background: #F8FAFC;
+    border: 1px dashed #CBD5E1;
+    border-radius: 12px;
+  }
+  .logo-preview {
+    width: 72px; height: 72px;
+    border-radius: 14px;
+    background: #1A3829;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #FFFFFF;
+  }
+  .logo-preview svg { width: 32px; height: 32px; stroke-width: 2; }
+  .logo-upload-info { flex: 1; min-width: 0; }
+  .logo-upload-title { font-size: 14px; font-weight: 700; color: #0A0F1A; margin-bottom: 2px; }
+  .logo-upload-sub { font-size: 12px; color: #475569; font-weight: 500; }
+  .logo-upload-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  /* Segmented toggle for grades */
+  .segmented {
+    display: inline-flex;
+    padding: 4px;
+    background: #F1F5F9;
+    border-radius: 10px;
+    border: 1px solid #E2E8F0;
+    margin-bottom: 16px;
+  }
+  .seg {
+    padding: 8px 20px;
+    font-size: 13px; font-weight: 600;
+    color: #64748B;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .seg.active { background: #FFFFFF; color: #0A0F1A; box-shadow: 0 1px 3px rgba(10, 15, 26, 0.08); }
+
+  /* Grade boundaries table */
+  .grades-table {
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .grade-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 140px 140px 40px;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid #F1F5F9;
+  }
+  .grade-row:last-child { border-bottom: none; }
+  .grade-row.header {
+    background: #F8FAFC;
+    border-bottom: 1px solid #E2E8F0;
+    font-size: 11px; font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .grade-letter {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 48px; height: 36px;
+    border-radius: 9px;
+    font-family: 'DM Mono', monospace;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .grade-letter.a-plus { background: #DCFCE7; color: #14532D; }
+  .grade-letter.a { background: #DCFCE7; color: #166534; }
+  .grade-letter.b { background: #DBEAFE; color: #1E40AF; }
+  .grade-letter.c { background: #FEF3C7; color: #92400E; }
+  .grade-letter.f { background: #FEE2E2; color: #991B1B; }
+  .label-input {
+    width: 100%; height: 36px;
+    padding: 0 12px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0A0F1A;
+    font-family: inherit;
+  }
+  .pct-input {
+    display: flex; align-items: center; gap: 6px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    background: #FFFFFF;
+    height: 36px;
+    padding: 0 12px;
+  }
+  .pct-input input {
+    flex: 1;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    background: transparent;
+    color: #0A0F1A;
+    outline: none;
+    min-width: 0;
+  }
+  .pct-input-suffix { font-size: 12px; color: #475569; font-weight: 600; }
+  .grade-info-btn {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    color: #94A3B8;
+    cursor: pointer;
+  }
+  .grade-info-btn:hover { background: #F1F5F9; color: #475569; }
+  .grade-info-btn svg { width: 14px; height: 14px; stroke-width: 2; }
+
+  /* Reset hint */
+  .grade-note {
+    font-size: 12px;
+    color: #475569;
+    font-weight: 500;
+    margin-top: 12px;
+    display: flex; align-items: flex-start; gap: 6px;
+  }
+  .grade-note svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; margin-top: 1px; color: #94A3B8; }
+
+  /* Sticky save bar */
+  .save-bar {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border-top: 1px solid #E2E8F0;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 -8px 24px rgba(10, 15, 26, 0.06);
+    z-index: 10;
+  }
+  .save-bar-left {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 14px; color: #475569; font-weight: 600;
+  }
+  .save-bar-dot { width: 8px; height: 8px; border-radius: 9999px; background: #F59E0B; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .save-bar-text strong { color: #0A0F1A; font-weight: 700; }
+  .save-bar-right { display: flex; gap: 10px; }
+
+  /* Timezone dropdown */
+  .tz-group-label {
+    font-size: 10px; font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Admin Settings — single-column layout</h2>
+<p class="note">Centered single-column layout (no right sidebar). Three sections stacked: Institution Info (with logo uploader + 6 fields) → Grade Boundaries (segmented EXAM/TEST toggle + editable rows) → Session Settings (single field). Sticky save bar at the bottom shown in the "unsaved changes" state.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/settings</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Settings</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main-inner">
+
+          <div class="page-header">
+            <div class="h1">Settings</div>
+            <div class="h1-meta">Manage your institution's details, grading rules, and session behavior.</div>
+          </div>
+
+          <!-- Section 1 — Institution Info -->
+          <div class="section-card">
+            <div class="section-head">
+              <div class="section-icon blue"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>
+              <div class="section-title-wrap">
+                <div class="section-title">Institution Info</div>
+                <div class="section-sub">Basic details and branding for your institution.</div>
+              </div>
+            </div>
+            <div class="section-body">
+
+              <!-- Logo uploader -->
+              <div class="field-group">
+                <label class="field-label">Logo <span class="optional">(optional)</span></label>
+                <div class="logo-uploader">
+                  <div class="logo-preview">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg>
+                  </div>
+                  <div class="logo-upload-info">
+                    <div class="logo-upload-title">Upload institution logo</div>
+                    <div class="logo-upload-sub">PNG, JPG or SVG · Max 2 MB · Square aspect recommended</div>
+                  </div>
+                  <div class="logo-upload-actions">
+                    <button class="btn btn-outline btn-sm"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
+                    <button class="btn btn-ghost btn-sm">Remove</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Name -->
+              <div class="field-group">
+                <label class="field-label">Institution Name<span class="req">*</span></label>
+                <input class="field-input" value="Aarav Abacus Academy">
+              </div>
+
+              <!-- Timezone -->
+              <div class="field-group">
+                <label class="field-label">Timezone<span class="req">*</span></label>
+                <div class="field-select">Asia / Kolkata (GMT+5:30)<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+                <div class="field-help">Used for scheduling assessments and timestamping activity logs.</div>
+              </div>
+
+              <!-- Contact row -->
+              <div class="field-row">
+                <div class="field-group" style="margin-bottom:0">
+                  <label class="field-label">Primary Contact Email <span class="optional">(optional)</span></label>
+                  <input class="field-input" type="email" value="hello@aaravacademy.in">
+                </div>
+                <div class="field-group" style="margin-bottom:0">
+                  <label class="field-label">Primary Contact Phone <span class="optional">(optional)</span></label>
+                  <input class="field-input" type="tel" value="+91 98765 43210">
+                </div>
+              </div>
+
+              <!-- Address (full width, below the contact row) -->
+              <div class="field-group" style="margin-top:18px">
+                <label class="field-label">Address <span class="optional">(optional)</span></label>
+                <textarea class="field-textarea" placeholder="Street, city, state, postal code">42, Main Street&#10;Bangalore, Karnataka 560001&#10;India</textarea>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Section 2 — Grade Boundaries -->
+          <div class="section-card">
+            <div class="section-head">
+              <div class="section-icon green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+              <div class="section-title-wrap">
+                <div class="section-title">Grade Boundaries</div>
+                <div class="section-sub">Set the percentage thresholds for each grade. EXAM and TEST grades can be configured independently.</div>
+              </div>
+            </div>
+            <div class="section-body">
+
+              <div class="segmented">
+                <div class="seg active">EXAM</div>
+                <div class="seg">TEST</div>
+              </div>
+
+              <div class="grades-table">
+                <div class="grade-row header">
+                  <div>Grade</div>
+                  <div>Label</div>
+                  <div>Min %</div>
+                  <div>Max %</div>
+                  <div></div>
+                </div>
+
+                <div class="grade-row">
+                  <div><span class="grade-letter a-plus">A+</span></div>
+                  <div><input class="label-input" value="Distinction"></div>
+                  <div class="pct-input"><input type="number" value="90"><span class="pct-input-suffix">%</span></div>
+                  <div class="pct-input"><input type="number" value="100"><span class="pct-input-suffix">%</span></div>
+                  <div><button class="grade-info-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></button></div>
+                </div>
+
+                <div class="grade-row">
+                  <div><span class="grade-letter a">A</span></div>
+                  <div><input class="label-input" value="Very Good"></div>
+                  <div class="pct-input"><input type="number" value="80"><span class="pct-input-suffix">%</span></div>
+                  <div class="pct-input"><input type="number" value="89"><span class="pct-input-suffix">%</span></div>
+                  <div><button class="grade-info-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></button></div>
+                </div>
+
+                <div class="grade-row">
+                  <div><span class="grade-letter b">B</span></div>
+                  <div><input class="label-input" value="Good"></div>
+                  <div class="pct-input"><input type="number" value="70"><span class="pct-input-suffix">%</span></div>
+                  <div class="pct-input"><input type="number" value="79"><span class="pct-input-suffix">%</span></div>
+                  <div><button class="grade-info-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></button></div>
+                </div>
+
+                <div class="grade-row">
+                  <div><span class="grade-letter c">C</span></div>
+                  <div><input class="label-input" value="Needs Practice"></div>
+                  <div class="pct-input"><input type="number" value="60"><span class="pct-input-suffix">%</span></div>
+                  <div class="pct-input"><input type="number" value="69"><span class="pct-input-suffix">%</span></div>
+                  <div><button class="grade-info-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></button></div>
+                </div>
+
+                <div class="grade-row">
+                  <div><span class="grade-letter f">F</span></div>
+                  <div><input class="label-input" value="Not Passed"></div>
+                  <div class="pct-input"><input type="number" value="0"><span class="pct-input-suffix">%</span></div>
+                  <div class="pct-input"><input type="number" value="59"><span class="pct-input-suffix">%</span></div>
+                  <div><button class="grade-info-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></button></div>
+                </div>
+
+              </div>
+
+              <div class="grade-note">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Grade thresholds must cover 0–100% without gaps or overlaps. Changes apply to new assessments only; existing results are not recalculated automatically.
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Section 3 — Session Settings -->
+          <div class="section-card">
+            <div class="section-head">
+              <div class="section-icon amber"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div class="section-title-wrap">
+                <div class="section-title">Session Settings</div>
+                <div class="section-sub">How long admin and student sessions stay alive before auto-logout.</div>
+              </div>
+            </div>
+            <div class="section-body">
+
+              <div class="field-group" style="margin-bottom:0">
+                <label class="field-label">Session Timeout<span class="req">*</span></label>
+                <div class="field-suffix" style="max-width:280px">
+                  <input class="field-input" type="number" value="60" style="font-family:'DM Mono',monospace;font-weight:700">
+                  <div class="field-suffix-text">minutes</div>
+                </div>
+                <div class="field-help">After this many minutes of inactivity, sessions are automatically logged out.</div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sticky save bar (shown in dirty state) -->
+      <div class="save-bar">
+        <div class="save-bar-left">
+          <div class="save-bar-dot"></div>
+          <div class="save-bar-text">You have <strong>3 unsaved changes</strong> across Institution &amp; Grade Boundaries.</div>
+        </div>
+        <div class="save-bar-right">
+          <button class="btn btn-outline">Discard</button>
+          <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Save Changes</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

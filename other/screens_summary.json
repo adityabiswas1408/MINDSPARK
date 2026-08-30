@@ -1,0 +1,854 @@
+[
+  {
+    "pdf_page": 3,
+    "full_text": "STUDENT \u203a STUDENT DASHBOARD\nStudent Dashboard \u2014 LIVE exam state\n.superpowers/brainstorm/223-1776020821/content/student-dashboard.html\nLarge greeting at the top \u2192 full-width LIVE hero card with embedded identity strip, pulsing LIVE NOW badge, big exam title, DM Mono 44px countdown timer, and an extra-large forest-green \"Enter Examination Hall \u2192\" CTA\nbutton.\nMINDSPARK Mockup Review  \u00b7  Screen 1 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 1 of 64\nMINDSPARK Mockup Review  \u2022  Screen 1 of 64\nMINDSPARK Mockup Review  \u2022  Screen 1 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT DASHBOARD",
+      "Student Dashboard \u2014 LIVE exam state",
+      ".superpowers/brainstorm/223-1776020821/content/student-dashboard.html",
+      "Large greeting at the top \u2192 full-width LIVE hero card with embedded identity strip, pulsing LIVE NOW badge, big exam title, DM Mono 44px countdown timer, and an extra-large forest-green \"Enter Examination Hall \u2192\" CTA",
+      "button.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 1 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 1 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 1 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 1 of 64"
+    ]
+  },
+  {
+    "pdf_page": 4,
+    "full_text": "STUDENT \u203a STUDENT DASHBOARD\nStudent Dashboard \u2014 Empty state (no live exam)\n.superpowers/brainstorm/223-1776020821/content/student-dashboard.html\nThis is the default state \u2014 95% of loads. Reassuring card with a shield icon, friendly title, calming subtitle, and a subtle \"View My Results\" escape hatch.\nMINDSPARK Mockup Review  \u00b7  Screen 2 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 2 of 64\nMINDSPARK Mockup Review  \u2022  Screen 2 of 64\nMINDSPARK Mockup Review  \u2022  Screen 2 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT DASHBOARD",
+      "Student Dashboard \u2014 Empty state (no live exam)",
+      ".superpowers/brainstorm/223-1776020821/content/student-dashboard.html",
+      "This is the default state \u2014 95% of loads. Reassuring card with a shield icon, friendly title, calming subtitle, and a subtle \"View My Results\" escape hatch.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 2 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 2 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 2 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 2 of 64"
+    ]
+  },
+  {
+    "pdf_page": 5,
+    "full_text": "STUDENT \u203a STUDENT EXAMS & TESTS\nScreen 1 \u2014 Exams list (populated, 3 sections)\n.superpowers/brainstorm/223-1776020821/content/student-exams-tests.html\nFull student chrome. Three sections stacked: Live Now (red dot) / Upcoming (slate dot) / Completed (slate dot, muted rows). Live card has a prominent bordered treatment with countdown + Enter button. Upcoming rows have\ndate badges + \"Not live yet\" hint. Completed rows have green \"Completed\" chips + View Results link.\nMINDSPARK Mockup Review  \u00b7  Screen 3 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 3 of 64\nMINDSPARK Mockup Review  \u2022  Screen 3 of 64\nMINDSPARK Mockup Review  \u2022  Screen 3 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT EXAMS & TESTS",
+      "Screen 1 \u2014 Exams list (populated, 3 sections)",
+      ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+      "Full student chrome. Three sections stacked: Live Now (red dot) / Upcoming (slate dot) / Completed (slate dot, muted rows). Live card has a prominent bordered treatment with countdown + Enter button. Upcoming rows have",
+      "date badges + \"Not live yet\" hint. Completed rows have green \"Completed\" chips + View Results link.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 3 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 3 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 3 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 3 of 64"
+    ]
+  },
+  {
+    "pdf_page": 6,
+    "full_text": "STUDENT \u203a STUDENT EXAMS & TESTS\nScreen 2 \u2014 Exams list (empty state \u2014 type-specific)\n.superpowers/brainstorm/223-1776020821/content/student-exams-tests.html\nBlue book-open icon + \"No exams right now\" + copy explaining what EXAMS are for newer students. Offline banner shown at the top as an example of the warning banner.\nMINDSPARK Mockup Review  \u00b7  Screen 4 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 4 of 64\nMINDSPARK Mockup Review  \u2022  Screen 4 of 64\nMINDSPARK Mockup Review  \u2022  Screen 4 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT EXAMS & TESTS",
+      "Screen 2 \u2014 Exams list (empty state \u2014 type-specific)",
+      ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+      "Blue book-open icon + \"No exams right now\" + copy explaining what EXAMS are for newer students. Offline banner shown at the top as an example of the warning banner.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 4 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 4 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 4 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 4 of 64"
+    ]
+  },
+  {
+    "pdf_page": 7,
+    "full_text": "STUDENT \u203a STUDENT EXAMS & TESTS\nScreen 3 \u2014 Tests list (type-specific empty state)\n.superpowers/brainstorm/223-1776020821/content/student-exams-tests.html\nSame shell as Exams, but the Tests nav item is active and the empty state icon is purple zap + different copy explaining what TESTS (Flash Anzan) are.\nMINDSPARK Mockup Review  \u00b7  Screen 5 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 5 of 64\nMINDSPARK Mockup Review  \u2022  Screen 5 of 64\nMINDSPARK Mockup Review  \u2022  Screen 5 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT EXAMS & TESTS",
+      "Screen 3 \u2014 Tests list (type-specific empty state)",
+      ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+      "Same shell as Exams, but the Tests nav item is active and the empty state icon is purple zap + different copy explaining what TESTS (Flash Anzan) are.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 5 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 5 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 5 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 5 of 64"
+    ]
+  },
+  {
+    "pdf_page": 8,
+    "full_text": "STUDENT \u203a STUDENT EXAMS & TESTS\nScreen 4 \u2014 Exam info detail (PUBLISHED not-yet-live)\n.superpowers/brainstorm/223-1776020821/content/student-exams-tests.html\nStudent clicks an upcoming row \u2192 lands here. Read-only card with status pill, title, meta, 3 info cells (duration/questions/level), and a blue \"Not yet available\" notice explaining that the exam will open when the teacher starts it.\nMINDSPARK Mockup Review  \u00b7  Screen 6 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 6 of 64\nMINDSPARK Mockup Review  \u2022  Screen 6 of 64\nMINDSPARK Mockup Review  \u2022  Screen 6 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT EXAMS & TESTS",
+      "Screen 4 \u2014 Exam info detail (PUBLISHED not-yet-live)",
+      ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+      "Student clicks an upcoming row \u2192 lands here. Read-only card with status pill, title, meta, 3 info cells (duration/questions/level), and a blue \"Not yet available\" notice explaining that the exam will open when the teacher starts it.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 6 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 6 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 6 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 6 of 64"
+    ]
+  },
+  {
+    "pdf_page": 9,
+    "full_text": "STUDENT \u203a STUDENT EXAMS & TESTS\nScreen 5 \u2014 Lobby (full-canvas, sidebar hidden)\n.superpowers/brainstorm/223-1776020821/content/student-exams-tests.html\nCalm pre-assessment screen. Sidebar is hidden entirely. Breathing circle animation, 76px DM Mono countdown, exam title, Optimal network pill, consent acknowledgment, and an extra-large \"I'm Ready\" CTA button. Exit\nbutton in the top-left corner for escape.\nMINDSPARK Mockup Review  \u00b7  Screen 7 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 7 of 64\nMINDSPARK Mockup Review  \u2022  Screen 7 of 64\nMINDSPARK Mockup Review  \u2022  Screen 7 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT EXAMS & TESTS",
+      "Screen 5 \u2014 Lobby (full-canvas, sidebar hidden)",
+      ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+      "Calm pre-assessment screen. Sidebar is hidden entirely. Breathing circle animation, 76px DM Mono countdown, exam title, Optimal network pill, consent acknowledgment, and an extra-large \"I'm Ready\" CTA button. Exit",
+      "button in the top-left corner for escape.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 7 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 7 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 7 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 7 of 64"
+    ]
+  },
+  {
+    "pdf_page": 10,
+    "full_text": "STUDENT \u203a ASSESSMENT-TAKING (V5)\nScreen 1 \u2014 4 operands \u00b7 Table format (tightened)\n.superpowers/brainstorm/1798-1776124309/content/student-assessment-v5.html\nVertical table only. Operator and number now sit ~18px apart instead of ~48px.op-colnarrowed to 40px withtext-align:right,num-colpadding-left dropped to 10px. Divider reduced to 1px slate so the two columns read as one tight\nblock. Negative rows (row 2:\u2212456) in crimson#991B1B.\nMINDSPARK Mockup Review  \u00b7  Screen 8 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 8 of 64\nMINDSPARK Mockup Review  \u2022  Screen 8 of 64\nMINDSPARK Mockup Review  \u2022  Screen 8 of 64\n",
+    "lines": [
+      "STUDENT \u203a ASSESSMENT-TAKING (V5)",
+      "Screen 1 \u2014 4 operands \u00b7 Table format (tightened)",
+      ".superpowers/brainstorm/1798-1776124309/content/student-assessment-v5.html",
+      "Vertical table only. Operator and number now sit ~18px apart instead of ~48px.op-colnarrowed to 40px withtext-align:right,num-colpadding-left dropped to 10px. Divider reduced to 1px slate so the two columns read as one tight",
+      "block. Negative rows (row 2:\u2212456) in crimson#991B1B.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 8 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 8 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 8 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 8 of 64"
+    ]
+  },
+  {
+    "pdf_page": 11,
+    "full_text": "STUDENT \u203a ASSESSMENT-TAKING (V5)\nScreen 2 \u2014 10 operands \u00b7 Table format (tightened)\n.superpowers/brainstorm/1798-1776124309/content/student-assessment-v5.html\nSame tight-gap table, longer 10-row sequence. Font scales to 22px and row padding compresses to 10px vertical so all 10 rows + result row fit cleanly. Four negative rows (56,142,213,45) in crimson.\nMINDSPARK Mockup Review  \u00b7  Screen 9 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 9 of 64\nMINDSPARK Mockup Review  \u2022  Screen 9 of 64\nMINDSPARK Mockup Review  \u2022  Screen 9 of 64\n",
+    "lines": [
+      "STUDENT \u203a ASSESSMENT-TAKING (V5)",
+      "Screen 2 \u2014 10 operands \u00b7 Table format (tightened)",
+      ".superpowers/brainstorm/1798-1776124309/content/student-assessment-v5.html",
+      "Same tight-gap table, longer 10-row sequence. Font scales to 22px and row padding compresses to 10px vertical so all 10 rows + result row fit cleanly. Four negative rows (56,142,213,45) in crimson.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 9 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 9 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 9 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 9 of 64"
+    ]
+  },
+  {
+    "pdf_page": 12,
+    "full_text": "STUDENT \u203a FLASH ANZAN TEST \u2014 INTERACTIVE EXPERIENCE\nFlash Anzan TEST \u2014 Interactive Experience\n/student/assessment/[id]/flash\nMINDSPARK Mockup Review  \u00b7  Screen 10 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 10 of 64\nMINDSPARK Mockup Review  \u2022  Screen 10 of 64\nMINDSPARK Mockup Review  \u2022  Screen 10 of 64\n",
+    "lines": [
+      "STUDENT \u203a FLASH ANZAN TEST \u2014 INTERACTIVE EXPERIENCE",
+      "Flash Anzan TEST \u2014 Interactive Experience",
+      "/student/assessment/[id]/flash",
+      "MINDSPARK Mockup Review  \u00b7  Screen 10 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 10 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 10 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 10 of 64"
+    ]
+  },
+  {
+    "pdf_page": 13,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 1 \u00b7 Get Ready (3-2-1 Countdown & Breathing Focus)\n/student/assessment/[id]/flash\nPreparation countdown before digits start flashing. 3-second animated countdown with breathing focus indicator and clear instruction to look at the center of the screen.\nMINDSPARK Mockup Review  \u00b7  Screen 11 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 1 \u00b7 Get Ready (3-2-1 Countdown & Breathing Focus)",
+      "/student/assessment/[id]/flash",
+      "Preparation countdown before digits start flashing. 3-second animated countdown with breathing focus indicator and clear instruction to look at the center of the screen.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 11 of 64"
+    ]
+  },
+  {
+    "pdf_page": 14,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 2 \u00b7 Flash Sequence (Sub-second Rapid Number Display)\n/student/assessment/[id]/flash\nFull-screen distraction-free sequence. Numbers flash at 450ms intervals in 96px DM Mono typography with all peripheral chrome, sidebars, and navigation hidden.\nMINDSPARK Mockup Review  \u00b7  Screen 12 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 2 \u00b7 Flash Sequence (Sub-second Rapid Number Display)",
+      "/student/assessment/[id]/flash",
+      "Full-screen distraction-free sequence. Numbers flash at 450ms intervals in 96px DM Mono typography with all peripheral chrome, sidebars, and navigation hidden.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 12 of 64"
+    ]
+  },
+  {
+    "pdf_page": 15,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 3 \u00b7 MCQ Answer Selection (4-Option Grid & Question Timer)\n/student/assessment/[id]/flash\nAnswer selection interface presented immediately after the flash sequence completes. 4 large tactile multiple-choice options with 64x64px touch targets and question progress indicator.\nMINDSPARK Mockup Review  \u00b7  Screen 13 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 3 \u00b7 MCQ Answer Selection (4-Option Grid & Question Timer)",
+      "/student/assessment/[id]/flash",
+      "Answer selection interface presented immediately after the flash sequence completes. 4 large tactile multiple-choice options with 64x64px touch targets and question progress indicator.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 13 of 64"
+    ]
+  },
+  {
+    "pdf_page": 16,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 4 \u00b7 Completion & Submission (3 of 3 Answered)\n/student/assessment/[id]/flash\nConfirmation screen displayed after the final question is answered. Summary stats showing all 3 questions answered, submission confirmation, and return CTA.\nMINDSPARK Mockup Review  \u00b7  Screen 14 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 4 \u00b7 Completion & Submission (3 of 3 Answered)",
+      "/student/assessment/[id]/flash",
+      "Confirmation screen displayed after the final question is answered. Summary stats showing all 3 questions answered, submission confirmation, and return CTA.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 14 of 64"
+    ]
+  },
+  {
+    "pdf_page": 17,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 1 \u00b7 Get Ready (3-2-1 Countdown & Breathing Focus)\n/student/assessment/[id]/flash\nPreparation countdown before digits start flashing. 3-second animated countdown with breathing focus indicator and clear instruction to look at the center of the screen.\nMINDSPARK Mockup Review  \u00b7  Screen 11 of 64\nMINDSPARK Mockup Review  \u2022  Screen 15 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 1 \u00b7 Get Ready (3-2-1 Countdown & Breathing Focus)",
+      "/student/assessment/[id]/flash",
+      "Preparation countdown before digits start flashing. 3-second animated countdown with breathing focus indicator and clear instruction to look at the center of the screen.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 11 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 15 of 64"
+    ]
+  },
+  {
+    "pdf_page": 18,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 2 \u00b7 Flash Sequence (Sub-second Rapid Number Display)\n/student/assessment/[id]/flash\nFull-screen distraction-free sequence. Numbers flash at 450ms intervals in 96px DM Mono typography with all peripheral chrome, sidebars, and navigation hidden.\nMINDSPARK Mockup Review  \u00b7  Screen 12 of 64\nMINDSPARK Mockup Review  \u2022  Screen 16 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 2 \u00b7 Flash Sequence (Sub-second Rapid Number Display)",
+      "/student/assessment/[id]/flash",
+      "Full-screen distraction-free sequence. Numbers flash at 450ms intervals in 96px DM Mono typography with all peripheral chrome, sidebars, and navigation hidden.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 12 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 16 of 64"
+    ]
+  },
+  {
+    "pdf_page": 19,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 3 \u00b7 MCQ Answer Selection (4-Option Grid & Question Timer)\n/student/assessment/[id]/flash\nAnswer selection interface presented immediately after the flash sequence completes. 4 large tactile multiple-choice options with 64x64px touch targets and question progress indicator.\nMINDSPARK Mockup Review  \u00b7  Screen 13 of 64\nMINDSPARK Mockup Review  \u2022  Screen 17 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 3 \u00b7 MCQ Answer Selection (4-Option Grid & Question Timer)",
+      "/student/assessment/[id]/flash",
+      "Answer selection interface presented immediately after the flash sequence completes. 4 large tactile multiple-choice options with 64x64px touch targets and question progress indicator.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 13 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 17 of 64"
+    ]
+  },
+  {
+    "pdf_page": 20,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 4 \u00b7 Completion & Submission (3 of 3 Answered)\n/student/assessment/[id]/flash\nConfirmation screen displayed after the final question is answered. Summary stats showing all 3 questions answered, submission confirmation, and return CTA.\nMINDSPARK Mockup Review  \u00b7  Screen 14 of 64\nMINDSPARK Mockup Review  \u2022  Screen 18 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 4 \u00b7 Completion & Submission (3 of 3 Answered)",
+      "/student/assessment/[id]/flash",
+      "Confirmation screen displayed after the final question is answered. Summary stats showing all 3 questions answered, submission confirmation, and return CTA.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 14 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 18 of 64"
+    ]
+  },
+  {
+    "pdf_page": 21,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 1 \u00b7 Get Ready (3-2-1 Countdown & Breathing Focus)\n/student/assessment/[id]/flash\nPreparation countdown before digits start flashing. 3-second animated countdown with breathing focus indicator and clear instruction to look at the center of the screen.\nMINDSPARK Mockup Review  \u00b7  Screen 11 of 64\nMINDSPARK Mockup Review  \u2022  Screen 15 of 64\nMINDSPARK Mockup Review  \u2022  Screen 19 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 1 \u00b7 Get Ready (3-2-1 Countdown & Breathing Focus)",
+      "/student/assessment/[id]/flash",
+      "Preparation countdown before digits start flashing. 3-second animated countdown with breathing focus indicator and clear instruction to look at the center of the screen.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 11 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 15 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 19 of 64"
+    ]
+  },
+  {
+    "pdf_page": 22,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 2 \u00b7 Flash Sequence (Sub-second Rapid Number Display)\n/student/assessment/[id]/flash\nFull-screen distraction-free sequence. Numbers flash at 450ms intervals in 96px DM Mono typography with all peripheral chrome, sidebars, and navigation hidden.\nMINDSPARK Mockup Review  \u00b7  Screen 12 of 64\nMINDSPARK Mockup Review  \u2022  Screen 16 of 64\nMINDSPARK Mockup Review  \u2022  Screen 20 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 2 \u00b7 Flash Sequence (Sub-second Rapid Number Display)",
+      "/student/assessment/[id]/flash",
+      "Full-screen distraction-free sequence. Numbers flash at 450ms intervals in 96px DM Mono typography with all peripheral chrome, sidebars, and navigation hidden.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 12 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 16 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 20 of 64"
+    ]
+  },
+  {
+    "pdf_page": 23,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 3 \u00b7 MCQ Answer Selection (4-Option Grid & Question Timer)\n/student/assessment/[id]/flash\nAnswer selection interface presented immediately after the flash sequence completes. 4 large tactile multiple-choice options with 64x64px touch targets and question progress indicator.\nMINDSPARK Mockup Review  \u00b7  Screen 13 of 64\nMINDSPARK Mockup Review  \u2022  Screen 17 of 64\nMINDSPARK Mockup Review  \u2022  Screen 21 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 3 \u00b7 MCQ Answer Selection (4-Option Grid & Question Timer)",
+      "/student/assessment/[id]/flash",
+      "Answer selection interface presented immediately after the flash sequence completes. 4 large tactile multiple-choice options with 64x64px touch targets and question progress indicator.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 13 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 17 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 21 of 64"
+    ]
+  },
+  {
+    "pdf_page": 24,
+    "full_text": "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE\nScreen 4 \u00b7 Completion & Submission (3 of 3 Answered)\n/student/assessment/[id]/flash\nConfirmation screen displayed after the final question is answered. Summary stats showing all 3 questions answered, submission confirmation, and return CTA.\nMINDSPARK Mockup Review  \u00b7  Screen 14 of 64\nMINDSPARK Mockup Review  \u2022  Screen 18 of 64\nMINDSPARK Mockup Review  \u2022  Screen 22 of 64\n",
+    "lines": [
+      "STUDENT \u00b7 FLASH ANZAN TEST \u00b7 INTERACTIVE EXPERIENCE",
+      "Screen 4 \u00b7 Completion & Submission (3 of 3 Answered)",
+      "/student/assessment/[id]/flash",
+      "Confirmation screen displayed after the final question is answered. Summary stats showing all 3 questions answered, submission confirmation, and return CTA.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 14 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 18 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 22 of 64"
+    ]
+  },
+  {
+    "pdf_page": 25,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 1 \u2014 List page \u00b7 happy path (mixed published + pending)\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nHero card showing the latest published result on top. Below it, filter chips (single-select), then one unified Academic Ledger with both published and pending rows. Pending rows show an amber \"Pending\" pill in the Grade\ncolumn.\nMINDSPARK Mockup Review  \u00b7  Screen 11 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 15 of 64\nMINDSPARK Mockup Review  \u2022  Screen 19 of 64\nMINDSPARK Mockup Review  \u2022  Screen 23 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 1 \u2014 List page \u00b7 happy path (mixed published + pending)",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Hero card showing the latest published result on top. Below it, filter chips (single-select), then one unified Academic Ledger with both published and pending rows. Pending rows show an amber \"Pending\" pill in the Grade",
+      "column.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 11 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 15 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 19 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 23 of 64"
+    ]
+  },
+  {
+    "pdf_page": 26,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 2 \u2014 List page \u00b7 empty state (no submissions)\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nStudent has never submitted an exam. Hero and ledger both replaced with a centred card that sends them to the Exams page.\nMINDSPARK Mockup Review  \u00b7  Screen 12 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 16 of 64\nMINDSPARK Mockup Review  \u2022  Screen 20 of 64\nMINDSPARK Mockup Review  \u2022  Screen 24 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 2 \u2014 List page \u00b7 empty state (no submissions)",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Student has never submitted an exam. Hero and ledger both replaced with a centred card that sends them to the Exams page.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 12 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 16 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 20 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 24 of 64"
+    ]
+  },
+  {
+    "pdf_page": 27,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 3 \u2014 List page \u00b7 filter empty state\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nStudent has results but the active filter (here: \"Pending\") returns zero matches. Hero and chips stay visible; ledger is replaced with a compact \"Clear filter\" reset.\nMINDSPARK Mockup Review  \u00b7  Screen 13 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 17 of 64\nMINDSPARK Mockup Review  \u2022  Screen 21 of 64\nMINDSPARK Mockup Review  \u2022  Screen 25 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 3 \u2014 List page \u00b7 filter empty state",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Student has results but the active filter (here: \"Pending\") returns zero matches. Hero and chips stay visible; ledger is replaced with a compact \"Clear filter\" reset.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 13 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 17 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 21 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 25 of 64"
+    ]
+  },
+  {
+    "pdf_page": 28,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 4 \u2014 Detail page \u00b7 EXAM published, answer key unlocked\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nFull happy path. Back link, header band (type/duration/date), big score panel with green rail, unlocked Answer Sheet CTA card.\nMINDSPARK Mockup Review  \u00b7  Screen 14 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 18 of 64\nMINDSPARK Mockup Review  \u2022  Screen 22 of 64\nMINDSPARK Mockup Review  \u2022  Screen 26 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 4 \u2014 Detail page \u00b7 EXAM published, answer key unlocked",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Full happy path. Back link, header band (type/duration/date), big score panel with green rail, unlocked Answer Sheet CTA card.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 14 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 18 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 22 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 26 of 64"
+    ]
+  },
+  {
+    "pdf_page": 29,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 5 \u2014 Detail page \u00b7 published but answer key locked\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nScore + grade visible, but admin hasn't released the answer key yet. The CTA card is in its locked state \u2014 non-interactive, no hover, no arrow.\nMINDSPARK Mockup Review  \u00b7  Screen 15 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 19 of 64\nMINDSPARK Mockup Review  \u2022  Screen 23 of 64\nMINDSPARK Mockup Review  \u2022  Screen 27 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 5 \u2014 Detail page \u00b7 published but answer key locked",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Score + grade visible, but admin hasn't released the answer key yet. The CTA card is in its locked state \u2014 non-interactive, no hover, no arrow.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 15 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 19 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 23 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 27 of 64"
+    ]
+  },
+  {
+    "pdf_page": 30,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 6 \u2014 Detail page \u00b7 TEST published\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nScore panel mirrors the EXAM detail layout \u2014 Score + Grade.\nMINDSPARK Mockup Review  \u00b7  Screen 16 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 20 of 64\nMINDSPARK Mockup Review  \u2022  Screen 24 of 64\nMINDSPARK Mockup Review  \u2022  Screen 28 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 6 \u2014 Detail page \u00b7 TEST published",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Score panel mirrors the EXAM detail layout \u2014 Score + Grade.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 16 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 20 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 24 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 28 of 64"
+    ]
+  },
+  {
+    "pdf_page": 31,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 7 \u2014 Detail page \u00b7 pending (awaiting grading)\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nSubmission exists but admin hasn't published results. Amber rail, Clock icon, no score rendered. Answer sheet card is implicitly locked (pending implies not graded).\nMINDSPARK Mockup Review  \u00b7  Screen 17 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 21 of 64\nMINDSPARK Mockup Review  \u2022  Screen 25 of 64\nMINDSPARK Mockup Review  \u2022  Screen 29 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 7 \u2014 Detail page \u00b7 pending (awaiting grading)",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Submission exists but admin hasn't published results. Amber rail, Clock icon, no score rendered. Answer sheet card is implicitly locked (pending implies not graded).",
+      "MINDSPARK Mockup Review  \u00b7  Screen 17 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 21 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 25 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 29 of 64"
+    ]
+  },
+  {
+    "pdf_page": 32,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 8 \u2014 Answer Sheet \u00b7 EXAM happy path (mixed correct / wrong / unanswered)\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nVertical scroll of question cards. EXAM questions render the v5 EquationTable. Tiles have four states: correct-and-picked (green + Check), correct-only (green), wrong-pick (crimson + X), neutral. Caption adapts. Time footer\nwith fallback.\nMINDSPARK Mockup Review  \u00b7  Screen 18 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 22 of 64\nMINDSPARK Mockup Review  \u2022  Screen 26 of 64\nMINDSPARK Mockup Review  \u2022  Screen 30 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 8 \u2014 Answer Sheet \u00b7 EXAM happy path (mixed correct / wrong / unanswered)",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Vertical scroll of question cards. EXAM questions render the v5 EquationTable. Tiles have four states: correct-and-picked (green + Check), correct-only (green), wrong-pick (crimson + X), neutral. Caption adapts. Time footer",
+      "with fallback.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 18 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 22 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 26 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 30 of 64"
+    ]
+  },
+  {
+    "pdf_page": 33,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 9 \u2014 Answer Sheet \u00b7 TEST one-line reconstruction\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nTEST questions store onlyflash_sequence(no written equation). Rendered as a single centred line with crimson negatives. Caption below explains the student saw these one at a time during the flash.\nMINDSPARK Mockup Review  \u00b7  Screen 19 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 23 of 64\nMINDSPARK Mockup Review  \u2022  Screen 27 of 64\nMINDSPARK Mockup Review  \u2022  Screen 31 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 9 \u2014 Answer Sheet \u00b7 TEST one-line reconstruction",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "TEST questions store onlyflash_sequence(no written equation). Rendered as a single centred line with crimson negatives. Caption below explains the student saw these one at a time during the flash.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 19 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 23 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 27 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 31 of 64"
+    ]
+  },
+  {
+    "pdf_page": 34,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 10 \u2014 Answer Sheet \u00b7 locked state\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nStudent pasted the URL directly but admin hasn't released the answer key (or the submission is still pending). Centred lock card replaces the whole body.\nMINDSPARK Mockup Review  \u00b7  Screen 20 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 24 of 64\nMINDSPARK Mockup Review  \u2022  Screen 28 of 64\nMINDSPARK Mockup Review  \u2022  Screen 32 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 10 \u2014 Answer Sheet \u00b7 locked state",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Student pasted the URL directly but admin hasn't released the answer key (or the submission is still pending). Centred lock card replaces the whole body.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 20 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 24 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 28 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 32 of 64"
+    ]
+  },
+  {
+    "pdf_page": 36,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 11b \u2014 Admin Release card \u00b7 released state\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nGreen rail, CheckCircle icon, timestamp + actor from activity_logs, student unlock count explaining the gate logic interaction.\nMINDSPARK Mockup Review  \u00b7  Screen 22 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 26 of 64\nMINDSPARK Mockup Review  \u2022  Screen 30 of 64\nMINDSPARK Mockup Review  \u2022  Screen 33 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 11b \u2014 Admin Release card \u00b7 released state",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Green rail, CheckCircle icon, timestamp + actor from activity_logs, student unlock count explaining the gate logic interaction.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 22 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 26 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 30 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 33 of 64"
+    ]
+  },
+  {
+    "pdf_page": 37,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 12a \u2014 Confirmation dialog \u00b7 release direction\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nBase UI dialog. Primary warning explains the gate logic: only students with published results see the answer sheet. Secondary warning only appears when zero published submissions exist for this paper.\nMINDSPARK Mockup Review  \u00b7  Screen 23 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 27 of 64\nMINDSPARK Mockup Review  \u2022  Screen 31 of 64\nMINDSPARK Mockup Review  \u2022  Screen 34 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 12a \u2014 Confirmation dialog \u00b7 release direction",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Base UI dialog. Primary warning explains the gate logic: only students with published results see the answer sheet. Secondary warning only appears when zero published submissions exist for this paper.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 23 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 27 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 31 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 34 of 64"
+    ]
+  },
+  {
+    "pdf_page": 38,
+    "full_text": "STUDENT \u203a RESULTS FLOW\nScreen 12b \u2014 Confirmation dialog \u00b7 un-release direction\n.superpowers/brainstorm/1798-1776124309/content/student-results-flow.html\nAmber confirm button for the destructive-ish action. Copy notes that un-releasing does not retrieve what students already saw.\nMINDSPARK Mockup Review  \u00b7  Screen 24 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 28 of 64\nMINDSPARK Mockup Review  \u2022  Screen 32 of 64\nMINDSPARK Mockup Review  \u2022  Screen 35 of 64\n",
+    "lines": [
+      "STUDENT \u203a RESULTS FLOW",
+      "Screen 12b \u2014 Confirmation dialog \u00b7 un-release direction",
+      ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+      "Amber confirm button for the destructive-ish action. Copy notes that un-releasing does not retrieve what students already saw.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 24 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 28 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 32 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 35 of 64"
+    ]
+  },
+  {
+    "pdf_page": 40,
+    "full_text": "STUDENT \u203a STUDENT PROFILE\nFrame 1 \u2014 /student/profile \u00b7 default state (More info collapsed)\n.superpowers/brainstorm/362-1776136481/content/student-profile.html\nHero strip + School Info section visible. More Info collapsed to a single toggle row showing the chevron pointing down. This is the landing state.\nMINDSPARK Mockup Review  \u00b7  Screen 26 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 30 of 64\nMINDSPARK Mockup Review  \u2022  Screen 33 of 64\nMINDSPARK Mockup Review  \u2022  Screen 37 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT PROFILE",
+      "Frame 1 \u2014 /student/profile \u00b7 default state (More info collapsed)",
+      ".superpowers/brainstorm/362-1776136481/content/student-profile.html",
+      "Hero strip + School Info section visible. More Info collapsed to a single toggle row showing the chevron pointing down. This is the landing state.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 26 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 30 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 33 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 37 of 64"
+    ]
+  },
+  {
+    "pdf_page": 41,
+    "full_text": "STUDENT \u203a STUDENT PROFILE\nFrame 2 \u2014 /student/profile \u00b7 More Info expanded (all fields filled)\n.superpowers/brainstorm/362-1776136481/content/student-profile.html\nSame card with the toggle in expanded state. Personal info (DOB, gender) and guardian contacts visible. Consent shows the green verified pill. Chevron flipped 180\u00b0.\nMINDSPARK Mockup Review  \u00b7  Screen 27 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 31 of 64\nMINDSPARK Mockup Review  \u2022  Screen 34 of 64\nMINDSPARK Mockup Review  \u2022  Screen 38 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT PROFILE",
+      "Frame 2 \u2014 /student/profile \u00b7 More Info expanded (all fields filled)",
+      ".superpowers/brainstorm/362-1776136481/content/student-profile.html",
+      "Same card with the toggle in expanded state. Personal info (DOB, gender) and guardian contacts visible. Consent shows the green verified pill. Chevron flipped 180\u00b0.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 27 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 31 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 34 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 38 of 64"
+    ]
+  },
+  {
+    "pdf_page": 42,
+    "full_text": "STUDENT \u203a STUDENT PROFILE\nFrame 3 \u2014 /student/profile \u00b7 Null-heavy state (More Info expanded with mostly empty fields)\n.superpowers/brainstorm/362-1776136481/content/student-profile.html\nSame card with the More Info section showing severalNot mentionedfallbacks. This is what a student record looks like when only the minimum required fields (full_name + level + cohort) were entered at admin-create time.\nDemonstrates the fallback styling: italic + lighter colour for unfilled fields. The verified pill is absent because consent is unverified \u2014 the row shows \"Not verified\" instead.\nMINDSPARK Mockup Review  \u00b7  Screen 28 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 32 of 64\nMINDSPARK Mockup Review  \u2022  Screen 35 of 64\nMINDSPARK Mockup Review  \u2022  Screen 39 of 64\n",
+    "lines": [
+      "STUDENT \u203a STUDENT PROFILE",
+      "Frame 3 \u2014 /student/profile \u00b7 Null-heavy state (More Info expanded with mostly empty fields)",
+      ".superpowers/brainstorm/362-1776136481/content/student-profile.html",
+      "Same card with the More Info section showing severalNot mentionedfallbacks. This is what a student record looks like when only the minimum required fields (full_name + level + cohort) were entered at admin-create time.",
+      "Demonstrates the fallback styling: italic + lighter colour for unfilled fields. The verified pill is absent because consent is unverified \u2014 the row shows \"Not verified\" instead.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 28 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 32 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 35 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 39 of 64"
+    ]
+  },
+  {
+    "pdf_page": 44,
+    "full_text": "ADMIN \u203a ADMIN DASHBOARD\nAdmin Dashboard \u2014 layout draft\n.superpowers/brainstorm/223-1776020821/content/dashboard-layout.html\nCommand Center layout. KPIs at top (3 cards). Main content: Active Live Assessments on the left (2/3 width), Activity Feed on the right (1/3 width). Page header has a dynamic subtitle showing live student count in real time.\nMINDSPARK Mockup Review  \u00b7  Screen 29 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 33 of 64\nMINDSPARK Mockup Review  \u2022  Screen 37 of 64\nMINDSPARK Mockup Review  \u2022  Screen 41 of 64\n",
+    "lines": [
+      "ADMIN \u203a ADMIN DASHBOARD",
+      "Admin Dashboard \u2014 layout draft",
+      ".superpowers/brainstorm/223-1776020821/content/dashboard-layout.html",
+      "Command Center layout. KPIs at top (3 cards). Main content: Active Live Assessments on the left (2/3 width), Activity Feed on the right (1/3 width). Page header has a dynamic subtitle showing live student count in real time.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 29 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 33 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 37 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 41 of 64"
+    ]
+  },
+  {
+    "pdf_page": 45,
+    "full_text": "ADMIN \u203a STUDENTS \u2014 LIST\nStudents List \u2014 populated view\n.superpowers/brainstorm/223-1776020821/content/students-list-v2.html\nMain list page. 4-column table: Roll No. | Name | Level | Actions (View + delete).\nMINDSPARK Mockup Review  \u00b7  Screen 30 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 34 of 64\nMINDSPARK Mockup Review  \u2022  Screen 38 of 64\nMINDSPARK Mockup Review  \u2022  Screen 42 of 64\n",
+    "lines": [
+      "ADMIN \u203a STUDENTS \u2014 LIST",
+      "Students List \u2014 populated view",
+      ".superpowers/brainstorm/223-1776020821/content/students-list-v2.html",
+      "Main list page. 4-column table: Roll No. | Name | Level | Actions (View + delete).",
+      "MINDSPARK Mockup Review  \u00b7  Screen 30 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 34 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 38 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 42 of 64"
+    ]
+  },
+  {
+    "pdf_page": 46,
+    "full_text": "ADMIN \u203a STUDENTS \u2014 LIST\nEmpty State 1 \u2014 No students at all\n.superpowers/brainstorm/223-1776020821/content/students-list-v2.html\nFull app shell with sidebar + top bar. Welcome card with two action buttons.\nMINDSPARK Mockup Review  \u00b7  Screen 31 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 35 of 64\nMINDSPARK Mockup Review  \u2022  Screen 39 of 64\nMINDSPARK Mockup Review  \u2022  Screen 43 of 64\n",
+    "lines": [
+      "ADMIN \u203a STUDENTS \u2014 LIST",
+      "Empty State 1 \u2014 No students at all",
+      ".superpowers/brainstorm/223-1776020821/content/students-list-v2.html",
+      "Full app shell with sidebar + top bar. Welcome card with two action buttons.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 31 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 35 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 39 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 43 of 64"
+    ]
+  },
+  {
+    "pdf_page": 47,
+    "full_text": "ADMIN \u203a STUDENTS \u2014 LIST\nEmpty State 2 \u2014 Filtered no-results\n.superpowers/brainstorm/223-1776020821/content/students-list-v2.html\nFilter bar still visible with active filters. \"Clear filters\" link as the action.\nMINDSPARK Mockup Review  \u00b7  Screen 32 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 36 of 64\nMINDSPARK Mockup Review  \u2022  Screen 40 of 64\nMINDSPARK Mockup Review  \u2022  Screen 44 of 64\n",
+    "lines": [
+      "ADMIN \u203a STUDENTS \u2014 LIST",
+      "Empty State 2 \u2014 Filtered no-results",
+      ".superpowers/brainstorm/223-1776020821/content/students-list-v2.html",
+      "Filter bar still visible with active filters. \"Clear filters\" link as the action.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 32 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 36 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 40 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 44 of 64"
+    ]
+  },
+  {
+    "pdf_page": 48,
+    "full_text": "ADMIN \u203a STUDENTS \u2014 DETAIL\nStudent Detail \u2014 Read-only mode (default)\n.superpowers/brainstorm/223-1776020821/content/student-detail.html\nClick \"View\" on a student row \u2192 land here. Profile hero + 5 sections stacked. Click \"Edit Profile\" at top to flip Personal + Academic sections into edit mode.\nMINDSPARK Mockup Review  \u00b7  Screen 33 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 37 of 64\nMINDSPARK Mockup Review  \u2022  Screen 41 of 64\nMINDSPARK Mockup Review  \u2022  Screen 45 of 64\n",
+    "lines": [
+      "ADMIN \u203a STUDENTS \u2014 DETAIL",
+      "Student Detail \u2014 Read-only mode (default)",
+      ".superpowers/brainstorm/223-1776020821/content/student-detail.html",
+      "Click \"View\" on a student row \u2192 land here. Profile hero + 5 sections stacked. Click \"Edit Profile\" at top to flip Personal + Academic sections into edit mode.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 33 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 37 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 41 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 45 of 64"
+    ]
+  },
+  {
+    "pdf_page": 49,
+    "full_text": "ADMIN \u203a STUDENTS \u2014 DETAIL\nStudent Detail \u2014 Edit mode\n.superpowers/brainstorm/223-1776020821/content/student-detail.html\nAfter clicking \"Edit Profile\". Edit banner appears at top. Personal Info + Academic Info fields become editable inputs. Recent Sessions + Danger Zone stay read-only (they have no editable fields anyway).\nMINDSPARK Mockup Review  \u00b7  Screen 34 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 38 of 64\nMINDSPARK Mockup Review  \u2022  Screen 42 of 64\nMINDSPARK Mockup Review  \u2022  Screen 46 of 64\n",
+    "lines": [
+      "ADMIN \u203a STUDENTS \u2014 DETAIL",
+      "Student Detail \u2014 Edit mode",
+      ".superpowers/brainstorm/223-1776020821/content/student-detail.html",
+      "After clicking \"Edit Profile\". Edit banner appears at top. Personal Info + Academic Info fields become editable inputs. Recent Sessions + Danger Zone stay read-only (they have no editable fields anyway).",
+      "MINDSPARK Mockup Review  \u00b7  Screen 34 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 38 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 42 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 46 of 64"
+    ]
+  },
+  {
+    "pdf_page": 50,
+    "full_text": "ADMIN \u203a STUDENTS \u2014 DRAWER\nStudent List Drawer \u2014 right-side panel\n.superpowers/brainstorm/223-1776020821/content/student-drawer.html\nSlides in from the right when admin clicks \"View Student List\" on the detail page. Backdrop dims the detail page underneath. Shows (1) drawer header with total stats, (2) a search bar to filter students, (3) \"Gave the Exam\"\ntable with S.No, Roll, Name, Score, and \"See Answer Sheet\" button per row, (4) \"Missed the Exam\" table below with just S.No, Roll, Name.\nMINDSPARK Mockup Review  \u00b7  Screen 35 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 39 of 64\nMINDSPARK Mockup Review  \u2022  Screen 43 of 64\nMINDSPARK Mockup Review  \u2022  Screen 47 of 64\n",
+    "lines": [
+      "ADMIN \u203a STUDENTS \u2014 DRAWER",
+      "Student List Drawer \u2014 right-side panel",
+      ".superpowers/brainstorm/223-1776020821/content/student-drawer.html",
+      "Slides in from the right when admin clicks \"View Student List\" on the detail page. Backdrop dims the detail page underneath. Shows (1) drawer header with total stats, (2) a search bar to filter students, (3) \"Gave the Exam\"",
+      "table with S.No, Roll, Name, Score, and \"See Answer Sheet\" button per row, (4) \"Missed the Exam\" table below with just S.No, Roll, Name.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 35 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 39 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 43 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 47 of 64"
+    ]
+  },
+  {
+    "pdf_page": 51,
+    "full_text": "ADMIN \u203a STUDENTS \u2014 DIALOGS\nCreate Student Dialog\n.superpowers/brainstorm/223-1776020821/content/student-dialogs.html\nOpens when admin clicks \"+ Add Student\" on the list page. 4 fields: Full Name, Roll Number, Level, Date of Birth. Dialog over a darkened backdrop.\nMINDSPARK Mockup Review  \u00b7  Screen 36 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 40 of 64\nMINDSPARK Mockup Review  \u2022  Screen 44 of 64\nMINDSPARK Mockup Review  \u2022  Screen 48 of 64\n",
+    "lines": [
+      "ADMIN \u203a STUDENTS \u2014 DIALOGS",
+      "Create Student Dialog",
+      ".superpowers/brainstorm/223-1776020821/content/student-dialogs.html",
+      "Opens when admin clicks \"+ Add Student\" on the list page. 4 fields: Full Name, Roll Number, Level, Date of Birth. Dialog over a darkened backdrop.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 36 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 40 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 44 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 48 of 64"
+    ]
+  },
+  {
+    "pdf_page": 52,
+    "full_text": "ADMIN \u203a STUDENTS \u2014 DIALOGS\nImport CSV Dialog\n.superpowers/brainstorm/223-1776020821/content/student-dialogs.html\nOpens when admin clicks \"Import CSV\". Dashed upload zone + template download callout. After upload, an error report appears in place of the upload zone (not shown in this mock).\nMINDSPARK Mockup Review  \u00b7  Screen 37 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 41 of 64\nMINDSPARK Mockup Review  \u2022  Screen 45 of 64\nMINDSPARK Mockup Review  \u2022  Screen 49 of 64\n",
+    "lines": [
+      "ADMIN \u203a STUDENTS \u2014 DIALOGS",
+      "Import CSV Dialog",
+      ".superpowers/brainstorm/223-1776020821/content/student-dialogs.html",
+      "Opens when admin clicks \"Import CSV\". Dashed upload zone + template download callout. After upload, an error report appears in place of the upload zone (not shown in this mock).",
+      "MINDSPARK Mockup Review  \u00b7  Screen 37 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 41 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 45 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 49 of 64"
+    ]
+  },
+  {
+    "pdf_page": 53,
+    "full_text": "ADMIN \u203a LEVELS \u2014 LIST\nLevels \u2014 main list page\n.superpowers/brainstorm/223-1776020821/content/levels-list.html\nSortable level cards with drag handle + sequence badge + name + stats row (students count, assessments count) + View button + overflow menu. Summary strip at top shows totals. Tip pill reminds admin they can drag to\nreorder.\nMINDSPARK Mockup Review  \u00b7  Screen 38 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 42 of 64\nMINDSPARK Mockup Review  \u2022  Screen 46 of 64\nMINDSPARK Mockup Review  \u2022  Screen 50 of 64\n",
+    "lines": [
+      "ADMIN \u203a LEVELS \u2014 LIST",
+      "Levels \u2014 main list page",
+      ".superpowers/brainstorm/223-1776020821/content/levels-list.html",
+      "Sortable level cards with drag handle + sequence badge + name + stats row (students count, assessments count) + View button + overflow menu. Summary strip at top shows totals. Tip pill reminds admin they can drag to",
+      "reorder.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 38 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 42 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 46 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 50 of 64"
+    ]
+  },
+  {
+    "pdf_page": 54,
+    "full_text": "ADMIN \u203a LEVELS \u2014 DETAIL\nLevel Detail \u2014 Students tab\n.superpowers/brainstorm/223-1776020821/content/level-detail.html\nLanding view for /admin/levels/[id]. Hero card with seq badge + stats. Tab strip below (Students active). Tab content: \"+ Add Student to Level\" CTA + search + 3-column table.\nMINDSPARK Mockup Review  \u00b7  Screen 39 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 43 of 64\nMINDSPARK Mockup Review  \u2022  Screen 47 of 64\nMINDSPARK Mockup Review  \u2022  Screen 51 of 64\n",
+    "lines": [
+      "ADMIN \u203a LEVELS \u2014 DETAIL",
+      "Level Detail \u2014 Students tab",
+      ".superpowers/brainstorm/223-1776020821/content/level-detail.html",
+      "Landing view for /admin/levels/[id]. Hero card with seq badge + stats. Tab strip below (Students active). Tab content: \"+ Add Student to Level\" CTA + search + 3-column table.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 39 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 43 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 47 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 51 of 64"
+    ]
+  },
+  {
+    "pdf_page": 55,
+    "full_text": "ADMIN \u203a LEVELS \u2014 DETAIL\nLevel Detail \u2014 Assessments tab\n.superpowers/brainstorm/223-1776020821/content/level-detail.html\nAfter clicking the Assessments tab. Same hero card. Same tab strip (Assessments now active). Tab content: \"+ Create Assessment for Level\" CTA + search + 3-column card grid pre-filtered to this level.\nMINDSPARK Mockup Review  \u00b7  Screen 40 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 44 of 64\nMINDSPARK Mockup Review  \u2022  Screen 48 of 64\nMINDSPARK Mockup Review  \u2022  Screen 52 of 64\n",
+    "lines": [
+      "ADMIN \u203a LEVELS \u2014 DETAIL",
+      "Level Detail \u2014 Assessments tab",
+      ".superpowers/brainstorm/223-1776020821/content/level-detail.html",
+      "After clicking the Assessments tab. Same hero card. Same tab strip (Assessments now active). Tab content: \"+ Create Assessment for Level\" CTA + search + 3-column card grid pre-filtered to this level.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 40 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 44 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 48 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 52 of 64"
+    ]
+  },
+  {
+    "pdf_page": 56,
+    "full_text": "ADMIN \u203a LEVELS \u2014 DIALOG\nCreate Level Dialog \u2014 single field\n.superpowers/brainstorm/223-1776020821/content/level-dialog.html\nOpens when admin clicks \"+ Add Level\" on /admin/levels. Just one text input for the level name. New level auto-appends to the end of the list; admin can drag to reorder afterward.\nMINDSPARK Mockup Review  \u00b7  Screen 41 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 45 of 64\nMINDSPARK Mockup Review  \u2022  Screen 49 of 64\nMINDSPARK Mockup Review  \u2022  Screen 53 of 64\n",
+    "lines": [
+      "ADMIN \u203a LEVELS \u2014 DIALOG",
+      "Create Level Dialog \u2014 single field",
+      ".superpowers/brainstorm/223-1776020821/content/level-dialog.html",
+      "Opens when admin clicks \"+ Add Level\" on /admin/levels. Just one text input for the level name. New level auto-appends to the end of the list; admin can drag to reorder afterward.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 41 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 45 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 49 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 53 of 64"
+    ]
+  },
+  {
+    "pdf_page": 57,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 LIST\nAssessments List \u2014 populated view\n.superpowers/brainstorm/223-1776020821/content/assessments-list.html\nMain list page. EXAM/TEST segmented toggle \u2192 Status pills row (6 pills) \u2192 Filter bar (search + level + date range) \u2192 vertical stack of full-width row cards with context-aware action buttons.\nMINDSPARK Mockup Review  \u00b7  Screen 42 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 46 of 64\nMINDSPARK Mockup Review  \u2022  Screen 50 of 64\nMINDSPARK Mockup Review  \u2022  Screen 54 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 LIST",
+      "Assessments List \u2014 populated view",
+      ".superpowers/brainstorm/223-1776020821/content/assessments-list.html",
+      "Main list page. EXAM/TEST segmented toggle \u2192 Status pills row (6 pills) \u2192 Filter bar (search + level + date range) \u2192 vertical stack of full-width row cards with context-aware action buttons.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 42 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 46 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 50 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 54 of 64"
+    ]
+  },
+  {
+    "pdf_page": 58,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 LIST\nEmpty State 1 \u2014 No assessments at all\n.superpowers/brainstorm/223-1776020821/content/assessments-list.html\nFirst-time institution. Full chrome, no filter bar (nothing to filter), welcome card with primary CTA.\nMINDSPARK Mockup Review  \u00b7  Screen 43 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 47 of 64\nMINDSPARK Mockup Review  \u2022  Screen 51 of 64\nMINDSPARK Mockup Review  \u2022  Screen 55 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 LIST",
+      "Empty State 1 \u2014 No assessments at all",
+      ".superpowers/brainstorm/223-1776020821/content/assessments-list.html",
+      "First-time institution. Full chrome, no filter bar (nothing to filter), welcome card with primary CTA.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 43 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 47 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 51 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 55 of 64"
+    ]
+  },
+  {
+    "pdf_page": 59,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 LIST\nEmpty State 2 \u2014 Filtered no-results\n.superpowers/brainstorm/223-1776020821/content/assessments-list.html\nFilter bar still visible with active filters highlighted. Amber icon. \"Clear all filters\" link.\nMINDSPARK Mockup Review  \u00b7  Screen 44 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 48 of 64\nMINDSPARK Mockup Review  \u2022  Screen 52 of 64\nMINDSPARK Mockup Review  \u2022  Screen 56 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 LIST",
+      "Empty State 2 \u2014 Filtered no-results",
+      ".superpowers/brainstorm/223-1776020821/content/assessments-list.html",
+      "Filter bar still visible with active filters highlighted. Amber icon. \"Clear all filters\" link.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 44 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 48 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 52 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 56 of 64"
+    ]
+  },
+  {
+    "pdf_page": 60,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD\nStep 1 \u2014 Type Selection\n.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html\nFull-page wizard, sidebar hidden. Horizontal stepper at top (Step 1 active). Two big cards side by side for EXAM vs TEST. EXAM is selected (green border + tint + check badge).\nMINDSPARK Mockup Review  \u00b7  Screen 45 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 49 of 64\nMINDSPARK Mockup Review  \u2022  Screen 53 of 64\nMINDSPARK Mockup Review  \u2022  Screen 57 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+      "Step 1 \u2014 Type Selection",
+      ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+      "Full-page wizard, sidebar hidden. Horizontal stepper at top (Step 1 active). Two big cards side by side for EXAM vs TEST. EXAM is selected (green border + tint + check badge).",
+      "MINDSPARK Mockup Review  \u00b7  Screen 45 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 49 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 53 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 57 of 64"
+    ]
+  },
+  {
+    "pdf_page": 61,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD\nStep 2 \u2014 Settings (Full Configurator)\n.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html\nStepper shows Step 1 completed, Step 2 active. 4 form sections + Save as Default toggle at the bottom. All 12 fields visible.\nMINDSPARK Mockup Review  \u00b7  Screen 46 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 50 of 64\nMINDSPARK Mockup Review  \u2022  Screen 54 of 64\nMINDSPARK Mockup Review  \u2022  Screen 58 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+      "Step 2 \u2014 Settings (Full Configurator)",
+      ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+      "Stepper shows Step 1 completed, Step 2 active. 4 form sections + Save as Default toggle at the bottom. All 12 fields visible.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 46 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 50 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 54 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 58 of 64"
+    ]
+  },
+  {
+    "pdf_page": 62,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD\nStep 3a \u2014 MCQ Builder (EXAM variant)\n.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html\nStepper shows Steps 1 & 2 completed, Step 3 active. Split pane: question list on the left (40%), editor on the right (60%). Question 2 is selected.\nMINDSPARK Mockup Review  \u00b7  Screen 47 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 51 of 64\nMINDSPARK Mockup Review  \u2022  Screen 55 of 64\nMINDSPARK Mockup Review  \u2022  Screen 59 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+      "Step 3a \u2014 MCQ Builder (EXAM variant)",
+      ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+      "Stepper shows Steps 1 & 2 completed, Step 3 active. Split pane: question list on the left (40%), editor on the right (60%). Question 2 is selected.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 47 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 51 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 55 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 59 of 64"
+    ]
+  },
+  {
+    "pdf_page": 63,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD\nStep 3b \u2014 MCQ Builder (TEST variant with Flash Config)\n.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html\nSame split pane as 3a, but above it there's a purple Flash Config card with params + Preview Flash button. Same pipe-format questions, same editor.\nMINDSPARK Mockup Review  \u00b7  Screen 48 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 52 of 64\nMINDSPARK Mockup Review  \u2022  Screen 56 of 64\nMINDSPARK Mockup Review  \u2022  Screen 60 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+      "Step 3b \u2014 MCQ Builder (TEST variant with Flash Config)",
+      ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+      "Same split pane as 3a, but above it there's a purple Flash Config card with params + Preview Flash button. Same pipe-format questions, same editor.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 48 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 52 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 56 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 60 of 64"
+    ]
+  },
+  {
+    "pdf_page": 64,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD\nFlash Preview Modal (on-demand)\n.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html\nTriggered by \"Preview Flash\" button on Step 3b. Modal over dimmed backdrop showing a sample flash at the configured speed. Progress bar at top, counter at bottom, playback controls below.\nMINDSPARK Mockup Review  \u00b7  Screen 49 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 53 of 64\nMINDSPARK Mockup Review  \u2022  Screen 57 of 64\nMINDSPARK Mockup Review  \u2022  Screen 61 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+      "Flash Preview Modal (on-demand)",
+      ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+      "Triggered by \"Preview Flash\" button on Step 3b. Modal over dimmed backdrop showing a sample flash at the configured speed. Progress bar at top, counter at bottom, playback controls below.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 49 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 53 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 57 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 61 of 64"
+    ]
+  },
+  {
+    "pdf_page": 65,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD\nStep 4 \u2014 Review\n.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html\nStepper shows 1\u20133 completed, Step 4 active. Bento grid of review cards \u2014 each section has an \"Edit\" button that jumps back to that step. Publish Now / Save as Draft action row at the bottom.\nMINDSPARK Mockup Review  \u00b7  Screen 50 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 54 of 64\nMINDSPARK Mockup Review  \u2022  Screen 58 of 64\nMINDSPARK Mockup Review  \u2022  Screen 62 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+      "Step 4 \u2014 Review",
+      ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+      "Stepper shows 1\u20133 completed, Step 4 active. Bento grid of review cards \u2014 each section has an \"Edit\" button that jumps back to that step. Publish Now / Save as Draft action row at the bottom.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 50 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 54 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 58 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 62 of 64"
+    ]
+  },
+  {
+    "pdf_page": 66,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD\nStep 5 \u2014 Success (Published variant)\n.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html\nAll 5 steps completed. Large green check icon. \"Assessment Published\" title. Summary chips. 4 action buttons including red \"Start Session Now\" as the contextual 4th.\nMINDSPARK Mockup Review  \u00b7  Screen 51 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 55 of 64\nMINDSPARK Mockup Review  \u2022  Screen 59 of 64\nMINDSPARK Mockup Review  \u2022  Screen 63 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+      "Step 5 \u2014 Success (Published variant)",
+      ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+      "All 5 steps completed. Large green check icon. \"Assessment Published\" title. Summary chips. 4 action buttons including red \"Start Session Now\" as the contextual 4th.",
+      "MINDSPARK Mockup Review  \u00b7  Screen 51 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 55 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 59 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 63 of 64"
+    ]
+  },
+  {
+    "pdf_page": 67,
+    "full_text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD\nStep 5 \u2014 Success (Draft variant)\n.superpowers/brainstorm/223-1776020821/content/assessment-wizard.html\nSame shell, blue file icon, \"Draft Saved\" title, 3 action buttons (no Start Session Now since there's nothing to start yet).\nMINDSPARK Mockup Review  \u00b7  Screen 52 of 60\nMINDSPARK Mockup Review  \u00b7  Screen 56 of 64\nMINDSPARK Mockup Review  \u2022  Screen 60 of 64\nMINDSPARK Mockup Review  \u2022  Screen 64 of 64\n",
+    "lines": [
+      "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+      "Step 5 \u2014 Success (Draft variant)",
+      ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+      "Same shell, blue file icon, \"Draft Saved\" title, 3 action buttons (no Start Session Now since there's nothing to start yet).",
+      "MINDSPARK Mockup Review  \u00b7  Screen 52 of 60",
+      "MINDSPARK Mockup Review  \u00b7  Screen 56 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 60 of 64",
+      "MINDSPARK Mockup Review  \u2022  Screen 64 of 64"
+    ]
+  }
+]

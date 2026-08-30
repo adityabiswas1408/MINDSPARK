@@ -1,0 +1,2440 @@
+================================================================
+MINDSPARK — MOBILE-FIRST MOCKUP VIEWER
+PROMPT FOR ANTIGRAVITY
+================================================================
+
+=== SECTION 1: WHAT YOU ARE BUILDING ===
+
+Build a single self-contained HTML file named index_mobile.html.
+
+This file is a MOCKUP VIEWER — a desktop-accessible HTML page that displays 
+every screen of the MindSpark web application as it would appear on a mobile 
+phone (390px wide, iPhone 14 proportions).
+
+MindSpark is a web-based mental arithmetic assessment platform for an abacus 
+institute. It has two portals:
+- Student Portal: Students take Flash Anzan exams and view results
+- Admin Portal: Teachers manage students, create exams, monitor live sessions
+
+The viewer shows each screen inside a phone frame rendered on a desktop page.
+Clicking "Jump to screen" dropdown navigates between screens.
+
+
+=== SECTION 2: ANTI-HALLUCINATION RULES ===
+READ THESE BEFORE WRITING A SINGLE LINE OF CODE.
+
+RULE 1 — NO PLACEHOLDERS EVER
+Do NOT write any of these: [content here], <!-- TODO -->, 
+[screen content], placeholder text, lorem ipsum, "..." as content,
+or any shortened stub. Every screen must be FULLY rendered.
+
+RULE 2 — COLOUR LOCK
+The ONLY hex colours permitted in this file are listed in SECTION 5.
+Do NOT invent colours. Do NOT use rgb(). Do NOT use named colours like 
+"green" or "red". If you need a shade not on the list, use the nearest 
+listed value. This rule has zero exceptions.
+
+RULE 3 — FONT LOCK
+Use ONLY 'DM Sans' (all UI text) and 'DM Mono' (numbers, timers, 
+roll numbers, monospace data). Both are imported from Google Fonts.
+Do NOT use system-ui as the primary font. Do NOT use any other typeface.
+
+RULE 4 — COMPLETE EVERY SCREEN
+The file must contain ALL 38 screens listed in SECTION 7, in order.
+After you write each screen's closing div, add this exact comment:
+<!-- SCREEN-COMPLETE: [screen-id] -->
+If this comment is missing, the screen is incomplete.
+
+RULE 5 — NO EXTERNAL DEPENDENCIES
+No CDN links, no npm, no external JS, no icon font CDN.
+ONLY allowed external: the single Google Fonts @import link.
+All icons are inline SVG paths written directly in the HTML.
+All styles are in a single <style> block in <head>.
+
+RULE 6 — NO IFRAMES
+Every screen is inline HTML inside a .phone div. No iframes, no 
+data-srcdoc, no srcdoc. All content is direct child HTML.
+
+RULE 7 — REAL DATA ONLY
+Use this real data throughout. Never invent new names or IDs.
+  Student: Aditi Sharma, Roll: MS-L3-001, Level 3, Level 3 cohort
+  Student 2: Ravi Kumar, Roll: MS-L2-002, Level 2
+  Student 3: Priya Singh, Roll: MS-L1-003, Level 1
+  Admin user: Admin User
+  Institute: Mindspark Abacus Institute
+  Exam 1: Q3 Mental Arithmetic, 20 questions, 30 min, Flash Anzan
+  Exam 2: Flash Anzan Level 2, 15 questions, 20 min
+  Exam 3: Mid-Term Practice Test, 25 questions, 45 min, TEST type
+  Score: 18/20, Grade: A, 90% accuracy
+
+RULE 8 — CSS NAMESPACE SCOPING
+Every screen's content div has class "s-[screen-id]" on the outer wrapper.
+Screen-specific CSS must be scoped: .s-[screen-id] .component { ... }
+Shared components go in the global shared CSS block.
+
+RULE 9 — MOBILE PATTERNS ONLY
+No horizontal sidebars. No desktop nav rails. No tables wider than 
+the phone frame. Use ONLY these mobile navigation patterns:
+  Students: Bottom tab bar (4 tabs: Home, Exams, Results, Profile)
+  Admin: Top app bar with hamburger → slide-in drawer overlay
+
+RULE 10 — WRITE IN ONE PASS
+Output the complete file in a single code block. 
+Do not stop to ask questions. Do not split into multiple responses.
+Do not say "I'll continue in the next message."
+
+
+=== SECTION 3: FILE ARCHITECTURE ===
+
+Structure of the output HTML file:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINDSPARK — Mobile Mockups</title>
+  [GOOGLE FONTS IMPORT — DM Sans 400;500;600;700 + DM Mono 400;500]
+  <style>
+    [A] RESET & BASE
+    [B] VIEWER SHELL CSS (topnav, container, group headers, screen blocks)
+    [C] PHONE FRAME CSS
+    [D] SHARED MOBILE COMPONENTS CSS (status bar, bottom nav, top app bar,
+        cards, buttons, inputs, badges, pills, chips)
+    [E] STUDENT SCREEN CSS (scoped under .s-[id])
+    [F] ADMIN SCREEN CSS (scoped under .s-[id])
+    [G] FLASH ANZAN SCREEN CSS (highest specificity — these are critical)
+  </style>
+</head>
+<body>
+  [VIEWER TOP NAV — sticky forest green bar with title + jump dropdown]
+  
+  <div class="container">
+  
+    [AUTH GROUP — 1 screen]
+    [STUDENT GROUP — 18 screens]
+    [ADMIN GROUP — 19 screens]
+    
+  </div>
+
+  [NO JAVASCRIPT NEEDED — this is a static visual mockup viewer]
+  [EXCEPTION: jump dropdown uses onchange="location.hash=this.value"]
+</body>
+</html>
+
+
+=== SECTION 4: VIEWER SHELL SPECIFICATION ===
+
+TOP NAV BAR:
+  position: sticky; top: 0; z-index: 100
+  background: #1A3829
+  height: 56px; padding: 0 24px
+  display: flex; align-items: center; gap: 12px
+  
+  Left: "MINDSPARK" (font-size: 13px; font-weight: 700; letter-spacing: 0.12em; 
+         color: #FFFFFF) + " Mobile Mockups" (opacity: 0.55; font-weight: 400)
+  Right 1: <select> styled with rgba(255,255,255,0.12) bg, white text,
+            1px solid rgba(255,255,255,0.25) border, border-radius: 8px
+            — contains ALL 38 screen options in 3 optgroups (AUTH, STUDENT, ADMIN)
+            — onchange="location.hash=this.value; this.value=''"
+  Right 2: "38 screens" (font-size: 12px; opacity: 0.6)
+
+CONTAINER:
+  max-width: 900px; margin: 0 auto; padding: 32px 24px 80px
+
+GROUP BLOCK (for AUTH, STUDENT, ADMIN):
+  margin-bottom: 48px
+
+GROUP HEADER:
+  display: flex; align-items: baseline; gap: 12px
+  margin-bottom: 24px; padding-bottom: 10px
+  border-bottom: 2px solid #1A3829
+  
+  GROUP LABEL: font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+               text-transform: uppercase; color: #1A3829
+  GROUP COUNT: font-size: 12px; color: #64748B
+
+SCREEN BLOCK:
+  margin-bottom: 48px; scroll-margin-top: 72px
+
+SCREEN HEADER (above each phone frame):
+  display: flex; align-items: flex-end; justify-content: space-between
+  margin-bottom: 12px
+  
+  Left col:
+    SCREEN TITLE: font-size: 16px; font-weight: 600; color: #0F172A
+    SCREEN PATH: font-family: DM Mono; font-size: 11px; color: #94A3B8
+  
+  Right:
+    ↑ Top LINK: font-size: 12px; color: #1A3829; padding: 4px 10px;
+                border: 1px solid #1A3829; border-radius: 6px
+                href="#top" (links to topnav id="top")
+
+PHONE WRAP:
+  display: flex; justify-content: center; padding: 8px 0
+
+PHONE FRAME:
+  width: 390px
+  background: #FFFFFF
+  border-radius: 46px
+  box-shadow: 0 0 0 2px #334155, 0 0 0 5px #0F172A, 
+              0 24px 64px rgba(0,0,0,0.22)
+  overflow: hidden
+  position: relative
+
+PHONE STATUS BAR (inside every phone frame, at top):
+  height: 44px; padding: 12px 24px 0
+  display: flex; align-items: center; justify-content: space-between
+  background: [inherits from screen — see per-screen spec]
+  
+  Left: "9:41" (font-family: DM Mono; font-size: 15px; font-weight: 600)
+  Right: Signal + WiFi + Battery (inline SVG, 18px each, color inherits)
+
+PHONE HOME BAR (inside every phone frame, at bottom):
+  height: 32px; background: [inherits]; display: flex;
+  align-items: center; justify-content: center
+  Inner pill: width: 130px; height: 5px; background: #0F172A; 
+              border-radius: 3px; opacity: 0.3
+
+
+=== SECTION 5: DESIGN TOKEN LOCK — EXACT HEX VALUES ONLY ===
+
+FOREST GREEN RAMP (MINDSPARK primary):
+  #0D2B1F  — green-900  (deepest bg)
+  #1A3829  — green-800  PRIMARY brand, CTAs, active nav, primary buttons
+  #1E4A35  — green-700  button hover state
+  #2D6A4F  — green-600  chart bars, grade colour
+  #40916C  — green-500  correct answer accents, trend text
+  #52B788  — green-400  MCQ hover border
+  #74C69D  — green-300  timer border, breathing circle
+  #B7E4C7  — green-200  active sidebar icon bg
+  #D8F1E3  — green-100  profile avatar ring
+  #EFFAF4  — green-50   active nav bg, MCQ selected tint, timer bg
+
+PAGE & SURFACE:
+  #F8FAFC  — page background (--bg-page)
+  #FFFFFF  — card surface (--bg-card)
+  #F1F5F9  — subtle bg, hover bg (--bg-subtle / --bg-hover)
+
+SLATE (borders, text):
+  #E2E8F0  — border standard (--border / --slate-200)
+  #CBD5E1  — border medium (--slate-300)
+  #94A3B8  — text subtle (--text-subtle / --slate-400)
+  #64748B  — slate-500
+  #475569  — text secondary (--text-secondary / --slate-600)
+  #334155  — slate-700
+  #1E293B  — slate-800
+  #0F172A  — text primary (--text-primary / --slate-900)
+
+SEMANTIC:
+  #DCFCE7  — success bg
+  #166534  — success text
+  #FEF9C3  — warning bg
+  #854D0E  — warning text
+  #FEE2E2  — error bg
+  #DC2626  — error text
+  #DBEAFE  — info bg
+  #1E40AF  — info text
+
+LIVE / ALERTS:
+  #EF4444  — LIVE badge, live dot
+  #991B1B  — negative numbers in equations (crimson)
+  #F59E0B  — amber accent (timer urgent border)
+  #92400E  — amber-800 (timer urgent text)
+  #FFFBEB  — amber-50 (timer urgent bg)
+  #FEF3C7  — amber-100 (pending pill bg)
+  #D97706  — amber-600 (pending icon)
+
+TYPE PILLS:
+  #DBEAFE / #1D4ED8  — EXAM type pill bg / text
+  #EDE9FE / #7C3AED  — TEST type pill bg / text
+
+GRADE PILLS:
+  #EFFAF4 / #2D6A4F  — Grade A/A+ bg / text
+  #DBEAFE / #1D4ED8  — Grade B bg / text
+  #FEF3C7 / #92400E  — Grade C bg / text
+  #FEE2E2 / #DC2626  — Grade F bg / text
+
+SHADOWS (write these verbatim, do not invent shadows):
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)
+  --shadow-lg: 0 10px 32px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06)
+
+BORDER RADII (use exact values):
+  4px   — chip, tag
+  6px   — badge
+  10px  — button (--radius-btn)
+  14px  — card (--radius-card)
+  18px  — overlay/sheet
+  999px — pill
+
+
+=== SECTION 6: SHARED MOBILE COMPONENT CSS ===
+
+Write these CSS classes. They are used across many screens.
+
+--- 6A. STUDENT BOTTOM NAV ---
+.bottom-nav {
+  position: sticky; bottom: 0;
+  height: 60px; background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+  display: flex; align-items: center;
+  padding: 0 8px; gap: 0;
+  z-index: 50;
+}
+.bnav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; padding: 6px 4px;
+  font-size: 10px; font-weight: 600;
+  color: #94A3B8; cursor: pointer;
+}
+.bnav-item svg { width: 22px; height: 22px; stroke-width: 1.8; }
+.bnav-item.active { color: #1A3829; }
+.bnav-item.active svg { stroke-width: 2.4; }
+
+--- 6B. ADMIN TOP APP BAR (with hamburger) ---
+.admin-topbar {
+  height: 56px; background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  position: sticky; top: 0; z-index: 50;
+}
+.admin-topbar-left { display: flex; align-items: center; gap: 10px; }
+.admin-topbar-logo { 
+  width: 28px; height: 28px; background: #1A3829;
+  border-radius: 7px; display: flex; align-items: center;
+  justify-content: center;
+}
+.admin-topbar-logo svg { width: 16px; height: 16px; color: #FFFFFF; }
+.admin-topbar-title { font-size: 15px; font-weight: 700; color: #0F172A; }
+.admin-topbar-right { display: flex; align-items: center; gap: 12px; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #475569; cursor: pointer;
+}
+.icon-btn svg { width: 20px; height: 20px; stroke-width: 2; }
+
+--- 6C. SECONDARY TOP BAR (with back arrow, for detail screens) ---
+.page-topbar {
+  height: 56px; background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 10px;
+  position: sticky; top: 0; z-index: 50;
+}
+.page-topbar .back-arrow {
+  width: 36px; height: 36px; display: flex;
+  align-items: center; justify-content: center;
+  color: #0F172A; cursor: pointer; flex-shrink: 0;
+}
+.page-topbar .back-arrow svg { width: 22px; height: 22px; stroke-width: 2.2; }
+.page-topbar .page-title { font-size: 16px; font-weight: 700; color: #0F172A; }
+.page-topbar .page-action { margin-left: auto; font-size: 14px; font-weight: 600; color: #1A3829; }
+
+--- 6D. CARD ---
+.card {
+  background: #FFFFFF; border: 1px solid #E2E8F0;
+  border-radius: 14px; padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+--- 6E. PRIMARY BUTTON (full width) ---
+.btn-primary {
+  width: 100%; height: 52px;
+  background: #1A3829; color: #FFFFFF;
+  border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 600;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 8px;
+}
+.btn-secondary {
+  width: 100%; height: 48px;
+  background: #FFFFFF; color: #1A3829;
+  border: 1.5px solid #1A3829; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 8px;
+}
+.btn-destructive {
+  width: 100%; height: 48px;
+  background: #FEE2E2; color: #DC2626;
+  border: 1px solid #FECACA; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.btn-sm {
+  height: 36px; padding: 0 14px;
+  background: #1A3829; color: #FFFFFF;
+  border: none; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-sm-outline {
+  height: 36px; padding: 0 14px;
+  background: #FFFFFF; color: #1A3829;
+  border: 1.5px solid #1A3829; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+--- 6F. INPUT FIELD ---
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+.input-label { font-size: 13px; font-weight: 600; color: #0F172A; }
+.input-field {
+  height: 48px; padding: 0 14px;
+  border: 1.5px solid #E2E8F0; border-radius: 10px;
+  background: #F8FAFC;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; color: #0F172A;
+  width: 100%;
+}
+.input-field::placeholder { color: #94A3B8; }
+
+--- 6G. BADGE PILLS ---
+.badge { 
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 700;
+}
+.badge-live { background: #EF4444; color: #FFFFFF; }
+.badge-success { background: #DCFCE7; color: #166534; }
+.badge-warning { background: #FEF9C3; color: #854D0E; }
+.badge-error { background: #FEE2E2; color: #DC2626; }
+.badge-neutral { background: #F1F5F9; color: #475569; }
+.badge-exam { background: #DBEAFE; color: #1D4ED8; }
+.badge-test { background: #EDE9FE; color: #7C3AED; }
+.badge-green { background: #EFFAF4; color: #1A3829; }
+
+--- 6H. SECTION HEADER ---
+.section-header {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: #94A3B8; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.section-header .count { 
+  font-size: 12px; font-weight: 700;
+  color: #475569; letter-spacing: 0; text-transform: none;
+}
+
+--- 6I. SCROLLABLE CONTENT AREA (main scrollable zone between topbar and bottomnav) ---
+.screen-scroll {
+  overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  background: #F8FAFC;
+}
+
+--- 6J. LIVE DOT PULSE ---
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #EF4444; display: inline-block;
+  animation: pulse-live 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.15); }
+}
+
+--- 6K. ADMIN NAV DRAWER OVERLAY ---
+.drawer-overlay {
+  position: absolute; inset: 0;
+  background: rgba(15,23,42,0.5); z-index: 200;
+  display: flex;
+}
+.drawer-panel {
+  width: 280px; height: 100%;
+  background: #FFFFFF;
+  box-shadow: 0 10px 32px rgba(0,0,0,0.12);
+  display: flex; flex-direction: column;
+  padding: 0;
+  animation: slideInLeft 0.2s ease;
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+.drawer-header {
+  padding: 48px 20px 20px;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex; align-items: center; gap: 12px;
+}
+.drawer-logo {
+  width: 36px; height: 36px; background: #1A3829;
+  border-radius: 9px; display: flex; align-items: center;
+  justify-content: center;
+}
+.drawer-nav { padding: 12px 10px; flex: 1; }
+.drawer-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 12px; border-radius: 10px;
+  font-size: 14px; font-weight: 500; color: #475569;
+  margin-bottom: 2px; cursor: pointer;
+}
+.drawer-item svg { width: 18px; height: 18px; stroke-width: 1.8; color: #94A3B8; }
+.drawer-item.active { background: #EFFAF4; color: #1A3829; font-weight: 700; }
+.drawer-item.active svg { color: #1A3829; stroke-width: 2.2; }
+.drawer-footer {
+  padding: 16px; border-top: 1px solid #E2E8F0;
+}
+.drawer-user-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  background: #F8FAFC;
+}
+.drawer-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #1A3829; color: #FFFFFF;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+.drawer-logout {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 10px;
+  font-size: 14px; font-weight: 600; color: #DC2626;
+  cursor: pointer; margin-top: 6px;
+}
+
+--- 6L. BOTTOM SHEET (for modals on mobile) ---
+.sheet-overlay {
+  position: absolute; inset: 0;
+  background: rgba(15,23,42,0.5); z-index: 200;
+  display: flex; align-items: flex-end;
+}
+.sheet-panel {
+  width: 100%; background: #FFFFFF;
+  border-radius: 18px 18px 0 0;
+  padding: 0 0 28px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.sheet-handle {
+  width: 40px; height: 4px; background: #E2E8F0;
+  border-radius: 2px; margin: 12px auto 4px;
+}
+.sheet-title {
+  font-size: 16px; font-weight: 700; color: #0F172A;
+  padding: 12px 20px 16px; border-bottom: 1px solid #E2E8F0;
+}
+.sheet-content { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+--- 6M. STUDENT EXAM CARD (live state) ---
+.exam-card-live {
+  background: #FFFFFF; border: 2px solid #1A3829;
+  border-radius: 14px; padding: 16px;
+  box-shadow: 0 4px 12px rgba(26,56,41,0.12);
+}
+.exam-card-upcoming {
+  background: #FFFFFF; border: 1px solid #E2E8F0;
+  border-radius: 14px; padding: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.exam-card-completed {
+  background: #F8FAFC; border: 1px solid #E2E8F0;
+  border-radius: 14px; padding: 14px;
+  opacity: 0.85;
+}
+
+--- 6N. KPI STRIP CARD (admin) ---
+.kpi-card-dark {
+  background: #1A3829; border-radius: 14px;
+  padding: 16px; color: #FFFFFF; flex: 1;
+}
+.kpi-card-light {
+  background: #FFFFFF; border: 1px solid #E2E8F0;
+  border-radius: 14px; padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06); flex: 1;
+}
+.kpi-num { 
+  font-size: 32px; font-weight: 700;
+  font-variant-numeric: tabular-nums; line-height: 1;
+  margin-bottom: 4px;
+}
+.kpi-lbl { font-size: 12px; font-weight: 500; opacity: 0.75; }
+.kpi-num-dark { color: #FFFFFF; }
+.kpi-num-light { color: #0F172A; }
+.kpi-lbl-light { color: #475569; opacity: 1; }
+
+--- 6O. CHECKBOX ROW (consent form) ---
+.consent-item {
+  background: #FFFFFF; border: 1px solid #E2E8F0;
+  border-radius: 14px; padding: 16px;
+}
+.consent-check-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 12px; padding: 12px;
+  background: #F8FAFC; border-radius: 10px;
+  border: 1.5px solid #E2E8F0;
+}
+.checkbox-box {
+  width: 20px; height: 20px; border-radius: 6px;
+  background: #1A3829; display: flex;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.checkbox-box svg { width: 12px; height: 12px; color: #FFFFFF; stroke-width: 3; }
+
+--- 6P. TIMER PILL ---
+.timer-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #EFFAF4; border: 1.5px solid #74C69D;
+  border-radius: 999px; padding: 6px 16px;
+}
+.timer-pill .time {
+  font-family: 'DM Mono', monospace;
+  font-size: 18px; font-weight: 600; color: #1A3829;
+  font-variant-numeric: tabular-nums;
+}
+.timer-pill.urgent {
+  background: #FFFBEB; border-color: #F59E0B;
+}
+.timer-pill.urgent .time { color: #92400E; }
+
+
+=== SECTION 7: COMPLETE SCREEN INVENTORY (38 screens) ===
+
+AUTH (1 screen):
+  1.  id=auth-login            Title: Login
+  
+STUDENT (18 screens):
+  2.  id=s-dashboard           Title: Student Dashboard — Default
+  3.  id=s-dashboard-live      Title: Student Dashboard — Live Exam
+  4.  id=s-exams               Title: Exams & Tests
+  5.  id=s-consent             Title: Student Consent
+  6.  id=s-lobby               Title: Exam Lobby
+  7.  id=s-flash-display       Title: Flash Anzan — Number Display
+  8.  id=s-flash-paused        Title: Flash Anzan — Tab-Switch Paused
+  9.  id=s-flash-mcq           Title: Flash Anzan — MCQ Answering
+  10. id=s-flash-nav-sheet     Title: Flash Anzan — Question Navigator Sheet
+  11. id=s-flash-mcq-urgent    Title: Flash Anzan — MCQ (Low Time Warning)
+  12. id=s-flash-review        Title: Flash Anzan — Review & Submit
+  13. id=s-exam-complete       Title: Exam Completion
+  14. id=s-results-list        Title: Results History
+  15. id=s-results-detail      Title: Result Detail
+  16. id=s-answer-sheet        Title: Answer Sheet (Student View)
+  17. id=s-profile             Title: Student Profile
+  18. id=s-profile-expanded    Title: Student Profile — More Info Open
+
+ADMIN (19 screens):
+  19. id=a-dashboard           Title: Admin Dashboard
+  20. id=a-drawer              Title: Admin Navigation Drawer (Open State)
+  21. id=a-students-list       Title: Students — List
+  22. id=a-student-detail      Title: Students — Detail (Read Mode)
+  23. id=a-student-edit        Title: Students — Detail (Edit Mode)
+  24. id=a-student-add-sheet   Title: Add Student — Bottom Sheet
+  25. id=a-levels-list         Title: Levels — List
+  26. id=a-level-detail        Title: Level Detail
+  27. id=a-level-add-sheet     Title: Add Level — Bottom Sheet
+  28. id=a-assessments-list    Title: Assessments — List
+  29. id=a-wizard-step1        Title: Assessment Wizard — Step 1 (Type)
+  30. id=a-wizard-step2        Title: Assessment Wizard — Step 2 (Settings)
+  31. id=a-wizard-step3        Title: Assessment Wizard — Step 3 (Questions)
+  32. id=a-flash-config        Title: Flash Anzan — Configuration (Step 4)
+  33. id=a-monitor-hub         Title: Live Monitor — Hub
+  34. id=a-monitor-detail      Title: Live Monitor — Exam Detail
+  35. id=a-results-hub         Title: Results Hub
+  36. id=a-results-detail      Title: Result Detail (Admin View)
+  37. id=a-activity-log        Title: Activity Log
+  38. id=a-announcements       Title: Announcements
+  39. id=a-settings            Title: Settings
+
+
+=== SECTION 8: SCREEN-BY-SCREEN SPECIFICATIONS ===
+
+For every screen: status bar bg and text colour is noted.
+For every screen: the screen's scrollable content is noted from top to bottom.
+The phone frame's .phone div has its own background set per screen.
+The status bar inherits the topmost element's background.
+Write EVERY element listed. If an element is listed, it must appear.
+
+------------------------------------------------------------
+SCREEN 1 — AUTH LOGIN (id: auth-login)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #F8FAFC, text: #0F172A
+
+Layout (not scrollable — full viewport centered):
+  [1] STATUS BAR (standard)
+  [2] Main area: flex-col, align-center, justify-center, min-height: 700px,
+      padding: 0 24px
+      
+      [2.1] Logo block (margin-bottom: 32px):
+            - Icon: 64px × 64px rounded square (border-radius: 16px), 
+              bg: #1A3829, center: hexagon SVG icon in white (28px)
+            - "MindSpark" heading: 28px, font-weight: 700, color: #0F172A,
+              margin-top: 16px, text-align: center
+            - Subtitle: "Sign in to your account" 14px, color: #475569,
+              text-align: center, margin-top: 6px
+      
+      [2.2] Login card (full width, card style, padding: 24px):
+            - Email field: label "Email Address", 
+              input placeholder "student@mindspark.edu"
+            - Password field: label "Password",
+              input placeholder "••••••••" (use type="password")
+            - Forgot link row: right-aligned "Forgot password?"
+              font-size: 13px, color: #1A3829, margin-top: 4px
+            - Sign In button (btn-primary, margin-top: 20px)
+            
+      [2.3] Below card: "Secure sign-in powered by MindSpark"
+            font-size: 12px, color: #94A3B8, text-align: center,
+            margin-top: 20px, display: flex, align-items: center, gap: 6px
+            + a small lock SVG icon (12px, color: #94A3B8)
+
+<!-- SCREEN-COMPLETE: auth-login -->
+
+------------------------------------------------------------
+SCREEN 2 — STUDENT DASHBOARD — DEFAULT (id: s-dashboard)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout (scrollable content between topbar and bottom nav):
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] TOP APP BAR (bg: #FFFFFF, height: 56px):
+      Left: Avatar initials "AS" (30px circle, bg: #1A3829, text: #FFFFFF,
+            font-size: 12px, font-weight: 700) + 
+            "Welcome back, Aditi" (14px, color: #475569, 
+            strong "Aditi" color: #0F172A)
+      Right: Bell icon (20px, color: #475569) with red dot notification badge
+  [3] SCROLLABLE CONTENT (padding: 16px, gap: 12px):
+      [3.1] Greeting block:
+            "Hello, Aditi 👋" — 24px, font-weight: 700, color: #0F172A
+            "Monday, 15 June 2026" — 13px, color: #475569, margin-top: 4px
+            
+      [3.2] Upcoming exam card (exam-card-upcoming):
+            Top row: badge-exam "EXAM" + badge-neutral "UPCOMING"
+            Title: "Q3 Mental Arithmetic" (16px, font-weight: 700, #0F172A)
+            Meta: "Level 3 · 20 questions · 30 min" (13px, #475569)
+            Bottom row: "In 2 days" tag (bg: #F1F5F9, color: #475569,
+                          padding: 4px 10px, border-radius: 6px, font-size: 12px)
+                         + btn-sm-outline "View Details" (margin-left: auto)
+            
+      [3.3] Section header "RECENT RESULTS" with "See all" link (#1A3829)
+      
+      [3.4] Result row card 1:
+            card style, padding: 14px
+            Left: badge-exam "EXAM" (11px)
+                  "Q2 Mental Arithmetic" (14px, font-weight: 600, #0F172A)
+                  "Level 3 · Completed Apr 10" (12px, #475569)
+            Right: "18/20" (16px, font-weight: 700, color: #1A3829,
+                   font-family: DM Mono)
+                   "A · 90%" (12px, color: #2D6A4F, font-weight: 600)
+                   
+      [3.5] Result row card 2:
+            Left: badge-test "TEST"
+                  "Mid-Term Practice Test" (14px, font-weight: 600, #0F172A)
+                  "Level 3 · Completed Mar 24" (12px, #475569)
+            Right: "23/25" + "A+ · 92%"
+      
+      [3.6] Announcement card:
+            top row: "📢" icon + "ANNOUNCEMENT" label (11px, #475569, uppercase)
+            "Exams resume next week — prepare your devices" 
+            (14px, font-weight: 600, #0F172A, margin-top: 8px)
+            "From: Admin User · 2 hours ago" (12px, #475569, margin-top: 4px)
+
+  [4] BOTTOM NAV (active: Home/dashboard icon)
+      Items: Home (grid icon), Exams (clipboard icon), 
+             Results (bar-chart icon), Profile (person icon)
+
+<!-- SCREEN-COMPLETE: s-dashboard -->
+
+------------------------------------------------------------
+SCREEN 3 — STUDENT DASHBOARD — LIVE EXAM (id: s-dashboard-live)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] TOPBAR same as screen 2
+  [3] SCROLLABLE CONTENT (padding: 16px, gap: 12px):
+      [3.1] Greeting:
+            "Hello, Aditi 👋" (24px, font-weight: 700, #0F172A)
+            "An exam is live right now — enter when you're ready." 
+            (14px, color: #475569, margin-top: 4px)
+            
+      [3.2] LIVE HERO CARD (bg: #FFFFFF, border: 2px solid #1A3829,
+             border-radius: 14px, padding: 20px,
+             box-shadow: 0 4px 12px rgba(26,56,41,0.12)):
+             
+             Row 1: badge-green "LEVEL 3" + mono text "MS-L3-001"
+                    (13px, DM Mono, #475569)
+             Row 2: badge-live "● LIVE NOW" (pulsing dot)
+             Row 3: Exam title "Q3 Mental Arithmetic"
+                    (20px, font-weight: 700, #0F172A, margin: 8px 0)
+             Row 4: TIME LEFT label (10px, uppercase, #94A3B8) +
+                    "28:14" in DM Mono (44px, font-weight: 700, color: #1A3829)
+                    On same row, right-aligned
+             Row 5: "Enter Examination Hall →" button
+                    (btn-primary, margin-top: 16px, height: 56px, font-size: 16px)
+             
+      [3.3] Section header "RECENT RESULTS"
+      [3.4] Two result row cards (same structure as screen 2)
+
+  [4] BOTTOM NAV (active: Home)
+
+<!-- SCREEN-COMPLETE: s-dashboard-live -->
+
+------------------------------------------------------------
+SCREEN 4 — EXAMS & TESTS (id: s-exams)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR
+  [2] TOPBAR: "Exams" (page title, no back arrow)
+      Right: Filter icon (sliders-horizontal SVG)
+  [3] SCROLLABLE CONTENT:
+      [3.1] Page intro text: "Your assigned assessments." (14px, #475569)
+      
+      [3.2] SECTION HEADER: "● LIVE NOW" (live-dot before text) 
+                              + count badge "1" (bg: #EF4444, color: #fff,
+                                width: 20px, height: 20px, border-radius: 50%,
+                                font-size: 11px, font-weight: 700)
+      
+      [3.3] LIVE exam card (exam-card-live):
+            badge-live "● LIVE" + badge-exam "EXAM"
+            "Q3 Mental Arithmetic" (18px, font-weight: 700, #0F172A)
+            "Level 3 · 20 questions · 30 min" (13px, #475569)
+            Timer row: "TIME LEFT" label + "28:14" DM Mono 
+                        (font-size: 32px, color: #1A3829)
+            Button: "Enter Now →" (btn-primary, margin-top: 12px)
+            
+      [3.4] SECTION HEADER: "UPCOMING" + count "2"
+      
+      [3.5] Upcoming card 1:
+            exam-card-upcoming
+            badge-exam "EXAM" + badge-neutral "UPCOMING"
+            "Flash Anzan Level 2" (16px, font-weight: 700, #0F172A)
+            "Level 2 · 15 questions · 20 min" (13px, #475569)
+            Date row: "Scheduled: Jun 20, 2026" (12px, #475569)
+            Right: "Not live yet" (12px, #94A3B8, italic)
+            
+      [3.6] Upcoming card 2:
+            badge-test "TEST" + badge-neutral "UPCOMING"
+            "Mid-Term Practice Test" (16px, font-weight: 700)
+            "Level 3 · 25 questions · 45 min"
+            Date row: "Scheduled: Jun 25, 2026"
+            
+      [3.7] SECTION HEADER: "COMPLETED" + count "3"
+      
+      [3.8] Completed card 1 (exam-card-completed):
+            badge-exam "EXAM" + badge-success "Completed"
+            "Q2 Mental Arithmetic" (16px, font-weight: 700, color: #0F172A)
+            "Completed Apr 10, 2026" (13px, #475569)
+            Right: "View Results →" (13px, font-weight: 600, color: #1A3829)
+            
+      [3.9] Completed cards 2 and 3 (same pattern, different titles:
+            "Q1 Mental Arithmetic · Feb 15" and "Practice Test 1 · Jan 28")
+
+  [4] BOTTOM NAV (active: Exams)
+
+<!-- SCREEN-COMPLETE: s-exams -->
+
+------------------------------------------------------------
+SCREEN 5 — STUDENT CONSENT (id: s-consent)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR
+  [2] PAGE TOPBAR: back arrow + "Academic Integrity"
+  [3] SCROLLABLE CONTENT:
+      [3.1] Heading block:
+            MindSpark logo icon (40px, bg: #1A3829, border-radius: 10px)
+            "Before your first exam" (20px, font-weight: 700, #0F172A, margin-top: 12px)
+            "Please review and agree to the following terms." 
+            (13px, #475569, margin-top: 6px)
+            
+      [3.2] CONSENT ITEM 1 (consent-item):
+            number badge "1" (24px circle, bg: #1A3829, color: #fff,
+                              font-size: 13px, font-weight: 700)
+            "Assessment Rules" (15px, font-weight: 700, #0F172A, margin-top: 12px)
+            "By proceeding, you agree to complete the assessment entirely on 
+            your own without external assistance. Any violation will result 
+            in an immediate fail." (13px, #475569, margin-top: 8px, line-height: 1.6)
+            Checkbox row (consent-check-row):
+              checkbox-box (checked ✓) + 
+              "I acknowledge and will abide by the assessment rules."
+              (13px, font-weight: 600, #0F172A)
+              
+      [3.3] CONSENT ITEM 2 (consent-item):
+            badge "2" + "Data Privacy" heading
+            "Your performance data and timings will be recorded to evaluate 
+            your skill progression. We process this data securely."
+            Checkbox row: ✓ "I understand and consent to data processing."
+            
+      [3.4] CONSENT ITEM 3 (consent-item):
+            badge "3" + "Guardian Consent" heading
+            "For students under 18, please provide guardian details below."
+            Two inputs: "Guardian Full Name" + "Relationship to Student"
+            Checkbox row: ✓ "Guardian has reviewed and approved these terms."
+            
+      [3.5] "Proceed to Exam Lobby" button (btn-primary, margin-top: 8px)
+      
+      Note: 24px padding-bottom at end so content clears without bottom nav
+      (No bottom nav on this screen — it's a full-focus flow screen)
+
+<!-- SCREEN-COMPLETE: s-consent -->
+
+------------------------------------------------------------
+SCREEN 6 — EXAM LOBBY (id: s-lobby)
+------------------------------------------------------------
+Phone bg: #FFFFFF
+Status bar bg: #FFFFFF, text: #0F172A
+NOTE: No bottom nav. Full focus screen. No sidebar.
+
+Layout (not standard — unique full-canvas layout):
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] TOP STRIP (height: 48px, bg: #FFFFFF, border-bottom: 1px solid #E2E8F0):
+      Left: "✕ Leave Lobby" (13px, #475569, cursor: pointer, 
+              display: flex, align-items: center, gap: 6px,
+              padding-left: 16px)
+              X is SVG icon 16px, color: #475569
+              
+  [3] MAIN CONTENT (padding: 24px 20px, display: flex, flex-direction: column,
+      align-items: center, text-align: center, gap: 16px):
+      
+      [3.1] Connection status pill:
+            bg: #DCFCE7, border: 1px solid #86EFAC,
+            border-radius: 999px, padding: 6px 16px
+            Green dot (6px, bg: #16A34A) + "Connection Stable"
+            (13px, font-weight: 600, color: #166534)
+            
+      [3.2] Breathing circle animation:
+            Outer: 72px circle, border: 2px solid #74C69D, 
+                   animation: breathe 4s ease-in-out infinite
+            Inner: 30px circle, bg: #B7E4C7, same animation
+            @keyframes breathe { 0%,100% { transform: scale(1); }
+                                  50% { transform: scale(1.08); } }
+            
+      [3.3] Exam title: "Q3 Mental Arithmetic"
+            (24px, font-weight: 700, #0F172A, margin-top: 8px)
+            "Please review your exam settings before starting.
+            The timer will not begin until you click ready."
+            (13px, #475569, margin-top: 6px)
+            
+      [3.4] Settings grid (display: grid, grid-template-columns: 1fr 1fr,
+             gap: 10px, width: 100%, margin-top: 8px):
+             Each cell: bg: #F8FAFC, border: 1px solid #E2E8F0,
+                        border-radius: 10px, padding: 14px,
+                        text-align: center
+             Label (10px, uppercase, #94A3B8, font-weight: 700)
+             Value (18px, font-weight: 700, #0F172A)
+             6 cells:
+               "QUESTIONS" / "20"
+               "TIME LIMIT" / "30 Minutes"
+               "FLASH DIGITS" / "3 Digits"
+               "FLASH SPEED" / "1.5 Seconds"
+               "NEGATIVES" / "Included"
+               "PASSING SCORE" / "80%"
+               
+      [3.5] Legal note: "By clicking I'm Ready, you agree to begin 
+            the assessment under monitored conditions."
+            (11px, #94A3B8, text-align: center)
+            
+      [3.6] "I'm Ready — Begin Exam" button
+            (btn-primary, font-size: 18px, height: 60px, 
+             margin-top: 8px, letter-spacing: 0.01em)
+
+<!-- SCREEN-COMPLETE: s-lobby -->
+
+------------------------------------------------------------
+SCREEN 7 — FLASH ANZAN NUMBER DISPLAY (id: s-flash-display)
+------------------------------------------------------------
+CRITICAL SCREEN — Build with exact care. This is a full-bleed immersive screen.
+Phone bg: #0F172A (near-black)
+Status bar bg: #0F172A, text: #FFFFFF (white text on dark)
+NO bottom nav. NO top app bar. NO card wrappers. Full screen only.
+
+Layout (fixed full canvas, no scroll):
+  [1] STATUS BAR (bg: #0F172A, text color: rgba(255,255,255,0.7))
+  
+  [2] FULL CANVAS AREA (min-height: 760px, bg: #0F172A, position: relative,
+      display: flex, flex-direction: column, align-items: center,
+      justify-content: center):
+  
+      [2.1] Exit button (position: absolute, top: 12px, right: 16px):
+            "✕" SVG icon (20px, color: rgba(255,255,255,0.4))
+            No label. Just the icon. opacity 0.4.
+            
+      [2.2] Progress indicator (position: absolute, top: 16px, 
+             left: 50%, transform: translateX(-50%)):
+            "FLASH 3 OF 8"
+            (font-family: DM Mono; font-size: 12px; font-weight: 600;
+             color: #64748B; text-transform: uppercase; letter-spacing: 0.12em;
+             background: rgba(255,255,255,0.06); padding: 6px 16px;
+             border-radius: 999px)
+             
+      [2.3] THE NUMBER (center of screen):
+            "-412"
+            Font: DM Mono, font-size: 96px, font-weight: 700, 
+            color: #EF4444 (red because it's negative),
+            font-variant-numeric: tabular-nums, letter-spacing: -0.02em,
+            line-height: 1, text-align: center
+            
+            NOTE: Positive numbers use color: #FFFFFF
+                  Negative numbers use color: #EF4444
+            
+      [2.4] Progress bar (position: absolute, bottom: 0, left: 0, right: 0):
+            Outer: height: 3px, bg: rgba(255,255,255,0.08)
+            Inner fill: width: 37.5% (3 of 8 flashed), 
+                        bg: #1A3829 (brand green),
+                        height: 3px, border-radius: 0
+
+  [3] HOME BAR (bg: #0F172A, inner pill: rgba(255,255,255,0.2))
+
+<!-- SCREEN-COMPLETE: s-flash-display -->
+
+------------------------------------------------------------
+SCREEN 8 — FLASH ANZAN TAB-SWITCH PAUSED (id: s-flash-paused)
+------------------------------------------------------------
+Phone bg: #0F172A
+Status bar bg: #0F172A, text: rgba(255,255,255,0.7)
+NOTE: Same dark canvas. EXAM IS PAUSED because student left the tab.
+
+Layout (position: relative):
+  [1] STATUS BAR (dark)
+  [2] DARK CANVAS (same as screen 7 — show blurred number "412" still visible,
+      but covered by overlay):
+      
+      [2.1] Background number (same position, but color: rgba(255,255,255,0.05),
+             font-size: 96px — barely visible, intentionally dimmed)
+             
+      [2.2] PAUSE OVERLAY (position: absolute, inset: 0,
+             background: rgba(13,27,31,0.88),
+             display: flex, align-items: center, justify-content: center):
+             
+             WARNING CARD (width: 310px, bg: #FFFFFF,
+                           border-radius: 18px, padding: 28px 24px,
+                           text-align: center,
+                           box-shadow: 0 20px 60px rgba(0,0,0,0.4)):
+               - Warning icon: 52px circle, bg: #FEF9C3, 
+                               display flex, center
+                               SVG alert-triangle (24px, color: #D97706)
+               - "Exam Paused" (20px, font-weight: 700, #0F172A, margin-top: 16px)
+               - "You left the exam window. Return to this tab to continue."
+                 (13px, #475569, margin-top: 8px, line-height: 1.6)
+               - "Return to Exam" button (btn-primary style but width auto,
+                  padding: 12px 28px, margin-top: 20px)
+               - "Leaving the exam screen during flash phase is recorded."
+                 (11px, #94A3B8, margin-top: 12px)
+
+  [3] HOME BAR (dark)
+
+<!-- SCREEN-COMPLETE: s-flash-paused -->
+
+------------------------------------------------------------
+SCREEN 9 — FLASH ANZAN MCQ ANSWERING (id: s-flash-mcq)
+------------------------------------------------------------
+CRITICAL SCREEN — The desktop version broke here (right sidebar panel).
+Mobile redesign: no right panel. Navigator is a compact dot strip at bottom.
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout (fixed structure, 3 main zones):
+  [1] STATUS BAR (bg: #FFFFFF)
+  
+  [2] STICKY HEADER (bg: #FFFFFF, border-bottom: 1px solid #E2E8F0,
+      height: 56px, display: flex, align-items: center,
+      justify-content: space-between, padding: 0 16px):
+      Left: "Question 4 of 20" (15px, font-weight: 700, color: #0F172A)
+      Right: timer-pill with "24:12" (normal green state)
+      
+  [3] MAIN CONTENT AREA (flex: 1, padding: 20px 16px,
+      display: flex, flex-direction: column, gap: 16px,
+      background: #F8FAFC):
+      
+      [3.1] MCQ GRID (display: grid, grid-template-columns: 1fr 1fr,
+             gap: 12px, width: 100%):
+             4 option cards, each:
+               - min-height: 80px
+               - background: #FFFFFF (default) / #EFFAF4 for selected C
+               - border: 1.5px solid #E2E8F0 (default) /
+                         3px solid #1A3829 (for selected C)
+               - border-radius: 12px
+               - display: flex, align-items: center, justify-content: center
+               - font-family: DM Mono, font-size: 22px, font-weight: 700
+               - box-shadow: --shadow-sm
+               Option A: "A) 1,420" (default state)
+               Option B: "B) 1,240" (default state)
+               Option C: "C) 1,440" (SELECTED — green border + tint)
+               Option D: "D) 1,400" (default state)
+               
+      [3.2] ACTION ROW (display: flex, gap: 10px):
+             "⚑ Flag for Review" (flex: 1, height: 48px,
+                bg: #FEF9C3, border: 1px solid #FDE68A,
+                border-radius: 10px, font-size: 14px, font-weight: 600,
+                color: #D97706, cursor: pointer)
+             "Next →" (flex: 1, height: 48px, btn-primary style,
+                but display: flex, align-items: center, 
+                justify-content: center)
+                
+  [4] QUESTION NAVIGATOR STRIP 
+      (bg: #FFFFFF, border-top: 1px solid #E2E8F0,
+       padding: 10px 16px):
+       
+       Top row: "QUESTION NAVIGATOR" label (10px, uppercase, #94A3B8)
+                + "Show all" link (13px, color: #1A3829, font-weight: 600)
+       
+       Dot row (display: flex, gap: 8px, overflow-x: auto, 
+                padding-bottom: 4px, margin-top: 8px):
+       Show 10 dots (representing questions 1-10, more off-screen):
+       
+         Q1: 36px circle, bg: #1A3829, color: #FFFFFF (ANSWERED)
+         Q2: 36px circle, bg: #1A3829, color: #FFFFFF (ANSWERED)  
+         Q3: 36px circle, border: 2px dashed #94A3B8, bg: #F8FAFC,
+              color: #475569 (SKIPPED)
+         Q4: 36px circle, border: 2px solid #1A3829, bg: #FFFFFF,
+              color: #1A3829, font-weight: 700 (CURRENT)
+         Q5-Q10: 36px circle, border: 1px solid #E2E8F0, 
+                  bg: #F8FAFC, color: #94A3B8 (UNATTEMPTED)
+       
+       Each dot: font-family: DM Mono, font-size: 13px, font-weight: 700,
+                  display: flex, align-items: center, justify-content: center,
+                  border-radius: 50%, flex-shrink: 0, cursor: pointer
+
+  [5] HOME BAR
+
+<!-- SCREEN-COMPLETE: s-flash-mcq -->
+
+------------------------------------------------------------
+SCREEN 10 — FLASH ANZAN QUESTION NAVIGATOR SHEET (id: s-flash-nav-sheet)
+------------------------------------------------------------
+NOTE: This is the expanded state when student taps "Show all" on screen 9.
+A bottom sheet overlays the MCQ screen showing ALL 20 questions.
+Phone bg: #F8FAFC
+Status bar bg: #F8FAFC, text: #0F172A
+
+Layout: Base screen is the MCQ screen (screen 9) dimmed behind overlay:
+  [1] STATUS BAR
+  
+  [2] DIMMED BACKGROUND (position: relative):
+      Show the MCQ screen content at 30% opacity behind
+  
+  [3] BOTTOM SHEET OVERLAY (sheet-overlay, aligned to bottom):
+      sheet-panel:
+        sheet-handle
+        "Question Navigator" (sheet-title)
+        
+        Legend row (padding: 0 20px, display: flex, gap: 16px, margin-bottom: 12px):
+          Each legend item: colored dot (10px) + label (12px, #475569)
+          ● #1A3829 "Answered"
+          ◌ border #94A3B8 "Skipped"
+          ● #1A3829 current border "Current"
+          ○ border #E2E8F0 "Not attempted"
+        
+        5-column grid of 20 question dots (padding: 0 20px):
+          (display: grid, grid-template-columns: repeat(5,1fr), gap: 10px)
+          Q1: Answered (bg: #1A3829, text: white)
+          Q2: Answered
+          Q3: Skipped (dashed border, #94A3B8)
+          Q4: Current (border: 2px solid #1A3829, bg: white, text: #1A3829)
+          Q5-Q9: Unattempted (border: 1px #E2E8F0)
+          Q10: Answered
+          Q11-Q20: Unattempted
+          Each dot: 52px square, border-radius: 10px, DM Mono 14px, font-weight: 700,
+                    display: flex, align-items: center, justify-content: center
+          
+        Stats row (padding: 16px 20px 0, border-top: 1px solid #E2E8F0,
+                   margin-top: 16px, display: flex, justify-content: space-around):
+          "4 Answered" (bold green), "1 Skipped" (amber), "15 Remaining" (muted)
+          Each: font-size: 13px, font-weight: 700
+          
+        "Close Navigator" btn-secondary (margin: 16px 20px 0)
+
+<!-- SCREEN-COMPLETE: s-flash-nav-sheet -->
+
+------------------------------------------------------------
+SCREEN 11 — FLASH MCQ LOW TIME WARNING (id: s-flash-mcq-urgent)
+------------------------------------------------------------
+Same as screen 9 but with LOW TIME WARNING active.
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout (exactly same as screen 9 EXCEPT):
+  [ADDITION 1] After STATUS BAR, before sticky header:
+               WARNING BANNER (position: sticky below status bar,
+               bg: #FFFBEB, border-bottom: 2px solid #F59E0B,
+               padding: 10px 16px, display: flex, align-items: center, gap: 10px):
+               ⚠ SVG icon (16px, color: #D97706)
+               "⏱ Less than 60 seconds remaining!" 
+               (13px, font-weight: 700, color: #92400E)
+               
+  [CHANGE 1] Timer pill in header: timer-pill.urgent state
+             (bg: #FFFBEB, border: 1.5px solid #F59E0B)
+             "00:42" in color: #92400E
+             
+  All else same as screen 9.
+
+<!-- SCREEN-COMPLETE: s-flash-mcq-urgent -->
+
+------------------------------------------------------------
+SCREEN 12 — FLASH ANZAN REVIEW & SUBMIT (id: s-flash-review)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+NOTE: No bottom nav. Exam is still active.
+
+Layout:
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] STICKY HEADER (bg: #FFFFFF, height: 56px, border-bottom: 1px solid #E2E8F0,
+      padding: 0 16px):
+      Left: "Exam Review" (16px, font-weight: 700, #0F172A)
+      Right: timer-pill.urgent "00:42" (amber state)
+      
+  [3] WARNING BANNER (bg: #FFFBEB, border-bottom: 1px solid #F59E0B,
+      padding: 10px 16px):
+      ⚠ "Less than 60 seconds remaining!"
+      (13px, font-weight: 700, color: #92400E)
+      
+  [4] SCROLLABLE CONTENT (padding: 16px):
+      [4.1] "Review your answers before submitting."
+            (13px, #475569, margin-bottom: 12px)
+      
+      [4.2] Question status grid (display: grid, 
+             grid-template-columns: repeat(5, 1fr), gap: 8px):
+             20 cells total, each 56px square, border-radius: 10px,
+             font-family: DM Mono, font-size: 13px, font-weight: 700,
+             display: flex, flex-direction: column,
+             align-items: center, justify-content: center, gap: 2px
+             
+             Q1: bg: #DCFCE7, color: #166534 — show "Q1" + "✓" (12px)
+             Q2: bg: #DCFCE7, color: #166534 — "Q2" + "✓"
+             Q3: bg: #F8FAFC, border: 1px dashed #CBD5E1, 
+                  color: #94A3B8 — "Q3" + "—"
+             Q4: bg: #DCFCE7, color: #166534 — "Q4" + "✓"
+             Q5: bg: #F8FAFC, border: 1px solid #E2E8F0, 
+                  color: #94A3B8 — "Q5" + "○"
+             Q6-Q18: Same unattempted style (bg: #F8FAFC, ○)
+             Q19: bg: #DCFCE7 + ✓
+             Q20: bg: #DCFCE7 + ✓
+             
+      [4.3] Summary row (display: flex, gap: 8px, margin: 16px 0,
+             justify-content: center):
+             "4 Answered" chip (bg: #DCFCE7, color: #166534, 
+                                  border-radius: 999px, padding: 6px 14px,
+                                  font-size: 13px, font-weight: 700)
+             "1 Skipped" chip (bg: #FEF9C3, color: #92400E)
+             "15 Unanswered" chip (bg: #F1F5F9, color: #64748B)
+             
+  [5] STICKY BOTTOM (bg: #FFFFFF, border-top: 1px solid #E2E8F0,
+      padding: 16px, position: sticky, bottom: 0):
+      "Submit Exam Now" (btn-primary, height: 56px, font-size: 17px)
+      Note below button: "This action cannot be undone."
+      (12px, #94A3B8, text-align: center, margin-top: 8px)
+
+<!-- SCREEN-COMPLETE: s-flash-review -->
+
+------------------------------------------------------------
+SCREEN 13 — EXAM COMPLETION (id: s-exam-complete)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #F8FAFC, text: #0F172A
+
+Layout (full-focus, no bottom nav):
+  [1] STATUS BAR
+  [2] SCROLLABLE CONTENT (padding: 24px 20px, align-items: center, 
+       text-align: center, display: flex, flex-direction: column, gap: 16px):
+      
+      [2.1] Grade circle:
+            88px circle, bg: #EFFAF4, border: 3px solid #1A3829,
+            display: flex, align-items: center, justify-content: center,
+            margin: 0 auto
+            "A" inside (font-family: DM Mono, 40px, font-weight: 700, 
+                         color: #1A3829)
+            
+      [2.2] "Exam Completed!" (24px, font-weight: 700, #0F172A, margin-top: 16px)
+      
+      [2.3] Score fraction (font-family: DM Mono):
+            "18" (64px, font-weight: 700, color: #1A3829)
+            "/20" (24px, font-weight: 700, color: #94A3B8)
+            "90% Accuracy" (16px, font-weight: 600, color: #2D6A4F, margin-top: 4px)
+            
+      [2.4] Stats strip (display: flex, justify-content: center, gap: 0,
+             border: 1px solid #E2E8F0, border-radius: 14px, bg: #FFFFFF,
+             overflow: hidden, margin-top: 4px):
+             3 cells, each flex: 1, padding: 14px 8px, text-align: center
+             Dividers: 1px solid #E2E8F0 between cells
+             
+             "18" (20px, font-weight: 700, color: #166534) + "Correct" (11px, #94A3B8)
+             "2" (20px, font-weight: 700, color: #DC2626) + "Incorrect" (11px, #94A3B8)
+             "0" (20px, font-weight: 700, color: #94A3B8) + "Skipped" (11px, #94A3B8)
+             
+      [2.5] "View Answer Sheet" (btn-sm-outline, auto width, 
+              padding: 0 28px, margin-top: 4px)
+              
+      [2.6] "Back to Dashboard" (btn-primary, margin-top: 4px)
+      
+      [2.7] 48px spacer at bottom
+
+<!-- SCREEN-COMPLETE: s-exam-complete -->
+
+------------------------------------------------------------
+SCREEN 14 — RESULTS HISTORY LIST (id: s-results-list)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] TOPBAR: "My Results" + right: filter icon
+  [3] SCROLLABLE CONTENT:
+      [3.1] HERO LATEST RESULT CARD:
+            bg: #FFFFFF, border: 2px solid #1A3829, border-radius: 14px,
+            padding: 20px, cursor: pointer
+            
+            Top: "LATEST RESULT" (10px, uppercase, color: #2D6A4F,
+                                   letter-spacing: 0.08em)
+            Title: "Q3 Mental Arithmetic" (18px, font-weight: 700, #0F172A, margin-top: 4px)
+            Meta: "Level 3 · EXAM · Apr 10, 2026" (12px, #475569)
+            
+            Score row (display: flex, align-items: center, 
+                        justify-content: space-between, margin-top: 16px):
+              Left: "18/20" (DM Mono, 36px, font-weight: 700, #1A3829)
+                    "90%" (16px, #2D6A4F, font-weight: 600)
+              Right: Grade pill: "A" (font-family: DM Mono, 32px, font-weight: 700,
+                                      color: #1A3829, bg: #EFFAF4, 
+                                      border: 1px solid #B7E4C7,
+                                      border-radius: 10px, padding: 8px 16px)
+            
+            "View Full Result →" (13px, color: #1A3829, font-weight: 600,
+                                   margin-top: 12px)
+            
+      [3.2] Filter chips row (chip-row style, scroll-x):
+            "All" (active, bg: #1A3829, color: #fff)
+            "EXAM" (inactive)
+            "TEST" (inactive)
+            "Level 3" (inactive)
+            
+      [3.3] "Academic Ledger" section header (11px, uppercase, #94A3B8)
+      
+      [3.4-3.8] 5 Result list rows as cards:
+             Each card: bg: #FFFFFF, border: 1px solid #E2E8F0,
+                        border-radius: 12px, padding: 14px,
+                        display: flex, align-items: center
+             
+             Left (flex: 1):
+               type-pill (badge-exam or badge-test)
+               Title (14px, font-weight: 600, #0F172A, margin-top: 4px)
+               "Level X · Date" (12px, #475569)
+             
+             Right:
+               Score "X/Y" (DM Mono, 16px, font-weight: 700, #0F172A)
+               Grade pill badge (A, A+, B etc.)
+               Chevron right icon (16px, #94A3B8)
+             
+             Data:
+               Row 1: EXAM "Q2 Mental Arithmetic" L3 Apr 10 · 18/20 · A
+               Row 2: TEST "Flash Anzan L2" L2 Mar 24 · 23/25 · A+
+               Row 3: EXAM "Q1 Mental Arithmetic" L3 Feb 15 · 16/20 · B
+               Row 4: TEST "Practice Test 1" L3 Jan 28 · 20/25 · B
+               Row 5: EXAM "End of Term" L3 Dec 12 · 15/20 · C
+
+  [4] BOTTOM NAV (active: Results)
+
+<!-- SCREEN-COMPLETE: s-results-list -->
+
+------------------------------------------------------------
+SCREEN 15 — RESULT DETAIL (STUDENT VIEW) (id: s-results-detail)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR
+  [2] PAGE TOPBAR: back arrow + "Q3 Mental Arithmetic"
+      Right: share icon (SVG, 20px, color: #475569)
+  [3] SCROLLABLE CONTENT:
+      [3.1] Meta row: badge-exam "EXAM" + "Level 3" (chip) 
+            + "Apr 10, 2026" (13px, #475569)
+            
+      [3.2] SCORE PANEL (bg: #FFFFFF, border: 1px solid #E2E8F0,
+             border-left: 4px solid #1A3829, border-radius: 14px,
+             padding: 24px, display: flex, justify-content: center,
+             gap: 40px, align-items: center):
+             
+             Left block (text-align: center):
+               "18" / "20" score fraction
+               "18" (DM Mono, 56px, font-weight: 700, #1A3829)
+               "/" (DM Mono, 24px, #94A3B8) 
+               "20" (DM Mono, 24px, #94A3B8)
+               "SCORE" (10px, uppercase, #94A3B8, margin-top: 4px)
+               
+             Right block: Grade card
+               "A" (DM Mono, 48px, font-weight: 700, #1A3829)
+               "GRADE" (10px, uppercase, #94A3B8, margin-top: 4px)
+               
+      [3.3] Stats strip (same pattern as completion screen):
+             "18 Correct" + "2 Incorrect" + "0 Skipped"
+             
+      [3.4] View Answer Sheet CTA card:
+             bg: #FFFFFF, border: 1px solid #E2E8F0, border-radius: 14px,
+             padding: 16px, display: flex, align-items: center, gap: 14px,
+             cursor: pointer (hover: bg: #EFFAF4, border: #B7E4C7)
+             
+             Left icon: 40px circle, bg: #EFFAF4, center:
+                         list-check SVG (20px, color: #1A3829)
+             Body: "View Full Answer Sheet" (15px, font-weight: 700, #0F172A)
+                   "See each question, your answer, and the correct answer."
+                   (12px, #475569, margin-top: 2px)
+             Right: chevron-right SVG (18px, color: #1A3829)
+             
+      [3.5] Exam info section: "EXAM DETAILS" header
+            List of detail rows, each: label (12px, #94A3B8) + value (14px, #0F172A)
+            "Duration" / "30 minutes"
+            "Questions" / "20"
+            "Passing Score" / "80%"
+            "Time Taken" / "22m 14s"
+
+  [4] BOTTOM NAV (active: Results)
+
+<!-- SCREEN-COMPLETE: s-results-detail -->
+
+------------------------------------------------------------
+SCREEN 16 — ANSWER SHEET STUDENT VIEW (id: s-answer-sheet)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR
+  [2] PAGE TOPBAR: back + "Answer Sheet"
+  [3] SCROLLABLE CONTENT:
+      [3.1] Student summary row:
+            "Aditi Sharma · MS-L3-001 · 18/20 · 90%"
+            (13px, #475569, padding: 12px 16px 0)
+      
+      [3.2] 5 question answer rows (cards, each):
+             card, padding: 14px, gap: 8px
+             
+             Top row: "Q1" (DM Mono, 11px, font-weight: 700, #94A3B8) 
+                      + CORRECT/WRONG badge right-aligned
+             
+             If CORRECT: badge-success "✓ Correct"
+             If WRONG: badge-error "✗ Wrong"
+             
+             Options (display: flex, flex-direction: column, gap: 6px):
+               For each option (A/B/C/D):
+                 Row: option letter circle + option text
+                 CORRECT answer: bg: #DCFCE7, border: 1px solid #86EFAC
+                                  letter circle: bg: #166534, text: #fff
+                 WRONG student pick: bg: #FEE2E2, border: 1px solid #FECACA
+                                     letter circle: bg: #DC2626, text: #fff
+                 Neutral: bg: #F8FAFC, border: 1px solid #E2E8F0
+                           letter circle: bg: #E2E8F0, text: #475569
+             
+             Show Q1 CORRECT, Q2 CORRECT, Q3 WRONG, Q4 CORRECT, Q5 CORRECT
+             
+             For Q3 (wrong), show student picked "B) 1,240" (red) 
+             and correct was "C) 1,440" (green)
+
+  [4] BOTTOM NAV (active: Results)
+
+<!-- SCREEN-COMPLETE: s-answer-sheet -->
+
+------------------------------------------------------------
+SCREEN 17 — STUDENT PROFILE (COLLAPSED) (id: s-profile)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] TOPBAR: "Profile"
+      Right: "Edit" text button — wait, profile is READ-ONLY.
+             Instead: no right action.
+  [3] SCROLLABLE CONTENT:
+      [3.1] Profile hero block (bg: #FFFFFF, padding: 24px 16px,
+             display: flex, flex-direction: column, align-items: center,
+             text-align: center, border-bottom: 1px solid #E2E8F0):
+             
+             Avatar (80px circle, bg: #1A3829, color: #fff,
+                      font-size: 28px, font-weight: 700,
+                      border: 3px solid #D8F1E3, 
+                      display: flex, align-items: center, justify-content: center):
+               "AS"
+             
+             "Aditi Sharma" (22px, font-weight: 700, #0F172A, margin-top: 12px)
+             "Student · Level 3" (13px, #475569, margin-top: 4px)
+             Active badge: badge-success "Active" (margin-top: 8px)
+             
+      [3.2] "SCHOOL INFO" section (card, margin: 12px 16px):
+             section-title at top
+             2-column grid of field rows:
+               "ROLL NUMBER" / "MS-L3-001" (DM Mono, font-weight: 600)
+               "LEVEL" / "Level 3"
+               "COHORT" / "Level 3 · 2025–26"
+               "ENROLLED ON" / "Aug 12, 2025"
+               
+      [3.3] MORE INFO toggle row:
+             bg: #F8FAFC, border-top: 1px solid #E2E8F0,
+             border-bottom: 1px solid #E2E8F0,
+             padding: 16px, display: flex, align-items: center,
+             justify-content: space-between, cursor: pointer
+             
+             "MORE INFO" (11px, uppercase, letter-spacing: 0.1em, #475569)
+             Chevron-down SVG (16px, #94A3B8)
+             
+      [3.4] NOTE text: "Contact your teacher to update any of these details."
+            (12px, #94A3B8, text-align: center, margin: 12px 16px)
+
+  [4] BOTTOM NAV (active: Profile)
+
+<!-- SCREEN-COMPLETE: s-profile -->
+
+------------------------------------------------------------
+SCREEN 18 — STUDENT PROFILE EXPANDED (id: s-profile-expanded)
+------------------------------------------------------------
+Same as screen 17 but MORE INFO section is OPEN (chevron-up).
+The toggle row has chevron pointing UP.
+Below the toggle row, add a card (margin: 0 16px, card style):
+  "PERSONAL INFO" section-title
+  2-col grid:
+    "DATE OF BIRTH" / "12 Mar 2012"
+    "GENDER" / "Female"
+    "EMAIL" / "aditi@mindspark.edu"
+  "GUARDIAN INFO" section-title (margin-top: 16px)
+  2-col grid:
+    "GUARDIAN NAME" / "Renu Sharma"
+    "RELATIONSHIP" / "Mother"
+    "GUARDIAN PHONE" / "+91 98765 43210"
+  "CONSENT STATUS" section-title (margin-top: 16px)
+  verified-pill style: ✓ "Consent Submitted" 
+  (bg: #EFFAF4, color: #1A3829, border: 1px solid #B7E4C7)
+
+<!-- SCREEN-COMPLETE: s-profile-expanded -->
+
+------------------------------------------------------------
+SCREEN 19 — ADMIN DASHBOARD (id: a-dashboard)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] ADMIN TOPBAR:
+      Left: admin-topbar-logo + "MindSpark" title
+      Right: Bell icon + avatar "AU" (30px circle, bg: #1A3829, text: #fff)
+  [3] SCROLLABLE CONTENT:
+      [3.1] Page heading row:
+            "Dashboard" (22px, font-weight: 700, #0F172A)
+            "48 students active now" (13px, #475569 — with live-dot before)
+            
+      [3.2] KPI ROW (display: flex, gap: 10px):
+            kpi-card-dark: "247" / "TOTAL STUDENTS" 
+            kpi-card-light: "3" / "ACTIVE EXAMS"
+            kpi-card-light (red left border 3px #EF4444): "48" / "LIVE NOW"
+            (display: flex, gap: 10px)
+            
+      [3.3] SECTION HEADER: "LIVE ASSESSMENTS"
+      
+      [3.4] Live exam card 1 (card, border-left: 3px solid #EF4444):
+            Top: badge-live "● LIVE" + badge-exam "EXAM" + badge-green "Level 3"
+            "Q3 Mental Arithmetic" (16px, font-weight: 700, #0F172A)
+            Progress row: "18/24 submitted" progress bar
+                (bg: #E2E8F0, inner: bg: #1A3829, width: 75%, height: 6px,
+                 border-radius: 3px, margin: 8px 0)
+            Stats row: "18 Submitted · 4 In Progress · 2 Not Started"
+                       (12px, #475569)
+            "Monitor →" btn-sm (margin-top: 10px)
+            
+      [3.5] Live exam card 2:
+            badge-live "● LIVE" + badge-test "TEST" + badge-green "Level 2"
+            "Flash Anzan Level 2"
+            Progress: "8/15 submitted" (53%)
+            "Monitor →" btn-sm
+            
+      [3.6] SECTION HEADER: "RECENT ACTIVITY"
+      
+      [3.7] Activity feed (4 rows):
+             Each row: color dot + "[User] [action] [target]" 
+             (13px, #475569) + time (11px, #94A3B8, right-aligned)
+             
+             ● green: "Aditi Sharma submitted Q3 Mental Arithmetic" · "2m ago"
+             ● green: "Ravi Kumar submitted Flash Anzan L2" · "5m ago"
+             ● #64748B: "Admin User released Q2 results" · "1h ago"
+             ● #64748B: "Admin User created Practice Test" · "3h ago"
+
+  [4] ADMIN BOTTOM NAV:
+      4 tabs: Dashboard (grid icon, ACTIVE), Students (users icon),
+              Assessments (clipboard icon), Results (bar-chart icon)
+
+<!-- SCREEN-COMPLETE: a-dashboard -->
+
+------------------------------------------------------------
+SCREEN 20 — ADMIN NAVIGATION DRAWER OPEN (id: a-drawer)
+------------------------------------------------------------
+Shows the admin dashboard underneath + drawer overlay open.
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout (position: relative, height: 760px):
+  [1] STATUS BAR
+  [2] Dimmed background (admin dashboard at 30% opacity behind overlay)
+  [3] DRAWER OVERLAY (drawer-overlay):
+      DRAWER PANEL (drawer-panel):
+        DRAWER HEADER:
+          drawer-logo: MindSpark hexagon icon (white svg, 18px)
+          "MindSpark" (15px, font-weight: 700, #0F172A)
+          "Admin Portal" (12px, #475569)
+          × close button (top-right of drawer header, 
+                           position: absolute, top: 52px, right: 16px,
+                           20px, color: #94A3B8)
+        
+        DRAWER NAV (flex-col, gap: 2px):
+          drawer-item active: Dashboard + grid icon
+          drawer-item: Students + users icon
+          drawer-item: Levels + layers icon
+          drawer-item: Assessments + clipboard icon
+          drawer-item: Live Monitor + monitor icon (with live-dot red badge)
+          drawer-item: Results + bar-chart icon
+          drawer-item: Activity Log + scroll-text icon
+          drawer-item: Announcements + megaphone icon
+          drawer-item: Settings + settings icon
+          
+        DRAWER FOOTER:
+          drawer-user-row:
+            drawer-avatar "AU"
+            Col: "Admin User" (13px, font-weight: 600, #0F172A)
+                 "admin@mindspark.edu" (11px, #475569)
+          
+          drawer-logout:
+            logout SVG icon (16px, color: #DC2626)
+            "Sign Out" (14px, font-weight: 600, color: #DC2626)
+
+<!-- SCREEN-COMPLETE: a-drawer -->
+
+------------------------------------------------------------
+SCREEN 21 — ADMIN STUDENTS LIST (id: a-students-list)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] ADMIN TOPBAR: "Students" title + right: hamburger icon
+  [3] CONTENT BELOW TOPBAR:
+      [3.1] Search + filter bar (padding: 12px 16px, bg: #FFFFFF,
+             border-bottom: 1px solid #E2E8F0):
+             Search input: 
+               height: 40px, bg: #F8FAFC, border: 1px solid #E2E8F0,
+               border-radius: 10px, padding: 0 12px 0 36px (icon left space)
+               Search icon SVG inside (16px, #94A3B8, absolute left 10px)
+               placeholder: "Search students..."
+               Full width minus buttons
+             
+             Row 2: "All Levels ▾" filter chip + "All Status ▾" chip
+                     + "247" count (badge-neutral) + far right: "Import CSV" 
+                     (btn-sm)
+             
+      [3.2] FAB (Floating Action Button — position: absolute, bottom: 72px,
+              right: 16px, width: 52px, height: 52px, border-radius: 50%,
+              bg: #1A3829, box-shadow: 0 4px 16px rgba(26,56,41,0.35),
+              display: flex, align-items: center, justify-content: center):
+              "+" SVG (24px, color: #FFFFFF, stroke-width: 2.5)
+      
+      [3.3] STUDENT CARD LIST (padding: 12px, display: flex, flex-col, gap: 8px):
+             Each student card (card style, padding: 14px, 
+                                display: flex, align-items: center, gap: 12px):
+             
+             Left: Avatar (40px circle, bg: #1A3829, color: #fff, 
+                            font-size: 14px, font-weight: 700)
+             Middle (flex: 1):
+               Name (15px, font-weight: 600, #0F172A)
+               Roll (DM Mono, 12px, #94A3B8) + "·" + Level chip (12px, #1A3829)
+             Right: "View" btn-sm + "⋮" icon (18px, #94A3B8)
+             
+             Show 5 students:
+               AS Aditi Sharma / MS-L3-001 · Level 3
+               RK Ravi Kumar / MS-L2-002 · Level 2
+               PS Priya Singh / MS-L1-003 · Level 1
+               AK Arjun Patel / MS-L3-004 · Level 3
+               MK Meera Kapoor / MS-L2-005 · Level 2
+
+  [4] ADMIN BOTTOM NAV (active: Students)
+
+<!-- SCREEN-COMPLETE: a-students-list -->
+
+------------------------------------------------------------
+SCREEN 22 — STUDENT DETAIL READ MODE (id: a-student-detail)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR
+  [2] PAGE TOPBAR: back arrow + "Aditi Sharma" + "Edit" action (right, green text)
+  [3] SCROLLABLE CONTENT:
+      [3.1] HERO (bg: #FFFFFF, padding: 20px 16px, text-align: center,
+             border-bottom: 1px solid #E2E8F0):
+             Avatar 72px "AS" (same style as profile)
+             "STUDENT" (10px, uppercase, #94A3B8, margin-top: 12px)
+             "Aditi Sharma" (22px, font-weight: 700, #0F172A)
+             "MS-L3-001" (DM Mono, 14px, #475569)
+             badge-success "Active" (margin-top: 8px)
+             
+      [3.2] Section card "PERSONAL INFO" (margin: 12px 16px):
+            2-col field grid:
+            "FULL NAME" / "Aditi Sharma"
+            "DATE OF BIRTH" / "12 Mar 2012"
+            "EMAIL" / "aditi@mindspark.edu"
+            "GENDER" / "Female"
+            
+      [3.3] Section card "ACADEMIC INFO":
+            "LEVEL" / "Level 3"
+            "COHORT" / "Level 3 · 2025–26"
+            "ROLL NUMBER" / "MS-L3-001" (DM Mono)
+            "ENROLLED ON" / "Aug 12, 2025"
+            
+      [3.4] Section card "GUARDIAN INFO":
+            "GUARDIAN" / "Renu Sharma"
+            "RELATIONSHIP" / "Mother"
+            "PHONE" / "+91 98765 43210"
+            
+      [3.5] Section card "CONSENT STATUS":
+             Row: verified-pill ✓ "Consent Submitted · Sep 5, 2025"
+             
+      [3.6] DANGER ZONE (padding: 16px):
+             "Remove Student" (btn-destructive, width: auto, padding: 0 20px,
+                               height: 40px, margin: 0 auto)
+
+  [4] ADMIN BOTTOM NAV (active: Students)
+
+<!-- SCREEN-COMPLETE: a-student-detail -->
+
+------------------------------------------------------------
+SCREEN 23 — STUDENT DETAIL EDIT MODE (id: a-student-edit)
+------------------------------------------------------------
+Same as Screen 22 but:
+- Topbar right shows "Save" (btn-sm style) and "Cancel" (text, #475569)
+- PERSONAL INFO and ACADEMIC INFO cards have editable inputs
+- Input fields show text in #0F172A on bg: #FFFFFF
+- Border: 1.5px solid #1A3829 (focused/edit mode on all fields)
+- "Level" shows a select dropdown instead of plain text
+- All other sections (guardian, consent, danger) remain same
+
+<!-- SCREEN-COMPLETE: a-student-edit -->
+
+------------------------------------------------------------
+SCREEN 24 — ADD STUDENT BOTTOM SHEET (id: a-student-add-sheet)
+------------------------------------------------------------
+Shows student list screen (dimmed) behind a bottom sheet.
+Phone bg: #F8FAFC
+
+Layout:
+  [1] STATUS BAR
+  [2] Dimmed student list background (30% opacity)
+  [3] BOTTOM SHEET OVERLAY (sheet-overlay):
+      sheet-panel:
+        sheet-handle
+        "Add New Student" (sheet-title)
+        
+        sheet-content:
+          icon row: 48px circle bg: #EFFAF4, user-plus SVG (#1A3829 20px)
+          + "Create a single student entry." (13px, #475569)
+          
+          4 input groups:
+            "Full Name *" / placeholder "e.g. Aditi Sharma"
+            "Roll Number *" / placeholder "e.g. MS-L3-025"
+            "Level *" / select with options: Level 1, Level 2, Level 3...
+            "Date of Birth" / input type=text placeholder "e.g. 15 Mar 2010"
+          
+          "Create Student" btn-primary (margin-top: 8px)
+          "Cancel" btn-secondary
+
+<!-- SCREEN-COMPLETE: a-student-add-sheet -->
+
+------------------------------------------------------------
+SCREEN 25 — LEVELS LIST (id: a-levels-list)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR (bg: #FFFFFF)
+  [2] ADMIN TOPBAR: "Levels" title + hamburger
+  [3] CONTENT:
+      [3.1] Summary strip (bg: #FFFFFF, border-bottom: 1px solid #E2E8F0,
+             padding: 12px 16px):
+             "5 Levels · 247 Students" (13px, #475569)
+             Tip: "↕ Drag cards to reorder" (12px, #94A3B8, italic)
+             
+      [3.2] FAB same as students (position: absolute, bottom: 72px, right: 16px)
+      
+      [3.3] LEVEL CARDS (padding: 12px, display: flex, flex-col, gap: 8px):
+             Each level card (card, padding: 14px):
+               Left: drag handle "⋮⋮" (DM Mono, 14px, #CBD5E1, cursor: grab)
+               Sequence badge: "01" circle (22px, bg: #1A3829, color: #fff,
+                                             DM Mono, 11px, font-weight: 700)
+               "Level 1" name (15px, font-weight: 700, #0F172A)
+               Meta: "32 students · 4 assessments" (12px, #475569)
+               Right: "View" btn-sm + "⋯" icon
+               
+             5 level cards: Level 1 (32 students, 4 assessments),
+                             Level 2 (48 students, 3 assessments),
+                             Level 3 (72 students, 6 assessments),
+                             Level 4 (55 students, 5 assessments),
+                             Level 5 (40 students, 2 assessments)
+
+  [4] ADMIN BOTTOM NAV
+
+<!-- SCREEN-COMPLETE: a-levels-list -->
+
+------------------------------------------------------------
+SCREEN 26 — LEVEL DETAIL (id: a-level-detail)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR
+  [2] PAGE TOPBAR: back + "Level 3" + edit icon (pencil, 20px)
+  [3] CONTENT:
+      [3.1] HERO CARD (bg: #FFFFFF, border-bottom: 1px solid #E2E8F0,
+             padding: 16px, display: flex, align-items: center, gap: 16px):
+             Sequence badge: "03" (48px circle, bg: #1A3829, color: #fff,
+                                    DM Mono, 22px, font-weight: 700)
+             Col: "Level 3" (20px, font-weight: 700, #0F172A)
+                  Row of 3 stats: "72 students" · "6 assessments" · "Active"
+                  (13px, #475569)
+             
+      [3.2] TAB BAR (bg: #FFFFFF, border-bottom: 1px solid #E2E8F0):
+             2 tabs: "Students" (ACTIVE — 3px bottom border #1A3829, 
+                                           color: #1A3829, font-weight: 700)
+                    "Assessments" (inactive — #475569)
+             Each tab: padding: 14px 20px, font-size: 14px
+             
+      [3.3] ADD + SEARCH ROW (padding: 12px 16px, bg: #FFFFFF,
+             border-bottom: 1px solid #E2E8F0):
+             "+ Add Student to Level" (btn-sm, full-width)
+             Search input (margin-top: 8px)
+             
+      [3.4] STUDENT LIST (same student card pattern as screen 21):
+             Show 4 students from Level 3
+
+  [4] ADMIN BOTTOM NAV (Students active)
+
+<!-- SCREEN-COMPLETE: a-level-detail -->
+
+------------------------------------------------------------
+SCREEN 27 — ADD LEVEL BOTTOM SHEET (id: a-level-add-sheet)
+------------------------------------------------------------
+Levels list dimmed behind. Bottom sheet with:
+  "Add New Level" title
+  Icon: 48px circle bg: #EFFAF4, layers SVG (#1A3829)
+  "Create a curriculum level." (13px, #475569)
+  
+  Input: "Level Name *" / placeholder "e.g. Level 6 — Master"
+  Hint text: "It will be added at position 06 and can be dragged to reorder."
+             (11px, #94A3B8, margin-top: 6px)
+  
+  "Create Level" btn-primary
+  "Cancel" btn-secondary
+
+<!-- SCREEN-COMPLETE: a-level-add-sheet -->
+
+------------------------------------------------------------
+SCREEN 28 — ASSESSMENTS LIST (id: a-assessments-list)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+Layout:
+  [1] STATUS BAR
+  [2] ADMIN TOPBAR: "Assessments" + hamburger
+      Right: "+ Create" btn-sm
+  [3] CONTENT:
+      [3.1] SEGMENTED CONTROL (padding: 12px 16px, bg: #FFFFFF,
+             border-bottom: 1px solid #E2E8F0):
+             EXAM (22) active toggle | TEST (10)
+             Toggle style: bg: #F1F5F9, border-radius: 10px, padding: 4px
+               Active half: bg: #1A3829, color: #fff, border-radius: 8px
+               Inactive: color: #475569
+               
+      [3.2] FILTER PILLS (padding: 8px 16px, bg: #FFFFFF, overflow-x: scroll):
+             "All 22" (active), "Draft 4", "Published 8", 
+             "Live 2", "Closed 6", "Archived 2"
+             
+      [3.3] SEARCH + FILTER ROW (padding: 8px 16px):
+             Search input + "Level ▾" chip + "Date ▾" chip
+             
+      [3.4] ASSESSMENT CARDS (padding: 8px 16px, flex-col, gap: 8px):
+             Each card (bg: #FFFFFF, border: 1px solid #E2E8F0,
+                         border-radius: 14px, padding: 14px):
+             
+             Row 1: badge-exam "EXAM" + badge-green "Level 3" + 
+                    badge-live "● LIVE" (if live) / status badge
+             Title: (16px, font-weight: 700, #0F172A)
+             Meta: "20 questions · 30 min · Published Jun 9, 2026"
+                   (12px, #475569)
+             Action row: "Monitor →" btn-sm (if live) or
+                         "View Results" btn-sm-outline
+             
+             Show 4 cards:
+               Card 1: EXAM · Level 3 · LIVE "Q3 Mental Arithmetic" · 
+                        20q · 30min · "Monitor →" btn
+               Card 2: EXAM · Level 2 · LIVE "Flash Anzan Level 2" · 
+                        15q · 20min · "Monitor →" btn
+               Card 3: EXAM · Level 3 · PUBLISHED "Q2 Mental Arithmetic" · 
+                        20q · 30min · "View Results" btn
+               Card 4: TEST · Level 3 · PUBLISHED "Mid-Term Practice" · 
+                        25q · 45min · "View Results" btn
+
+  [4] ADMIN BOTTOM NAV (Assessments active)
+
+<!-- SCREEN-COMPLETE: a-assessments-list -->
+
+------------------------------------------------------------
+SCREEN 29 — ASSESSMENT WIZARD STEP 1 TYPE (id: a-wizard-step1)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+NOTE: Full-focus screen. No bottom nav. No drawer.
+
+Layout:
+  [1] STATUS BAR
+  [2] WIZARD HEADER (bg: #FFFFFF, border-bottom: 1px solid #E2E8F0,
+      height: 56px, display: flex, align-items: center, 
+      justify-content: space-between, padding: 0 16px):
+      Left: "×" close icon (20px, #475569) + "New Assessment" (15px, font-weight: 700)
+      Right: "Step 1 of 4" (12px, #94A3B8)
+      
+  [3] STEP INDICATOR (padding: 16px, bg: #FFFFFF, 
+       border-bottom: 1px solid #E2E8F0):
+       4 dots in a row with connecting lines:
+         Dot 1: 28px circle, bg: #1A3829, color: #fff, "1" (ACTIVE)
+                below: "TYPE" (9px, uppercase, #1A3829, font-weight: 700)
+         Line: flex: 1, height: 2px, bg: #E2E8F0
+         Dot 2: 28px, border: 2px solid #E2E8F0, color: #94A3B8, "2"
+                below: "SETTINGS"
+         Line: same
+         Dot 3: same inactive "3" / "QUESTIONS"
+         Line: same
+         Dot 4: same inactive "4" / "FLASH"
+  
+  [4] CONTENT (padding: 20px 16px):
+      [4.1] "Choose assessment type" (20px, font-weight: 700, #0F172A)
+             "This determines how questions are presented to students."
+             (13px, #475569, margin-top: 6px)
+      
+      [4.2] TYPE CARDS (two large cards, flex-col, gap: 12px, margin-top: 20px):
+      
+             EXAM CARD (selected state, bg: #EFFAF4, 
+                         border: 2px solid #1A3829, border-radius: 14px,
+                         padding: 20px, position: relative):
+               Check badge: 24px circle, bg: #1A3829, color: #fff,
+                             position: absolute, top: 12px, right: 12px
+                             ✓ checkmark SVG inside
+               Icon: 48px square, bg: #DBEAFE, border-radius: 12px,
+                      clipboard-list SVG (24px, #1D4ED8)
+               "Flash Arithmetic Exam" (16px, font-weight: 700, #0F172A, margin-top: 12px)
+               "Numbers flash at configurable speed. Student computes 
+               mentally and selects the answer." (13px, #475569, margin-top: 6px)
+               
+             TEST CARD (unselected, bg: #FFFFFF, border: 1.5px solid #E2E8F0,
+                          border-radius: 14px, padding: 20px):
+               Icon: 48px, bg: #EDE9FE, border-radius: 12px,
+                      zap SVG (24px, #7C3AED)
+               "Practice Test" (16px, font-weight: 700, #0F172A, margin-top: 12px)
+               "Structured multiple-choice questions with configurable 
+               scoring and time limits." (13px, #475569, margin-top: 6px)
+               
+  [5] STICKY BOTTOM (bg: #FFFFFF, border-top: 1px solid #E2E8F0, padding: 16px):
+      "Continue to Settings →" btn-primary
+
+<!-- SCREEN-COMPLETE: a-wizard-step1 -->
+
+------------------------------------------------------------
+SCREEN 30 — ASSESSMENT WIZARD STEP 2 SETTINGS (id: a-wizard-step2)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] WIZARD HEADER: same, "Step 2 of 4"
+[3] STEP INDICATOR: Dot 1 filled (#1A3829), connecting line filled,
+    Dot 2 ACTIVE (#1A3829), dots 3+4 inactive
+[4] CONTENT (padding: 16px, flex-col, gap: 14px):
+    "Exam Settings" (20px, font-weight: 700)
+    
+    Input groups:
+      "Exam Title *" / value "Q4 Mental Arithmetic" (filled in)
+      "Level *" / select showing "Level 3"
+      "Time Limit (minutes) *" / value "30"
+      "Total Questions *" / value "20"
+      "Passing Score (%) *" / value "80"
+      "Publish Immediately?" / toggle switch UI:
+        Row: label + toggle
+        Toggle: 44px × 24px, bg: #1A3829 (ON state), circle white 20px right
+[5] STICKY BOTTOM: "← Back" (btn-secondary) + "Continue →" (btn-primary)
+    side by side, gap: 10px
+
+<!-- SCREEN-COMPLETE: a-wizard-step2 -->
+
+------------------------------------------------------------
+SCREEN 31 — ASSESSMENT WIZARD STEP 3 QUESTIONS (id: a-wizard-step3)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] WIZARD HEADER: "Step 3 of 4"
+[3] STEP INDICATOR: Dots 1+2 filled, dot 3 ACTIVE, dot 4 inactive
+[4] CONTENT (padding: 16px):
+    "Questions" heading + "Add numbers to each Flash question."
+    
+    Progress: "2 of 20 questions added" (13px, #475569)
+    Progress bar: bg #E2E8F0, fill: bg #1A3829, width: 10%,
+                  height: 6px, border-radius: 3px, margin-bottom: 16px
+    
+    Question cards (show 2 added questions):
+      QUESTION CARD 1 (card, bg: #FFFFFF, border-left: 3px solid #1A3829):
+        Top row: "Question 1" (12px, uppercase, #94A3B8) + "×" delete icon (right)
+        Numbers entered: Row of operands styled like the vertical table:
+          "892" with no operator (first number)
+          "−456" (negative, color: #991B1B)
+          "314" 
+          Horizontal line above answer
+        "Add number" + link below: "+  Add operand" (13px, #1A3829)
+        
+      QUESTION CARD 2 (card, same, border-left: 3px solid #1A3829):
+        "Question 2"
+        Numbers: "541", "+217", "−89"
+        
+      ADD QUESTION button: dashed border card
+        "+ Add Question" (14px, font-weight: 600, #1A3829, text-center,
+                          bg: #EFFAF4, border: 1.5px dashed #1A3829,
+                          border-radius: 14px, padding: 16px, cursor: pointer)
+
+[5] STICKY BOTTOM: "← Back" + "Continue to Flash Config →" btn-primary
+
+<!-- SCREEN-COMPLETE: a-wizard-step3 -->
+
+------------------------------------------------------------
+SCREEN 32 — FLASH ANZAN CONFIGURATION STEP 4 (id: a-flash-config)
+------------------------------------------------------------
+CRITICAL SCREEN. Build accurately. This is the screen the user says was not
+built correctly in the previous desktop mockup.
+
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] WIZARD HEADER: "Step 4 of 4 — Flash Config"
+[3] STEP INDICATOR: Dots 1+2+3 filled, dot 4 ACTIVE (all 4 visible)
+[4] CONTENT (padding: 16px, flex-col, gap: 0):
+
+    "Flash Anzan Configuration" (20px, font-weight: 700, #0F172A)
+    "Configure how numbers will flash during the exam." (13px, #475569, margin-top: 6px, margin-bottom: 20px)
+
+    SETTING ROW FORMAT:
+    Each setting row is a card (bg: #FFFFFF, border: 1px solid #E2E8F0,
+    border-radius: 12px, padding: 16px, margin-bottom: 10px):
+      Top: setting name (14px, font-weight: 700, #0F172A) + 
+           setting description (12px, #475569, margin-top: 2px)
+      Bottom: stepper control (right-aligned)
+    
+    STEPPER CONTROL:
+      "−" btn (36px circle, bg: #F1F5F9, border: 1px solid #E2E8F0,
+                font-size: 20px, font-weight: 700, color: #475569)
+      Value (DM Mono, 24px, font-weight: 700, #0F172A, min-width: 48px, 
+              text-align: center)
+      "+" btn (same style as −)
+      Display as: flex, align-items: center, gap: 12px
+    
+    ROW 1 — "Number of Digits"
+      Description: "How many digits each flashed number will have."
+      Stepper value: 3 (range 1–9)
+      
+    ROW 2 — "Flashes per Question"
+      Description: "How many numbers flash before the student answers."
+      Stepper value: 8 (range 1–20)
+      
+    ROW 3 — "Flash Speed"
+      Description: "Time each number stays on screen."
+      INSTEAD OF STEPPER: segmented control with 3 options:
+        "0.5s" | "1.0s" | "1.5s" (current: 1.5s — active bg #1A3829, color #fff)
+        (bg: #F1F5F9, border-radius: 8px, height: 40px, display: flex)
+      
+    ROW 4 — "Include Negative Numbers"
+      Description: "Flash negative values (shown in red) in the sequence."
+      INSTEAD OF STEPPER: toggle switch
+        Row: padding-top: 12px, display: flex, align-items: center, 
+              justify-content: space-between
+        "Yes / Enabled" text (14px, font-weight: 600, color: #1A3829) — toggle ON
+        Toggle switch: 44px × 24px, bg: #1A3829, white circle right
+    
+    LIVE PREVIEW CARD:
+      bg: #0F172A, border-radius: 14px, padding: 24px,
+      text-align: center, margin-top: 8px
+      
+      Label: "LIVE PREVIEW" (10px, uppercase, color: rgba(255,255,255,0.4),
+                               letter-spacing: 0.1em, margin-bottom: 16px)
+      
+      Number display: "-412"
+      (DM Mono, 64px, font-weight: 700, color: #EF4444 [negative],
+       font-variant-numeric: tabular-nums, line-height: 1)
+      
+      Below: "Flash Speed: 1.5s · 3 Digits · 8 Flashes"
+      (12px, color: rgba(255,255,255,0.45), margin-top: 16px)
+      
+      A positive example below that:
+      "892" (DM Mono, 40px, font-weight: 700, color: #FFFFFF [positive],
+              margin-top: 12px, display: block)
+      "↑ Positive number" (11px, rgba(255,255,255,0.3))
+
+[5] STICKY BOTTOM (bg: #FFFFFF, border-top: 1px solid #E2E8F0, padding: 16px):
+    "← Back" btn-secondary (flex: 1) + "Save Configuration ✓" btn-primary (flex: 2)
+    (display: flex, gap: 10px)
+
+<!-- SCREEN-COMPLETE: a-flash-config -->
+
+------------------------------------------------------------
+SCREEN 33 — LIVE MONITOR HUB (id: a-monitor-hub)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] ADMIN TOPBAR: "Live Monitor" + hamburger
+    Right: live-dot + "3 Live" (12px, #EF4444, font-weight: 700)
+[3] CONTENT:
+    [3.1] Summary: 
+          "3 exams running · 48 students active" 
+          (14px, #475569, padding: 12px 16px, bg: #FFFFFF,
+           border-bottom: 1px solid #E2E8F0)
+    [3.2] MONITOR CARDS (padding: 12px 16px, flex-col, gap: 10px):
+           Each card (card, border-left: 3px solid #EF4444, padding: 14px):
+             Top: badge-live "● LIVE" + badge-exam/badge-test + badge-green "Level X"
+             Title (16px, font-weight: 700, #0F172A)
+             Time remaining strip:
+               bg: #FEE2E2, border-radius: 8px, padding: 8px 12px, margin: 10px 0
+               clock icon (14px, #DC2626) + "TIME LEFT: 28:14" 
+               (DM Mono, 14px, font-weight: 700, color: #DC2626)
+             Stats grid (2×2, gap: 8px, font-size: 13px):
+               "18 Active" | "6 Submitted"
+               "48 Total" | "24 Enrolled"
+             "Monitor →" (btn-sm, margin-top: 8px)
+           
+           3 cards total:
+             "Q3 Mental Arithmetic" EXAM Level 3 · 28:14 remaining
+             "Flash Anzan Level 2" TEST Level 2 · 16:30 remaining
+             "Mid-Term Practice" EXAM Level 3 · 38:55 remaining
+
+[4] ADMIN BOTTOM NAV (no specific bottom nav item for Monitor — show Dashboard active
+    — this screen is accessed from drawer)
+
+<!-- SCREEN-COMPLETE: a-monitor-hub -->
+
+------------------------------------------------------------
+SCREEN 34 — LIVE MONITOR DETAIL (id: a-monitor-detail)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] PAGE TOPBAR: back + "Q3 Mental Arithmetic"
+    Right: timer-pill.urgent "28:14"
+[3] CONTENT:
+    [3.1] Exam meta row (bg: #FFFFFF, padding: 12px 16px,
+           border-bottom: 1px solid #E2E8F0):
+           badge-live "● LIVE" + badge-exam "EXAM" + "Level 3"
+           "48 Enrolled · 18 Submitted · 24 In Progress · 6 Not Started"
+           (13px, #475569, margin-top: 6px)
+    [3.2] Search row (padding: 8px 16px):
+           Search input with placeholder "Search by name or roll..."
+    [3.3] STUDENT STATUS LIST (padding: 8px 16px, flex-col, gap: 6px):
+           Each row (bg: #FFFFFF, border: 1px solid #E2E8F0, border-radius: 10px,
+                      padding: 12px 14px):
+           Left: Avatar (36px, initials)
+                 Col: Name (14px, font-weight: 600, #0F172A)
+                       Roll (DM Mono, 12px, #94A3B8)
+           Right: Status badge + "Q X/20" (12px, #475569) + time (12px, #94A3B8)
+           
+           Show 4 students:
+             AS "Aditi Sharma" / MS-L3-001 · 
+                badge-warning "In Progress" · "Q4/20" · "05:48"
+             RK "Ravi Kumar" / MS-L2-002 · 
+                badge-success "Submitted" · "Q20/20" · "14:12"
+             PS "Priya Singh" / MS-L1-003 · 
+                badge-error "Timed Out" · "Q16/20" · "30:00"
+             AK "Arjun Patel" / MS-L3-004 · 
+                badge-neutral "Not Started" · "Q0/20" · "00:00"
+
+<!-- SCREEN-COMPLETE: a-monitor-detail -->
+
+------------------------------------------------------------
+SCREEN 35 — RESULTS HUB (id: a-results-hub)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] ADMIN TOPBAR: "Results" + hamburger
+[3] CONTENT:
+    [3.1] SEGMENTED CONTROL: "EXAM" (active) | "TEST" (same pattern as assessments)
+    [3.2] STATUS FILTER PILLS (overflow-x: scroll):
+           "Published 8" (active) | "Yet to Evaluate 3" | "Archived 12"
+    [3.3] RESULT CARDS (flex-col, gap: 8px, padding: 12px 16px):
+           Each card (card, hover: left accent bar):
+             Top: badge-exam "EXAM" + badge-green "Level 3" + status badge
+             Title (16px, font-weight: 700, #0F172A)
+             Meta: "24 students · 20 questions · 30 min" (13px, #475569)
+             Stats row: "Avg: 82%" + "Highest: A+" + "Pass Rate: 18/24"
+                         (12px, #475569, display: flex, gap: 12px)
+             Actions: "View Results" btn-sm + "↓ Export" btn-sm-outline (if published)
+           
+           4 cards:
+             "Q3 Mental Arithmetic" PUBLISHED EXAM L3 Avg 82% 
+             "Q2 Mental Arithmetic" PUBLISHED EXAM L3 Avg 79%
+             "Flash Anzan Level 2" YET TO EVALUATE TEST L2
+             "Mid-Term Practice" PUBLISHED TEST L3 Avg 76%
+
+[4] ADMIN BOTTOM NAV (Results active)
+
+<!-- SCREEN-COMPLETE: a-results-hub -->
+
+------------------------------------------------------------
+SCREEN 36 — RESULT DETAIL ADMIN VIEW (id: a-results-detail)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] PAGE TOPBAR: back + "Q3 Mental Arithmetic"
+    Right: "Release Results" btn-sm (bg: #1A3829, color: #fff) if not published
+           OR "Published ✓" badge-success if already published
+[3] CONTENT:
+    [3.1] Badge row: badge-exam "EXAM" + badge-green "PUBLISHED" + "Level 3 · 30 min"
+    [3.2] Score panel (same pattern as student detail):
+           border-left: 4px solid #1A3829
+           Average "82%" / "AVERAGE SCORE"
+           Highest "A+" / "HIGHEST GRADE"
+    [3.3] Stats strip: "20 Took" + "3 Missed" + "Pass Rate 75%"
+    [3.4] "VIEW STUDENT LIST" button (btn-secondary) — opens drawer
+    [3.5] Grade distribution section header + 
+           Simple horizontal bar chart (using div bars):
+             "A+ (3)" — bar width: 12.5%, bg: #1A3829
+             "A  (6)" — bar width: 25%, bg: #2D6A4F
+             "B  (5)" — bar width: 20.8%, bg: #40916C
+             "C  (3)" — bar width: 12.5%, bg: #F59E0B
+             "F  (3)" — bar width: 12.5%, bg: #DC2626
+             Each bar: height: 24px, border-radius: 6px,
+                        label left + count right, font-size: 13px
+
+[4] ADMIN BOTTOM NAV (Results active)
+
+<!-- SCREEN-COMPLETE: a-results-detail -->
+
+------------------------------------------------------------
+SCREEN 37 — ACTIVITY LOG (id: a-activity-log)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] ADMIN TOPBAR: "Activity Log" + hamburger
+[3] CONTENT:
+    [3.1] Filter row (padding: 8px 16px, overflow-x: scroll):
+           "Last 7 Days ▾" chip + "All Users ▾" chip + "All Actions ▾" chip
+    [3.2] Date divider: "Today, Jun 15 2026" 
+           (10px, uppercase, #94A3B8, font-weight: 700,
+            padding: 12px 16px 8px)
+    [3.3] LOG ENTRIES (flex-col, gap: 6px, padding: 0 16px):
+           Each entry (bg: #FFFFFF, border: 1px solid #E2E8F0, 
+                        border-radius: 12px, padding: 12px 14px):
+             Row 1: time (DM Mono, 11px, #94A3B8) + user name (12px, font-weight: 700, #0F172A)
+                     + role badge (badge-exam "ADMIN" / badge-neutral "STUDENT")
+             Row 2: Action description (13px, #475569, margin-top: 4px)
+             Row 3: "Target: Q3 Mental Arithmetic" (12px, #94A3B8, margin-top: 2px)
+             
+           Show 5 entries:
+             10:15:02 · Admin User (ADMIN) · "Started Exam Session" · Q3 Mental Arithmetic
+             10:16:45 · Aditi Sharma (STUDENT) · "Joined Exam" · Q3 Mental Arithmetic
+             10:45:12 · Aditi Sharma (STUDENT) · "Submitted Exam" · Q3 Mental Arithmetic
+             10:50:00 · Admin User (ADMIN) · "Released Results" · Q3 Mental Arithmetic
+             09:30:14 · Admin User (ADMIN) · "Created Assessment" · Q4 Mental Arithmetic
+             
+    [3.4] "Read-only — cannot be edited or deleted." note
+           (12px, #94A3B8, text-align: center, padding: 12px)
+
+[4] ADMIN BOTTOM NAV
+
+<!-- SCREEN-COMPLETE: a-activity-log -->
+
+------------------------------------------------------------
+SCREEN 38 — ANNOUNCEMENTS (id: a-announcements)
+------------------------------------------------------------
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] ADMIN TOPBAR: "Announcements" + hamburger
+[3] CONTENT:
+    [3.1] COMPOSE CARD (card, bg: #FFFFFF, margin: 12px 16px):
+           "Compose Announcement" section title
+           Inputs:
+             "Title" / placeholder "e.g. Upcoming Exam Schedule"
+             "Message Body" / textarea (height: 96px, resize: none, 
+                                         placeholder "Write your announcement here...")
+             "Audience" / select dropdown:
+               options: All Students, Level 1 Only, Level 2 Only, Level 3 Only
+               showing: "All Students" selected
+           "Send Announcement" btn-primary (margin-top: 8px)
+           
+    [3.2] DELIVERY HISTORY header "SENT ANNOUNCEMENTS"
+    
+    [3.3] 3 sent announcement rows (cards):
+           Each: megaphone icon (16px, #94A3B8) + 
+                 Title (14px, font-weight: 600, #0F172A) + 
+                 "→ All Students · Jun 12" (12px, #475569)
+           
+           "Exams resume next week — prepare your devices"
+           "Q2 Results have been published"
+           "System maintenance scheduled for Sunday"
+
+[4] ADMIN BOTTOM NAV
+
+<!-- SCREEN-COMPLETE: a-announcements -->
+
+------------------------------------------------------------
+SCREEN 39 — SETTINGS (id: a-settings)
+------------------------------------------------------------
+NOTE: Screen count is 39 (38 listed + settings which was in SECTION 7 as 39)
+Phone bg: #F8FAFC
+Status bar bg: #FFFFFF, text: #0F172A
+
+[1] STATUS BAR
+[2] ADMIN TOPBAR: "Settings" + hamburger
+[3] CONTENT (flex-col, gap: 0, padding: 12px 16px):
+    [3.1] Section: "INSTITUTION INFO" header
+          Card with fields (input groups):
+            "Institution Name" / "Mindspark Abacus Institute"
+            "Admin Email" / "admin@mindspark.edu"
+            "City / Location" / "Manendragarh, CG"
+          Logo upload: dashed border box (bg: #F8FAFC, border: 1.5px dashed #CBD5E1,
+            border-radius: 10px, padding: 20px, text-align: center):
+            "Upload Logo" (13px, #475569) + "Drag & drop or tap to choose"
+            (11px, #94A3B8)
+            
+    [3.2] Section: "GRADE BOUNDARIES" header
+          Segmented control: "EXAM" | "TEST"
+          Grade rows (card):
+            Each row: Grade pill ("A+") + From-To inputs side by side + condition
+            "A+" · 95% – 100%
+            "A"  · 85% – 94%
+            "B"  · 75% – 84%
+            "C"  · 65% – 74%
+            "F"  · Below 65%
+            Each row: display: flex, align-items: center, gap: 10px, padding: 10px 0,
+                        border-bottom: 1px solid #E2E8F0 (except last)
+    
+    [3.3] Section: "SESSION SETTINGS" header
+          Card: "Session Timeout (minutes)" input with value "30"
+          
+    [3.4] STICKY SAVE BAR (bg: #FFFBEB, border: 1px solid #FDE68A,
+           border-radius: 10px, padding: 12px 16px,
+           display: flex, align-items: center, justify-content: space-between,
+           margin-top: 8px):
+           ⚠ "Unsaved changes" (13px, font-weight: 600, #92400E)
+           "Save Changes" btn-sm (bg: #1A3829)
+
+[4] ADMIN BOTTOM NAV
+
+<!-- SCREEN-COMPLETE: a-settings -->
+
+
+=== SECTION 9: JUMP DROPDOWN — FULL OPTION LIST ===
+
+The <select> in the top nav must contain ALL of these options 
+grouped in 3 optgroups. Update count to "39 screens":
+
+AUTH optgroup:
+  "Login" → #auth-login
+
+STUDENT optgroup (18 options):
+  "Student Dashboard — Default" → #s-dashboard
+  "Student Dashboard — Live Exam" → #s-dashboard-live
+  "Exams & Tests" → #s-exams
+  "Student Consent" → #s-consent
+  "Exam Lobby" → #s-lobby
+  "Flash Anzan — Number Display" → #s-flash-display
+  "Flash Anzan — Tab-Switch Paused" → #s-flash-paused
+  "Flash Anzan — MCQ Answering" → #s-flash-mcq
+  "Flash Anzan — Navigator Sheet" → #s-flash-nav-sheet
+  "Flash Anzan — MCQ Low Time" → #s-flash-mcq-urgent
+  "Flash Anzan — Review & Submit" → #s-flash-review
+  "Exam Completion" → #s-exam-complete
+  "Results History" → #s-results-list
+  "Result Detail" → #s-results-detail
+  "Answer Sheet" → #s-answer-sheet
+  "Student Profile — Collapsed" → #s-profile
+  "Student Profile — Expanded" → #s-profile-expanded
+
+ADMIN optgroup (20 options):
+  "Admin Dashboard" → #a-dashboard
+  "Admin Navigation Drawer" → #a-drawer
+  "Students — List" → #a-students-list
+  "Students — Detail (Read)" → #a-student-detail
+  "Students — Detail (Edit)" → #a-student-edit
+  "Add Student Sheet" → #a-student-add-sheet
+  "Levels — List" → #a-levels-list
+  "Level Detail" → #a-level-detail
+  "Add Level Sheet" → #a-level-add-sheet
+  "Assessments — List" → #a-assessments-list
+  "Wizard Step 1 — Type" → #a-wizard-step1
+  "Wizard Step 2 — Settings" → #a-wizard-step2
+  "Wizard Step 3 — Questions" → #a-wizard-step3
+  "Flash Config — Step 4" → #a-flash-config
+  "Live Monitor — Hub" → #a-monitor-hub
+  "Live Monitor — Detail" → #a-monitor-detail
+  "Results Hub" → #a-results-hub
+  "Result Detail (Admin)" → #a-results-detail
+  "Activity Log" → #a-activity-log
+  "Announcements" → #a-announcements
+  "Settings" → #a-settings
+
+
+=== SECTION 10: FINAL COMPLETION CHECKLIST ===
+
+Before outputting the file, verify internally:
+
+□ File starts with <!DOCTYPE html> and ends with </html>
+□ Google Fonts link is present in <head> (DM Sans + DM Mono)
+□ All CSS variables use ONLY approved hex values from Section 5
+□ Viewer topnav is sticky green (#1A3829), shows "39 screens"
+□ Jump dropdown has all 39 options in 3 optgroups
+□ All 39 screen blocks exist in the file in order
+□ Every screen block has: id, screen-title, screen-path text, phone-wrap
+□ Every phone frame has: status bar, home bar
+□ Flash Display screen (s-flash-display) uses #0F172A background
+□ Flash Paused screen (s-flash-paused) has the warning card overlay
+□ Flash MCQ screen (s-flash-mcq) has compact dot navigator — NO right sidebar
+□ Flash Config screen (a-flash-config) has live preview on dark bg (#0F172A)
+□ Flash Config screen shows both negative (red) and positive (white) numbers in preview
+□ Every screen has <!-- SCREEN-COMPLETE: [id] --> comment at the end
+□ No iframes exist anywhere in the file
+□ No external CDN links except Google Fonts
+□ No placeholder text, no lorem ipsum, no "[content here]"
+□ Student screens have bottom nav with 4 tabs
+□ Admin screens have bottom nav with 4 tabs + hamburger topbar
+□ Exam focus screens (lobby, flash, exam complete) have NO bottom nav
+□ The file is valid HTML that opens and renders in Chrome without errors
+
+================================================================
+END OF PROMPT
+================================================================

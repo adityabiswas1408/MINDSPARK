@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F1F5F9; color: #0A0F1A; font-size: 16px; line-height: 1.5; padding: 32px 24px; -webkit-font-smoothing: antialiased; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+
+  .exam-page { min-height: 820px; background: #FFFFFF; display: flex; flex-direction: column; position: relative; }
+
+  /* ══ Minimal 56px top strip ══ */
+  .exam-strip { height: 56px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 24px; gap: 20px; flex-shrink: 0; }
+  .strip-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .strip-title { font-size: 13px; font-weight: 600; color: #334155; letter-spacing: 0.01em; }
+  .progress-label { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #475569; padding: 4px 10px; background: #F1F5F9; border-radius: 9999px; }
+  .strip-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .timer-primary { display: flex; align-items: center; gap: 8px; padding: 6px 16px; background: #EFFAF4; border: 1px solid #B7E4C7; border-radius: 10px; }
+  .timer-primary-label { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-primary-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 700; color: #1A3829; letter-spacing: -0.03em; line-height: 1; }
+  .timer-secondary { display: flex; align-items: center; gap: 6px; padding: 5px 11px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; }
+  .timer-secondary-label { font-size: 9px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-secondary-value { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #334155; letter-spacing: -0.015em; }
+  .strip-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .sync-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 9999px; font-size: 11px; font-weight: 600; color: #475569; }
+  .sync-pill::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: #1A3829; }
+  .exit-btn { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; font-family: inherit; }
+  .exit-btn svg { width: 12px; height: 12px; stroke-width: 2.5; }
+
+  /* ══ Screen 1a — Full pre-flash interstitial ══ */
+  .preflash-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 40px;
+  }
+  .focus-dot { width: 32px; height: 32px; border-radius: 9999px; background: #1A3829; box-shadow: 0 0 0 12px rgba(26, 56, 41, 0.08), 0 0 0 28px rgba(26, 56, 41, 0.04); position: relative; }
+  .focus-dot::before { content: ''; position: absolute; inset: -50px; border-radius: 9999px; border: 2px dashed rgba(26, 56, 41, 0.15); animation: breathe-dot 2s ease-in-out infinite; }
+  @keyframes breathe-dot { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } }
+  .preflash-countdown { font-family: 'DM Mono', monospace; font-size: 180px; font-weight: 700; color: #1A3829; line-height: 1; letter-spacing: -0.06em; }
+  .preflash-hint { font-size: 15px; color: #475569; font-weight: 500; text-align: center; max-width: 420px; }
+  .preflash-hint strong { color: #1A3829; font-weight: 700; }
+
+  /* ══ Screen 1b — Mini-reset between questions ══ */
+  .mini-reset-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 20px;
+  }
+  .mini-reset-dot {
+    width: 24px; height: 24px;
+    border-radius: 9999px;
+    background: #1A3829;
+    box-shadow: 0 0 0 10px rgba(26, 56, 41, 0.1), 0 0 0 20px rgba(26, 56, 41, 0.04);
+    animation: mini-pulse 1s ease-in-out;
+    position: relative;
+  }
+  @keyframes mini-pulse { 0% { transform: scale(0.8); opacity: 0.6; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  .mini-reset-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+  .mini-reset-progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #94A3B8;
+    letter-spacing: 0.08em;
+    margin-top: 8px;
+  }
+
+  /* ══ EXAM MCQ view ══ */
+  .mcq-main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 40px 36px; }
+  .mcq-inner { width: 100%; max-width: 720px; }
+
+  /* Vertical equation panel */
+  .equation-panel {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 36px 40px 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .equation-label {
+    font-size: 11px; font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+
+  /* Vertical arithmetic */
+  .vert-equation {
+    display: inline-grid;
+    grid-template-columns: 36px auto;
+    align-items: baseline;
+    row-gap: 6px;
+  }
+  .vert-op {
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+    color: #475569;
+    font-weight: 500;
+  }
+  .vert-num {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    color: #0A0F1A;
+    font-weight: 500;
+    text-align: right;
+    min-width: 120px;
+  }
+  .vert-line {
+    grid-column: 1 / 3;
+    height: 2px;
+    background: #0A0F1A;
+    margin-top: 6px;
+    margin-left: 36px;
+  }
+  .vert-result {
+    grid-column: 1 / 3;
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    color: #94A3B8;
+    font-weight: 500;
+    padding-top: 4px;
+  }
+
+  /* Size variants based on sequence length */
+  .vert-equation.size-lg { font-size: 36px; }
+  .vert-equation.size-md { font-size: 30px; }
+  .vert-equation.size-sm { font-size: 24px; }
+  .vert-equation.size-lg .vert-num { min-width: 130px; }
+  .vert-equation.size-md .vert-num { min-width: 115px; }
+  .vert-equation.size-sm .vert-num { min-width: 95px; }
+  .vert-equation.size-lg .vert-op { font-size: 32px; }
+  .vert-equation.size-md .vert-op { font-size: 26px; }
+  .vert-equation.size-sm .vert-op { font-size: 22px; }
+
+  /* 2×2 option grid */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .option-tile {
+    background: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 150ms;
+    min-height: 92px;
+  }
+  .option-tile:hover { border-color: #52B788; background: #F0FDF4; }
+  .option-tile.selected { border-color: #1A3829; border-width: 3px; background: #EFFAF4; box-shadow: 0 4px 12px rgba(26, 56, 41, 0.08); }
+  .option-letter {
+    width: 42px; height: 42px;
+    border-radius: 9999px;
+    background: #F1F5F9;
+    color: #475569;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .option-tile.selected .option-letter { background: #1A3829; color: #FFFFFF; }
+  .option-value {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    font-weight: 500;
+    color: #0A0F1A;
+    letter-spacing: -0.01em;
+  }
+
+  .confirm-row { display: flex; justify-content: center; margin-top: 4px; }
+  .confirm-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 0 32px; height: 54px;
+    background: #1A3829;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(26, 56, 41, 0.25), 0 2px 6px rgba(26, 56, 41, 0.15);
+    min-width: 240px;
+    justify-content: center;
+  }
+  .confirm-btn svg { width: 18px; height: 18px; stroke-width: 2.5; }
+  .confirm-btn.disabled { background: #E2E8F0; color: #94A3B8; box-shadow: none; cursor: not-allowed; }
+
+  .kbd-hint {
+    position: absolute;
+    bottom: 20px;
+    right: 24px;
+    font-size: 11px;
+    color: #94A3B8;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .kbd-hint kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #334155;
+    line-height: 1;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 1a — Full pre-flash interstitial (before first question only)</h2>
+<p class="note">Only shown ONCE, before the very first flash sequence of a TEST. Big focus dot + dashed breathing ring + 180px DM Mono countdown + hint.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: TEST — full pre-flash interstitial (first question)</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Flash Anzan — Level 3</div>
+        <div class="progress-label">Q 1 / 10</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">Flash starts in</span>
+          <span class="timer-primary-value" style="font-size:14px">—</span>
+        </div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">14:57</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="preflash-main">
+      <div class="focus-dot"></div>
+      <div class="preflash-countdown">3</div>
+      <div class="preflash-hint">Watch the <strong>center of the screen</strong>. Numbers will start flashing in <strong>3 seconds</strong>.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 1b — Mini-reset between subsequent questions</h2>
+<p class="note">Shown between questions 2 through N on a TEST. Just a single pulsing dot + "READY" label for ~1 second before the next flash begins. Much shorter than the full interstitial — students are already in the flow.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: TEST — mini-reset (Q2, Q3, ... Q10)</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Flash Anzan — Level 3</div>
+        <div class="progress-label">Q 5 / 10</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">Next flash in</span>
+          <span class="timer-primary-value" style="font-size:14px">1s</span>
+        </div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">12:34</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mini-reset-main">
+      <div class="mini-reset-dot"></div>
+      <div class="mini-reset-label">Ready</div>
+      <div class="mini-reset-progress-label">Q 5 / 10</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 3a — EXAM MCQ view with 4-operand vertical equation (example 1)</h2>
+<p class="note">Vertical arithmetic panel — operands stacked with operator signs on the left, right-aligned. Horizontal rule under the equation and "???" placeholder for the answer. Below: 2×2 option grid + Confirm button.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: EXAM MCQ — 4 operands "892 − 456 + 124 + 75"</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 3 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">This Question</span>
+          <span class="timer-primary-value">00:42</span>
+        </div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">14:23</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 3</div>
+          <div class="vert-equation size-lg">
+            <span class="vert-op"></span><span class="vert-num">892</span>
+            <span class="vert-op">−</span><span class="vert-num">456</span>
+            <span class="vert-op">+</span><span class="vert-num">124</span>
+            <span class="vert-op">+</span><span class="vert-num">75</span>
+            <div class="vert-line"></div>
+            <div class="vert-result">???</div>
+          </div>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile">
+            <div class="option-letter">A</div>
+            <div class="option-value">625</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">B</div>
+            <div class="option-value">635</div>
+          </div>
+          <div class="option-tile selected">
+            <div class="option-letter">C</div>
+            <div class="option-value">645</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">D</div>
+            <div class="option-value">655</div>
+          </div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">
+            Confirm Answer
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 3b — EXAM MCQ view with 4-operand vertical equation (example 2, mixed operators)</h2>
+<p class="note">Another 4-operand example with a different operator pattern (+/-/+/-) and different digit widths. Shows how the vertical panel scales with smaller numbers — right-alignment and tabular-nums keep the columns tidy.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: EXAM MCQ — 4 operands "245 + 378 − 42 + 108"</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 7 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">This Question</span>
+          <span class="timer-primary-value">01:05</span>
+        </div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">09:47</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 7</div>
+          <div class="vert-equation size-lg">
+            <span class="vert-op"></span><span class="vert-num">245</span>
+            <span class="vert-op">+</span><span class="vert-num">378</span>
+            <span class="vert-op">−</span><span class="vert-num">42</span>
+            <span class="vert-op">+</span><span class="vert-num">108</span>
+            <div class="vert-line"></div>
+            <div class="vert-result">???</div>
+          </div>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile">
+            <div class="option-letter">A</div>
+            <div class="option-value">679</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">B</div>
+            <div class="option-value">689</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">C</div>
+            <div class="option-value">699</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">D</div>
+            <div class="option-value">709</div>
+          </div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn disabled">
+            Confirm Answer
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 3c — EXAM MCQ view with 10-operand vertical equation</h2>
+<p class="note">Long sequence. Font scales down to 24px (size-sm) to keep the panel from overflowing vertically. Still right-aligned, still tabular-nums, still the same horizontal rule and "???" result placeholder.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: EXAM MCQ — 10 operands (long sequence)</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 12 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">This Question</span>
+          <span class="timer-primary-value">01:58</span>
+        </div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">06:14</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 12</div>
+          <div class="vert-equation size-sm">
+            <span class="vert-op"></span><span class="vert-num">124</span>
+            <span class="vert-op">+</span><span class="vert-num">387</span>
+            <span class="vert-op">−</span><span class="vert-num">56</span>
+            <span class="vert-op">+</span><span class="vert-num">201</span>
+            <span class="vert-op">−</span><span class="vert-num">142</span>
+            <span class="vert-op">+</span><span class="vert-num">89</span>
+            <span class="vert-op">−</span><span class="vert-num">213</span>
+            <span class="vert-op">+</span><span class="vert-num">176</span>
+            <span class="vert-op">−</span><span class="vert-num">45</span>
+            <span class="vert-op">+</span><span class="vert-num">128</span>
+            <div class="vert-line"></div>
+            <div class="vert-result">???</div>
+          </div>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile">
+            <div class="option-letter">A</div>
+            <div class="option-value">639</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">B</div>
+            <div class="option-value">649</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">C</div>
+            <div class="option-value">659</div>
+          </div>
+          <div class="option-tile selected">
+            <div class="option-letter">D</div>
+            <div class="option-value">669</div>
+          </div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">
+            Confirm Answer
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+</body>
+</html>

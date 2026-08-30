@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Student Assessment — Table format v5 (tightened)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F1F5F9; color: #0A0F1A; font-size: 16px; line-height: 1.5; padding: 32px 24px; -webkit-font-smoothing: antialiased; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+
+  .exam-page { min-height: 820px; background: #FFFFFF; display: flex; flex-direction: column; position: relative; }
+
+  /* ══ Minimal 56px top strip ══ */
+  .exam-strip { height: 56px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 24px; gap: 20px; flex-shrink: 0; }
+  .strip-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .strip-title { font-size: 13px; font-weight: 600; color: #334155; }
+  .progress-label { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #475569; padding: 4px 10px; background: #F1F5F9; border-radius: 9999px; }
+  .strip-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .timer-primary { display: flex; align-items: center; gap: 8px; padding: 6px 16px; background: #EFFAF4; border: 1px solid #B7E4C7; border-radius: 10px; }
+  .timer-primary-label { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-primary-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 700; color: #1A3829; letter-spacing: -0.03em; line-height: 1; }
+  .timer-secondary { display: flex; align-items: center; gap: 6px; padding: 5px 11px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; }
+  .timer-secondary-label { font-size: 9px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-secondary-value { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #334155; }
+  .strip-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .sync-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 9999px; font-size: 11px; font-weight: 600; color: #475569; }
+  .sync-pill::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: #1A3829; }
+  .exit-btn { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; font-family: inherit; }
+  .exit-btn svg { width: 12px; height: 12px; stroke-width: 2.5; }
+
+  /* MCQ main */
+  .mcq-main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 40px 36px; }
+  .mcq-inner { width: 100%; max-width: 720px; }
+
+  /* Equation panel shell */
+  .equation-panel {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 32px 40px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .equation-label {
+    font-size: 11px; font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 18px;
+  }
+
+  /* ══ TABLE FORMAT v5 — tightened gap ══
+     Changes from v4:
+     - op-col width 68 → 40, padding-right 24 → 8
+     - num-col padding-left 24 → 10, min-width 160 → 112
+     - border-right between op and num reduced 2px → 1px
+     - operator now right-aligned in its cell (was centered) so it hugs the divider
+     - number left padding minimised so it hugs the divider from the other side
+     Result: operator and number sit ~18px apart instead of ~48px apart. */
+  .table-equation {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid #1A3829;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(26, 56, 41, 0.1);
+  }
+  .table-equation td {
+    padding: 14px 0;
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1.5px solid #94A3B8;
+    background: #FFFFFF;
+    font-weight: 600;
+  }
+  .table-equation tr:last-child td { border-bottom: none; }
+  .table-equation .op-col {
+    width: 40px;
+    text-align: right;
+    padding-right: 8px;
+    color: #475569;
+    background: #F1F5F9;
+    border-right: 1px solid #CBD5E1;
+    font-weight: 700;
+  }
+  .table-equation .op-col.minus { color: #991B1B; }
+  .table-equation .num-col {
+    text-align: right;
+    padding-left: 10px;
+    padding-right: 22px;
+    color: #0A0F1A;
+    min-width: 112px;
+  }
+  .table-equation .num-col.negative { color: #991B1B; }
+  .table-equation .result-row .op-col {
+    background: #EFFAF4;
+    color: #1A3829;
+    font-size: 1.2em;
+    border-top: 2px solid #0A0F1A;
+  }
+  .table-equation .result-row .num-col {
+    background: #F8FAFC;
+    color: #94A3B8;
+    border-top: 2px solid #0A0F1A;
+  }
+  .table-equation.size-lg td { font-size: 34px; }
+  .table-equation.size-sm td { font-size: 22px; padding: 10px 0; }
+  .table-equation.size-sm .op-col { padding-right: 8px; }
+  .table-equation.size-sm .num-col { padding-left: 10px; padding-right: 20px; }
+
+  /* 2×2 option grid */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .option-tile {
+    background: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    min-height: 92px;
+  }
+  .option-tile:hover { border-color: #52B788; background: #F0FDF4; }
+  .option-tile.selected { border-color: #1A3829; border-width: 3px; background: #EFFAF4; box-shadow: 0 4px 12px rgba(26, 56, 41, 0.08); }
+  .option-letter {
+    width: 42px; height: 42px;
+    border-radius: 9999px;
+    background: #F1F5F9;
+    color: #475569;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700;
+  }
+  .option-tile.selected .option-letter { background: #1A3829; color: #FFFFFF; }
+  .option-value {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    font-weight: 500;
+    color: #0A0F1A;
+  }
+
+  .confirm-row { display: flex; justify-content: center; margin-top: 4px; }
+  .confirm-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 0 32px; height: 54px;
+    background: #1A3829;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(26, 56, 41, 0.25);
+    min-width: 240px;
+    justify-content: center;
+  }
+  .confirm-btn svg { width: 18px; height: 18px; stroke-width: 2.5; }
+
+  .kbd-hint {
+    position: absolute;
+    bottom: 20px;
+    right: 24px;
+    font-size: 11px;
+    color: #94A3B8;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .kbd-hint kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #334155;
+    line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 1 — 4 operands · Table format (tightened)</h2>
+<p class="note">Vertical table only. Operator and number now sit ~18px apart instead of ~48px. <code>op-col</code> narrowed to 40px with <code>text-align:right</code>, <code>num-col</code> padding-left dropped to 10px. Divider reduced to 1px slate so the two columns read as one tight block. Negative rows (row 2: <code>−456</code>) in crimson <code>#991B1B</code>.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: 4 operands table format</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 3 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary"><span class="timer-primary-label">This Question</span><span class="timer-primary-value">00:42</span></div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">14:23</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 3</div>
+          <table class="table-equation size-lg">
+            <tbody>
+              <tr><td class="op-col">&nbsp;</td><td class="num-col">892</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">456</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">124</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">75</td></tr>
+              <tr class="result-row"><td class="op-col">=</td><td class="num-col">???</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile"><div class="option-letter">A</div><div class="option-value">625</div></div>
+          <div class="option-tile"><div class="option-letter">B</div><div class="option-value">635</div></div>
+          <div class="option-tile selected"><div class="option-letter">C</div><div class="option-value">645</div></div>
+          <div class="option-tile"><div class="option-letter">D</div><div class="option-value">655</div></div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">Confirm Answer<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 2 — 10 operands · Table format (tightened)</h2>
+<p class="note">Same tight-gap table, longer 10-row sequence. Font scales to 22px and row padding compresses to 10px vertical so all 10 rows + result row fit cleanly. Four negative rows (<code>56</code>, <code>142</code>, <code>213</code>, <code>45</code>) in crimson.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: 10 operands table format</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 12 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary"><span class="timer-primary-label">This Question</span><span class="timer-primary-value">01:58</span></div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">06:14</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 12</div>
+          <table class="table-equation size-sm">
+            <tbody>
+              <tr><td class="op-col">&nbsp;</td><td class="num-col">124</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">387</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">56</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">201</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">142</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">89</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">213</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">176</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">45</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">128</td></tr>
+              <tr class="result-row"><td class="op-col">=</td><td class="num-col">???</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile"><div class="option-letter">A</div><div class="option-value">639</div></div>
+          <div class="option-tile"><div class="option-letter">B</div><div class="option-value">649</div></div>
+          <div class="option-tile"><div class="option-letter">C</div><div class="option-value">659</div></div>
+          <div class="option-tile selected"><div class="option-letter">D</div><div class="option-value">669</div></div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">Confirm Answer<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+</body>
+</html>

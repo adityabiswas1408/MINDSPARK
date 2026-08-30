@@ -1,0 +1,4709 @@
+[
+  {
+    "page_num": 1,
+    "width": 1116.0,
+    "height": 792.0,
+    "has_image": false,
+    "image_count": 0,
+    "spans": [
+      {
+        "text": "MINDSPARK",
+        "font": "Helvetica-Bold",
+        "size": 34.0,
+        "color": "#ffffff",
+        "bbox": [
+          36.0,
+          255.6199951171875,
+          241.87002563476562,
+          302.43798828125
+        ]
+      },
+      {
+        "text": "Final Mockups \u2014 Design Review",
+        "font": "Helvetica",
+        "size": 16.0,
+        "color": "#b7e4c7",
+        "bbox": [
+          36.0,
+          306.79998779296875,
+          270.7200012207031,
+          328.78399658203125
+        ]
+      },
+      {
+        "text": "60 screens  \u00b7  generated August 22, 2026",
+        "font": "Helvetica",
+        "size": 11.0,
+        "color": "#74c69d",
+        "bbox": [
+          36.0,
+          340.17498779296875,
+          237.79493713378906,
+          355.28900146484375
+        ]
+      },
+      {
+        "text": "One mockup per page, with its accompanying design note.",
+        "font": "Helvetica",
+        "size": 9.0,
+        "color": "#52b788",
+        "bbox": [
+          36.0,
+          722.3250122070312,
+          269.61297607421875,
+          734.6909790039062
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 2,
+    "width": 1116.0,
+    "height": 400.0,
+    "has_image": false,
+    "image_count": 0,
+    "spans": [
+      {
+        "text": "STUDENT",
+        "font": "Helvetica-Bold",
+        "size": 28.0,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          160.0399932861328,
+          168.2160186767578,
+          198.59600830078125
+        ]
+      },
+      {
+        "text": "28 screens in this section",
+        "font": "Helvetica",
+        "size": 11.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          203.1750030517578,
+          159.49697875976562,
+          218.28900146484375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 3,
+    "width": 1116.0,
+    "height": 886.875,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT DASHBOARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          181.43499755859375,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Student Dashboard \u2014 LIVE exam state",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          331.1839904785156,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-dashboard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Large greeting at the top ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          153.32699584960938,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          153.32699584960938,
+          87.89500427246094,
+          163.69049072265625,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": " full-width LIVE hero card with embedded identity strip, pulsing LIVE NOW badge, big exam title, DM Mono 44px countdown timer, and an extra-large forest-green \"Enter Examination Hall ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          163.69049072265625,
+          87.2125015258789,
+          1031.1070556640625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          1031.107177734375,
+          87.89500427246094,
+          1041.470703125,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": "\" CTA",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          1041.470703125,
+          87.2125015258789,
+          1069.1171875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "button.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          68.10900115966797,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 1 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          864.8125,
+          1079.9998779296875,
+          875.1174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 4,
+    "width": 1116.0,
+    "height": 872.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT DASHBOARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          181.43499755859375,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Student Dashboard \u2014 Empty state (no live exam)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          410.3039855957031,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-dashboard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "This is the default state \u2014 95% of loads. Reassuring card with a shield icon, friendly title, calming subtitle, and a subtle \"View My Results\" escape hatch.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          742.58740234375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 2 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          850.3125,
+          1079.9998779296875,
+          860.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 5,
+    "width": 1116.0,
+    "height": 1030.875,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT EXAMS & TESTS",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          194.67799377441406,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 1 \u2014 Exams list (populated, 3 sections)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          385.4559631347656,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          376.7998962402344,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Full student chrome. Three sections stacked: Live Now (red dot) / Upcoming (slate dot) / Completed (slate dot, muted rows). Live card has a prominent bordered treatment with countdown + Enter button. Upcoming rows have",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1075.6376953125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "date badges + \"Not live yet\" hint. Completed rows have green \"Completed\" chips + View Results link.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          504.9407043457031,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 3 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          1008.8125,
+          1079.9998779296875,
+          1019.1174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 6,
+    "width": 1116.0,
+    "height": 887.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT EXAMS & TESTS",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          194.67799377441406,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 2 \u2014 Exams list (empty state \u2014 type-specific)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          433.4719543457031,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          376.7998962402344,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Blue book-open icon + \"No exams right now\" + copy explaining what EXAMS are for newer students. Offline banner shown at the top as an example of the warning banner.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          830.766845703125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 4 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          865.3125,
+          1079.9998779296875,
+          875.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 7,
+    "width": 1116.0,
+    "height": 887.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT EXAMS & TESTS",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          194.67799377441406,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 3 \u2014 Tests list (type-specific empty state)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          403.23199462890625,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          376.7998962402344,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Same shell as Exams, but the Tests nav item is active and the empty state icon is purple zap + different copy explaining what TESTS (Flash Anzan) are.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          743.01806640625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 5 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          865.3125,
+          1079.9998779296875,
+          875.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 8,
+    "width": 1116.0,
+    "height": 887.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT EXAMS & TESTS",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          194.67799377441406,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 4 \u2014 Exam info detail (PUBLISHED not-yet-live)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          447.6479797363281,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          376.7998962402344,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Student clicks an upcoming row ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          186.5594940185547,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          186.5594940185547,
+          87.89500427246094,
+          196.92298889160156,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": " lands here. Read-only card with status pill, title, meta, 3 info cells (duration/questions/level), and a blue \"Not yet available\" notice explaining that the exam will open when the teacher starts it.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          196.92298889160156,
+          87.2125015258789,
+          1078.60888671875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 6 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          865.3125,
+          1079.9998779296875,
+          875.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 9,
+    "width": 1116.0,
+    "height": 901.875,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT EXAMS & TESTS",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          194.67799377441406,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 5 \u2014 Lobby (full-canvas, sidebar hidden)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          396.9919738769531,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-exams-tests.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          376.7998962402344,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Calm pre-assessment screen. Sidebar is hidden entirely. Breathing circle animation, 76px DM Mono countdown, exam title, Optimal network pill, consent acknowledgment, and an extra-large \"I'm Ready\" CTA button. Exit",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1053.849853515625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "button in the top-left corner for escape.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          216.34799194335938,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 7 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          879.8125,
+          1079.9998779296875,
+          890.1174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 10,
+    "width": 1116.0,
+    "height": 945.0,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a ASSESSMENT-TAKING (V5)",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          196.08901977539062,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 1 \u2014 4 operands \u00b7 Table format (tightened)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          409.42401123046875,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-assessment-v5.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          391.1998596191406,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Vertical table only. Operator and number now sit ~18px apart instead of ~48px.op-colnarrowed to 40px withtext-align:right,num-colpadding-left dropped to 10px. Divider reduced to 1px slate so the two columns read as one tight",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1080.0010986328125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "block. Negative rows (row 2:",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          167.86949157714844,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "\u2212",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          167.86949157714844,
+          102.39500427246094,
+          173.6339874267578,
+          116.07649993896484
+        ]
+      },
+      {
+        "text": "456) in crimson#991B1B.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          173.6339874267578,
+          101.7125015258789,
+          291.5174560546875,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 8 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          922.9375,
+          1079.9998779296875,
+          933.2424926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 11,
+    "width": 1116.0,
+    "height": 1076.0,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a ASSESSMENT-TAKING (V5)",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          196.08901977539062,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 2 \u2014 10 operands \u00b7 Table format (tightened)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          418.3199768066406,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-assessment-v5.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          391.1998596191406,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Same tight-gap table, longer 10-row sequence. Font scales to 22px and row padding compresses to 10px vertical so all 10 rows + result row fit cleanly. Four negative rows (56,142,213,45) in crimson.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          958.9405517578125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 9 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          921.1950073242188,
+          1053.9375,
+          1079.9998779296875,
+          1064.2425537109375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 12,
+    "width": 1116.0,
+    "height": 448.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a FLASH ANZAN TEST \u2014 INTERACTIVE EXPERIENCE",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          295.2669677734375,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Flash Anzan TEST \u2014 Interactive Experience",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          370.3359680175781,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": "/student/assessment/[id]/flash",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          180.0000457763672,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 10 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          426.1875,
+          1080.0001220703125,
+          436.49249267578125
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 13,
+    "width": 1116.0,
+    "height": 900.75,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 1 \u2014 List page \u00b7 happy path (mixed published + pending)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          518.3519287109375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Hero card showing the latest published result on top. Below it, filter chips (single-select), then one unified Academic Ledger with both published and pending rows. Pending rows show an amber \"Pending\" pill in the Grade",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1054.8370361328125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "column.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          72.76050567626953,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 11 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          878.6875,
+          1080.0001220703125,
+          888.9924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 14,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 2 \u2014 List page \u00b7 empty state (no submissions)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          437.0079650878906,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Student has never submitted an exam. Hero and ledger both replaced with a centred card that sends them to the Exams page.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          623.1394653320312,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 12 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 15,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 3 \u2014 List page \u00b7 filter empty state",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          339.2159729003906,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Student has results but the active filter (here: \"Pending\") returns zero matches. Hero and chips stay visible; ledger is replaced with a compact \"Clear filter\" reset.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          778.0355224609375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 13 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 16,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 4 \u2014 Detail page \u00b7 EXAM published, answer key unlocked",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          522.39990234375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Full happy path. Back link, header band (type/duration/date), big score panel with green rail, unlocked Answer Sheet CTA card.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          626.02685546875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 14 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 17,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 5 \u2014 Detail page \u00b7 published but answer key locked",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          477.05596923828125,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Score + grade visible, but admin hasn't released the answer key yet. The CTA card is in its locked state \u2014 non-interactive, no hover, no arrow.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          697.16455078125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 15 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 18,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 6 \u2014 Detail page \u00b7 TEST published",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          347.2159729003906,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Score panel mirrors the EXAM detail layout \u2014 Score + Grade.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          324.571533203125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 16 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 19,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 7 \u2014 Detail page \u00b7 pending (awaiting grading)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          430.76800537109375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Submission exists but admin hasn't published results. Amber rail, Clock icon, no score rendered. Answer sheet card is implicitly locked (pending implies not graded).",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          798.3636474609375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 17 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 20,
+    "width": 1116.0,
+    "height": 1871.43798828125,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 8 \u2014 Answer Sheet \u00b7 EXAM happy path (mixed correct / wrong / unanswered)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          670.847900390625,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Vertical scroll of question cards. EXAM questions render the v5 EquationTable. Tiles have four states: correct-and-picked (green + Check), correct-only (green), wrong-pick (crimson + X), neutral. Caption adapts. Time footer",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1070.062255859375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "with fallback.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          96.10201263427734,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 18 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1849.37548828125,
+          1080.0001220703125,
+          1859.6805419921875
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 21,
+    "width": 1116.0,
+    "height": 1016.18798828125,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.405487060546875,
+          150.75,
+          45.109989166259766
+        ]
+      },
+      {
+        "text": "Screen 9 \u2014 Answer Sheet \u00b7 TEST one-line reconstruction",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.88048553466797,
+          469.90399169921875,
+          68.91249084472656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54448699951172,
+          386.3998718261719,
+          80.53649139404297
+        ]
+      },
+      {
+        "text": "TEST questions store onlyflash_sequence(no written equation). Rendered as a single centred line with crimson negatives. Caption below explains the student saw these one at a time during the flash.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2129898071289,
+          959.8538818359375,
+          101.6399917602539
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 19 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          994.12548828125,
+          1080.0001220703125,
+          1004.4304809570312
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 22,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 10 \u2014 Answer Sheet \u00b7 locked state",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          348.12799072265625,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Student pasted the URL directly but admin hasn't released the answer key (or the submission is still pending). Centred lock card replaces the whole body.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          748.8140869140625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 20 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 23,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 11a \u2014 Admin Release card \u00b7 unreleased state",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          437.9519348144531,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Lives on the admin per-assessment detail page, directly above the answer-key view. Neutral grey rail when unreleased.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          590.3898315429688,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 21 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 24,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 11b \u2014 Admin Release card \u00b7 released state",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          419.2799377441406,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Green rail, CheckCircle icon, timestamp + actor from activity_logs, student unlock count explaining the gate logic interaction.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          612.2720336914062,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 22 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 25,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 12a \u2014 Confirmation dialog \u00b7 release direction",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          437.0239562988281,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Base UI dialog. Primary warning explains the gate logic: only students with published results see the answer sheet. Secondary warning only appears when zero published submissions exist for this paper.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          976.7379760742188,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 23 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 26,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a RESULTS FLOW",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 12b \u2014 Confirmation dialog \u00b7 un-release direction",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          462.7839660644531,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/1798-1776124309/content/student-results-flow.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          386.3998718261719,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Amber confirm button for the destructive-ish action. Copy notes that un-releasing does not retrieve what students already saw.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          621.3439331054688,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 24 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 27,
+    "width": 1116.0,
+    "height": 196.0,
+    "has_image": false,
+    "image_count": 0,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT PROFILE",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          163.03250122070312,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Student Profile mockup \u2014 3 frames",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          306.2879943847656,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/362-1776136481/content/student-profile.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          357.5999450683594,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Single read-only profile card with a minimal hero (avatar + name + role line). School Info section visible by default. More Info section collapses/expands as one block. NULL fields render asNot mentioned. Avatar falls back to",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1068.9384765625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "initials when avatar_url is null. No editable fields, no save flows. Standard student shell with Profile active in the sidebar (Help & Support nav entry removed).",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          763.1361694335938,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "This entry is an overview note for the frames that follow \u2014 no standalone visual for this card.",
+        "font": "Helvetica-Oblique",
+        "size": 11.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          124.22999572753906,
+          485.9659729003906,
+          139.12399291992188
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 25 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          173.9375,
+          1080.0001220703125,
+          184.24249267578125
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 28,
+    "width": 1116.0,
+    "height": 886.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT PROFILE",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          163.03250122070312,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Frame 1 \u2014 /student/profile \u00b7 default state (More info collapsed)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          510.7679748535156,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/362-1776136481/content/student-profile.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          357.5999450683594,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Hero strip + School Info section visible. More Info collapsed to a single toggle row showing the chevron pointing down. This is the landing state.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          699.8525390625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 26 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          864.1875,
+          1080.0001220703125,
+          874.4924926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 29,
+    "width": 1116.0,
+    "height": 894.7227172851562,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT PROFILE",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          163.03250122070312,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Frame 2 \u2014 /student/profile \u00b7 More Info expanded (all fields filled)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          523.23193359375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/362-1776136481/content/student-profile.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          357.5999450683594,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Same card with the toggle in expanded state. Personal info (DOB, gender) and guardian contacts visible. Consent shows the green verified pill. Chevron flipped 180\u00b0.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          804.1492309570312,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 27 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          872.6602172851562,
+          1080.0001220703125,
+          882.9652099609375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 30,
+    "width": 1116.0,
+    "height": 906.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "STUDENT \u203a STUDENT PROFILE",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          163.03250122070312,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Frame 3 \u2014 /student/profile \u00b7 Null-heavy state (More Info expanded with mostly empty fields)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          730.3839721679688,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/362-1776136481/content/student-profile.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          357.5999450683594,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Same card with the More Info section showing severalNot mentionedfallbacks. This is what a student record looks like when only the minimum required fields (full_name + level + cohort) were entered at admin-create time.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1060.7276611328125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "Demonstrates the fallback styling: italic + lighter colour for unfilled fields. The verified pill is absent because consent is unverified \u2014 the row shows \"Not verified\" instead.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          816.9696044921875,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 28 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          884.3125,
+          1080.0001220703125,
+          894.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 31,
+    "width": 1116.0,
+    "height": 400.0,
+    "has_image": false,
+    "image_count": 0,
+    "spans": [
+      {
+        "text": "ADMIN",
+        "font": "Helvetica-Bold",
+        "size": 28.0,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          160.0399932861328,
+          127.75601959228516,
+          198.59600830078125
+        ]
+      },
+      {
+        "text": "32 screens in this section",
+        "font": "Helvetica",
+        "size": 11.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          203.1750030517578,
+          159.49697875976562,
+          218.28900146484375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 32,
+    "width": 1116.0,
+    "height": 1007.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ADMIN DASHBOARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          156.87001037597656,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Admin Dashboard \u2014 layout draft",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          285.8080139160156,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/dashboard-layout.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          362.3999328613281,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Command Center layout. KPIs at top (3 cards). Main content: Active Live Assessments on the left (2/3 width), Activity Feed on the right (1/3 width). Page header has a dynamic subtitle showing live student count in real time.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1069.537109375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 29 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          985.3125,
+          1080.0001220703125,
+          995.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 33,
+    "width": 1116.0,
+    "height": 918.5,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a STUDENTS \u2014 LIST",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          148.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Students List \u2014 populated view",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          277.823974609375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/students-list-v2.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          362.3999328613281,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Main list page. 4-column table: Roll No. | Name | Level | Actions (View + delete).",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          408.03607177734375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 30 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          896.4375,
+          1080.0001220703125,
+          906.7424926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 34,
+    "width": 1116.0,
+    "height": 902.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a STUDENTS \u2014 LIST",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          148.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Empty State 1 \u2014 No students at all",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          300.06402587890625,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/students-list-v2.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          362.3999328613281,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Full app shell with sidebar + top bar. Welcome card with two action buttons.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          386.4376525878906,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 31 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          880.3125,
+          1080.0001220703125,
+          890.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 35,
+    "width": 1116.0,
+    "height": 902.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a STUDENTS \u2014 LIST",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          148.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Empty State 2 \u2014 Filtered no-results",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          306.28802490234375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/students-list-v2.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          362.3999328613281,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Filter bar still visible with active filters. \"Clear filters\" link as the action.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          357.95111083984375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 32 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          880.3125,
+          1080.0001220703125,
+          890.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 36,
+    "width": 1116.0,
+    "height": 1421.75,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a STUDENTS \u2014 DETAIL",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          161.1370086669922,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Student Detail \u2014 Read-only mode (default)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          360.4800109863281,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-detail.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          352.7999572753906,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Click \"View\" on a student row ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          175.33497619628906,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          175.33497619628906,
+          87.89500427246094,
+          185.69847106933594,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": " land here. Profile hero + 5 sections stacked. Click \"Edit Profile\" at top to flip Personal + Academic sections into edit mode.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          185.69847106933594,
+          87.2125015258789,
+          752.8250732421875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 33 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1399.6875,
+          1080.0001220703125,
+          1409.9925537109375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 37,
+    "width": 1116.0,
+    "height": 1253.75,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a STUDENTS \u2014 DETAIL",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          161.1370086669922,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Student Detail \u2014 Edit mode",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          245.80799865722656,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-detail.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          352.7999572753906,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "After clicking \"Edit Profile\". Edit banner appears at top. Personal Info + Academic Info fields become editable inputs. Recent Sessions + Danger Zone stay read-only (they have no editable fields anyway).",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          976.0659790039062,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 34 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1231.6875,
+          1080.0001220703125,
+          1241.9925537109375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 38,
+    "width": 1116.0,
+    "height": 1006.875,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a STUDENTS \u2014 DRAWER",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          168.68499755859375,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Student List Drawer \u2014 right-side panel",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          331.16796875,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-drawer.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          352.7999572753906,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Slides in from the right when admin clicks \"View Student List\" on the detail page. Backdrop dims the detail page underneath. Shows (1) drawer header with total stats, (2) a search bar to filter students, (3) \"Gave the Exam\"",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1061.1163330078125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "table with S.No, Roll, Name, Score, and \"See Answer Sheet\" button per row, (4) \"Missed the Exam\" table below with just S.No, Roll, Name.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          681.7399291992188,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 35 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          984.8125,
+          1080.0001220703125,
+          995.1174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 39,
+    "width": 1116.0,
+    "height": 737.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a STUDENTS \u2014 DIALOGS",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          169.16949462890625,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Create Student Dialog",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          203.13600158691406,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-dialogs.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          357.5999450683594,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Opens when admin clicks \"+ Add Student\" on the list page. 4 fields: Full Name, Roll Number, Level, Date of Birth. Dialog over a darkened backdrop.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          721.881591796875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 36 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          715.3125,
+          1080.0001220703125,
+          725.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 40,
+    "width": 1116.0,
+    "height": 737.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a STUDENTS \u2014 DIALOGS",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          169.16949462890625,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Import CSV Dialog",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          176.4639892578125,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/student-dialogs.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          357.5999450683594,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Opens when admin clicks \"Import CSV\". Dashed upload zone + template download callout. After upload, an error report appears in place of the upload zone (not shown in this mock).",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          878.8884887695312,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 37 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          715.3125,
+          1080.0001220703125,
+          725.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 41,
+    "width": 1116.0,
+    "height": 933.0,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a LEVELS \u2014 LIST",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          136.1215057373047,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Levels \u2014 main list page",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          217.40798950195312,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/levels-list.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          338.3999938964844,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Sortable level cards with drag handle + sequence badge + name + stats row (students count, assessments count) + View button + overflow menu. Summary strip at top shows totals. Tip pill reminds admin they can drag to",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1060.507080078125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "reorder.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          72.76050567626953,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 38 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          910.9375,
+          1080.0001220703125,
+          921.2424926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 42,
+    "width": 1116.0,
+    "height": 992.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a LEVELS \u2014 DETAIL",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          148.39549255371094,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Level Detail \u2014 Students tab",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          246.72000122070312,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/level-detail.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          343.1999816894531,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Landing view for /admin/levels/[id]. Hero card with seq badge + stats. Tab strip below (Students active). Tab content: \"+ Add Student to Level\" CTA + search + 3-column table.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          844.1752319335938,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 39 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          970.3125,
+          1080.0001220703125,
+          980.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 43,
+    "width": 1116.0,
+    "height": 992.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a LEVELS \u2014 DETAIL",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          148.39549255371094,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Level Detail \u2014 Assessments tab",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          281.4239807128906,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/level-detail.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          343.1999816894531,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "After clicking the Assessments tab. Same hero card. Same tab strip (Assessments now active). Tab content: \"+ Create Assessment for Level\" CTA + search + 3-column card grid pre-filtered to this level.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          971.0260009765625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 40 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          970.3125,
+          1080.0001220703125,
+          980.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 44,
+    "width": 1116.0,
+    "height": 662.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a LEVELS \u2014 DIALOG",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          150.75851440429688,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Create Level Dialog \u2014 single field",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          292.97601318359375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/level-dialog.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          343.1999816894531,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Opens when admin clicks \"+ Add Level\" on /admin/levels. Just one text input for the level name. New level auto-appends to the end of the list; admin can drag to reorder afterward.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          866.6455078125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 41 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          640.3125,
+          1080.0001220703125,
+          650.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 45,
+    "width": 1116.0,
+    "height": 1121.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 LIST",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          167.29100036621094,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Assessments List \u2014 populated view",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          312.52801513671875,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessments-list.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          362.3999328613281,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Main list page. EXAM/TEST segmented toggle ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          255.42901611328125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          255.42901611328125,
+          87.89500427246094,
+          265.7925109863281,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": " Status pills row (6 pills) ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          265.7925109863281,
+          87.2125015258789,
+          378.9825439453125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          378.9825439453125,
+          87.89500427246094,
+          389.3460388183594,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": " Filter bar (search + level + date range) ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          389.3460388183594,
+          87.2125015258789,
+          573.7576904296875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          573.7576904296875,
+          87.89500427246094,
+          584.1212158203125,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": " vertical stack of full-width row cards with context-aware action buttons.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          584.1212158203125,
+          87.2125015258789,
+          913.8217163085938,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 42 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1099.3125,
+          1080.0001220703125,
+          1109.6175537109375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 46,
+    "width": 1116.0,
+    "height": 1007.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 LIST",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          167.29100036621094,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Empty State 1 \u2014 No assessments at all",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          333.88800048828125,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessments-list.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          362.3999328613281,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "First-time institution. Full chrome, no filter bar (nothing to filter), welcome card with primary CTA.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          481.777587890625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 43 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          985.3125,
+          1080.0001220703125,
+          995.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 47,
+    "width": 1116.0,
+    "height": 1007.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 LIST",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          167.29100036621094,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Empty State 2 \u2014 Filtered no-results",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          306.28802490234375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessments-list.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          362.3999328613281,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Filter bar still visible with active filters highlighted. Amber icon. \"Clear all filters\" link.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          421.549560546875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 44 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          985.3125,
+          1080.0001220703125,
+          995.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 48,
+    "width": 1116.0,
+    "height": 947.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          182.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Step 1 \u2014 Type Selection",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          221.83999633789062,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Full-page wizard, sidebar hidden. Horizontal stepper at top (Step 1 active). Two big cards side by side for EXAM vs TEST. EXAM is selected (green border + tint + check badge).",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          857.67822265625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 45 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          925.3125,
+          1080.0001220703125,
+          935.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 49,
+    "width": 1116.0,
+    "height": 1428.875,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          182.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Step 2 \u2014 Settings (Full Configurator)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          316.9120178222656,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Stepper shows Step 1 completed, Step 2 active. 4 form sections + Save as Default toggle at the bottom. All 12 fields visible.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          609.993408203125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 46 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1406.8125,
+          1080.0001220703125,
+          1417.1175537109375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 50,
+    "width": 1116.0,
+    "height": 947.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          182.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Step 3a \u2014 MCQ Builder (EXAM variant)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          332.9440002441406,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Stepper shows Steps 1 & 2 completed, Step 3 active. Split pane: question list on the left (40%), editor on the right (60%). Question 2 is selected.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          704.840087890625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 47 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          925.3125,
+          1080.0001220703125,
+          935.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 51,
+    "width": 1116.0,
+    "height": 947.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          182.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Step 3b \u2014 MCQ Builder (TEST variant with Flash Config)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          466.2879943847656,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Same split pane as 3a, but above it there's a purple Flash Config card with params + Preview Flash button. Same pipe-format questions, same editor.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          730.4390869140625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 48 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          925.3125,
+          1080.0001220703125,
+          935.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 52,
+    "width": 1116.0,
+    "height": 662.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          182.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Flash Preview Modal (on-demand)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          294.7200012207031,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Triggered by \"Preview Flash\" button on Step 3b. Modal over dimmed backdrop showing a sample flash at the configured speed. Progress bar at top, counter at bottom, playback controls below.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          928.7844848632812,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 49 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          640.3125,
+          1080.0001220703125,
+          650.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 53,
+    "width": 1116.0,
+    "height": 947.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          182.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Step 4 \u2014 Review",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          164.04800415039062,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Stepper shows 1\u20133 completed, Step 4 active. Bento grid of review cards \u2014 each section has an \"Edit\" button that jumps back to that step. Publish Now / Save as Draft action row at the bottom.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          927.0623779296875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 50 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          925.3125,
+          1080.0001220703125,
+          935.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 54,
+    "width": 1116.0,
+    "height": 947.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          182.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Step 5 \u2014 Success (Published variant)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          322.32000732421875,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "All 5 steps completed. Large green check icon. \"Assessment Published\" title. Summary chips. 4 action buttons including red \"Start Session Now\" as the contextual 4th.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          809.5880737304688,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 51 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          925.3125,
+          1080.0001220703125,
+          935.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 55,
+    "width": 1116.0,
+    "height": 947.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a ASSESSMENTS \u2014 WIZARD",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          182.8629913330078,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Step 5 \u2014 Success (Draft variant)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          283.18402099609375,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/assessment-wizard.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          367.1999206542969,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Same shell, blue file icon, \"Draft Saved\" title, 3 action buttons (no Start Session Now since there's nothing to start yet).",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          584.7094116210938,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 52 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          925.3125,
+          1080.0001220703125,
+          935.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 56,
+    "width": 1116.0,
+    "height": 947.375,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a LIVE MONITOR",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          132.80650329589844,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 1 \u2014 Monitor Hub",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          221.80801391601562,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/live-monitor.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          343.1999816894531,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Card grid of currently LIVE exams. Each card: red left accent, status + type + level badges, title, red urgent time-remaining strip, 4 mini-stats (active count + submitted + progress + started), red Monitor button.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          999.7962646484375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 53 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          925.3125,
+          1080.0001220703125,
+          935.6174926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 57,
+    "width": 1116.0,
+    "height": 1057.68798828125,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a LIVE MONITOR",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          132.80650329589844,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 2 \u2014 Live Monitor Detail (during exam)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.88048553466797,
+          380.9759826660156,
+          68.91249084472656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/live-monitor.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54448699951172,
+          343.1999816894531,
+          80.53649139404297
+        ]
+      },
+      {
+        "text": "Click into one exam. Hero card with 4px red accent + title + meta + BIG red countdown + Force Close button + 4 KPI mini-cards (In Progress / Submitted / Disconnected / Waiting). Below: search + realtime pill + 4-column",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2129898071289,
+          1055.79248046875,
+          101.6399917602539
+        ]
+      },
+      {
+        "text": "student table with live status badges and progress bars.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7129898071289,
+          295.1295166015625,
+          116.1399917602539
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 54 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1035.62548828125,
+          1080.0001220703125,
+          1045.9305419921875
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 58,
+    "width": 1116.0,
+    "height": 760.625,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a LIVE MONITOR",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          132.80650329589844,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 3 \u2014 Force Close Dialog (type-to-confirm)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          404.96002197265625,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/live-monitor.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          343.1999816894531,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Red-topped destructive dialog. Warning icon, scary copy, impact box showing real counts, and a type-to-confirm input. Force Close button is disabled until admin types \"CLOSE\" exactly.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          894.8901977539062,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 55 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          738.5625,
+          1080.0001220703125,
+          748.8674926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 59,
+    "width": 1116.0,
+    "height": 1108.68798828125,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a LIVE MONITOR",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          132.80650329589844,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Screen 4 \u2014 Exam Closed Summary",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          305.44000244140625,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/live-monitor.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          343.1999816894531,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Same page, different state after force-close or timer expiry. Gray CLOSED badge, timer replaced with \"Ended at\" label, Force Close button replaced with \"View in Results ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2129898071289,
+          825.66357421875,
+          101.6399917602539
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          825.66357421875,
+          87.89549255371094,
+          836.027099609375,
+          101.57698822021484
+        ]
+      },
+      {
+        "text": "\". Below the hero: a Session Summary card with 4",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          836.027099609375,
+          87.2129898071289,
+          1069.0958251953125,
+          101.6399917602539
+        ]
+      },
+      {
+        "text": "final stats. Student table is frozen (no realtime pill, no animations). Action row at bottom with Export + View Results.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7129898071289,
+          571.4266967773438,
+          116.1399917602539
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 56 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1086.62548828125,
+          1080.0001220703125,
+          1096.9305419921875
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 60,
+    "width": 1116.0,
+    "height": 899.625,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a RESULTS \u2014 HUB",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          142.71749877929688,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Results Hub \u2014 v4 (logout restored + design polish)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          425.8559875488281,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/hub-layout-v4.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          347.9999694824219,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Changes: (1) Logout button added to the bottom of the sidebar with a user card above it. (2) Design polish: cards now have a hover-reveal left accent bar in forest green, subtle lift on hover, refined typography with tighter",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1053.8397216796875,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "letter-spacing on headings, vertical dividers between stats, status pill active state uses solid dark green, left-accent bar on active nav item, more sophisticated shadows.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          814.502197265625,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 57 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          877.5625,
+          1080.0001220703125,
+          887.8674926757812
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 61,
+    "width": 1116.0,
+    "height": 1065.125,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a RESULTS \u2014 DETAIL",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          155.0,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Result Detail \u2014 v3 (font bumped +2px across the board)",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          462.3199768066406,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/detail-layout-v3.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          362.3999328613281,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Every text element is 2px larger. Base body is 16px (was 14), H1 is 28px, H3 is 19px, KPI values are 34px, KPI labels are 13px, nav items are 16px, table cells are 15\u201316px, buttons are 15\u201316px.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          938.2660522460938,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 58 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1043.0625,
+          1080.0001220703125,
+          1053.3675537109375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 62,
+    "width": 1116.0,
+    "height": 1141.875,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a RESULTS \u2014 ANSWER SHEET",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          192.78248596191406,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Student Answer Sheet \u2014 per-student view",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          357.8399658203125,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/answer-sheet.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          343.1999816894531,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Full page at /admin/results/[paperId]/students/[studentId]. Shows the student's profile card with aggregate score on the right, three mini KPIs (Correct / Wrong / Accuracy), then the answer sheet table \u2014 one row per question",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          1070.40869140625,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "with all 4 options visible, student's pick highlighted, correct answer shown in a pill, wrong rows tinted light red.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          543.3707275390625,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 59 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1119.8125,
+          1080.0001220703125,
+          1130.1175537109375
+        ]
+      }
+    ]
+  },
+  {
+    "page_num": 63,
+    "width": 1116.0,
+    "height": 1703.25,
+    "has_image": true,
+    "image_count": 1,
+    "spans": [
+      {
+        "text": "ADMIN \u203a SETTINGS",
+        "font": "Helvetica-Bold",
+        "size": 8.5,
+        "color": "#1a3829",
+        "bbox": [
+          36.0,
+          33.404998779296875,
+          113.91950988769531,
+          45.109500885009766
+        ]
+      },
+      {
+        "text": "Admin Settings \u2014 single-column layout",
+        "font": "Helvetica-Bold",
+        "size": 16.0,
+        "color": "#0f172a",
+        "bbox": [
+          36.0,
+          46.87999725341797,
+          338.2720031738281,
+          68.91200256347656
+        ]
+      },
+      {
+        "text": ".superpowers/brainstorm/223-1776020821/content/settings.html",
+        "font": "Courier",
+        "size": 8.0,
+        "color": "#64748b",
+        "bbox": [
+          36.0,
+          70.54399871826172,
+          324.0000305175781,
+          80.53600311279297
+        ]
+      },
+      {
+        "text": "Centered single-column layout (no right sidebar). Three sections stacked: Institution Info (with logo uploader + 6 fields) ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          87.2125015258789,
+          588.3634033203125,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          588.3634033203125,
+          87.89500427246094,
+          598.7269287109375,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": " Grade Boundaries (segmented EXAM/TEST toggle + editable rows) ",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          598.7269287109375,
+          87.2125015258789,
+          919.4078979492188,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "\u2192",
+        "font": "Symbol",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          919.4078979492188,
+          87.89500427246094,
+          929.7714233398438,
+          101.57649993896484
+        ]
+      },
+      {
+        "text": " Session Settings (single field).",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          929.7714233398438,
+          87.2125015258789,
+          1073.3275146484375,
+          101.6395034790039
+        ]
+      },
+      {
+        "text": "Sticky save bar at the bottom shown in the \"unsaved changes\" state.",
+        "font": "Helvetica",
+        "size": 10.5,
+        "color": "#334155",
+        "bbox": [
+          36.0,
+          101.7125015258789,
+          354.53857421875,
+          116.1395034790039
+        ]
+      },
+      {
+        "text": "MINDSPARK Mockup Review  \u00b7  Screen 60 of 60",
+        "font": "Helvetica",
+        "size": 7.5,
+        "color": "#64748b",
+        "bbox": [
+          917.0250244140625,
+          1681.1875,
+          1080.0001220703125,
+          1691.4925537109375
+        ]
+      }
+    ]
+  }
+]

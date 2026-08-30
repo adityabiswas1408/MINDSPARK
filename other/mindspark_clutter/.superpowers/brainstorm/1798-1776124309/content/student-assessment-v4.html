@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F1F5F9; color: #0A0F1A; font-size: 16px; line-height: 1.5; padding: 32px 24px; -webkit-font-smoothing: antialiased; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+
+  .exam-page { min-height: 820px; background: #FFFFFF; display: flex; flex-direction: column; position: relative; }
+
+  /* ══ Minimal 56px top strip ══ */
+  .exam-strip { height: 56px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 24px; gap: 20px; flex-shrink: 0; }
+  .strip-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .strip-title { font-size: 13px; font-weight: 600; color: #334155; }
+  .progress-label { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #475569; padding: 4px 10px; background: #F1F5F9; border-radius: 9999px; }
+  .strip-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .timer-primary { display: flex; align-items: center; gap: 8px; padding: 6px 16px; background: #EFFAF4; border: 1px solid #B7E4C7; border-radius: 10px; }
+  .timer-primary-label { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-primary-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 700; color: #1A3829; letter-spacing: -0.03em; line-height: 1; }
+  .timer-secondary { display: flex; align-items: center; gap: 6px; padding: 5px 11px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; }
+  .timer-secondary-label { font-size: 9px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-secondary-value { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #334155; }
+  .strip-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .sync-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 9999px; font-size: 11px; font-weight: 600; color: #475569; }
+  .sync-pill::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: #1A3829; }
+  .exit-btn { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; font-family: inherit; }
+  .exit-btn svg { width: 12px; height: 12px; stroke-width: 2.5; }
+
+  /* MCQ main */
+  .mcq-main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 40px 36px; }
+  .mcq-inner { width: 100%; max-width: 720px; }
+
+  /* Equation panel shell */
+  .equation-panel {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 32px 40px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .equation-label {
+    font-size: 11px; font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 18px;
+  }
+
+  /* ══ VERTICAL STACKED (tightened with ch units) ══ */
+  .vert-equation {
+    display: inline-grid;
+    align-items: baseline;
+    column-gap: 4px;  /* very tight between operator and number */
+    row-gap: 4px;
+    justify-items: end;  /* right-align operator in its column */
+  }
+  .vert-equation.size-lg {
+    font-size: 38px;
+    grid-template-columns: 1ch 3ch;  /* 1 char operator + 3 char number */
+  }
+  .vert-equation.size-sm {
+    font-size: 26px;
+    grid-template-columns: 1ch 3ch;
+  }
+  .vert-op {
+    font-family: 'DM Mono', monospace;
+    color: #475569;
+    font-weight: 600;
+  }
+  .vert-op.minus { color: #991B1B; }
+  .vert-num {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    color: #0A0F1A;
+    font-weight: 500;
+    text-align: right;
+  }
+  .vert-num.negative { color: #991B1B; }
+  .vert-line {
+    grid-column: 2 / 3;
+    justify-self: stretch;
+    height: 3px;
+    background: #0A0F1A;
+    margin-top: 4px;
+  }
+  .vert-result {
+    grid-column: 2 / 3;
+    justify-self: stretch;
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    color: #94A3B8;
+    font-weight: 500;
+    padding-top: 2px;
+  }
+
+  /* ══ TABLE FORMAT (darkened, 2 columns only, no headers/serial) ══ */
+  .table-equation {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid #1A3829;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(26, 56, 41, 0.1);
+  }
+  .table-equation td {
+    padding: 14px 24px;
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1.5px solid #94A3B8;
+    background: #FFFFFF;
+    font-weight: 600;
+  }
+  .table-equation tr:last-child td {
+    border-bottom: none;
+  }
+  .table-equation .op-col {
+    width: 68px;
+    text-align: center;
+    color: #475569;
+    background: #F1F5F9;
+    border-right: 2px solid #1A3829;
+    font-weight: 700;
+  }
+  .table-equation .op-col.minus { color: #991B1B; }
+  .table-equation .num-col {
+    text-align: right;
+    color: #0A0F1A;
+    min-width: 160px;
+  }
+  .table-equation .num-col.negative { color: #991B1B; }
+  .table-equation .result-row .op-col {
+    background: #EFFAF4;
+    color: #1A3829;
+    font-size: 1.2em;
+  }
+  .table-equation .result-row .num-col {
+    background: #F8FAFC;
+    color: #94A3B8;
+    border-top: 2px solid #0A0F1A;
+  }
+  .table-equation .result-row .op-col {
+    border-top: 2px solid #0A0F1A;
+  }
+  .table-equation.size-lg td { font-size: 30px; }
+  .table-equation.size-sm td { font-size: 22px; padding: 10px 22px; }
+
+  /* 2×2 option grid */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .option-tile {
+    background: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    min-height: 92px;
+  }
+  .option-tile:hover { border-color: #52B788; background: #F0FDF4; }
+  .option-tile.selected { border-color: #1A3829; border-width: 3px; background: #EFFAF4; box-shadow: 0 4px 12px rgba(26, 56, 41, 0.08); }
+  .option-letter {
+    width: 42px; height: 42px;
+    border-radius: 9999px;
+    background: #F1F5F9;
+    color: #475569;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700;
+  }
+  .option-tile.selected .option-letter { background: #1A3829; color: #FFFFFF; }
+  .option-value {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    font-weight: 500;
+    color: #0A0F1A;
+  }
+
+  .confirm-row { display: flex; justify-content: center; margin-top: 4px; }
+  .confirm-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 0 32px; height: 54px;
+    background: #1A3829;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(26, 56, 41, 0.25);
+    min-width: 240px;
+    justify-content: center;
+  }
+  .confirm-btn svg { width: 18px; height: 18px; stroke-width: 2.5; }
+
+  .kbd-hint {
+    position: absolute;
+    bottom: 20px;
+    right: 24px;
+    font-size: 11px;
+    color: #94A3B8;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .kbd-hint kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #334155;
+    line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 1 — 4 operands · Vertical stacked (no table)</h2>
+<p class="note">Now with <strong>real</strong> tight spacing: operator and number use <code>ch</code> units so the number column is exactly 3 digits wide instead of 130px. The <code>−</code> operator and <code>456</code> operand are both in crimson <code>#991B1B</code>.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: 4 operands vertical stacked</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 3 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary"><span class="timer-primary-label">This Question</span><span class="timer-primary-value">00:42</span></div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">14:23</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 3</div>
+          <div class="vert-equation size-lg">
+            <span class="vert-op">&nbsp;</span><span class="vert-num">892</span>
+            <span class="vert-op minus">−</span><span class="vert-num negative">456</span>
+            <span class="vert-op">+</span><span class="vert-num">124</span>
+            <span class="vert-op">+</span><span class="vert-num">75</span>
+            <div class="vert-line"></div>
+            <div class="vert-result">???</div>
+          </div>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile"><div class="option-letter">A</div><div class="option-value">625</div></div>
+          <div class="option-tile"><div class="option-letter">B</div><div class="option-value">635</div></div>
+          <div class="option-tile selected"><div class="option-letter">C</div><div class="option-value">645</div></div>
+          <div class="option-tile"><div class="option-letter">D</div><div class="option-value">655</div></div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">Confirm Answer<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 2 — 10 operands · Vertical stacked (no table)</h2>
+<p class="note">Longer sequence with 4 negative rows (56, 142, 213, 45). Font scales down to 26px so all 10 rows fit comfortably. Same tight operator-to-number spacing.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: 10 operands vertical stacked</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 12 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary"><span class="timer-primary-label">This Question</span><span class="timer-primary-value">01:58</span></div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">06:14</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 12</div>
+          <div class="vert-equation size-sm">
+            <span class="vert-op">&nbsp;</span><span class="vert-num">124</span>
+            <span class="vert-op">+</span><span class="vert-num">387</span>
+            <span class="vert-op minus">−</span><span class="vert-num negative">56</span>
+            <span class="vert-op">+</span><span class="vert-num">201</span>
+            <span class="vert-op minus">−</span><span class="vert-num negative">142</span>
+            <span class="vert-op">+</span><span class="vert-num">89</span>
+            <span class="vert-op minus">−</span><span class="vert-num negative">213</span>
+            <span class="vert-op">+</span><span class="vert-num">176</span>
+            <span class="vert-op minus">−</span><span class="vert-num negative">45</span>
+            <span class="vert-op">+</span><span class="vert-num">128</span>
+            <div class="vert-line"></div>
+            <div class="vert-result">???</div>
+          </div>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile"><div class="option-letter">A</div><div class="option-value">639</div></div>
+          <div class="option-tile"><div class="option-letter">B</div><div class="option-value">649</div></div>
+          <div class="option-tile"><div class="option-letter">C</div><div class="option-value">659</div></div>
+          <div class="option-tile selected"><div class="option-letter">D</div><div class="option-value">669</div></div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">Confirm Answer<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 3 — 4 operands · Table format</h2>
+<p class="note">No step numbers, no column headers. Just two clean columns: operator + number. Stronger <code>2px #1A3829</code> outer border, <code>1.5px #94A3B8</code> inner row dividers, slate-tinted operator column, and a forest-green "=" cell on the result row. No more washed-out edges.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: 4 operands table format</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 3 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary"><span class="timer-primary-label">This Question</span><span class="timer-primary-value">00:42</span></div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">14:23</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 3</div>
+          <table class="table-equation size-lg">
+            <tbody>
+              <tr><td class="op-col">&nbsp;</td><td class="num-col">892</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">456</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">124</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">75</td></tr>
+              <tr class="result-row"><td class="op-col">=</td><td class="num-col">???</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile"><div class="option-letter">A</div><div class="option-value">625</div></div>
+          <div class="option-tile"><div class="option-letter">B</div><div class="option-value">635</div></div>
+          <div class="option-tile selected"><div class="option-letter">C</div><div class="option-value">645</div></div>
+          <div class="option-tile"><div class="option-letter">D</div><div class="option-value">655</div></div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">Confirm Answer<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 4 — 10 operands · Table format</h2>
+<p class="note">Longer 10-row table, same strong borders. Font scales to 22px. Negative rows (56, 142, 213, 45) have crimson operator cells and crimson numbers. Result row uses the same forest-green "=" cell treatment.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: 10 operands table format</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 12 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary"><span class="timer-primary-label">This Question</span><span class="timer-primary-value">01:58</span></div>
+        <div class="timer-secondary"><span class="timer-secondary-label">Exam</span><span class="timer-secondary-value">06:14</span></div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 12</div>
+          <table class="table-equation size-sm">
+            <tbody>
+              <tr><td class="op-col">&nbsp;</td><td class="num-col">124</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">387</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">56</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">201</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">142</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">89</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">213</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">176</td></tr>
+              <tr><td class="op-col minus">−</td><td class="num-col negative">45</td></tr>
+              <tr><td class="op-col">+</td><td class="num-col">128</td></tr>
+              <tr class="result-row"><td class="op-col">=</td><td class="num-col">???</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile"><div class="option-letter">A</div><div class="option-value">639</div></div>
+          <div class="option-tile"><div class="option-letter">B</div><div class="option-value">649</div></div>
+          <div class="option-tile"><div class="option-letter">C</div><div class="option-value">659</div></div>
+          <div class="option-tile selected"><div class="option-letter">D</div><div class="option-value">669</div></div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">Confirm Answer<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+</body>
+</html>

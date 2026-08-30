@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Anzan — MINDSPARK</title>
+    <meta name="description" content="Configure and run Flash Anzan mental arithmetic tests with MINDSPARK">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           DESIGN TOKENS
+           ═══════════════════════════════════════════ */
+        :root {
+            /* Page & surfaces */
+            --page:   #F8FAFC;
+            --card:   #FFFFFF;
+            --border: #E2E8F0;
+            --bmd:    #CBD5E1;
+
+            /* Text */
+            --t1: #0F172A;
+            --t2: #475569;
+            --t3: #94A3B8;
+
+            /* Green ramp — UI primary */
+            --g900: #0D2B1F;
+            --g800: #1A3829;
+            --g700: #1E4A35;
+            --g600: #2D6A4F;
+            --g500: #40916C;
+            --g400: #52B788;
+            --g300: #74C69D;
+            --g200: #B7E4C7;
+            --g100: #D8F3DC;
+            --g50:  #EFFAF4;
+
+            /* Semantic */
+            --ok-bg: #DCFCE7; --ok-tx: #166534;
+            --er-bg: #FEE2E2; --er-tx: #991B1B;
+            --wn-bg: #FEF9C3; --wn-tx: #854D0E;
+
+            /* Negative number color */
+            --s-neg: #991B1B;
+
+            /* Flash contrast tiers */
+            --ff-std-tx:  #0F172A; --ff-std-bg:  #FFFFFF;
+            --ff-mid-tx:  #1E293B; --ff-mid-bg:  #F8FAFC;
+            --ff-fast-tx: #334155; --ff-fast-bg: #F1F5F9;
+
+            /* Typography */
+            --f:  'DM Sans', sans-serif;
+            --fm: 'DM Mono', monospace;
+
+            /* Shadows */
+            --s1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+            --s2: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+            --s3: 0 10px 32px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+
+            /* Radii */
+            --r1: 4px; --r2: 6px; --r3: 10px; --r4: 14px; --r5: 18px; --rf: 9999px;
+        }
+
+        /* ═══════════════════════════════════════════
+           RESETS & BASE
+           ═══════════════════════════════════════════ */
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--page);
+            font-family: var(--f);
+            color: var(--t1);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        body.overlay-active { overflow: hidden; }
+        .fm { font-family: var(--fm); font-variant-numeric: tabular-nums; }
+        button { font-family: var(--f); cursor: pointer; }
+        button:focus-visible { outline: 2px solid var(--g400); outline-offset: 2px; }
+
+        /* ═══════════════════════════════════════════
+           TOP NAVIGATION
+           ═══════════════════════════════════════════ */
+        .topnav {
+            background: var(--g800);
+            color: #FFFFFF;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: var(--s1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topnav-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .topnav-logo {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        .topnav-logo span { font-weight: 400; opacity: 0.6; }
+        .topnav-sep {
+            width: 1px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+        }
+        .topnav-module {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        .topnav-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-family: var(--fm);
+            opacity: 0.6;
+        }
+        .topnav-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--g400);
+            box-shadow: 0 0 6px var(--g400);
+        }
+
+        /* ═══════════════════════════════════════════
+           MAIN LAYOUT
+           ═══════════════════════════════════════════ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px 64px;
+        }
+        .page-header {
+            margin-bottom: 28px;
+        }
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 6px 0;
+        }
+        .page-header p {
+            font-size: 14px;
+            color: var(--t2);
+            margin: 0;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ═══════════════════════════════════════════
+           PANELS & CARDS
+           ═══════════════════════════════════════════ */
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--r4);
+            box-shadow: var(--s1);
+            padding: 28px 32px;
+        }
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-title-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--g50);
+            border: 1px solid var(--g200);
+            border-radius: var(--r1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--g600);
+        }
+        .panel-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .panel-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--t3);
+            margin-bottom: 16px;
+        }
+
+        /* ═══════════════════════════════════════════
+           FORM CONTROLS
+           ═══════════════════════════════════════════ */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--t1);
+            margin-bottom: 4px;
+        }
+        .form-hint {
+            font-size: 12px;
+            color: var(--t3);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        /* Select */
+        select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--bmd);
+            border-radius: var(--r2);
+            font-family: var(--f);
+            font-size: 13px;
+            color: var(--t1);
+            background: var(--card);
+            outline: none;
+            transition: border-color 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394A3B8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+        select:focus { border-color: var(--g500); }
+
+        /* Number input */
+        input[type="number"] {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--bmd);
+            border-radius: var(--r2);
+            font-family: var(--fm);
+            font-size: 13px;
+            color: var(--t1);
+            background: var(--card);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="number"]:focus { border-color: var(--g500); }
+        input[type="number"]::-webkit-inner-spin-button { opacity: 1; }
+
+        /* Chip groups */
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .chip {
+            padding: 7px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--r3);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--t2);
+            cursor: pointer;
+            background: var(--card);
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            user-select: none;
+        }
+        .chip:hover { border-color: var(--g300); }
+        .chip.active {
+            border-color: var(--g800);
+            background: var(--g50);
+            color: var(--g800);
+            font-weight: 600;
+        }
+
+        /* Toggle switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .toggle-row-left {
+            flex: 1;
+        }
+        .toggle {
+            width: 40px;
+            height: 22px;
+            border-radius: var(--rf);
+            border: none;
+            background: var(--bmd);
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .toggle.on {
+            background: var(--g500);
+        }
+        .toggle.on::after {
+            transform: translateX(18px);
+        }
+
+        /* Preset selector */
+        .preset-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .preset-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r3);
+            background: var(--card);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--t2);
+            text-align: center;
+            transition: all 0.15s;
+        }
+        .preset-btn:hover { border-color: var(--g300); }
+        .preset-btn.active {
+            border-color: var(--g800);
+            background: var(--g50);
+            color: var(--g800);
+        }
+        .preset-btn small {
+            display: block;
+            font-size: 10px;
+            font-weight: 400;
+            color: var(--t3);
+            margin-top: 2px;
+        }
+        .preset-btn.active small { color: var(--g600); }
+
+        /* ═══════════════════════════════════════════
+           PREVIEW PANEL (dark)
+           ═══════════════════════════════════════════ */
+        .preview-panel {
+            background: var(--g900);
+            color: #FFFFFF;
+            padding: 28px;
+            border-radius: var(--r4);
+            position: sticky;
+            top: 80px;
+        }
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .preview-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--g400);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+        .preview-title::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            background: var(--g400);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--g400);
+        }
+        .preview-badge {
+            font-size: 10px;
+            font-family: var(--fm);
+            padding: 3px 8px;
+            border-radius: var(--rf);
+            background: rgba(255,255,255,0.08);
+            color: var(--t3);
+        }
+
+        /* Flash preview box */
+        .preview-flash-box {
+            background: #FFFFFF;
+            border-radius: var(--r3);
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .preview-flash-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--t3);
+            margin-bottom: 8px;
+        }
+        .preview-flash-num {
+            font-family: var(--fm);
+            font-size: 42px;
+            font-weight: 600;
+            color: var(--t1);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+        .preview-flash-num.neg { color: var(--s-neg); }
+
+        /* Sequence preview */
+        .preview-seq {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .preview-seq-item {
+            font-family: var(--fm);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: var(--r1);
+            background: var(--page);
+            color: var(--t1);
+        }
+        .preview-seq-item.neg {
+            color: var(--s-neg);
+            background: var(--er-bg);
+        }
+
+        /* Options preview */
+        .preview-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .preview-opt {
+            background: var(--page);
+            border-radius: var(--r2);
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+        .preview-opt-lbl {
+            font-weight: 600;
+            color: var(--t3);
+        }
+        .preview-opt-val {
+            font-family: var(--fm);
+            font-weight: 600;
+            color: var(--t1);
+        }
+        .preview-opt.correct {
+            background: var(--ok-bg);
+        }
+        .preview-opt.correct .preview-opt-val {
+            color: var(--ok-tx);
+        }
+
+        /* Stats rows */
+        .preview-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .stat-lbl { color: var(--t3); }
+        .stat-val { font-weight: 600; font-family: var(--fm); font-size: 12px; }
+
+        /* Regenerate button */
+        .btn-regen {
+            width: 100%;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: var(--r2);
+            color: var(--g300);
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+        .btn-regen:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Launch button */
+        .btn-launch {
+            width: 100%;
+            margin-top: 16px;
+            padding: 14px 24px;
+            background: var(--g500);
+            border: none;
+            border-radius: var(--r3);
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+        .btn-launch:hover { background: var(--g600); }
+        .btn-launch:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-launch:disabled:hover { background: var(--g500); }
+
+        /* Seed row */
+        .seed-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .seed-row input[type="number"] {
+            flex: 1;
+        }
+        .seed-btn {
+            padding: 9px 12px;
+            background: var(--page);
+            border: 1px solid var(--bmd);
+            border-radius: var(--r2);
+            font-size: 12px;
+            color: var(--t2);
+            white-space: nowrap;
+            transition: border-color 0.15s;
+        }
+        .seed-btn:hover { border-color: var(--g400); }
+
+        /* ═══════════════════════════════════════════
+           OVERLAY — Full-screen test
+           ═══════════════════════════════════════════ */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 500;
+            display: none;
+            background: #FFFFFF;
+        }
+        .overlay.active { display: block; }
+
+        /* Exit button */
+        .overlay-exit {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 510;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            color: var(--t2);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .overlay-exit:hover { background: rgba(0,0,0,0.08); }
+
+        /* Exit confirm tooltip */
+        .exit-tooltip {
+            position: fixed;
+            top: 16px;
+            right: 64px;
+            z-index: 520;
+            background: var(--t1);
+            color: #FFFFFF;
+            padding: 10px 14px;
+            border-radius: var(--r3);
+            box-shadow: var(--s3);
+            font-size: 13px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+        .exit-tooltip.visible { display: flex; }
+        .exit-tooltip-text { font-weight: 400; }
+        .exit-tooltip-btn {
+            padding: 5px 12px;
+            border-radius: var(--r2);
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .exit-tooltip-leave {
+            background: #DC2626;
+            color: #FFFFFF;
+        }
+        .exit-tooltip-stay {
+            background: rgba(255,255,255,0.15);
+            color: #FFFFFF;
+        }
+
+        /* ── Shared overlay phases ── */
+        .phase-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .phase-container.active { display: flex; }
+
+        /* ── Get Ready ── */
+        .phase-getready { background: var(--page); }
+        .getready-label {
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--t1);
+            margin-bottom: 16px;
+        }
+        .getready-digit {
+            font-family: var(--fm);
+            font-size: min(20vw, 160px);
+            font-weight: 600;
+            color: var(--g800);
+            font-variant-numeric: tabular-nums;
+            transition: none !important;
+            line-height: 1;
+        }
+        .getready-dots {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .getready-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--bmd);
+            transition: background 0.2s;
+        }
+        .getready-dot.active { background: var(--g800); }
+        .getready-qinfo {
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--t3);
+        }
+        .getready-qinfo strong {
+            font-family: var(--fm);
+            color: var(--t2);
+        }
+
+        /* ── Flash ── */
+        .phase-flash { background: #FFFFFF; }
+        .flash-number {
+            font-family: var(--fm);
+            font-size: min(30vh, 240px);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            color: var(--ff-std-tx);
+            line-height: 1;
+            user-select: none;
+            transition: none !important;
+        }
+        .flash-number.neg { color: var(--s-neg); }
+
+        /* ── MCQ ── */
+        .phase-mcq { background: #FFFFFF; }
+        .mcq-wrap {
+            max-width: 520px;
+            width: 100%;
+            padding: 0 24px;
+        }
+        .mcq-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .mcq-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--t1);
+            margin: 0 0 6px 0;
+        }
+        .mcq-progress {
+            font-size: 13px;
+            color: var(--t2);
+            margin: 0;
+        }
+        .mcq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .mcq-opt {
+            min-height: 72px;
+            padding: 18px 16px;
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r3);
+            box-shadow: var(--s1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: border-color 0.15s;
+        }
+        .mcq-opt:hover { border-color: var(--g400); }
+        .mcq-opt:focus-visible { outline: 2px solid var(--g400); outline-offset: 2px; }
+        .mcq-opt.selected {
+            border: 2.5px solid var(--g800);
+            background: var(--g50);
+        }
+        .mcq-opt.selected .opt-lbl,
+        .mcq-opt.selected .opt-val { color: var(--g800); }
+        .opt-lbl {
+            font-size: 13px;
+            color: var(--t3);
+        }
+        .opt-val {
+            font-family: var(--fm);
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--t1);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Timer */
+        .mcq-timer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .timer-svg {
+            width: 34px;
+            height: 34px;
+            transform: rotate(-90deg);
+        }
+        .timer-label {
+            font-size: 13px;
+            color: var(--t2);
+        }
+        .timer-label strong {
+            font-family: var(--fm);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* MCQ buttons */
+        .mcq-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-confirm {
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--g800);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--r3);
+            font-size: 15px;
+            font-weight: 600;
+            display: none;
+            transition: background 0.15s;
+        }
+        .btn-confirm:hover { background: var(--g900); }
+        .btn-confirm.visible { display: block; }
+        .btn-skip-q {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--rf);
+            color: var(--t3);
+            font-size: 12px;
+            font-weight: 500;
+            transition: border-color 0.15s;
+        }
+        .btn-skip-q:hover { border-color: var(--bmd); }
+
+        /* ── Submitted ── */
+        .phase-submitted { background: var(--page); }
+        .submitted-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--r5);
+            box-shadow: var(--s3);
+            padding: 40px 48px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+        }
+        .submitted-check {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--ok-bg);
+            color: var(--g500);
+            font-size: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .submitted-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--t1);
+            margin: 0 0 6px 0;
+        }
+        .submitted-sub {
+            font-size: 14px;
+            color: var(--t2);
+            margin: 0 0 24px 0;
+        }
+        .submitted-stats {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .stat-pill {
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: var(--rf);
+            border: 1px solid var(--border);
+            font-weight: 500;
+        }
+        .sp-answered { background: var(--g50); color: var(--g800); border-color: var(--g200); }
+        .sp-skipped { background: var(--page); color: var(--t2); }
+        .sp-correct { background: var(--ok-bg); color: var(--ok-tx); border-color: transparent; }
+        .sp-wrong { background: var(--er-bg); color: var(--er-tx); border-color: transparent; }
+        .submitted-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        .btn-pri {
+            padding: 12px 24px;
+            background: var(--g800);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--r3);
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .btn-pri:hover { background: var(--g900); }
+        .btn-sec {
+            padding: 12px 24px;
+            background: var(--card);
+            color: var(--t1);
+            border: 1.5px solid var(--bmd);
+            border-radius: var(--r3);
+            font-size: 14px;
+            font-weight: 600;
+            transition: border-color 0.15s;
+        }
+        .btn-sec:hover { border-color: var(--g400); }
+
+        /* ═══════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════ */
+        @media (max-width: 860px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .preview-panel {
+                position: static;
+            }
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 20px 16px 48px; }
+            .panel { padding: 20px; }
+            .preview-panel { padding: 20px; }
+            .page-header h1 { font-size: 20px; }
+            .mcq-grid { grid-template-columns: 1fr; }
+            .flash-number { font-size: min(20vh, 120px); }
+            .getready-digit { font-size: min(15vw, 100px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════ TOP NAVIGATION ═══════════════ -->
+    <nav class="topnav" role="banner">
+        <div class="topnav-left">
+            <div class="topnav-logo">MINDSPARK <span>EXAM</span></div>
+            <div class="topnav-sep"></div>
+            <div class="topnav-module">Flash Anzan</div>
+        </div>
+        <div class="topnav-status">
+            <div class="topnav-dot"></div>
+            <span>Prototype</span>
+        </div>
+    </nav>
+
+    <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+    <main class="container">
+        <div class="page-header">
+            <h1>Flash Anzan Configuration</h1>
+            <p>Configure and preview your mental arithmetic test before launching.</p>
+        </div>
+
+        <div class="layout">
+
+            <!-- ────── LEFT: Config Controls ────── -->
+            <div class="config-col">
+
+                <!-- Difficulty Presets -->
+                <div class="preset-bar" id="preset-bar">
+                    <button class="preset-btn" data-preset="easy" aria-label="Easy preset">
+                        Easy
+                        <small>Beginner friendly</small>
+                    </button>
+                    <button class="preset-btn active" data-preset="standard" aria-label="Standard preset">
+                        Standard
+                        <small>Balanced challenge</small>
+                    </button>
+                    <button class="preset-btn" data-preset="hard" aria-label="Hard preset">
+                        Hard
+                        <small>Expert level</small>
+                    </button>
+                </div>
+
+                <!-- Core Settings Panel -->
+                <div class="panel">
+                    <h2 class="panel-title">
+                        <span class="panel-title-icon">⚡</span>
+                        Sequence &amp; Timing
+                    </h2>
+
+                    <div class="two-col">
+                        <div class="form-group">
+                            <label class="form-label" for="cfg-questions">Number of Questions</label>
+                            <div class="form-hint">Total questions in this test session.</div>
+                            <input type="number" id="cfg-questions" min="1" max="50" value="3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="cfg-seqlen">Sequence Length</label>
+                            <div class="form-hint">Numbers flashed per question.</div>
+                            <select id="cfg-seqlen">
+                                <option value="3">3 numbers</option>
+                                <option value="5" selected>5 numbers</option>
+                                <option value="7">7 numbers</option>
+                                <option value="10">10 numbers</option>
+                                <option value="15">15 numbers</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Number Length</label>
+                        <div class="form-hint">Digit count for generated numbers.</div>
+                        <div class="chip-group" id="cfg-numlen">
+                            <button class="chip" data-val="1">1-digit</button>
+                            <button class="chip active" data-val="2">2-digit</button>
+                            <button class="chip" data-val="3">3-digit</button>
+                            <button class="chip" data-val="mixed">Mixed</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Flash Speed</label>
+                        <div class="form-hint">Duration each number stays on screen. Faster = harder.</div>
+                        <div class="chip-group" id="cfg-speed">
+                            <button class="chip" data-val="700">700ms <span style="color:var(--t3)">(Slow)</span></button>
+                            <button class="chip active" data-val="450">450ms <span style="color:var(--t3)">(Standard)</span></button>
+                            <button class="chip" data-val="300">300ms <span style="color:var(--t3)">(Fast)</span></button>
+                            <button class="chip" data-val="custom">Custom</button>
+                        </div>
+                        <div id="custom-speed-row" style="display:none; margin-top: 10px;">
+                            <input type="number" id="cfg-speed-custom" min="100" max="2000" value="450" placeholder="ms">
+                        </div>
+                    </div>
+
+                    <!-- Flow Control section -->
+                    <div class="panel-section">
+                        <div class="panel-section-label">Flow Control</div>
+
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label class="form-label" for="cfg-countdown">Countdown Duration</label>
+                                <div class="form-hint">Seconds before the first number flashes.</div>
+                                <select id="cfg-countdown">
+                                    <option value="2">2 seconds</option>
+                                    <option value="3" selected>3 seconds</option>
+                                    <option value="5">5 seconds</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="cfg-mcqtimer">MCQ Answer Timeout</label>
+                                <div class="form-hint">Seconds allowed to choose an answer.</div>
+                                <select id="cfg-mcqtimer">
+                                    <option value="5" selected>5 seconds</option>
+                                    <option value="10">10 seconds</option>
+                                    <option value="15">15 seconds</option>
+                                    <option value="0">Unlimited</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="toggle-row">
+                                <div class="toggle-row-left">
+                                    <label class="form-label">Include Negatives</label>
+                                    <div class="form-hint" style="margin-bottom:0">Allow negative numbers in sequences.</div>
+                                </div>
+                                <button class="toggle on" id="cfg-negatives" role="switch" aria-checked="true" aria-label="Include negatives"></button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="toggle-row">
+                                <div class="toggle-row-left">
+                                    <label class="form-label">Allow Skip</label>
+                                    <div class="form-hint" style="margin-bottom:0">Let users skip questions without answering.</div>
+                                </div>
+                                <button class="toggle on" id="cfg-allowskip" role="switch" aria-checked="true" aria-label="Allow skip"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seed section -->
+                    <div class="panel-section">
+                        <div class="panel-section-label">Reproducibility</div>
+                        <div class="form-group">
+                            <label class="form-label" for="cfg-seed">Random Seed</label>
+                            <div class="form-hint">Set a seed for deterministic question generation, or leave blank for random.</div>
+                            <div class="seed-row">
+                                <input type="number" id="cfg-seed" placeholder="Auto (random)">
+                                <button class="seed-btn" id="btn-new-seed" aria-label="Generate new seed">🎲 New</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ────── RIGHT: Preview Panel ────── -->
+            <div class="preview-panel" id="preview-panel">
+                <div class="preview-header">
+                    <div class="preview-title">Live Preview</div>
+                    <span class="preview-badge" id="preview-badge">SEED: AUTO</span>
+                </div>
+
+                <!-- Flash preview -->
+                <div class="preview-flash-box" id="preview-flash-box">
+                    <div class="preview-flash-label">Sample Flash</div>
+                    <div class="preview-flash-num" id="preview-num">47</div>
+                    <div class="preview-seq" id="preview-seq"></div>
+                </div>
+
+                <!-- Options preview -->
+                <div class="preview-flash-box" id="preview-opts-box" style="padding: 16px;">
+                    <div class="preview-flash-label">Answer Choices</div>
+                    <div class="preview-options" id="preview-opts"></div>
+                </div>
+
+                <!-- Stats -->
+                <div class="preview-stats" id="preview-stats"></div>
+
+                <!-- Regenerate -->
+                <button class="btn-regen" id="btn-regen" aria-label="Regenerate sample data">
+                    <span>↻</span> Regenerate Sample
+                </button>
+
+                <!-- Launch -->
+                <button class="btn-launch" id="btn-launch" aria-label="Launch flash test">
+                    <span>▶</span> Try Flash Test
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ═══════════════ TEST OVERLAY ═══════════════ -->
+    <div class="overlay" id="test-overlay" role="dialog" aria-label="Flash Anzan Test" aria-modal="true">
+
+        <!-- Exit button -->
+        <button class="overlay-exit" id="overlay-exit" aria-label="Exit test">✕</button>
+
+        <!-- Exit confirmation tooltip -->
+        <div class="exit-tooltip" id="exit-tooltip">
+            <span class="exit-tooltip-text">Leave the test?</span>
+            <button class="exit-tooltip-btn exit-tooltip-leave" id="exit-confirm-leave">Leave</button>
+            <button class="exit-tooltip-btn exit-tooltip-stay" id="exit-confirm-stay">Stay</button>
+        </div>
+
+        <!-- Get Ready -->
+        <div class="phase-container phase-getready" id="phase-getready">
+            <div class="getready-label">Get Ready</div>
+            <div class="getready-digit" id="getready-digit">3</div>
+            <div class="getready-dots" id="getready-dots"></div>
+            <div class="getready-qinfo" id="getready-qinfo">
+                Question <strong>1</strong> of <strong>3</strong>
+            </div>
+        </div>
+
+        <!-- Flash -->
+        <div class="phase-container phase-flash" id="phase-flash">
+            <div class="flash-number" id="flash-number" aria-live="off"></div>
+        </div>
+
+        <!-- MCQ -->
+        <div class="phase-container phase-mcq" id="phase-mcq">
+            <div class="mcq-wrap">
+                <div class="mcq-header">
+                    <h2 class="mcq-title">What was the total?</h2>
+                    <p class="mcq-progress" id="mcq-progress">Question 1 of 3</p>
+                </div>
+                <div class="mcq-grid" id="mcq-grid"></div>
+                <div class="mcq-timer" id="mcq-timer-wrap">
+                    <svg class="timer-svg" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16" fill="none" stroke="var(--border)" stroke-width="2.5"/>
+                        <circle cx="18" cy="18" r="16" fill="none" stroke="var(--g300)" stroke-width="2.5"
+                                stroke-dasharray="100.53" stroke-dashoffset="0" id="timer-ring"/>
+                    </svg>
+                    <div class="timer-label" id="timer-label">Time remaining: <strong>5s</strong></div>
+                </div>
+                <div class="mcq-actions">
+                    <button class="btn-confirm" id="btn-confirm">Confirm Answer →</button>
+                    <button class="btn-skip-q" id="btn-skip-q" aria-label="Skip this question">Skip this question</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submitted -->
+        <div class="phase-container phase-submitted" id="phase-submitted">
+            <div class="submitted-card" id="submitted-card">
+                <div class="submitted-check">✓</div>
+                <h2 class="submitted-title">Test Complete!</h2>
+                <p class="submitted-sub">Your responses have been recorded.</p>
+                <div class="submitted-stats" id="submitted-stats"></div>
+                <div class="submitted-actions">
+                    <button class="btn-pri" id="btn-restart" aria-label="Play again">▶ Play Again</button>
+                    <button class="btn-sec" id="btn-close-test" aria-label="Close test">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+    <script>
+    (function() {
+        'use strict';
+
+        /* ═══════════════════════════════════════════
+           SEEDED PRNG (Mulberry32)
+           ═══════════════════════════════════════════ */
+        function mulberry32(seed) {
+            return function() {
+                seed |= 0;
+                seed = seed + 0x6D2B79F5 | 0;
+                let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+                t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+            };
+        }
+
+        /* ═══════════════════════════════════════════
+           CONFIGURATION STATE
+           ═══════════════════════════════════════════ */
+        const CONFIG = {
+            questions: 3,
+            flashSpeed: 450,
+            numLength: '2',      // '1', '2', '3', 'mixed'
+            negatives: true,
+            seqLength: 5,
+            countdown: 3,
+            mcqTimer: 5,
+            allowSkip: true,
+            seed: null,          // null = random
+            preset: 'standard'
+        };
+
+        const PRESETS = {
+            easy:     { questions: 3, flashSpeed: 700, numLength: '1', negatives: false, seqLength: 3, countdown: 3, mcqTimer: 10, allowSkip: true },
+            standard: { questions: 3, flashSpeed: 450, numLength: '2', negatives: true,  seqLength: 5, countdown: 3, mcqTimer: 5,  allowSkip: true },
+            hard:     { questions: 5, flashSpeed: 300, numLength: '3', negatives: true,  seqLength: 10, countdown: 2, mcqTimer: 5,  allowSkip: false }
+        };
+
+        /* ═══════════════════════════════════════════
+           DOM REFS
+           ═══════════════════════════════════════════ */
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => document.querySelectorAll(s);
+
+        // Config controls
+        const elQuestions   = $('#cfg-questions');
+        const elSeqLen      = $('#cfg-seqlen');
+        const elCountdown   = $('#cfg-countdown');
+        const elMcqTimer    = $('#cfg-mcqtimer');
+        const elSeed        = $('#cfg-seed');
+        const elNegToggle   = $('#cfg-negatives');
+        const elSkipToggle  = $('#cfg-allowskip');
+        const elCustomSpeed = $('#cfg-speed-custom');
+        const elCustomRow   = $('#custom-speed-row');
+        const elPresetBar   = $('#preset-bar');
+
+        // Preview
+        const elPreviewNum      = $('#preview-num');
+        const elPreviewSeq      = $('#preview-seq');
+        const elPreviewOpts     = $('#preview-opts');
+        const elPreviewStats    = $('#preview-stats');
+        const elPreviewBadge    = $('#preview-badge');
+
+        // Overlay
+        const elOverlay         = $('#test-overlay');
+        const elBtnLaunch       = $('#btn-launch');
+        const elExitBtn         = $('#overlay-exit');
+        const elExitTooltip     = $('#exit-tooltip');
+
+        /* ═══════════════════════════════════════════
+           QUESTION GENERATOR
+           ═══════════════════════════════════════════ */
+        function generateNumber(rng, numLength) {
+            const len = numLength === 'mixed'
+                ? [1, 2, 3][Math.floor(rng() * 3)]
+                : parseInt(numLength);
+            const min = len === 1 ? 1 : Math.pow(10, len - 1);
+            const max = Math.pow(10, len) - 1;
+            return Math.floor(rng() * (max - min + 1)) + min;
+        }
+
+        function generateQuestions(config) {
+            const seed = config.seed !== null
+                ? config.seed
+                : Math.floor(Math.random() * 2147483647);
+            const rng = mulberry32(seed);
+            const questions = [];
+
+            for (let q = 0; q < config.questions; q++) {
+                const sequence = [];
+                for (let i = 0; i < config.seqLength; i++) {
+                    let num = generateNumber(rng, config.numLength);
+                    if (config.negatives && rng() < 0.3 && i > 0) {
+                        num = -num;
+                    }
+                    sequence.push(num);
+                }
+
+                const correct = sequence.reduce((a, b) => a + b, 0);
+                const distractors = new Set();
+                distractors.add(correct);
+
+                // Generate plausible distractors
+                const maxDigits = config.numLength === 'mixed' ? 3 : parseInt(config.numLength);
+                const spread = Math.max(5, Math.pow(10, maxDigits - 1));
+
+                while (distractors.size < 4) {
+                    const offset = Math.floor(rng() * spread * 2) - spread;
+                    const d = correct + (offset === 0 ? (rng() > 0.5 ? 1 : -1) * Math.ceil(rng() * spread) : offset);
+                    if (d !== correct) distractors.add(d);
+                }
+
+                const options = Array.from(distractors);
+                // Shuffle
+                for (let i = options.length - 1; i > 0; i--) {
+                    const j = Math.floor(rng() * (i + 1));
+                    [options[i], options[j]] = [options[j], options[i]];
+                }
+
+                const labels = ['A', 'B', 'C', 'D'];
+                const correctLabel = labels[options.indexOf(correct)];
+
+                questions.push({
+                    sequence,
+                    options: options.map((v, i) => ({ label: labels[i], value: v })),
+                    correct: correctLabel
+                });
+            }
+
+            return { questions, seed };
+        }
+
+        /* ═══════════════════════════════════════════
+           CONFIG BINDING
+           ═══════════════════════════════════════════ */
+        function readConfig() {
+            CONFIG.questions = Math.max(1, Math.min(50, parseInt(elQuestions.value) || 3));
+            CONFIG.seqLength = parseInt(elSeqLen.value);
+            CONFIG.countdown = parseInt(elCountdown.value);
+            CONFIG.mcqTimer  = parseInt(elMcqTimer.value);
+            CONFIG.negatives = elNegToggle.classList.contains('on');
+            CONFIG.allowSkip = elSkipToggle.classList.contains('on');
+
+            const seedVal = elSeed.value.trim();
+            CONFIG.seed = seedVal ? parseInt(seedVal) : null;
+
+            // Num length from chip
+            const activeChip = document.querySelector('#cfg-numlen .chip.active');
+            CONFIG.numLength = activeChip ? activeChip.dataset.val : '2';
+
+            // Flash speed
+            const activeSpeed = document.querySelector('#cfg-speed .chip.active');
+            if (activeSpeed && activeSpeed.dataset.val !== 'custom') {
+                CONFIG.flashSpeed = parseInt(activeSpeed.dataset.val);
+            } else {
+                CONFIG.flashSpeed = Math.max(100, Math.min(2000, parseInt(elCustomSpeed.value) || 450));
+            }
+        }
+
+        function writeConfig() {
+            elQuestions.value = CONFIG.questions;
+            elSeqLen.value = CONFIG.seqLength;
+            elCountdown.value = CONFIG.countdown;
+            elMcqTimer.value = CONFIG.mcqTimer;
+
+            // Toggles
+            elNegToggle.classList.toggle('on', CONFIG.negatives);
+            elNegToggle.setAttribute('aria-checked', CONFIG.negatives);
+            elSkipToggle.classList.toggle('on', CONFIG.allowSkip);
+            elSkipToggle.setAttribute('aria-checked', CONFIG.allowSkip);
+
+            // Num length chips
+            document.querySelectorAll('#cfg-numlen .chip').forEach(c => {
+                c.classList.toggle('active', c.dataset.val === CONFIG.numLength);
+            });
+
+            // Speed chips
+            const speedVals = ['700', '450', '300'];
+            const isCustom = !speedVals.includes(String(CONFIG.flashSpeed));
+            document.querySelectorAll('#cfg-speed .chip').forEach(c => {
+                if (c.dataset.val === 'custom') {
+                    c.classList.toggle('active', isCustom);
+                } else {
+                    c.classList.toggle('active', !isCustom && c.dataset.val === String(CONFIG.flashSpeed));
+                }
+            });
+            elCustomRow.style.display = isCustom ? 'block' : 'none';
+            if (isCustom) elCustomSpeed.value = CONFIG.flashSpeed;
+
+            // Seed
+            elSeed.value = CONFIG.seed !== null ? CONFIG.seed : '';
+
+            // Preset
+            document.querySelectorAll('.preset-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.preset === CONFIG.preset);
+            });
+        }
+
+        function applyPreset(name) {
+            const p = PRESETS[name];
+            if (!p) return;
+            Object.assign(CONFIG, p);
+            CONFIG.preset = name;
+            CONFIG.seed = null;
+            writeConfig();
+            refreshPreview();
+        }
+
+        /* ═══════════════════════════════════════════
+           PREVIEW
+           ═══════════════════════════════════════════ */
+        let previewData = null;
+
+        function refreshPreview() {
+            readConfig();
+            const result = generateQuestions(CONFIG);
+            previewData = result;
+            const sample = result.questions[0];
+
+            // Badge
+            elPreviewBadge.textContent = CONFIG.seed !== null
+                ? `SEED: ${result.seed}`
+                : 'SEED: AUTO';
+
+            // Flash number (first in sequence)
+            const firstNum = sample.sequence[0];
+            elPreviewNum.textContent = firstNum;
+            elPreviewNum.classList.toggle('neg', firstNum < 0);
+
+            // Sequence pills
+            elPreviewSeq.innerHTML = sample.sequence.map(n =>
+                `<span class="preview-seq-item${n < 0 ? ' neg' : ''}">${n}</span>`
+            ).join('');
+
+            // Options
+            elPreviewOpts.innerHTML = sample.options.map(opt =>
+                `<div class="preview-opt${opt.label === sample.correct ? ' correct' : ''}">
+                    <span class="preview-opt-lbl">${opt.label}</span>
+                    <span class="preview-opt-val">${opt.value}</span>
+                </div>`
+            ).join('');
+
+            // Stats
+            const totalSeqTime = ((CONFIG.seqLength * CONFIG.flashSpeed) / 1000).toFixed(2);
+            elPreviewStats.innerHTML = `
+                <div class="stat-row">
+                    <span class="stat-lbl">Questions</span>
+                    <span class="stat-val">${CONFIG.questions}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-lbl">Flash Speed</span>
+                    <span class="stat-val">${CONFIG.flashSpeed}ms</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-lbl">Number Format</span>
+                    <span class="stat-val">${CONFIG.numLength === 'mixed' ? 'Mixed' : CONFIG.numLength + '-digit'}${CONFIG.negatives ? ' ± neg' : ''}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-lbl">Sequence Time</span>
+                    <span class="stat-val">${totalSeqTime}s</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-lbl">Countdown</span>
+                    <span class="stat-val">${CONFIG.countdown}s</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-lbl">Answer Window</span>
+                    <span class="stat-val">${CONFIG.mcqTimer === 0 ? '∞' : CONFIG.mcqTimer + 's'}</span>
+                </div>
+            `;
+        }
+
+        /* ═══════════════════════════════════════════
+           TIMER MANAGEMENT
+           ═══════════════════════════════════════════ */
+        let timerIds = [];
+        let intervalIds = [];
+
+        function setSafeTimeout(cb, delay) {
+            const id = setTimeout(cb, delay);
+            timerIds.push(id);
+            return id;
+        }
+
+        function setSafeInterval(cb, delay) {
+            const id = setInterval(cb, delay);
+            intervalIds.push(id);
+            return id;
+        }
+
+        function clearAllTimers() {
+            timerIds.forEach(clearTimeout);
+            intervalIds.forEach(clearInterval);
+            timerIds = [];
+            intervalIds = [];
+        }
+
+        /* ═══════════════════════════════════════════
+           TEST STATE MACHINE
+           ═══════════════════════════════════════════ */
+        let testPhase = 'idle'; // 'idle' | 'getready' | 'flash' | 'mcq' | 'submitted'
+        let testQuestions = [];
+        let currentQ = 0;
+        let answers = [];     // { label: string | null, correct: string }
+        let selectedOption = null;
+        let mcqTimeLeft = 0;
+
+        function initTest() {
+            readConfig();
+            const result = generateQuestions(CONFIG);
+            testQuestions = result.questions;
+            currentQ = 0;
+            answers = [];
+            selectedOption = null;
+            exitTooltipHide();
+            setPhase('getready');
+        }
+
+        function resetTest() {
+            clearAllTimers();
+            testPhase = 'idle';
+            currentQ = 0;
+            answers = [];
+            selectedOption = null;
+            hideAllPhases();
+        }
+
+        function setPhase(phase) {
+            clearAllTimers();
+            testPhase = phase;
+            hideAllPhases();
+
+            switch (phase) {
+                case 'getready':  runGetReady(); break;
+                case 'flash':     runFlash(); break;
+                case 'mcq':       runMCQ(); break;
+                case 'submitted': runSubmitted(); break;
+            }
+        }
+
+        function hideAllPhases() {
+            $$('.phase-container').forEach(el => el.classList.remove('active'));
+        }
+
+        /* ── Get Ready ── */
+        function runGetReady() {
+            const el = $('#phase-getready');
+            el.classList.add('active');
+
+            const digit = $('#getready-digit');
+            const dotsWrap = $('#getready-dots');
+            const qinfo = $('#getready-qinfo');
+
+            // Info
+            qinfo.innerHTML = `Question <strong>${currentQ + 1}</strong> of <strong>${testQuestions.length}</strong>`;
+
+            // Build dots
+            const count = CONFIG.countdown;
+            dotsWrap.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'getready-dot';
+                dotsWrap.appendChild(dot);
+            }
+
+            let remaining = count;
+            const dots = dotsWrap.querySelectorAll('.getready-dot');
+
+            function updateCD() {
+                digit.textContent = remaining;
+                dots.forEach((d, i) => {
+                    d.classList.toggle('active', i === (count - remaining));
+                });
+            }
+
+            updateCD();
+
+            setSafeInterval(() => {
+                remaining--;
+                if (remaining > 0) {
+                    updateCD();
+                } else {
+                    setPhase('flash');
+                }
+            }, 1000);
+        }
+
+        /* ── Flash ── */
+        function runFlash() {
+            const el = $('#phase-flash');
+            el.classList.add('active');
+
+            // Apply contrast tier based on speed
+            const speed = CONFIG.flashSpeed;
+            if (speed >= 500) {
+                el.style.background = 'var(--ff-std-bg)';
+            } else if (speed >= 300) {
+                el.style.background = 'var(--ff-mid-bg)';
+            } else {
+                el.style.background = 'var(--ff-fast-bg)';
+            }
+
+            const numEl = $('#flash-number');
+            const seq = testQuestions[currentQ].sequence;
+            let idx = 0;
+
+            function showNum(n) {
+                numEl.textContent = n;
+                numEl.classList.toggle('neg', n < 0);
+            }
+
+            showNum(seq[0]);
+
+            setSafeInterval(() => {
+                idx++;
+                if (idx < seq.length) {
+                    showNum(seq[idx]);
+                } else {
+                    numEl.textContent = '';
+                    numEl.classList.remove('neg');
+                    setSafeTimeout(() => setPhase('mcq'), 300);
+                }
+            }, CONFIG.flashSpeed);
+        }
+
+        /* ── MCQ ── */
+        function runMCQ() {
+            const el = $('#phase-mcq');
+            el.classList.add('active');
+
+            selectedOption = null;
+            mcqTimeLeft = CONFIG.mcqTimer;
+
+            const q = testQuestions[currentQ];
+            const isLast = currentQ === testQuestions.length - 1;
+
+            // Progress
+            $('#mcq-progress').innerHTML = `Question <span class="fm">${currentQ + 1}</span> of <span class="fm">${testQuestions.length}</span>`;
+
+            // Grid
+            const grid = $('#mcq-grid');
+            grid.innerHTML = '';
+            grid.style.pointerEvents = 'none';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'mcq-opt';
+                btn.setAttribute('aria-label', `Option ${opt.label}: ${opt.value}`);
+                btn.innerHTML = `<span class="opt-lbl">(${opt.label})</span><span class="opt-val">${opt.value}</span>`;
+                btn.onclick = () => selectMCQOption(idx);
+                grid.appendChild(btn);
+            });
+
+            // Pointer events block
+            setSafeTimeout(() => { grid.style.pointerEvents = 'auto'; }, 800);
+
+            // Confirm button
+            const btnConf = $('#btn-confirm');
+            btnConf.classList.remove('visible');
+            btnConf.textContent = isLast ? 'Confirm & Submit →' : 'Confirm Answer →';
+            btnConf.onclick = handleConfirm;
+
+            // Skip button
+            const btnSkip = $('#btn-skip-q');
+            btnSkip.style.display = CONFIG.allowSkip ? 'block' : 'none';
+            btnSkip.onclick = handleSkip;
+
+            // Timer
+            const timerWrap = $('#mcq-timer-wrap');
+            if (CONFIG.mcqTimer === 0) {
+                timerWrap.style.display = 'none';
+                return;
+            }
+            timerWrap.style.display = 'flex';
+
+            updateTimerLabel(isLast);
+
+            const ring = $('#timer-ring');
+            const circumference = 2 * Math.PI * 16; // r=16
+            ring.style.transition = 'none';
+            ring.style.strokeDasharray = circumference;
+            ring.style.strokeDashoffset = '0';
+
+            // Animate ring
+            setSafeTimeout(() => {
+                ring.style.transition = `stroke-dashoffset ${CONFIG.mcqTimer}s linear`;
+                ring.style.strokeDashoffset = circumference;
+            }, 50);
+
+            // Countdown
+            setSafeInterval(() => {
+                mcqTimeLeft--;
+                if (mcqTimeLeft >= 0) {
+                    updateTimerLabel(isLast);
+                }
+                if (mcqTimeLeft <= 0) {
+                    if (selectedOption !== null) {
+                        handleConfirm();
+                    } else {
+                        handleSkip();
+                    }
+                }
+            }, 1000);
+        }
+
+        function selectMCQOption(idx) {
+            selectedOption = idx;
+            const opts = $$('#mcq-grid .mcq-opt');
+            opts.forEach((o, i) => o.classList.toggle('selected', i === idx));
+            $('#btn-confirm').classList.add('visible');
+            updateTimerLabel(currentQ === testQuestions.length - 1);
+        }
+
+        function updateTimerLabel(isLast) {
+            const lbl = $('#timer-label');
+            if (CONFIG.mcqTimer === 0) return;
+            if (selectedOption !== null) {
+                lbl.innerHTML = `Auto-confirming in <strong>${mcqTimeLeft}s</strong>`;
+            } else {
+                lbl.innerHTML = isLast
+                    ? `Submit in <strong>${mcqTimeLeft}s</strong>`
+                    : `Time remaining: <strong>${mcqTimeLeft}s</strong>`;
+            }
+        }
+
+        function handleConfirm() {
+            const q = testQuestions[currentQ];
+            const chosenLabel = selectedOption !== null ? q.options[selectedOption].label : null;
+            answers.push({
+                label: chosenLabel,
+                correct: q.correct,
+                isCorrect: chosenLabel === q.correct
+            });
+            advanceMCQ();
+        }
+
+        function handleSkip() {
+            answers.push({
+                label: null,
+                correct: testQuestions[currentQ].correct,
+                isCorrect: false
+            });
+            advanceMCQ();
+        }
+
+        function advanceMCQ() {
+            if (currentQ < testQuestions.length - 1) {
+                currentQ++;
+                setPhase('getready');
+            } else {
+                setPhase('submitted');
+            }
+        }
+
+        /* ── Submitted ── */
+        function runSubmitted() {
+            const el = $('#phase-submitted');
+            el.classList.add('active');
+
+            const total = answers.length;
+            const answered = answers.filter(a => a.label !== null).length;
+            const skipped = total - answered;
+            const correct = answers.filter(a => a.isCorrect).length;
+            const wrong = answered - correct;
+
+            const statsEl = $('#submitted-stats');
+            statsEl.innerHTML = `
+                <span class="stat-pill sp-answered"><span class="fm">${answered}</span> of <span class="fm">${total}</span> Answered</span>
+                <span class="stat-pill sp-skipped"><span class="fm">${skipped}</span> Skipped</span>
+                <span class="stat-pill sp-correct"><span class="fm">${correct}</span> Correct</span>
+                ${wrong > 0 ? `<span class="stat-pill sp-wrong"><span class="fm">${wrong}</span> Wrong</span>` : ''}
+            `;
+
+            // Animate card
+            const card = $('#submitted-card');
+            card.style.transition = 'none';
+            card.style.transform = 'translateY(20px)';
+            card.style.opacity = '0';
+
+            setSafeTimeout(() => {
+                card.style.transition = 'transform 350ms ease-out, opacity 350ms ease-out';
+                card.style.transform = 'translateY(0)';
+                card.style.opacity = '1';
+            }, 50);
+
+            // Buttons
+            $('#btn-restart').onclick = () => {
+                initTest();
+            };
+            $('#btn-close-test').onclick = () => {
+                exitTest();
+            };
+        }
+
+        /* ═══════════════════════════════════════════
+           OVERLAY MANAGEMENT
+           ═══════════════════════════════════════════ */
+        function openOverlay() {
+            elOverlay.classList.add('active');
+            document.body.classList.add('overlay-active');
+            elBtnLaunch.disabled = true;
+            elBtnLaunch.innerHTML = '<span>◼</span> Test Running…';
+            initTest();
+        }
+
+        function exitTest() {
+            clearAllTimers();
+            resetTest();
+            exitTooltipHide();
+            elOverlay.classList.remove('active');
+            document.body.classList.remove('overlay-active');
+            elBtnLaunch.disabled = false;
+            elBtnLaunch.innerHTML = '<span>▶</span> Try Flash Test';
+        }
+
+        function exitTooltipShow() {
+            elExitTooltip.classList.add('visible');
+        }
+
+        function exitTooltipHide() {
+            elExitTooltip.classList.remove('visible');
+        }
+
+        function requestExit() {
+            if (testPhase === 'submitted') {
+                exitTest();
+                return;
+            }
+            exitTooltipShow();
+        }
+
+        /* ═══════════════════════════════════════════
+           EVENT BINDINGS
+           ═══════════════════════════════════════════ */
+        function init() {
+            // Preset bar
+            elPresetBar.addEventListener('click', (e) => {
+                const btn = e.target.closest('.preset-btn');
+                if (btn) applyPreset(btn.dataset.preset);
+            });
+
+            // Chip groups (numlen, speed)
+            document.querySelectorAll('#cfg-numlen, #cfg-speed').forEach(group => {
+                group.addEventListener('click', (e) => {
+                    const chip = e.target.closest('.chip');
+                    if (!chip) return;
+
+                    // For speed group, handle custom
+                    if (group.id === 'cfg-speed') {
+                        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                        chip.classList.add('active');
+                        elCustomRow.style.display = chip.dataset.val === 'custom' ? 'block' : 'none';
+                    } else {
+                        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                        chip.classList.add('active');
+                    }
+
+                    clearPresetHighlight();
+                    refreshPreview();
+                });
+            });
+
+            // Toggle buttons
+            [elNegToggle, elSkipToggle].forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    toggle.classList.toggle('on');
+                    toggle.setAttribute('aria-checked', toggle.classList.contains('on'));
+                    clearPresetHighlight();
+                    refreshPreview();
+                });
+            });
+
+            // Selects & inputs
+            [elQuestions, elSeqLen, elCountdown, elMcqTimer, elCustomSpeed].forEach(el => {
+                el.addEventListener('change', () => {
+                    clearPresetHighlight();
+                    refreshPreview();
+                });
+                el.addEventListener('input', () => {
+                    clearPresetHighlight();
+                    refreshPreview();
+                });
+            });
+
+            // Seed
+            elSeed.addEventListener('change', refreshPreview);
+            elSeed.addEventListener('input', refreshPreview);
+
+            // New seed button
+            $('#btn-new-seed').addEventListener('click', () => {
+                elSeed.value = Math.floor(Math.random() * 99999);
+                refreshPreview();
+            });
+
+            // Regenerate
+            $('#btn-regen').addEventListener('click', () => {
+                elSeed.value = '';
+                CONFIG.seed = null;
+                refreshPreview();
+            });
+
+            // Launch
+            elBtnLaunch.addEventListener('click', openOverlay);
+
+            // Exit
+            elExitBtn.addEventListener('click', requestExit);
+            $('#exit-confirm-leave').addEventListener('click', exitTest);
+            $('#exit-confirm-stay').addEventListener('click', exitTooltipHide);
+
+            // Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && elOverlay.classList.contains('active')) {
+                    e.preventDefault();
+                    if (elExitTooltip.classList.contains('visible')) {
+                        exitTest();
+                    } else {
+                        requestExit();
+                    }
+                }
+            });
+
+            // MCQ keyboard support (1-4 for options, Enter to confirm, S to skip)
+            document.addEventListener('keydown', (e) => {
+                if (testPhase !== 'mcq') return;
+                if (e.key >= '1' && e.key <= '4') {
+                    const idx = parseInt(e.key) - 1;
+                    const opts = $$('#mcq-grid .mcq-opt');
+                    if (opts[idx]) selectMCQOption(idx);
+                }
+                if (e.key === 'Enter' && selectedOption !== null) {
+                    handleConfirm();
+                }
+                if (e.key === 's' || e.key === 'S') {
+                    if (CONFIG.allowSkip) handleSkip();
+                }
+            });
+
+            // Initialize preview
+            refreshPreview();
+        }
+
+        function clearPresetHighlight() {
+            CONFIG.preset = null;
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        // Boot
+        document.addEventListener('DOMContentLoaded', init);
+    })();
+    </script>
+</body>
+</html>

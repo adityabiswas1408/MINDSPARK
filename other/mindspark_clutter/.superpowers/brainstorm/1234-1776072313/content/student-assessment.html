@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F1F5F9; color: #0A0F1A; font-size: 16px; line-height: 1.5; padding: 32px 24px; -webkit-font-smoothing: antialiased; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+
+  /* Full-canvas exam page — no sidebar, no top header */
+  .exam-page { min-height: 820px; background: #FFFFFF; display: flex; flex-direction: column; position: relative; }
+
+  /* ══ Minimal 56px top strip ══ */
+  .exam-strip {
+    height: 56px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+  .strip-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .strip-title { font-size: 13px; font-weight: 600; color: #334155; letter-spacing: 0.01em; }
+  .progress-label { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #475569; padding: 4px 10px; background: #F1F5F9; border-radius: 9999px; }
+  .strip-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; }
+
+  .timer-primary {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 16px;
+    background: #EFFAF4;
+    border: 1px solid #B7E4C7;
+    border-radius: 10px;
+  }
+  .timer-primary.urgent { background: #FEF3C7; border-color: #FDE68A; }
+  .timer-primary.critical { background: #FEE2E2; border-color: #FCA5A5; animation: pulse-soft 1s ease-in-out infinite; }
+  @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
+  .timer-primary-label { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-primary-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 700; color: #1A3829; letter-spacing: -0.03em; line-height: 1; }
+  .timer-primary.urgent .timer-primary-value { color: #92400E; }
+  .timer-primary.critical .timer-primary-value { color: #991B1B; }
+
+  .timer-secondary {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 11px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+  }
+  .timer-secondary-label { font-size: 9px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; }
+  .timer-secondary-value { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #334155; letter-spacing: -0.015em; }
+
+  .strip-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .sync-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+  }
+  .sync-pill::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: #1A3829; }
+  .sync-pill.syncing::before { background: #F59E0B; animation: pulse 1s ease-in-out infinite; }
+  .sync-pill.offline { background: #FEF3C7; border-color: #FDE68A; color: #92400E; }
+  .sync-pill.offline::before { background: #F59E0B; }
+  .exit-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .exit-btn:hover { background: #FEF2F2; border-color: #FECACA; color: #991B1B; }
+  .exit-btn svg { width: 12px; height: 12px; stroke-width: 2.5; }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+  /* ═════════════════════════════════════════════ */
+  /* Screen 1 — Pre-flash interstitial */
+  .preflash-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 40px;
+  }
+  .focus-dot {
+    width: 32px; height: 32px;
+    border-radius: 9999px;
+    background: #1A3829;
+    box-shadow: 0 0 0 12px rgba(26, 56, 41, 0.08), 0 0 0 28px rgba(26, 56, 41, 0.04);
+    position: relative;
+  }
+  .focus-dot::before {
+    content: '';
+    position: absolute;
+    inset: -50px;
+    border-radius: 9999px;
+    border: 2px dashed rgba(26, 56, 41, 0.15);
+    animation: breathe-dot 2s ease-in-out infinite;
+  }
+  @keyframes breathe-dot { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } }
+
+  .preflash-countdown {
+    font-family: 'DM Mono', monospace;
+    font-size: 180px;
+    font-weight: 700;
+    color: #1A3829;
+    line-height: 1;
+    letter-spacing: -0.06em;
+  }
+  .preflash-hint {
+    font-size: 15px;
+    color: #475569;
+    font-weight: 500;
+    text-align: center;
+    max-width: 420px;
+  }
+  .preflash-hint strong { color: #1A3829; font-weight: 700; }
+
+  /* ═════════════════════════════════════════════ */
+  /* Screen 2 — Flash view (absolute minimum) */
+  .flash-canvas {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+  }
+  .flash-number {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(120px, 30vh, 220px);
+    font-weight: 700;
+    color: #0A0F1A;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    transition: none !important;
+  }
+  .flash-number.negative { color: #991B1B; }
+
+  /* ═════════════════════════════════════════════ */
+  /* Screen 3 — EXAM MCQ view */
+  .mcq-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 40px 40px;
+  }
+  .mcq-inner { width: 100%; max-width: 720px; }
+
+  /* Equation panel (EXAM only) */
+  .equation-panel {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 40px 32px;
+    text-align: center;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+  }
+  .equation-label { font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+  .equation-expr {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 32px;
+    font-weight: 500;
+    color: #0A0F1A;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .equation-expr .pipe { color: #CBD5E1; margin: 0 10px; font-weight: 300; }
+
+  /* TEST MCQ question label (after flash) */
+  .test-q-label {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .test-q-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: #F5F3FF;
+    color: #6D28D9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .test-q-icon svg { width: 26px; height: 26px; stroke-width: 1.75; }
+  .test-q-question {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0A0F1A;
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+  .test-q-hint { font-size: 14px; color: #475569; font-weight: 500; }
+
+  /* 2×2 option grid */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .option-tile {
+    background: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    cursor: pointer;
+    transition: all 150ms;
+    min-height: 100px;
+  }
+  .option-tile:hover { border-color: #52B788; background: #F0FDF4; }
+  .option-tile.selected {
+    border-color: #1A3829;
+    border-width: 3px;
+    background: #EFFAF4;
+    box-shadow: 0 4px 12px rgba(26, 56, 41, 0.08);
+  }
+  .option-letter {
+    width: 44px; height: 44px;
+    border-radius: 9999px;
+    background: #F1F5F9;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .option-tile.selected .option-letter {
+    background: #1A3829;
+    color: #FFFFFF;
+  }
+  .option-value {
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    font-weight: 500;
+    color: #0A0F1A;
+    letter-spacing: -0.01em;
+  }
+
+  /* Confirm button */
+  .confirm-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+  }
+  .confirm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 32px;
+    height: 56px;
+    background: #1A3829;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(26, 56, 41, 0.25), 0 2px 6px rgba(26, 56, 41, 0.15);
+    min-width: 260px;
+    justify-content: center;
+  }
+  .confirm-btn svg { width: 18px; height: 18px; stroke-width: 2.5; }
+  .confirm-btn.submit { background: #DC2626; box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25); }
+  .confirm-btn.disabled { background: #E2E8F0; color: #94A3B8; box-shadow: none; cursor: not-allowed; }
+
+  /* Keyboard hint */
+  .kbd-hint {
+    position: absolute;
+    bottom: 20px;
+    right: 24px;
+    font-size: 11px;
+    color: #94A3B8;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .kbd-hint kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #334155;
+    line-height: 1;
+  }
+
+  /* ═════════════════════════════════════════════ */
+  /* Screen 5 — Time's Up transition */
+  .timesup-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: #FFFBEB;
+  }
+  .timesup-icon {
+    width: 120px; height: 120px;
+    border-radius: 9999px;
+    background: #FEF3C7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #92400E;
+    margin-bottom: 24px;
+    box-shadow: 0 0 0 16px rgba(245, 158, 11, 0.1);
+  }
+  .timesup-icon svg { width: 56px; height: 56px; stroke-width: 2; }
+  .timesup-title {
+    font-size: 42px;
+    font-weight: 800;
+    color: #92400E;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .timesup-sub {
+    font-size: 17px;
+    font-weight: 600;
+    color: #B45309;
+    margin-bottom: 32px;
+  }
+  .timesup-progress {
+    width: 220px;
+    height: 6px;
+    background: #FDE68A;
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  .timesup-progress-fill {
+    width: 60%;
+    height: 100%;
+    background: #92400E;
+    border-radius: 9999px;
+  }
+
+  /* ═════════════════════════════════════════════ */
+  /* Screen 6 — Time-expiring warning modal */
+  .warning-stage {
+    flex: 1;
+    position: relative;
+    background: rgba(10, 15, 26, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+  .warning-dialog {
+    background: #FFFFFF;
+    border-radius: 18px;
+    box-shadow: 0 24px 64px rgba(10, 15, 26, 0.4);
+    overflow: hidden;
+    width: 100%;
+    max-width: 480px;
+    border-top: 4px solid #DC2626;
+  }
+  .warning-body { padding: 36px 32px; text-align: center; }
+  .warning-icon-big {
+    width: 80px; height: 80px;
+    border-radius: 9999px;
+    background: #FEE2E2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #991B1B;
+    margin-bottom: 20px;
+    box-shadow: 0 0 0 12px rgba(220, 38, 38, 0.08);
+    animation: pulse-warn 2s ease-in-out infinite;
+  }
+  @keyframes pulse-warn { 0%, 100% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0.08); } 50% { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0.04); } }
+  .warning-icon-big svg { width: 40px; height: 40px; stroke-width: 2; }
+  .warning-title { font-size: 24px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.02em; margin-bottom: 10px; }
+  .warning-countdown {
+    font-family: 'DM Mono', monospace;
+    font-size: 48px;
+    font-weight: 700;
+    color: #991B1B;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .warning-desc {
+    font-size: 14px;
+    color: #475569;
+    font-weight: 500;
+    max-width: 380px;
+    margin: 0 auto 24px;
+    line-height: 1.5;
+  }
+  .warning-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .warning-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    height: 44px;
+    background: #1A3829;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .warning-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    height: 44px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    color: #1E293B;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ═════════════════════════════════════════════ */
+  /* Screen 7 — Completion screen */
+  .complete-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: #F8FAFC;
+  }
+  .complete-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 22px;
+    padding: 56px 48px;
+    width: 100%;
+    max-width: 620px;
+    box-shadow: 0 12px 40px rgba(10, 15, 26, 0.06);
+    text-align: center;
+  }
+  .complete-icon {
+    width: 108px; height: 108px;
+    border-radius: 9999px;
+    background: #DCFCE7;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #14532D;
+    margin-bottom: 28px;
+    box-shadow: 0 0 0 14px rgba(26, 56, 41, 0.06), 0 0 0 28px rgba(26, 56, 41, 0.03);
+  }
+  .complete-icon svg { width: 52px; height: 52px; stroke-width: 2.5; }
+  .complete-title { font-size: 34px; font-weight: 800; color: #0A0F1A; letter-spacing: -0.025em; margin-bottom: 10px; line-height: 1.1; }
+  .complete-sub { font-size: 16px; color: #334155; font-weight: 500; max-width: 460px; margin: 0 auto 32px; line-height: 1.5; }
+
+  /* Stats row */
+  .complete-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .complete-stat {
+    padding: 18px 16px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+  }
+  .complete-stat-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .complete-stat-value { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; font-size: 26px; font-weight: 700; color: #0A0F1A; line-height: 1; letter-spacing: -0.025em; }
+  .complete-stat-value.denom { font-size: 16px; color: #475569; font-weight: 500; }
+
+  /* Results pending notice */
+  .pending-notice {
+    padding: 16px 20px;
+    background: #EFF6FF;
+    border: 1px solid #DBEAFE;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    text-align: left;
+  }
+  .pending-notice svg { width: 20px; height: 20px; color: #1E3A8A; stroke-width: 2; flex-shrink: 0; margin-top: 1px; }
+  .pending-notice-title { font-size: 13px; font-weight: 700; color: #1E3A8A; margin-bottom: 2px; }
+  .pending-notice-text { font-size: 13px; color: #334155; font-weight: 500; line-height: 1.5; }
+
+  /* Redirect countdown */
+  .redirect-row {
+    padding-top: 24px;
+    border-top: 1px solid #F1F5F9;
+  }
+  .redirect-text {
+    font-size: 13px;
+    color: #475569;
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .redirect-text strong { color: #1A3829; font-family: 'DM Mono', monospace; font-weight: 700; }
+  .redirect-actions { display: flex; gap: 10px; justify-content: center; }
+  .redirect-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 22px;
+    height: 48px;
+    background: #1A3829;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(26, 56, 41, 0.25);
+  }
+  .redirect-primary svg { width: 16px; height: 16px; stroke-width: 2.5; }
+  .redirect-ghost {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 16px;
+    height: 48px;
+    background: transparent;
+    border: none;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 1 — TEST Pre-flash interstitial (auto-countdown + focus dot)</h2>
+<p class="note">Full-canvas. Big focus dot with a breathing dashed ring. Huge "3" countdown in DM Mono. Hint text below. The countdown ticks 3 → 2 → 1 → GO → flash starts.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /student/assessment/[id] — TEST pre-flash (countdown at 3)</div>
+  <div class="exam-page">
+
+    <!-- Exam strip -->
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Flash Anzan — Level 3</div>
+        <div class="progress-label">Q 3 / 10</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">Flash starts in</span>
+          <span class="timer-primary-value">—</span>
+        </div>
+        <div class="timer-secondary">
+          <span class="timer-secondary-label">Exam</span>
+          <span class="timer-secondary-value">14:23</span>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="preflash-main">
+      <div class="focus-dot"></div>
+      <div class="preflash-countdown">3</div>
+      <div class="preflash-hint">Watch the <strong>center of the screen</strong>. Numbers will start flashing in <strong>3 seconds</strong>.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 2 — TEST Flash view (sacred — absolute minimum)</h2>
+<p class="note">The flash number fills the canvas. NOTHING ELSE is rendered besides the exam strip at the very top. No progress bar, no dots, no peripheral UI. Per DESIGN.md §4 mandate.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /student/assessment/[id] — TEST flash (showing "+466")</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Flash Anzan — Level 3</div>
+        <div class="progress-label">Q 3 / 10</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">Flashing</span>
+          <span class="timer-primary-value" style="font-size:14px">— — —</span>
+        </div>
+        <div class="timer-secondary">
+          <span class="timer-secondary-label">Exam</span>
+          <span class="timer-secondary-value">14:22</span>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="flash-canvas">
+      <div class="flash-number">+466</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 3 — EXAM MCQ view (2×2 grid, option selected, confirm button visible)</h2>
+<p class="note">Vertical equation panel at top, 2×2 option grid below, Confirm button centered at the bottom. Option C is selected (green border + tint). Top strip shows per-question timer at 42s (green) and overall at 14:23.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /student/assessment/[id] — EXAM MCQ (Q3, option C selected)</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 3 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">This Question</span>
+          <span class="timer-primary-value">00:42</span>
+        </div>
+        <div class="timer-secondary">
+          <span class="timer-secondary-label">Exam</span>
+          <span class="timer-secondary-value">14:23</span>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="equation-panel">
+          <div class="equation-label">Question 3</div>
+          <div class="equation-expr">892<span class="pipe">|</span>-456<span class="pipe">|</span>+124</div>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile">
+            <div class="option-letter">A</div>
+            <div class="option-value">540</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">B</div>
+            <div class="option-value">550</div>
+          </div>
+          <div class="option-tile selected">
+            <div class="option-letter">C</div>
+            <div class="option-value">560</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">D</div>
+            <div class="option-value">570</div>
+          </div>
+        </div>
+
+        <div class="confirm-row">
+          <button class="confirm-btn">
+            Confirm Answer
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> select · <kbd>Enter</kbd> confirm</div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 4 — TEST MCQ view (post-flash, "What was the total?")</h2>
+<p class="note">No equation panel — the flash just ended and there's nothing to show the student anymore. Instead: purple Test type icon + "What was the total?" title + hint. Same 2×2 grid. Auto-advance mode (no confirm button — clicking an option commits immediately).</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /student/assessment/[id] — TEST post-flash MCQ (auto-advance)</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Flash Anzan — Level 3</div>
+        <div class="progress-label">Q 3 / 10</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary">
+          <span class="timer-primary-label">Answer in</span>
+          <span class="timer-primary-value">00:12</span>
+        </div>
+        <div class="timer-secondary">
+          <span class="timer-secondary-label">Exam</span>
+          <span class="timer-secondary-value">14:19</span>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="mcq-main">
+      <div class="mcq-inner">
+
+        <div class="test-q-label">
+          <div class="test-q-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div class="test-q-question">What was the total?</div>
+          <div class="test-q-hint">Pick the sum from the sequence you just saw</div>
+        </div>
+
+        <div class="options-grid">
+          <div class="option-tile">
+            <div class="option-letter">A</div>
+            <div class="option-value">656</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">B</div>
+            <div class="option-value">646</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">C</div>
+            <div class="option-value">666</div>
+          </div>
+          <div class="option-tile">
+            <div class="option-letter">D</div>
+            <div class="option-value">676</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; font-size:13px; color:#475569; font-weight:500; margin-top:12px">
+          Tap an option to submit and move to the next question
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kbd-hint"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd> to select</div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 5 — Time's Up transition (per-question timer expired)</h2>
+<p class="note">Full-canvas amber takeover for ~2 seconds. Big clock icon, "Time's up!" title, "Moving to next question…" subtitle, and a progress bar at the bottom that fills in 2 seconds before the next question loads.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /student/assessment/[id] — Time's Up transition</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 3 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary critical">
+          <span class="timer-primary-label">This Question</span>
+          <span class="timer-primary-value">00:00</span>
+        </div>
+        <div class="timer-secondary">
+          <span class="timer-secondary-label">Exam</span>
+          <span class="timer-secondary-value">13:41</span>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill syncing">Syncing…</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="timesup-main">
+      <div class="timesup-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="timesup-title">Time's up!</div>
+      <div class="timesup-sub">Moving to next question…</div>
+      <div class="timesup-progress"><div class="timesup-progress-fill"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 6 — Time-expiring warning modal (overall exam timer &lt; 60s)</h2>
+<p class="note">Modal overlay over the current MCQ view. Red top border, pulsing warning icon, big countdown, and two action buttons. Triggered when the overall exam timer hits 60 seconds.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /student/assessment/[id] — Timer warning (45s left)</div>
+  <div class="exam-page">
+
+    <div class="exam-strip">
+      <div class="strip-left">
+        <div class="strip-title">Q3 Mental Arithmetic</div>
+        <div class="progress-label">Q 18 / 20</div>
+      </div>
+      <div class="strip-center">
+        <div class="timer-primary urgent">
+          <span class="timer-primary-label">This Question</span>
+          <span class="timer-primary-value">00:08</span>
+        </div>
+        <div class="timer-secondary" style="background:#FEE2E2;border-color:#FCA5A5;">
+          <span class="timer-secondary-label" style="color:#991B1B">Exam</span>
+          <span class="timer-secondary-value" style="color:#991B1B">00:45</span>
+        </div>
+      </div>
+      <div class="strip-right">
+        <div class="sync-pill">Saved</div>
+        <button class="exit-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Exit Exam</button>
+      </div>
+    </div>
+
+    <div class="warning-stage">
+      <div class="warning-dialog">
+        <div class="warning-body">
+          <div class="warning-icon-big">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="warning-title">Exam ending soon</div>
+          <div class="warning-countdown">00:45</div>
+          <div class="warning-desc">Your exam will auto-submit when the timer reaches zero. You have <strong style="color:#0A0F1A">2 unanswered questions</strong>. Finish what you can — anything you don't answer will be left blank.</div>
+          <div class="warning-actions">
+            <button class="warning-btn-outline">Keep Answering</button>
+            <button class="warning-btn-primary">Submit Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 7 — Completion screen (voluntary submit, 10s auto-redirect)</h2>
+<p class="note">Post-submission celebration. Big green check in a halo, "Well done!" title, subtitle, 3-stat grid (Answered / Unanswered / Time Taken), blue results-pending notice, and the redirect row with "Back to Dashboard Now" primary + "Stay here" ghost link + visible countdown.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /student/assessment/[id] — Completion (just submitted)</div>
+  <div class="exam-page">
+
+    <div class="complete-main">
+      <div class="complete-card">
+
+        <div class="complete-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+
+        <div class="complete-title">Well done, Aditi!</div>
+        <div class="complete-sub">Your answers for <strong style="color:#0A0F1A">Q3 Mental Arithmetic</strong> have been saved. You can head back to your dashboard now.</div>
+
+        <div class="complete-stats">
+          <div class="complete-stat">
+            <div class="complete-stat-label">Answered</div>
+            <div class="complete-stat-value">19<span class="denom">/20</span></div>
+          </div>
+          <div class="complete-stat">
+            <div class="complete-stat-label">Unanswered</div>
+            <div class="complete-stat-value">1</div>
+          </div>
+          <div class="complete-stat">
+            <div class="complete-stat-label">Time Taken</div>
+            <div class="complete-stat-value">24:12</div>
+          </div>
+        </div>
+
+        <div class="pending-notice">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <div class="pending-notice-title">Your score isn't ready yet</div>
+            <div class="pending-notice-text">Your teacher will publish the results soon. You'll find them on the My Results page once they're available.</div>
+          </div>
+        </div>
+
+        <div class="redirect-row">
+          <div class="redirect-text">Taking you back to the dashboard in <strong>10</strong> seconds</div>
+          <div class="redirect-actions">
+            <button class="redirect-primary">Back to Dashboard Now<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+            <button class="redirect-ghost">Stay here</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

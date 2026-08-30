@@ -1,0 +1,80 @@
+=== RESTRUCTURED FILES MANIFEST ===
+
+Directories moved to A:\MS\other:
+  [DIR]  chunks
+  [DIR]  scratch
+
+Files moved to A:\MS\other:
+  [FILE] MINDSPARK — Final Mockups.pdf
+  [FILE] MINDSPARK_Final_Mockups_Clean.pdf
+  [FILE] MINDSPARK_MOBILE_MOCKUP_PROMPT.md
+  [FILE] MindSpark_Rebuild_Prompt.md
+  [FILE] apply_fixes.py
+  [FILE] audit_missing_features.py
+  [FILE] build_clean_master_pdf.py
+  [FILE] build_complete_mockups_pdf.py
+  [FILE] build_exact_67p_master.py
+  [FILE] build_full_updated_pdf.py
+  [FILE] build_v2.py
+  [FILE] capture_flash_screens.js
+  [FILE] chunk1.html
+  [FILE] chunk2_1.html
+  [FILE] chunk2_2.html
+  [FILE] chunk3_1.html
+  [FILE] chunk3_2.html
+  [FILE] cleanup.py
+  [FILE] cleanup2.py
+  [FILE] cleanup3.py
+  [FILE] crop_footer.py
+  [FILE] cross_verify_deep.py
+  [FILE] detailed_cross_verification.json
+  [FILE] dump_pdf_data.py
+  [FILE] dump_screens_audit.py
+  [FILE] extracted_pdf_pages.json
+  [FILE] flash_anzan_config.html
+  [FILE] flash_anzan_mockup.html
+  [FILE] flash_anzan_standalone.html
+  [FILE] flash_screen_1_getready.png
+  [FILE] flash_screen_2_flash.png
+  [FILE] flash_screen_3_mcq.png
+  [FILE] flash_screen_4_submitted.png
+  [FILE] group_screens_audit.py
+  [FILE] index (1).html
+  [FILE] index_complete.html
+  [FILE] index_desktop_incomplete.html
+  [FILE] index_mobile.html
+  [FILE] inspect_css_palette.py
+  [FILE] inspect_flash_files.py
+  [FILE] inspect_flash_funcs.py
+  [FILE] inspect_flash_script.py
+  [FILE] inspect_index.py
+  [FILE] inspect_index_2.py
+  [FILE] inspect_index_3.py
+  [FILE] inspect_index_4.py
+  [FILE] inspect_index_fix.py
+  [FILE] inspect_mockup_screens.py
+  [FILE] inspect_orig_typography.py
+  [FILE] inspect_page_elements.py
+  [FILE] inspect_pdf_layout.py
+  [FILE] list_original_60_screens.py
+  [FILE] list_pdfs.py
+  [FILE] mindspark-mobile-mockup.html
+  [FILE] mindspark_extra_screens.html
+  [FILE] mindspark_mobile_prompt.txt
+  [FILE] mindspark_mockup_v2.html
+  [FILE] qa_final_pdf.py
+  [FILE] qa_footer_crop.png
+  [FILE] qa_page_11.png
+  [FILE] qa_page_12.png
+  [FILE] qa_page_13.png
+  [FILE] qa_page_14.png
+  [FILE] qa_page_15.png
+  [FILE] qa_page_16.png
+  [FILE] qa_pdf_pages.py
+  [FILE] rebuild_perfect_pdf.py
+  [FILE] render_page_11.py
+  [FILE] render_qa_pages.py
+  [FILE] screens_summary.json
+  [FILE] stack-audit-prompt.md
+  [FILE] stack-audit.md
+  [FILE] update_flash_colors.py

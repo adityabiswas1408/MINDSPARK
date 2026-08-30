@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F1F5F9;
+    color: #0A0F1A;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 32px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 820px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+  .page { display: flex; min-height: 1200px; background: #F8FAFC; }
+
+  /* Sidebar */
+  .sidebar { width: 252px; background: #FFFFFF; border-right: 1px solid #E2E8F0; flex-shrink: 0; display: flex; flex-direction: column; }
+  .logo-bar { height: 68px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: #1A3829; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark svg { width: 20px; height: 20px; color: #FFFFFF; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .nav-section { padding: 16px 12px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; font-size: 16px; font-weight: 500; color: #1E293B; cursor: pointer; position: relative; }
+  .nav-item.active { background: #EFFAF4; color: #1A3829; font-weight: 600; }
+  .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 11px; bottom: 11px; width: 3px; border-radius: 0 3px 3px 0; background: #1A3829; }
+  .nav-icon { width: 20px; height: 20px; stroke-width: 1.75; flex-shrink: 0; }
+  .sidebar-footer { padding: 14px; border-top: 1px solid #E2E8F0; margin-top: auto; }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 15px; font-weight: 600; color: #0A0F1A; }
+  .user-role { font-size: 13px; color: #475569; }
+  .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 15px; font-weight: 500; color: #1E293B; cursor: pointer; }
+  .logout-btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
+
+  /* Top header */
+  .topbar { height: 68px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+  .crumbs { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #334155; }
+  .crumbs a { color: #334155; cursor: pointer; }
+  .crumbs strong { color: #0A0F1A; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .icon-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #334155; cursor: pointer; position: relative; }
+  .icon-btn svg { width: 20px; height: 20px; stroke-width: 1.75; }
+  .icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; background: #DC2626; border-radius: 9999px; border: 2px solid #FFFFFF; }
+  .divider-v { width: 1px; height: 22px; background: #E2E8F0; }
+  .top-avatar { width: 38px; height: 38px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; }
+
+  /* Main */
+  .main { flex: 1; padding: 32px 40px 40px; overflow: hidden; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; color: #334155; margin-bottom: 16px; cursor: pointer; }
+  .back-link svg { width: 16px; height: 16px; stroke-width: 2; }
+
+  /* Student profile card */
+  .profile-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.06);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .profile-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: #1A3829;
+  }
+  .profile-avatar {
+    width: 72px; height: 72px; border-radius: 9999px;
+    background: #1A3829; color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 700;
+    flex-shrink: 0;
+    letter-spacing: -0.01em;
+  }
+  .profile-body { flex: 1; min-width: 0; }
+  .profile-label {
+    font-size: 13px; font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .profile-name { font-size: 26px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.018em; margin-bottom: 6px; }
+  .profile-meta {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 15px; color: #1E293B; font-weight: 500;
+    flex-wrap: wrap;
+  }
+  .profile-meta .sep { color: #CBD5E1; }
+  .profile-meta .item { display: inline-flex; align-items: center; gap: 6px; }
+  .profile-meta svg { width: 15px; height: 15px; stroke-width: 1.75; color: #475569; }
+
+  .profile-score {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-left: 24px;
+    border-left: 1px solid #E2E8F0;
+  }
+  .score-big {
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 110px;
+  }
+  .score-big .label {
+    font-size: 11px; font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .score-big .value {
+    font-size: 42px; font-weight: 700;
+    color: #1A3829;
+    font-family: 'DM Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+  .score-big .value .denom {
+    font-size: 22px; color: #334155; font-weight: 500;
+    margin-left: 2px;
+  }
+  .score-big .sub {
+    margin-top: 6px;
+    font-size: 13px; color: #334155; font-weight: 500;
+  }
+  .score-big .sub .pct { font-family: 'DM Mono', monospace; color: #1A3829; font-weight: 700; }
+
+  /* Mini KPIs above table */
+  .mini-kpi-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .mini-kpi {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .mini-kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .mini-kpi-icon svg { width: 18px; height: 18px; stroke-width: 2; }
+  .mini-kpi-icon.green { background: #DCFCE7; color: #14532D; }
+  .mini-kpi-icon.red { background: #FEE2E2; color: #991B1B; }
+  .mini-kpi-icon.blue { background: #DBEAFE; color: #1E3A8A; }
+  .mini-kpi-text { flex: 1; min-width: 0; }
+  .mini-kpi-label { font-size: 12px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+  .mini-kpi-value { font-size: 22px; font-weight: 700; color: #0A0F1A; font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -0.02em; }
+
+  /* Section */
+  .sec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .sec-title { font-size: 19px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .sec-sub { font-size: 14px; color: #334155; font-weight: 500; margin-left: 4px; }
+  .legend-row { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #334155; }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 3px; border: 1px solid; }
+  .legend-swatch.right { background: #FFFFFF; border-color: #E2E8F0; }
+  .legend-swatch.wrong { background: #FEF2F2; border-color: #FECACA; }
+
+  /* Answer sheet table */
+  .sheet-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.06);
+  }
+  .sheet-table { width: 100%; border-collapse: collapse; }
+  .sheet-table thead { background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+  .sheet-table th {
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 13px; font-weight: 700;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .sheet-table th.num { width: 62px; }
+  .sheet-table th.seq { min-width: 200px; }
+  .sheet-table th.opt { width: 90px; text-align: center; }
+  .sheet-table th.ans { width: 110px; text-align: center; }
+  .sheet-table td {
+    padding: 16px 18px;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 15px;
+    color: #1E293B;
+    vertical-align: middle;
+  }
+  .sheet-table tbody tr:last-child td { border-bottom: none; }
+
+  /* Wrong row tint */
+  .sheet-table tr.wrong td {
+    background: #FEF2F2;
+    border-bottom-color: #FEE2E2;
+  }
+
+  .q-num {
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+    color: #475569;
+    font-size: 15px;
+  }
+  .q-expr {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px; font-weight: 600;
+    color: #0A0F1A;
+    letter-spacing: 0.02em;
+  }
+  .q-expr .pipe { color: #94A3B8; margin: 0 6px; font-weight: 400; }
+
+  .opt-cell { text-align: center; }
+  .opt-box {
+    display: inline-flex; align-items: baseline; gap: 4px;
+    padding: 6px 10px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px; font-weight: 500;
+    color: #1E293B;
+    background: #FFFFFF;
+    min-width: 68px;
+    justify-content: center;
+  }
+  .opt-letter {
+    font-size: 10px; font-weight: 700;
+    color: #475569;
+    letter-spacing: 0.05em;
+  }
+  .opt-box.student-picked {
+    border-color: #1A3829;
+    background: #EFFAF4;
+    color: #1A3829;
+    font-weight: 700;
+  }
+  .opt-box.student-picked .opt-letter { color: #1A3829; }
+  .opt-box.student-picked-wrong {
+    border-color: #DC2626;
+    background: #FEE2E2;
+    color: #991B1B;
+    font-weight: 700;
+  }
+  .opt-box.student-picked-wrong .opt-letter { color: #991B1B; }
+
+  .answer-cell { text-align: center; }
+  .answer-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 11px;
+    border-radius: 9999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .answer-pill.student-right {
+    background: #DCFCE7;
+    color: #14532D;
+  }
+  .answer-pill.student-wrong {
+    background: #FEE2E2;
+    color: #991B1B;
+  }
+  .answer-pill.correct-bg {
+    background: #DCFCE7;
+    color: #14532D;
+  }
+  .answer-pill svg { width: 13px; height: 13px; stroke-width: 2.5; }
+
+  /* Summary bar below table */
+  .summary-bar {
+    margin-top: 20px;
+    padding: 18px 24px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.06);
+  }
+  .summary-text { font-size: 15px; color: #1E293B; font-weight: 500; }
+  .summary-text strong { color: #0A0F1A; font-weight: 700; }
+  .summary-actions { display: flex; gap: 12px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0 18px; height: 42px;
+    border-radius: 10px;
+    font-size: 15px; font-weight: 500;
+    cursor: pointer; border: 1px solid transparent;
+  }
+  .btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
+  .btn-outline { background: #FFFFFF; border-color: #E2E8F0; color: #1E293B; }
+  .btn-primary { background: #1A3829; color: #FFFFFF; }
+</style>
+</head>
+<body>
+
+<h2>Student Answer Sheet — per-student view</h2>
+<p class="note">Full page at /admin/results/[paperId]/students/[studentId]. Shows the student's profile card with aggregate score on the right, three mini KPIs (Correct / Wrong / Accuracy), then the answer sheet table — one row per question with all 4 options visible, student's pick highlighted, correct answer shown in a pill, wrong rows tinted light red.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/results/q3-mental-arithmetic/students/MS-L3-001</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"/></svg>Announcements</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+
+      <div class="topbar">
+        <div class="crumbs">
+          <span>Admin</span>
+          <svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <a>Results</a>
+          <svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <a>Q3 Mental Arithmetic</a>
+          <svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <a>Students</a>
+          <svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <strong>Aditi Sharma</strong>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+
+        <div class="back-link"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back to Student List</div>
+
+        <!-- Profile card -->
+        <div class="profile-card">
+          <div class="profile-avatar">AS</div>
+          <div class="profile-body">
+            <div class="profile-label">Answer Sheet</div>
+            <div class="profile-name">Aditi Sharma</div>
+            <div class="profile-meta">
+              <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6M9 13h6M9 18h4"/></svg>MS-L3-001</span>
+              <span class="sep">·</span>
+              <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span>
+              <span class="sep">·</span>
+              <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Q3 Mental Arithmetic</span>
+              <span class="sep">·</span>
+              <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Attempted Apr 10, 2026</span>
+            </div>
+          </div>
+          <div class="profile-score">
+            <div class="score-big">
+              <div class="label">Final Score</div>
+              <div class="value">19<span class="denom">/20</span></div>
+              <div class="sub"><span class="pct">95%</span> accuracy</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini KPIs -->
+        <div class="mini-kpi-row">
+          <div class="mini-kpi">
+            <div class="mini-kpi-icon green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="mini-kpi-text"><div class="mini-kpi-label">Correct</div><div class="mini-kpi-value">19</div></div>
+          </div>
+          <div class="mini-kpi">
+            <div class="mini-kpi-icon red"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+            <div class="mini-kpi-text"><div class="mini-kpi-label">Wrong</div><div class="mini-kpi-value">1</div></div>
+          </div>
+          <div class="mini-kpi">
+            <div class="mini-kpi-icon blue"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="mini-kpi-text"><div class="mini-kpi-label">Time Taken</div><div class="mini-kpi-value">26:42</div></div>
+          </div>
+        </div>
+
+        <!-- Section -->
+        <div class="sec-head">
+          <div class="sec-title">Answer Sheet</div>
+          <div class="sec-sub">20 questions · tap a row to expand</div>
+          <div class="legend-row">
+            <div class="legend-item"><div class="legend-swatch right"></div>Correct</div>
+            <div class="legend-item"><div class="legend-swatch wrong"></div>Wrong</div>
+          </div>
+        </div>
+
+        <!-- Sheet -->
+        <div class="sheet-card">
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th class="num">#</th>
+                <th class="seq">Sequence</th>
+                <th class="opt">A</th>
+                <th class="opt">B</th>
+                <th class="opt">C</th>
+                <th class="opt">D</th>
+                <th class="ans">Student</th>
+                <th class="ans">Correct</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr>
+                <td class="q-num">01</td>
+                <td class="q-expr">245<span class="pipe">|</span>-242<span class="pipe">|</span>+466</td>
+                <td class="opt-cell"><div class="opt-box">449</div></td>
+                <td class="opt-cell"><div class="opt-box student-picked">469</div></td>
+                <td class="opt-cell"><div class="opt-box">479</div></td>
+                <td class="opt-cell"><div class="opt-box">489</div></td>
+                <td class="answer-cell"><span class="answer-pill student-right"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>B</span></td>
+                <td class="answer-cell"><span class="answer-pill correct-bg">B</span></td>
+              </tr>
+
+              <tr>
+                <td class="q-num">02</td>
+                <td class="q-expr">892<span class="pipe">|</span>-456<span class="pipe">|</span>+124</td>
+                <td class="opt-cell"><div class="opt-box">540</div></td>
+                <td class="opt-cell"><div class="opt-box">550</div></td>
+                <td class="opt-cell"><div class="opt-box student-picked">560</div></td>
+                <td class="opt-cell"><div class="opt-box">570</div></td>
+                <td class="answer-cell"><span class="answer-pill student-right"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>C</span></td>
+                <td class="answer-cell"><span class="answer-pill correct-bg">C</span></td>
+              </tr>
+
+              <tr>
+                <td class="q-num">03</td>
+                <td class="q-expr">163<span class="pipe">|</span>+288<span class="pipe">|</span>-41</td>
+                <td class="opt-cell"><div class="opt-box">390</div></td>
+                <td class="opt-cell"><div class="opt-box">400</div></td>
+                <td class="opt-cell"><div class="opt-box student-picked">410</div></td>
+                <td class="opt-cell"><div class="opt-box">420</div></td>
+                <td class="answer-cell"><span class="answer-pill student-right"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>C</span></td>
+                <td class="answer-cell"><span class="answer-pill correct-bg">C</span></td>
+              </tr>
+
+              <!-- WRONG ROW -->
+              <tr class="wrong">
+                <td class="q-num">04</td>
+                <td class="q-expr">724<span class="pipe">|</span>-318<span class="pipe">|</span>+92</td>
+                <td class="opt-cell"><div class="opt-box">488</div></td>
+                <td class="opt-cell"><div class="opt-box">498</div></td>
+                <td class="opt-cell"><div class="opt-box student-picked-wrong">508</div></td>
+                <td class="opt-cell"><div class="opt-box">518</div></td>
+                <td class="answer-cell"><span class="answer-pill student-wrong"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>C</span></td>
+                <td class="answer-cell"><span class="answer-pill correct-bg">B</span></td>
+              </tr>
+
+              <tr>
+                <td class="q-num">05</td>
+                <td class="q-expr">345<span class="pipe">|</span>+612<span class="pipe">|</span>-198</td>
+                <td class="opt-cell"><div class="opt-box">749</div></td>
+                <td class="opt-cell"><div class="opt-box student-picked">759</div></td>
+                <td class="opt-cell"><div class="opt-box">769</div></td>
+                <td class="opt-cell"><div class="opt-box">779</div></td>
+                <td class="answer-cell"><span class="answer-pill student-right"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>B</span></td>
+                <td class="answer-cell"><span class="answer-pill correct-bg">B</span></td>
+              </tr>
+
+              <tr>
+                <td class="q-num">06</td>
+                <td class="q-expr">512<span class="pipe">|</span>-89<span class="pipe">|</span>+247</td>
+                <td class="opt-cell"><div class="opt-box">660</div></td>
+                <td class="opt-cell"><div class="opt-box student-picked">670</div></td>
+                <td class="opt-cell"><div class="opt-box">680</div></td>
+                <td class="opt-cell"><div class="opt-box">690</div></td>
+                <td class="answer-cell"><span class="answer-pill student-right"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>B</span></td>
+                <td class="answer-cell"><span class="answer-pill correct-bg">B</span></td>
+              </tr>
+
+              <tr>
+                <td class="q-num">…</td>
+                <td colspan="7" style="color:#475569;font-style:italic;font-weight:500;font-size:15px">14 more questions</td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Summary bar -->
+        <div class="summary-bar">
+          <div class="summary-text">Student answered <strong>19 out of 20</strong> questions correctly — <strong>95% accuracy</strong></div>
+          <div class="summary-actions">
+            <button class="btn btn-outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

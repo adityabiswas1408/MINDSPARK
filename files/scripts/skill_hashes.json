@@ -1,0 +1,282 @@
+{
+  "algorithmic-art": {
+    "hash": "6d777d1f61c7d24436f7dba740c5d8d36a029d674fe1c8fafa6e217a7c0fa3f2",
+    "files": 4,
+    "index": 1
+  },
+  "architecture-decision-records": {
+    "hash": "189510d6ae4bfda6ee09fe9601c9546b993ac29d2066e356f94882b2dd0c5b4d",
+    "files": 1,
+    "index": 2
+  },
+  "blueprint": {
+    "hash": "dc41552b906ed4eb59b7e2911844c154ec2c8f7a9ffcc50b8773edc882df0676",
+    "files": 1,
+    "index": 3
+  },
+  "brainstorming": {
+    "hash": "d7c3d82a8d425331f417aada31e871b975a69756220e7fff92f33048632e7b93",
+    "files": 1,
+    "index": 4
+  },
+  "brandkit": {
+    "hash": "f436b9385f7e3d152c4c698efad099fd688c047a612520245efe7d2067833dd9",
+    "files": 11,
+    "index": 5
+  },
+  "canvas-design": {
+    "hash": "4bb7c5cfdcf60fb2f628ae67057f8c7c5de55ff97d3926aa421e7a1a127756aa",
+    "files": 29,
+    "index": 6
+  },
+  "chatlog-filter": {
+    "hash": "dd40b3db3400bc3f31a999389181ccd3ab8fbc95bb6c25d52e60bb3cc26695f3",
+    "files": 2,
+    "index": 7
+  },
+  "clarifying-requests": {
+    "hash": "1fe92901acf8901ba8c70e861ec7cff54b31cbc66ad1efd6d69556005e6c5203",
+    "files": 1,
+    "index": 8
+  },
+  "claude-api": {
+    "hash": "c97855ace64b872a019cd2b8cd8a393ea3aedf20eb2a1e25c49b24bb760d3cf4",
+    "files": 68,
+    "index": 9
+  },
+  "codebase-onboarding": {
+    "hash": "cd0aa67d474202ef298eeaa172c3f9b7d66bf831574b69a9cf6b468a460dab81",
+    "files": 1,
+    "index": 10
+  },
+  "coding-standards": {
+    "hash": "28304e1562b57a4fe2bdb3e75cb8b599b8cdc8e8ca0b52bea0f341b2a9956081",
+    "files": 1,
+    "index": 11
+  },
+  "context-budget": {
+    "hash": "8ed71c0b335f83493ba22c8d4f81e33e9029467f7943df348495bc9e38e46f83",
+    "files": 1,
+    "index": 12
+  },
+  "deep-research": {
+    "hash": "9ae4dae02c9b5f98b5b05338052c6febff9e60fdb85279c655ee36dc5b0d9559",
+    "files": 1,
+    "index": 13
+  },
+  "design-taste-frontend": {
+    "hash": "93b9d967b99bfd4627cd89237fe91ad9eaf5791d6299dc712fe7943a0402e876",
+    "files": 5,
+    "index": 14
+  },
+  "docx": {
+    "hash": "aaa51793655fdc9107d377e4ddf3bf292d5f08009877aaa84e875a069f58335c",
+    "files": 61,
+    "index": 15
+  },
+  "frontend-design": {
+    "hash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84",
+    "files": 2,
+    "index": 16
+  },
+  "full-output-enforcement": {
+    "hash": "524f7c7950c3fde726101613f630140411c7d080e63be718687f4b38f919be81",
+    "files": 1,
+    "index": 17
+  },
+  "image-to-code": {
+    "hash": "3d2ac14d956fdafc5500d2108b90895e134d847f9f199e7f1d18bf1f814cf7c8",
+    "files": 1,
+    "index": 18
+  },
+  "imagegen-frontend-mobile": {
+    "hash": "7c1d1dc59cd0df4063b8621af543bf5dea1d576b261507e17b0323c69680b048",
+    "files": 1,
+    "index": 19
+  },
+  "imagegen-frontend-web": {
+    "hash": "27255c7c50181e58add156b2aa2bd5325285b85f04027e4c8b73742d98d7be0a",
+    "files": 1,
+    "index": 20
+  },
+  "import-memory": {
+    "hash": "d9e4b7e13222b525b8228fd1c3689afcd03f47be2c68bfd60927c370ebe8fe16",
+    "files": 1,
+    "index": 21
+  },
+  "industrial-brutalist-ui": {
+    "hash": "2bf0768a6f0c541a6f1e4d79fe600c8fa32ff58744f80fa8a4bf50b1c6f4cf60",
+    "files": 1,
+    "index": 22
+  },
+  "inherit-legacy-style": {
+    "hash": "c7f3c73960e596237035f3718e46ee34cbd968447cc15f992d98bf703a172417",
+    "files": 1,
+    "index": 23
+  },
+  "intent-driven-coding": {
+    "hash": "8b3f0a40215baf5598f77941643fed678a4628c999c63399f53082f673d24450",
+    "files": 1,
+    "index": 24
+  },
+  "internal-comms": {
+    "hash": "459dc07b9e22c400a2e46baabe2fde1411716cb52ffc768235d295c2aa1bfc87",
+    "files": 6,
+    "index": 25
+  },
+  "karpathy-guidelines": {
+    "hash": "14765fcd580cead1ce48df9d0348e6b295ac8789f76735deb5c94e840c025879",
+    "files": 2,
+    "index": 26
+  },
+  "living-docs-governance": {
+    "hash": "39399ac1a87093e0bd8e0ee311fa7b54bf3b754c440765ca0aaaf096ae8620f5",
+    "files": 1,
+    "index": 27
+  },
+  "mcp-builder": {
+    "hash": "f6a3fb1de1abafa4acc09a426a957a35a949137215e911bb774c748a7de4aad9",
+    "files": 10,
+    "index": 28
+  },
+  "minimalist-ui": {
+    "hash": "1fded8a1a6892818e42b90015fe5e1b0ef09fb65af89b842af4156a743917d7c",
+    "files": 1,
+    "index": 29
+  },
+  "mvp-context-kit": {
+    "hash": "5773350d48c7299b8b2eae18c95c3c2bff433f60a2b975ea6678f9794dd42850",
+    "files": 1,
+    "index": 30
+  },
+  "pdf": {
+    "hash": "2d52a66cb7f806882dd77cb6e7fd8cbf3a04d555adcefe55c4dacc0fe04ecd51",
+    "files": 12,
+    "index": 31
+  },
+  "ponytail": {
+    "hash": "9e8d05cbbaf6dc38f0cffc924c09b3cbe76d94ba4ba0d09bde803da2f8c6b5a0",
+    "files": 1,
+    "index": 32
+  },
+  "ponytail-audit": {
+    "hash": "0406899b920175367e43ca6bf3c2e5b9ba676a9bcf1fe35b57dc75fd15cfa1e2",
+    "files": 1,
+    "index": 33
+  },
+  "ponytail-debt": {
+    "hash": "8e7448ee88cb22234f73d1b9b8ad5f815ee32bc33ada062281b9723a961e6d92",
+    "files": 1,
+    "index": 34
+  },
+  "ponytail-review": {
+    "hash": "d68b62a2fb83972ca8a9f7f20851baf6563bb7908bc81002214c6c1141486c25",
+    "files": 1,
+    "index": 35
+  },
+  "pptx": {
+    "hash": "b5162351ae363e56ceed440d12cc8af18f7d281f76bf3d4f64b55bd0679f31a3",
+    "files": 56,
+    "index": 36
+  },
+  "project-context-system": {
+    "hash": "42e9bd2eea7b2acf11ec55794f65a23b06599bbe4ce105c37cfb82de4ef984b6",
+    "files": 2,
+    "index": 37
+  },
+  "project-takeover-recovery": {
+    "hash": "b02b75ead64b9bd225d40f6629abbe88328e3ad94e5df6f33f633e6b4768e036",
+    "files": 2,
+    "index": 38
+  },
+  "prompt-optimizer": {
+    "hash": "632d1f031a0176a766718ca6038281a269020fbb707740690639aefc5167be4c",
+    "files": 1,
+    "index": 39
+  },
+  "receiving-code-review": {
+    "hash": "441e66b609c69d6bc22e08ebf54bcf7b971d45e6583d1fe57ce0d194170ab100",
+    "files": 1,
+    "index": 40
+  },
+  "redesign-existing-projects": {
+    "hash": "3033c60793428b28ba20fac3496842e6f9ff740e1a35af144b99d8917031fdb3",
+    "files": 1,
+    "index": 41
+  },
+  "search-dependencies": {
+    "hash": "e2d294a963770d29c143adc7e26d19be8ad679000f8e47d14d70e1ed4ca4c891",
+    "files": 1,
+    "index": 42
+  },
+  "skill-creator": {
+    "hash": "40e964bcb817df7b9ebc1d7d7bcd597ce197f9b2ed5a5fa0bf2b0e02f96c6d6d",
+    "files": 18,
+    "index": 43
+  },
+  "skill-stocktake": {
+    "hash": "28fbd198797488a52958847e42bff1c9460d531266944c54574d858e8d566a31",
+    "files": 5,
+    "index": 44
+  },
+  "slack-gif-creator": {
+    "hash": "1a56cc6b0904dc4e3bd14c910a776e9108df9e08983c8471c13b4b3ed0f2997d",
+    "files": 7,
+    "index": 45
+  },
+  "stitch-design-taste": {
+    "hash": "c96b580192b34167efa01f460bbc669ff4315cf97f3cf6ff85ded8029aa720b8",
+    "files": 2,
+    "index": 46
+  },
+  "suggest-model": {
+    "hash": "824ef1b8953debe95125c81ab734642278e8310c5dd2db3a86fee168a5e0f18a",
+    "files": 2,
+    "index": 47
+  },
+  "supabase": {
+    "hash": "28277953d2bc57eeba4b4b301afd469c95a5feabd89c3b1138ea6a1f3563216e",
+    "files": 4,
+    "index": 48
+  },
+  "supabase-postgres-best-practices": {
+    "hash": "22f6a572126d2ac5067cd0709fb7cb75647b42c35b4d33ab0ffb66475ed595c6",
+    "files": 36,
+    "index": 49
+  },
+  "systematic-debugging": {
+    "hash": "3af99337760fccdd9d599f17ee67e0d8ad3509794ee9f8e21d3d0e44087cb0b7",
+    "files": 10,
+    "index": 50
+  },
+  "tdd-workflow": {
+    "hash": "0e5819725dade1b1edfac3c1589ca6cba1b74172625f3e85afa1bd09e1e712ff",
+    "files": 2,
+    "index": 51
+  },
+  "ui-ux-pro-max": {
+    "hash": "1d70f4e82bae766934977ea6fb32623358e2ecb562926f7d2cd8ca6c31024cc5",
+    "files": 1,
+    "index": 52
+  },
+  "unified-memory": {
+    "hash": "72175f26320efcb83e68ea5d79a62534d858c93b4c50e15525ceaf6c071f0029",
+    "files": 1,
+    "index": 53
+  },
+  "verification-before-completion": {
+    "hash": "d66b25e87a0c44b4e76440f475a796572147e47c63f7d6c70a17a90b327f9975",
+    "files": 1,
+    "index": 54
+  },
+  "web-design-guidelines": {
+    "hash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a",
+    "files": 1,
+    "index": 55
+  },
+  "writing-plans": {
+    "hash": "c5ebba236ce8cf52f004cd0a66052cebc8faac694b378a1af836555caa45a541",
+    "files": 1,
+    "index": 56
+  }
+}

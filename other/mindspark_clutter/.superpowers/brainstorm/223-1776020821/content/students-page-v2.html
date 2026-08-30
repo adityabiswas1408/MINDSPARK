@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F1F5F9;
+    color: #0A0F1A;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 32px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 820px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+  .page { display: flex; min-height: 1100px; background: #F8FAFC; }
+
+  /* Sidebar (unchanged) */
+  .sidebar { width: 252px; background: #FFFFFF; border-right: 1px solid #E2E8F0; flex-shrink: 0; display: flex; flex-direction: column; }
+  .logo-bar { height: 68px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: #1A3829; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark svg { width: 20px; height: 20px; color: #FFFFFF; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .nav-section { padding: 16px 12px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; font-size: 16px; font-weight: 500; color: #1E293B; cursor: pointer; position: relative; }
+  .nav-item.active { background: #EFFAF4; color: #1A3829; font-weight: 600; }
+  .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 11px; bottom: 11px; width: 3px; border-radius: 0 3px 3px 0; background: #1A3829; }
+  .nav-icon { width: 20px; height: 20px; stroke-width: 1.75; flex-shrink: 0; }
+  .sidebar-footer { padding: 14px; border-top: 1px solid #E2E8F0; margin-top: auto; }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 15px; font-weight: 600; color: #0A0F1A; }
+  .user-role { font-size: 13px; color: #475569; }
+  .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 15px; font-weight: 500; color: #1E293B; cursor: pointer; }
+  .logout-btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
+
+  /* Top header */
+  .topbar { height: 68px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+  .crumbs { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #334155; }
+  .crumbs a { color: #334155; cursor: pointer; }
+  .crumbs strong { color: #0A0F1A; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .icon-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #334155; cursor: pointer; position: relative; }
+  .icon-btn svg { width: 20px; height: 20px; stroke-width: 1.75; }
+  .icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; background: #DC2626; border-radius: 9999px; border: 2px solid #FFFFFF; }
+  .divider-v { width: 1px; height: 22px; background: #E2E8F0; }
+  .top-avatar { width: 38px; height: 38px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; }
+
+  /* Main */
+  .main { flex: 1; padding: 32px 40px 40px; overflow: hidden; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; color: #334155; margin-bottom: 16px; cursor: pointer; }
+  .back-link svg { width: 16px; height: 16px; stroke-width: 2; }
+
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+  .header-group { flex: 1; }
+  .header-label { font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .header-title { font-size: 30px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.018em; line-height: 1.15; margin-bottom: 8px; }
+  .header-sub { font-size: 15px; color: #1E293B; font-weight: 500; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .kpi { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 20px 22px; box-shadow: 0 1px 3px rgba(10, 15, 26, 0.06); }
+  .kpi-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .kpi-label { font-size: 13px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.06em; }
+  .kpi-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #F1F5F9; color: #1E293B; }
+  .kpi-icon svg { width: 16px; height: 16px; stroke-width: 2; }
+  .kpi-icon.green { background: #EFFAF4; color: #1A3829; }
+  .kpi-icon.red { background: #FEF2F2; color: #991B1B; }
+  .kpi-icon.blue { background: #EFF6FF; color: #1E3A8A; }
+  .kpi-icon.amber { background: #FEF3C7; color: #92400E; }
+  .kpi-value { font-size: 34px; font-weight: 700; color: #0A0F1A; font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .kpi-value .unit { font-size: 20px; color: #334155; margin-left: 2px; }
+  .kpi-sub { font-size: 14px; color: #334155; font-weight: 500; }
+
+  .filter-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .filter-search { position: relative; flex: 1; max-width: 420px; }
+  .filter-search input { width: 100%; height: 42px; padding: 0 14px 0 42px; border: 1px solid #E2E8F0; border-radius: 12px; background: #FFFFFF; font-size: 15px; font-family: inherit; color: #0A0F1A; }
+  .filter-search input::placeholder { color: #475569; }
+  .filter-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #475569; pointer-events: none; }
+  .sort-btn { display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; height: 42px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; font-size: 14px; font-weight: 500; color: #1E293B; cursor: pointer; }
+  .sort-btn svg { width: 16px; height: 16px; stroke-width: 1.75; color: #475569; }
+
+  .sec { margin-bottom: 28px; }
+  .sec:last-child { margin-bottom: 0; }
+  .sec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .sec-dot { width: 10px; height: 10px; border-radius: 9999px; flex-shrink: 0; }
+  .sec-dot.green { background: #1A3829; }
+  .sec-dot.red { background: #B91C1C; }
+  .sec-title { font-size: 19px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .sec-count { padding: 4px 12px; background: #F1F5F9; color: #334155; font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; border-radius: 9999px; }
+
+  .table-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(10, 15, 26, 0.06); }
+  .table-card.missed { border-color: #FECACA; box-shadow: 0 1px 3px rgba(153, 27, 27, 0.04); }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+  .table-card.missed thead { background: #FEF2F2; border-bottom-color: #FECACA; }
+  th { padding: 14px 22px; text-align: left; font-size: 13px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+  .table-card.missed th { color: #991B1B; }
+  th.sno { width: 72px; }
+  th.roll { width: 140px; }
+  th.score { width: 130px; text-align: right; }
+  th.action { width: 200px; text-align: right; }
+  td { padding: 16px 22px; border-bottom: 1px solid #F1F5F9; font-size: 15px; color: #1E293B; }
+  .table-card.missed td { border-bottom-color: #FEE2E2; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFBFC; }
+
+  .sno { color: #475569; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 15px; }
+  .roll { color: #475569; font-family: 'DM Mono', monospace; font-weight: 600; font-size: 14px; }
+  .name { color: #0A0F1A; font-weight: 600; font-size: 16px; }
+  .score { font-family: 'DM Mono', monospace; font-weight: 700; font-size: 18px; text-align: right; letter-spacing: -0.01em; }
+  .score .total { font-size: 14px; font-weight: 500; color: #475569; margin: 0 1px; }
+  .score .denom { font-size: 14px; font-weight: 500; color: #475569; }
+  .score.good { color: #1A3829; }
+  .score.mid { color: #92400E; }
+  .score.bad { color: #991B1B; }
+
+  .action-cell { text-align: right; }
+  .view-sheet {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    color: #1E293B;
+    cursor: pointer;
+    transition: all 150ms;
+  }
+  .view-sheet:hover { background: #EFFAF4; border-color: #1A3829; color: #1A3829; }
+  .view-sheet svg { width: 15px; height: 15px; stroke-width: 1.75; }
+
+  /* Show all row — expand button */
+  .expand-row td {
+    padding: 0;
+    border: none;
+    background: #FAFBFC;
+    border-top: 1px solid #F1F5F9;
+  }
+  .expand-btn {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 14px;
+    background: transparent;
+    border: none;
+    font-size: 14px; font-weight: 600;
+    color: #1A3829;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 150ms;
+  }
+  .expand-btn:hover { background: #EFFAF4; }
+  .expand-icon {
+    width: 22px; height: 22px; border-radius: 9999px;
+    background: #1A3829; color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .expand-icon svg { width: 14px; height: 14px; stroke-width: 2.5; }
+  .expand-count {
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+    color: #334155;
+    margin-left: 6px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Student List — v2 (scored/total format + expand button)</h2>
+<p class="note">Changes: (1) Score column now shows <code>19/20</code> format — scored correct out of total questions. (2) "14 more students" row replaced with a proper "Show all 22 students" expand button — a green circular + icon on the left, label in forest green, full-width clickable strip at the bottom of the table.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/results/q3-mental-arithmetic/students</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"/></svg>Announcements</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+
+      <div class="topbar">
+        <div class="crumbs">
+          <span>Admin</span>
+          <svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <a>Results</a>
+          <svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <a>Q3 Mental Arithmetic</a>
+          <svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <strong>Students</strong>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+
+        <div class="back-link"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back to Q3 Mental Arithmetic</div>
+
+        <div class="page-header">
+          <div class="header-group">
+            <div class="header-label">Student List</div>
+            <div class="header-title">Q3 Mental Arithmetic</div>
+            <div class="header-sub">Level 3 · Published Apr 10, 2026 · 22 of 24 students attempted</div>
+          </div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-header"><div class="kpi-label">Gave</div><div class="kpi-icon green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+            <div class="kpi-value">22</div>
+            <div class="kpi-sub">students attempted</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-header"><div class="kpi-label">Missed</div><div class="kpi-icon red"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div>
+            <div class="kpi-value">2</div>
+            <div class="kpi-sub">did not attend</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-header"><div class="kpi-label">Enrolled</div><div class="kpi-icon blue"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div>
+            <div class="kpi-value">24</div>
+            <div class="kpi-sub">total in level 3</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-header"><div class="kpi-label">Average Score</div><div class="kpi-icon amber"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div></div>
+            <div class="kpi-value">17<span class="unit">/20</span></div>
+            <div class="kpi-sub">across 22 submissions</div>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-search">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input placeholder="Search by name or roll number…">
+          </div>
+          <button class="sort-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg>Sort: Roll No.</button>
+        </div>
+
+        <div class="sec">
+          <div class="sec-head">
+            <div class="sec-dot green"></div>
+            <div class="sec-title">Gave the Exam</div>
+            <div class="sec-count">22</div>
+          </div>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th class="sno">S.No</th>
+                  <th class="roll">Roll No.</th>
+                  <th>Name</th>
+                  <th class="score">Score</th>
+                  <th class="action"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="sno">01</td><td class="roll">MS-L3-001</td><td class="name">Aditi Sharma</td><td class="score good">19<span class="total">/</span><span class="denom">20</span></td><td class="action-cell"><button class="view-sheet"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>See Answer Sheet</button></td></tr>
+                <tr><td class="sno">02</td><td class="roll">MS-L3-002</td><td class="name">Rahul Verma</td><td class="score good">18<span class="total">/</span><span class="denom">20</span></td><td class="action-cell"><button class="view-sheet"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>See Answer Sheet</button></td></tr>
+                <tr><td class="sno">03</td><td class="roll">MS-L3-003</td><td class="name">Priya Patel</td><td class="score good">18<span class="total">/</span><span class="denom">20</span></td><td class="action-cell"><button class="view-sheet"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>See Answer Sheet</button></td></tr>
+                <tr><td class="sno">04</td><td class="roll">MS-L3-004</td><td class="name">Arjun Singh</td><td class="score good">17<span class="total">/</span><span class="denom">20</span></td><td class="action-cell"><button class="view-sheet"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>See Answer Sheet</button></td></tr>
+                <tr><td class="sno">05</td><td class="roll">MS-L3-005</td><td class="name">Sneha Iyer</td><td class="score good">16<span class="total">/</span><span class="denom">20</span></td><td class="action-cell"><button class="view-sheet"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>See Answer Sheet</button></td></tr>
+                <tr><td class="sno">06</td><td class="roll">MS-L3-007</td><td class="name">Kabir Mehta</td><td class="score mid">15<span class="total">/</span><span class="denom">20</span></td><td class="action-cell"><button class="view-sheet"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>See Answer Sheet</button></td></tr>
+                <tr><td class="sno">07</td><td class="roll">MS-L3-008</td><td class="name">Ananya Das</td><td class="score mid">14<span class="total">/</span><span class="denom">20</span></td><td class="action-cell"><button class="view-sheet"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>See Answer Sheet</button></td></tr>
+                <tr><td class="sno">08</td><td class="roll">MS-L3-009</td><td class="name">Vikram Kapoor</td><td class="score bad">11<span class="total">/</span><span class="denom">20</span></td><td class="action-cell"><button class="view-sheet"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>See Answer Sheet</button></td></tr>
+                <tr class="expand-row">
+                  <td colspan="5">
+                    <button class="expand-btn">
+                      <span class="expand-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+                      Show all <span class="expand-count">22</span> students
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-head">
+            <div class="sec-dot red"></div>
+            <div class="sec-title">Missed the Exam</div>
+            <div class="sec-count">2</div>
+          </div>
+          <div class="table-card missed">
+            <table>
+              <thead>
+                <tr>
+                  <th class="sno">S.No</th>
+                  <th class="roll">Roll No.</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="sno">01</td><td class="roll">MS-L3-006</td><td class="name">Meera Reddy</td></tr>
+                <tr><td class="sno">02</td><td class="roll">MS-L3-010</td><td class="name">Ishaan Gupta</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

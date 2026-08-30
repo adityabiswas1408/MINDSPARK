@@ -1,0 +1,3175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINDSPARK — Mobile Mockups</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+:root {
+  /* SURFACES */
+  --page:      #F8FAFC;
+  --card:      #FFFFFF;
+  --border:    #E2E8F0;
+  --bmd:       #CBD5E1;
+  --subtle:    #F8FAFC;
+  --hover:     #F1F5F9;
+  --overlay:   rgba(15, 23, 42, 0.4);
+  --sl100:     #F1F5F9;
+  --sl200:     #E2E8F0;
+  --sl300:     #CBD5E1;
+
+  /* TEXT */
+  --t1:        #0F172A;   /* primary text */
+  --t2:        #475569;   /* secondary text */
+  --t3:        #94A3B8;   /* subtle / placeholder */
+  --t-neg:     #991B1B;   /* NEGATIVE ARITHMETIC NUMBERS ONLY — never for errors */
+
+  /* GREEN RAMP — PRIMARY UI SYSTEM */
+  --g900:      #0D2B1F;
+  --g800:      #1A3829;   /* PRIMARY: buttons, active nav, LIVE card border */
+  --g700:      #1E4A35;   /* button :active / :hover */
+  --g600:      #2D6A4F;   /* chart bars, grade colour */
+  --g500:      #40916C;   /* correct answers, trend text */
+  --g400:      #52B788;   /* MCQ hover border */
+  --g300:      #74C69D;   /* timer border */
+  --g200:      #B7E4C7;   /* active icon background */
+  --g100:      #D8F1E3;   /* avatar ring */
+  --g50:       #EFFAF4;   /* active nav bg, MCQ selected tint */
+
+  /* LIVE */
+  --live:      #EF4444;
+
+  /* SEMANTIC STATUS */
+  --ok-bg:     #DCFCE7;   --ok-tx:  #166534;
+  --wn-bg:     #FEF9C3;   --wn-tx:  #854D0E;
+  --er-bg:     #FEE2E2;   --er-tx:  #DC2626;
+  --in-bg:     #DBEAFE;   --in-tx:  #1E40AF;
+
+  /* AMBER (pending / warning accent) */
+  --amb50:     #FEF3C7;
+  --amb500:    #F59E0B;
+  --amb600:    #D97706;
+  --amb700:    #92400E;
+
+  /* PURPLE (TEST type pill) */
+  --pur50:     #EDE9FE;
+  --pur700:    #7C3AED;
+
+  /* BRAND IDENTITY — use on login/loading bg ONLY, never on interactive UI */
+  --ms-navy:   #204074;
+  --ms-blue:   #3A9ED1;
+  --ms-orange: #F57A39;
+  --ms-yellow: #F5BE38;
+
+  /* FLASH ANZAN — contrast levels by speed */
+  --ff-std-tx: #0F172A;   --ff-std-bg: #FFFFFF;   /* speed >= 500ms */
+  --ff-mid-tx: #1E293B;   --ff-mid-bg: #F8FAFC;   /* speed = 300ms  */
+  --ff-fst-tx: #334155;   --ff-fst-bg: #F1F5F9;   /* speed < 300ms  */
+
+  /* SHADOWS */
+  --s1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --s2: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --s3: 0 10px 32px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+
+  /* RADIUS */
+  --r1: 4px;    /* chip */
+  --r2: 6px;    /* badge */
+  --r3: 10px;   /* button */
+  --r4: 14px;   /* card */
+  --r5: 18px;   /* overlay / bottom sheet top corners */
+  --rf: 9999px; /* pill */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #E2E8F0; color: #0F172A; }
+
+/* OUTER NAV */
+.doc-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: #1A3829; color: #fff;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 24px; height: 56px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.doc-logo { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.doc-logo span { opacity: .5; font-weight: 400; }
+.doc-jump { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); border-radius: 8px; padding: 6px 12px; font-family: inherit; font-size: 13px; cursor: pointer; outline: none; max-width: 300px; }
+.doc-count { font-size: 12px; opacity: .55; white-space: nowrap; }
+
+/* DOC BODY */
+.doc-body { max-width: 1100px; margin: 0 auto; padding: 40px 24px 100px; }
+
+/* GROUP HEADERS */
+.group-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; margin-top: 48px; padding-bottom: 10px; border-bottom: 2px solid #1A3829; }
+.group-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #1A3829; }
+.group-count { font-size: 12px; color: #64748B; }
+
+/* SCREEN BLOCK */
+.screen-block { margin-bottom: 60px; scroll-margin-top: 72px; }
+.screen-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.screen-title { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 4px; }
+.screen-path { font-family: 'DM Mono', monospace; font-size: 11px; color: #94A3B8; }
+.top-link { font-size: 12px; color: #1A3829; border: 1px solid #1A3829; border-radius: 6px; padding: 4px 10px; text-decoration: none; white-space: nowrap; }
+.top-link:hover { background: #1A3829; color: #fff; }
+
+/* IPHONE FRAME */
+.iphone-frame {
+  width: 390px;
+  height: 844px;
+  background: #F8FAFC;
+  border-radius: 44px;
+  border: 10px solid #1C1C1E;
+  box-shadow:
+    0 0 0 1px #3A3A3C inset,
+    0 24px 64px rgba(0,0,0,0.35),
+    0 4px 12px rgba(0,0,0,0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* STATUS BAR */
+.iphone-status-bar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  color: var(--t1);
+  background: inherit;
+  z-index: 20;
+}
+.iphone-status-bar.dark { color: #fff; }
+
+/* SCROLLABLE CONTENT AREA */
+.iphone-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--page);
+  scrollbar-width: none;
+}
+.iphone-content::-webkit-scrollbar { display: none; }
+
+/* HOME INDICATOR */
+.iphone-home-indicator {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: inherit;
+  flex-shrink: 0;
+  z-index: 20;
+}
+.home-bar {
+  width: 134px; height: 5px;
+  background: #1C1C1E; border-radius: 3px; opacity: 0.2;
+}
+
+/* COMMON APP COMPONENTS */
+.top-bar {
+  height: 56px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.top-bar-title { font-size: 17px; font-weight: 700; color: #0F172A; flex: 1; text-align: center; }
+.top-bar-back { display: flex; align-items: center; gap: 4px; font-size: 14px; color: #1A3829; font-weight: 600; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
+.top-bar-action { font-size: 13px; color: #1A3829; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+
+.student-bottom-nav, .admin-bottom-nav {
+  min-height: 60px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  color: #94A3B8;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 4px;
+}
+.bottom-nav-item.active { color: #1A3829; }
+.bottom-nav-item.active .nav-icon-wrap {
+  background: #EFFAF4;
+  border-radius: 8px;
+  padding: 4px 12px;
+}
+.nav-icon-wrap { display: flex; align-items: center; justify-content: center; }
+.bottom-nav-item i { width: 22px; height: 22px; }
+
+.btn-primary {
+  background: #1A3829;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  height: 48px;
+  padding: 0 20px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+.btn-primary:active, .btn-secondary:active, .mcq-btn:active:not(.selected) {
+  transform: scale(0.97);
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+.btn-primary:active { background: #1E4A35; }
+
+.btn-secondary {
+  background: #FFFFFF;
+  color: #1A3829;
+  border: 1.5px solid #1A3829;
+  border-radius: 10px;
+  height: 44px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.ms-input {
+  width: 100%;
+  height: 48px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  background: #F8FAFC;
+  color: #0F172A;
+  outline: none;
+}
+.ms-input:focus { border-color: #1A3829; background: #FFFFFF; }
+.ms-label { font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 6px; display: block; }
+.ms-label .required { color: #DC2626; }
+
+.ms-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+.avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #1A3829;
+  color: #FFFFFF;
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-family: 'DM Sans', sans-serif;
+}
+.avatar-lg { width: 72px; height: 72px; font-size: 24px; }
+.avatar-md { width: 48px; height: 48px; font-size: 18px; }
+
+/* STATUS CHIPS */
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; }
+.chip-exam     { background: #DBEAFE; color: #1D4ED8; }
+.chip-test     { background: #EDE9FE; color: #7C3AED; }
+.chip-live     { background: #FEE2E2; color: #DC2626; }
+.chip-published{ background: #DCFCE7; color: #166534; }
+.chip-draft    { background: #F1F5F9; color: #475569; }
+.chip-pending  { background: #FEF3C7; color: #92400E; }
+.chip-completed{ background: #DCFCE7; color: #166534; }
+.chip-closed   { background: #F1F5F9; color: #475569; }
+.chip-archived { background: #F1F5F9; color: #64748B; }
+.chip-student  { background: #F1F5F9; color: #475569; }
+.chip-admin    { background: #DBEAFE; color: #1D4ED8; }
+.chip-active   { background: #DCFCE7; color: #166534; }
+
+/* GRADE PILLS */
+.grade-pill    { display: inline-flex; padding: 3px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; }
+.grade-aplus, .grade-a { background: #EFFAF4; color: #1E4A35; }
+.grade-b       { background: #DBEAFE; color: #1D4ED8; }
+.grade-c       { background: #FEF3C7; color: #92400E; }
+.grade-f       { background: #FEE2E2; color: #DC2626; }
+
+/* LEVEL BADGE */
+.level-badge { background: #F1F5F9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; }
+
+/* LIVE NOW BADGE — animated */
+.live-badge { background: #EF4444; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 5px; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF; animation: pulse-dot 1.4s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+/* SEQ BADGE (level sequence number) */
+.seq-badge { background: #1A3829; color: #FFFFFF; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 8px; }
+
+.mcq-btn {
+  width: 100%;
+  min-height: 64px;
+  padding: 0 16px;
+  border: 2px solid #E2E8F0;
+  border-radius: 14px;
+  background: #FFFFFF;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0F172A;
+  transition: border-color 0.12s, background 0.12s;
+}
+.mcq-btn.selected { background: #1A3829; color: #FFFFFF; border-color: #1A3829; }
+.mcq-btn:active:not(.selected) { border-color: #52B788; }
+.mcq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94A3B8;
+  padding: 0 4px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.bs-overlay { position: absolute; inset: 0; background: rgba(15,23,42,0.4); z-index: 19; animation: fadeIn 0.25s ease forwards; }
+.bottom-sheet {
+  position: absolute;
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  bottom: 0; left: 0; right: 0;
+  background: #FFFFFF;
+  border-radius: 20px 20px 0 0;
+  padding: 0 16px 20px;
+  box-shadow: 0 -6px 32px rgba(0,0,0,0.14);
+  z-index: 20;
+}
+.bs-handle-area { height: 28px; display: flex; align-items: center; justify-content: center; }
+.bs-handle { width: 40px; height: 4px; background: #CBD5E1; border-radius: 2px; }
+.bs-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.bs-title { font-size: 17px; font-weight: 700; color: #0F172A; flex: 1; }
+.bs-close { width: 32px; height: 32px; border-radius: 50%; background: #F1F5F9; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #475569; }
+
+.stepper-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9; }
+.stepper-label { font-size: 14px; color: #0F172A; font-weight: 500; }
+.stepper-control { display: flex; align-items: center; gap: 12px; }
+.stepper-btn { width: 36px; height: 36px; border-radius: 8px; border: 1.5px solid #E2E8F0; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #1A3829; font-weight: 700; }
+.stepper-btn:active { background: #EFFAF4; }
+.stepper-value { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 600; color: #0F172A; min-width: 32px; text-align: center; }
+
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+.toggle-label { font-size: 14px; color: #0F172A; font-weight: 500; }
+.toggle { width: 48px; height: 28px; border-radius: 14px; border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+.toggle.on  { background: #1A3829; }
+.toggle.off { background: #CBD5E1; }
+.toggle-thumb { position: absolute; top: 3px; width: 22px; height: 22px; background: #fff; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2); transition: left 0.2s; }
+.toggle.on  .toggle-thumb { left: 23px; }
+.toggle.off .toggle-thumb { left: 3px; }
+
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F8FAFC; }
+.info-row:last-child { border-bottom: none; }
+.info-row-label { font-size: 13px; color: #94A3B8; font-weight: 500; }
+.info-row-value { font-size: 14px; color: #0F172A; font-weight: 600; text-align: right; }
+.info-row-value.null { color: #94A3B8; font-weight: 400; }
+
+.snap-x-container { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.snap-item { scroll-snap-align: start; }
+  </style>
+</head>
+<body>
+
+<!-- OUTER NAV (mockup document nav, not the app) -->
+<nav class="doc-nav">
+  <span class="doc-logo">MINDSPARK <span>Mobile Mockups</span></span>
+  <div style="flex:1"></div>
+  <select class="doc-jump" onchange="location.hash=this.value; this.value=''">
+    <option value="">Jump to screen…</option>
+    <optgroup label="AUTH — 1 screen">
+      <option value="#screen-auth-login">Login</option>
+    </optgroup>
+    <optgroup label="STUDENT — 13 screens">
+      <option value="#screen-student-dashboard">Student Dashboard</option>
+      <option value="#screen-student-dashboard-live">Student Dashboard (Live Exam)</option>
+      <option value="#screen-student-exams">Student Exams &amp; Tests</option>
+      <option value="#screen-student-consent">Academic Integrity &amp; Consent</option>
+      <option value="#screen-exam-lobby">Exam Lobby</option>
+      <option value="#screen-flash-display">Flash Anzan — Number Display</option>
+      <option value="#screen-flash-mcq">Flash Anzan — MCQ Answering</option>
+      <option value="#screen-flash-review">Flash Anzan — Review &amp; Submit</option>
+      <option value="#screen-exam-complete">Exam Completion</option>
+      <option value="#screen-assessment-v5">Assessment Taking (Vertical Table)</option>
+      <option value="#screen-student-results">My Results — List</option>
+      <option value="#screen-student-result-detail">Result Detail</option>
+      <option value="#screen-student-profile">Student Profile</option>
+    </optgroup>
+    <optgroup label="ADMIN — 20 screens">
+      <option value="#screen-admin-dashboard">Admin Dashboard</option>
+      <option value="#screen-admin-students">Students — List</option>
+      <option value="#screen-admin-student-detail">Students — Detail</option>
+      <option value="#screen-admin-create-student">Students — Add New (Bottom Sheet)</option>
+      <option value="#screen-admin-levels">Levels — List</option>
+      <option value="#screen-admin-level-detail">Levels — Detail</option>
+      <option value="#screen-admin-create-level">Levels — Add New (Bottom Sheet)</option>
+      <option value="#screen-admin-assessments">Assessments — List</option>
+      <option value="#screen-admin-wizard-step1">Wizard — Step 1 Type</option>
+      <option value="#screen-admin-wizard-step2">Wizard — Step 2 Settings</option>
+      <option value="#screen-admin-flash-config">Flash Anzan Configuration</option>
+      <option value="#screen-admin-monitor-hub">Live Monitor Hub</option>
+      <option value="#screen-admin-monitor-detail">Monitor Detail</option>
+      <option value="#screen-admin-activity">Activity Log</option>
+      <option value="#screen-admin-announcements">Announcements</option>
+      <option value="#screen-admin-results">Results Hub</option>
+      <option value="#screen-admin-result-detail">Results Detail</option>
+      <option value="#screen-admin-student-drawer">Results — Student List (Bottom Sheet)</option>
+      <option value="#screen-admin-answer-sheet">Answer Sheet</option>
+      <option value="#screen-admin-settings">Settings</option>
+    </optgroup>
+  </select>
+  <span class="doc-count">34 screens</span>
+</nav>
+
+<!-- DOCUMENT BODY -->
+<div class="doc-body">
+  
+  <!-- GROUP: AUTH -->
+  <div class="group-header"><span class="group-label">AUTH</span><span class="group-count">1 screen</span></div>
+  
+  <div class="screen-block" id="screen-auth-login">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Login</h2>
+        <code class="screen-path">/login</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar dark">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center">
+          <i data-lucide="signal" style="width:14px;height:14px"></i>
+          <i data-lucide="battery" style="width:14px;height:14px"></i>
+        </span>
+      </div>
+      <div class="iphone-content" style="background: linear-gradient(180deg, #204074 0%, #1A3829 55%, #0D2B1F 100%);">
+        <div style="padding: 60px 24px 40px; display: flex; flex-direction: column; align-items: center; min-height: 100%;">
+          
+          <div style="margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <div style="width: 64px; height: 64px; border-radius: 16px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="hexagon" style="width: 36px; height: 36px; color: #FFFFFF; stroke-width: 1.5;"></i>
+            </div>
+            <div style="font-size: 28px; font-weight: 700; color: #FFFFFF; margin-top: 16px;">MindSpark</div>
+            <div style="font-size: 15px; color: rgba(255,255,255,0.6); margin-top: 6px; margin-bottom: 32px;">Sign in to your account</div>
+          </div>
+
+          <div class="ms-card" style="border-radius: 20px; padding: 24px; width: 100%; box-shadow: 0 16px 48px rgba(0,0,0,0.3); background: #FFFFFF; border: none;">
+            <label class="ms-label">Email Address</label>
+            <input type="email" class="ms-input" placeholder="student@mindspark.edu">
+            <div style="height: 14px;"></div>
+            <label class="ms-label">Password</label>
+            <input type="password" class="ms-input" placeholder="••••••••">
+            <div style="height: 24px;"></div>
+            <button class="btn-primary" style="height: 52px; width: 100%;">Sign In</button>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- GROUP: STUDENT -->
+  <div class="group-header"><span class="group-label">STUDENT</span><span class="group-count">13 screens</span></div>
+
+  <!-- B1: Student Dashboard -->
+  <div class="screen-block" id="screen-student-dashboard">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Student Dashboard</h2>
+        <code class="screen-path">/student/dashboard</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center">
+          <i data-lucide="signal" style="width:14px;height:14px"></i>
+          <i data-lucide="battery" style="width:14px;height:14px"></i>
+        </span>
+      </div>
+      <!-- Top App Bar -->
+      <div class="top-bar">
+        <div style="display:flex;align-items:center;gap:6px;flex:1;">
+          <i data-lucide="hexagon" style="width:20px;height:20px;color:#1A3829;fill:rgba(26,56,41,0.1);"></i>
+          <span style="font-size:15px;font-weight:700;color:#1A3829;">MindSpark</span>
+        </div>
+        <div style="position:relative;">
+          <i data-lucide="bell" style="width:20px;height:20px;color:#0F172A;"></i>
+          <div style="position:absolute;top:0;right:0;width:6px;height:6px;background:#EF4444;border-radius:50%;border:1px solid #fff;"></div>
+        </div>
+        <div class="avatar" style="margin-left:8px;">AS</div>
+      </div>
+      <!-- Scroll Content -->
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div style="font-size:26px;font-weight:700;color:#0F172A;">Hello, Aditi 👋</div>
+            <div style="font-size:14px;color:#475569;margin-top:4px;">Welcome back. Here's your overview.</div>
+          </div>
+          
+          <div class="ms-card" style="padding:0;overflow:hidden;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;">
+              <div style="padding:12px;text-align:center;border-right:1px solid #E2E8F0;">
+                <div style="font-size:11px;color:#94A3B8;text-transform:uppercase;margin-bottom:4px;font-weight:700;"><i data-lucide="clipboard-list" style="width:12px;height:12px;vertical-align:-2px;margin-right:2px;"></i> Exams</div>
+                <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#0F172A;">3</div>
+              </div>
+              <div style="padding:12px;text-align:center;border-right:1px solid #E2E8F0;">
+                <div style="font-size:11px;color:#94A3B8;text-transform:uppercase;margin-bottom:4px;font-weight:700;"><i data-lucide="zap" style="width:12px;height:12px;vertical-align:-2px;margin-right:2px;"></i> Tests</div>
+                <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#0F172A;">5</div>
+              </div>
+              <div style="padding:12px;text-align:center;">
+                <div style="font-size:11px;color:#94A3B8;text-transform:uppercase;margin-bottom:4px;font-weight:700;"><i data-lucide="bar-chart-2" style="width:12px;height:12px;vertical-align:-2px;margin-right:2px;"></i> Avg Score</div>
+                <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#1A3829;">86%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">UPCOMING</div>
+
+          <div class="ms-card">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-exam">EXAM</span>
+              <span class="level-badge">Level 3</span>
+              <span style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;margin-left:auto;font-weight:600;">MS-L3-001</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-top:8px;">Q3 Mental Arithmetic</div>
+            <div style="font-size:13px;color:#475569;margin-top:4px;">Starts in 2 days · Jun 20, 2026</div>
+          </div>
+
+          <div class="section-label">RECENT RESULTS</div>
+
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Q2 Flash Anzan</div>
+              <div style="font-size:13px;color:#475569;margin-top:2px;">Score: 18/20 · 90%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="grade-pill grade-a">A</span>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Q1 Mental Arithmetic</div>
+              <div style="font-size:13px;color:#475569;margin-top:2px;">15/20 · 75%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="grade-pill grade-b">B</span>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!-- Student Bottom Nav -->
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item active">
+          <div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>
+          Dashboard
+        </div>
+        <div class="bottom-nav-item">
+          <div class="nav-icon-wrap"><i data-lucide="clipboard-list"></i></div>
+          Exams
+        </div>
+        <div class="bottom-nav-item">
+          <div class="nav-icon-wrap"><i data-lucide="bar-chart-2"></i></div>
+          Results
+        </div>
+        <div class="bottom-nav-item">
+          <div class="nav-icon-wrap"><i data-lucide="user"></i></div>
+          Profile
+        </div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B2: Student Dashboard (LIVE) -->
+  <div class="screen-block" id="screen-student-dashboard-live">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Student Dashboard (Live Exam)</h2>
+        <code class="screen-path">/student/dashboard</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center">
+          <i data-lucide="signal" style="width:14px;height:14px"></i>
+          <i data-lucide="battery" style="width:14px;height:14px"></i>
+        </span>
+      </div>
+      <div class="top-bar">
+        <div style="display:flex;align-items:center;gap:6px;flex:1;">
+          <i data-lucide="hexagon" style="width:20px;height:20px;color:#1A3829;fill:rgba(26,56,41,0.1);"></i>
+          <span style="font-size:15px;font-weight:700;color:#1A3829;">MindSpark</span>
+        </div>
+        <div style="position:relative;">
+          <i data-lucide="bell" style="width:20px;height:20px;color:#0F172A;"></i>
+          <div style="position:absolute;top:0;right:0;width:6px;height:6px;background:#EF4444;border-radius:50%;border:1px solid #fff;"></div>
+        </div>
+        <div class="avatar" style="margin-left:8px;">AS</div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div style="font-size:26px;font-weight:700;color:#0F172A;">Hello, Aditi 👋</div>
+            <div style="font-size:14px;color:#DC2626;margin-top:4px;font-weight:600;">An exam is live right now — enter when you're ready.</div>
+          </div>
+          
+          <div style="border:2px solid #1A3829;border-radius:16px;background:#F8FFF9;padding:16px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-exam">EXAM</span>
+              <span class="level-badge">Level 3</span>
+              <span style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;margin-left:auto;font-weight:600;">MS-L3-001</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+              <div class="live-badge"><div class="live-dot"></div> LIVE NOW</div>
+              <div style="text-align:right;">
+                <div style="font-size:10px;text-transform:uppercase;color:#94A3B8;font-weight:700;">TIME LEFT</div>
+                <div style="font-family:'DM Mono',monospace;font-size:36px;font-weight:700;color:#1A3829;line-height:1;">28:14</div>
+              </div>
+            </div>
+            <div style="font-size:20px;font-weight:700;color:#0F172A;margin-top:10px;margin-bottom:14px;">Q3 Mental Arithmetic</div>
+            <button class="btn-primary" style="height:52px;">Enter Examination Hall →</button>
+          </div>
+
+          <div class="ms-card" style="display:flex;gap:16px;font-size:12px;color:#475569;flex-wrap:wrap;font-weight:600;">
+            <div style="display:flex;align-items:center;gap:16px;">
+              <span>20 Questions</span>
+              <span style="color:#CBD5E1;">·</span>
+              <span>30 Min</span>
+              <span style="color:#CBD5E1;">·</span>
+              <span>3 Digits</span>
+              <span style="color:#CBD5E1;">·</span>
+              <span>80% Pass</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="clipboard-list"></i></div>Exams</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="bar-chart-2"></i></div>Results</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="user"></i></div>Profile</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B3: Student Exams & Tests -->
+  <div class="screen-block" id="screen-student-exams">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Student Exams &amp; Tests</h2>
+        <code class="screen-path">/student/exams</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Exams</div>
+        <i data-lucide="filter" style="width:20px;height:20px;color:#0F172A;cursor:pointer;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div style="display:flex;align-items:center;margin-bottom:8px;">
+            <div class="live-dot" style="background:#EF4444;width:8px;height:8px;margin-right:6px;"></div>
+            <span style="font-size:12px;font-weight:700;color:#DC2626;">LIVE NOW</span>
+            <div style="margin-left:auto;background:#EF4444;color:#fff;font-size:11px;font-weight:700;width:18px;height:18px;border-radius:9999px;display:flex;align-items:center;justify-content:center;">1</div>
+          </div>
+
+          <div style="border:1.5px solid #EF4444;background:#FFF5F5;border-radius:14px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="live-badge"><div class="live-dot"></div> LIVE NOW</div>
+              <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#1A3829;">28:14</div>
+            </div>
+            <div style="font-size:16px;font-weight:700;color:#0F172A;margin-top:8px;">Q3 Mental Arithmetic</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+              <span class="chip chip-exam">EXAM</span>
+              <span class="level-badge">Level 3</span>
+              <span style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;margin-left:auto;font-weight:600;">MS-L3-001</span>
+            </div>
+            <button class="btn-primary" style="height:44px;margin-top:12px;">Enter Exam →</button>
+          </div>
+
+          <div style="height:1px;background:#E2E8F0;margin:4px 0;"></div>
+
+          <div style="display:flex;align-items:center;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#94A3B8;margin-right:6px;"></div>
+            <span style="font-size:12px;font-weight:700;color:#475569;letter-spacing:0.05em;">UPCOMING</span>
+            <div style="margin-left:auto;background:#E2E8F0;color:#475569;font-size:11px;font-weight:700;padding:2px 6px;border-radius:9999px;">2</div>
+          </div>
+
+          <div class="ms-card">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-exam">EXAM</span>
+              <span class="level-badge">Level 3</span>
+              <span style="background:#DBEAFE;color:#1D4ED8;border-radius:6px;padding:3px 8px;font-size:11px;font-family:'DM Mono',monospace;margin-left:auto;font-weight:700;">Jun 20</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-top:8px;">Q4 Flash Anzan</div>
+            <div style="font-size:12px;color:#94A3B8;margin-top:4px;">Not live yet</div>
+          </div>
+
+          <div class="ms-card">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-test">TEST</span>
+              <span class="level-badge">Level 2</span>
+              <span style="background:#DBEAFE;color:#1D4ED8;border-radius:6px;padding:3px 8px;font-size:11px;font-family:'DM Mono',monospace;margin-left:auto;font-weight:700;">Jun 25</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-top:8px;">Q2 Mid-Term Test</div>
+            <div style="font-size:12px;color:#94A3B8;margin-top:4px;">Not live yet</div>
+          </div>
+
+          <div style="display:flex;align-items:center;margin-top:4px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#94A3B8;margin-right:6px;"></div>
+            <span style="font-size:12px;font-weight:700;color:#475569;letter-spacing:0.05em;">COMPLETED</span>
+            <div style="margin-left:auto;background:#E2E8F0;color:#475569;font-size:11px;font-weight:700;padding:2px 6px;border-radius:9999px;">2</div>
+          </div>
+
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:#475569;">Q2 Flash Anzan</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+                <span class="chip chip-exam">EXAM</span>
+                <span style="font-size:11px;color:#94A3B8;">Apr 5, 2026</span>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <span class="chip chip-completed">Completed</span>
+              <div style="font-size:12px;color:#1A3829;font-weight:700;margin-top:8px;">View Results →</div>
+            </div>
+          </div>
+
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:#475569;">Q1 Mental Arithmetic</div>
+              <div style="font-size:13px;color:#94A3B8;margin-top:4px;">75% · 15/20</div>
+            </div>
+            <div style="text-align:right;">
+              <span class="chip chip-completed">Completed</span>
+              <div style="font-size:12px;color:#1A3829;font-weight:700;margin-top:8px;">View Results →</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="clipboard-list"></i></div>Exams</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="bar-chart-2"></i></div>Results</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="user"></i></div>Profile</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B4: Academic Integrity & Consent -->
+  <div class="screen-block" id="screen-student-consent">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Academic Integrity &amp; Consent</h2>
+        <code class="screen-path">/student/consent</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Back</div>
+        <div class="top-bar-title" style="margin-left:-20px;">Academic Integrity</div>
+        <div style="width:40px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div class="ms-card" style="font-size:14px;color:#475569;line-height:1.6;">
+            Please review and agree to the following terms before proceeding to your first exam.
+          </div>
+
+          <div class="ms-card">
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:10px;">1. Assessment Rules</div>
+            <div style="font-size:13px;color:#475569;line-height:1.6;margin-bottom:14px;">
+              By proceeding, you agree to complete this assessment entirely on your own without external assistance. Any violation will result in an immediate fail.
+            </div>
+            <label style="font-size:13px;color:#0F172A;display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+              <input type="checkbox" style="width:18px;height:18px;accent-color:#1A3829;margin-top:2px;">
+              <span>I acknowledge and will abide by the assessment rules.</span>
+            </label>
+          </div>
+
+          <div class="ms-card">
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:10px;">2. Data Privacy</div>
+            <div style="font-size:13px;color:#475569;line-height:1.6;margin-bottom:14px;">
+              Your performance data and timings will be recorded to evaluate your skill progression. We process this data securely.
+            </div>
+            <label style="font-size:13px;color:#0F172A;display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+              <input type="checkbox" style="width:18px;height:18px;accent-color:#1A3829;margin-top:2px;">
+              <span>I understand and consent to data processing.</span>
+            </label>
+          </div>
+
+          <button class="btn-primary" style="height:52px;margin-top:8px;">Continue to Exam →</button>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B5: Exam Lobby -->
+  <div class="screen-block" id="screen-exam-lobby">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Exam Lobby</h2>
+        <code class="screen-path">/student/exam/lobby</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Back</div>
+        <div class="top-bar-title" style="margin-left:-20px;">Exam Lobby</div>
+        <div style="width:40px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div style="display:flex;align-items:center;gap:8px;background:#EFFAF4;border:1px solid #B7E4C7;border-radius:10px;padding:10px 14px;">
+            <div style="width:8px;height:8px;background:#166534;border-radius:50%;"></div>
+            <div style="font-size:13px;color:#166534;font-weight:600;">Connection Stable</div>
+          </div>
+
+          <div class="ms-card">
+            <div style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:6px;">Q3 Mental Arithmetic</div>
+            <div style="font-size:13px;color:#475569;margin-bottom:16px;">
+              Please review your exam settings before starting. The timer will not begin until you click ready.
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div style="background:#F8FAFC;border-radius:10px;padding:12px;">
+                <div style="font-size:10px;text-transform:uppercase;color:#94A3B8;font-weight:700;margin-bottom:4px;">QUESTIONS</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:#0F172A;">20</div>
+              </div>
+              <div style="background:#F8FAFC;border-radius:10px;padding:12px;">
+                <div style="font-size:10px;text-transform:uppercase;color:#94A3B8;font-weight:700;margin-bottom:4px;">TIME LIMIT</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:#0F172A;">30 Min</div>
+              </div>
+              <div style="background:#F8FAFC;border-radius:10px;padding:12px;">
+                <div style="font-size:10px;text-transform:uppercase;color:#94A3B8;font-weight:700;margin-bottom:4px;">FLASH DIGITS</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:#0F172A;">3 Digits</div>
+              </div>
+              <div style="background:#F8FAFC;border-radius:10px;padding:12px;">
+                <div style="font-size:10px;text-transform:uppercase;color:#94A3B8;font-weight:700;margin-bottom:4px;">FLASH SPEED</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:#0F172A;">1.5 Sec</div>
+              </div>
+              <div style="background:#F8FAFC;border-radius:10px;padding:12px;">
+                <div style="font-size:10px;text-transform:uppercase;color:#94A3B8;font-weight:700;margin-bottom:4px;">NEGATIVES</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:#0F172A;">Included</div>
+              </div>
+              <div style="background:#F8FAFC;border-radius:10px;padding:12px;">
+                <div style="font-size:10px;text-transform:uppercase;color:#94A3B8;font-weight:700;margin-bottom:4px;">PASSING</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:#0F172A;">80%</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <button class="btn-primary" style="height:52px;margin-bottom:12px;">I'm Ready — Start Exam →</button>
+            <button class="btn-secondary" style="height:44px;border-color:#E2E8F0;color:#475569;">Exit</button>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B6: Flash Anzan — Number Display -->
+  <div class="screen-block" id="screen-flash-display">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Flash Anzan — Number Display</h2>
+        <code class="screen-path">/student/exam/flash</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="iphone-content" style="background:#FFFFFF;">
+        <div style="display:flex;flex-direction:column;height:100%;">
+          
+          <div style="height:44px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:#94A3B8;font-weight:600;">Q3/20</div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:#94A3B8;font-weight:600;">00:42</div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:#94A3B8;font-weight:600;">14:23</div>
+          </div>
+
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+            <div style="font-family:'DM Mono',monospace;font-size:96px;font-weight:600;color:#991B1B;transition:none !important;">-412</div>
+          </div>
+
+          <div style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;letter-spacing:0.08em;font-weight:600;">FLASH 3 OF 8</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator" style="background:#FFFFFF;"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B7: Flash Anzan — MCQ Answering -->
+  <div class="screen-block" id="screen-flash-mcq">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Flash Anzan — MCQ Answering</h2>
+        <code class="screen-path">/student/exam/answer</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar" style="justify-content:space-between;">
+        <div style="font-size:14px;font-weight:700;color:#0F172A;">Question 4 of 20</div>
+        <div style="background:#EFFAF4;border:1px solid #B7E4C7;border-radius:8px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:#1A3829;">24:12</div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div style="border-bottom:1px solid #E2E8F0;"></div>
+
+          <div class="mcq-grid">
+            <button class="mcq-btn">A) 1,420</button>
+            <button class="mcq-btn">B) 1,240</button>
+            <button class="mcq-btn selected">C) 1,440</button>
+            <button class="mcq-btn">D) 1,400</button>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button style="flex:1;background:#FEF9C3;color:#854D0E;border:1.5px solid #FDE68A;border-radius:10px;height:48px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">🚩 Flag for Review</button>
+            <button class="btn-primary" style="flex:1.5;height:48px;font-size:14px;">Next Question →</button>
+          </div>
+
+          <div class="section-label" style="margin-top:12px;">QUESTION NAVIGATOR</div>
+
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none;">
+            <div style="width:48px;height:48px;flex-shrink:0;background:#1A3829;color:#fff;border-radius:8px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;">Q1</div>
+            <div style="width:48px;height:48px;flex-shrink:0;background:#1A3829;color:#fff;border-radius:8px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;">Q2</div>
+            <div style="width:48px;height:48px;flex-shrink:0;background:#FEF9C3;border:1.5px dashed #FDE68A;color:#854D0E;border-radius:8px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;">Q3</div>
+            <div style="width:48px;height:48px;flex-shrink:0;background:#fff;border:2px solid #1A3829;color:#0F172A;border-radius:8px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;">Q4</div>
+            <div style="width:48px;height:48px;flex-shrink:0;background:#fff;border:1.5px solid #E2E8F0;color:#94A3B8;border-radius:8px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;">Q5</div>
+            <div style="width:48px;height:48px;flex-shrink:0;background:#fff;border:1.5px solid #E2E8F0;color:#94A3B8;border-radius:8px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;">Q6</div>
+            <div style="width:48px;height:48px;flex-shrink:0;background:#fff;border:1.5px solid #E2E8F0;color:#94A3B8;border-radius:8px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;">Q7</div>
+            <div style="width:48px;height:48px;flex-shrink:0;background:#fff;border:1.5px solid #E2E8F0;color:#94A3B8;border-radius:8px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;">Q8</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B8: Flash Anzan — Review & Submit -->
+  <div class="screen-block" id="screen-flash-review">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Flash Anzan — Review &amp; Submit</h2>
+        <code class="screen-path">/student/exam/review</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Back</div>
+        <div class="top-bar-title" style="margin-left:-20px;">Review Answers</div>
+        <div style="width:40px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:14px;">
+          
+          <div style="background:#FEF9C3;border:1px solid #FDE68A;border-left:3px solid #F59E0B;border-radius:10px;padding:10px 14px;font-size:13px;color:#854D0E;font-weight:600;">
+            ⏱ Low Time Warning: Less than 60 seconds remaining!
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q1 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q2 ✓</div>
+            <div style="background:#FEF9C3;border:1px solid #FDE68A;color:#854D0E;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q3 🚩</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q4 ✓</div>
+            
+            <div style="background:#fff;border:1.5px solid #E2E8F0;color:#94A3B8;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q5 ○</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q6 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q7 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q8 ✓</div>
+            
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q9 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q10 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q11 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q12 ✓</div>
+            
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q13 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q14 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q15 ✓</div>
+            <div style="background:#fff;border:1.5px solid #E2E8F0;color:#94A3B8;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q16 ○</div>
+            
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q17 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q18 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q19 ✓</div>
+            <div style="background:#1A3829;color:#fff;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;">Q20 ✓</div>
+          </div>
+
+          <div style="font-size:13px;color:#475569;text-align:center;font-weight:600;margin-top:4px;">
+            18 Answered · 1 Flagged · 1 Unanswered
+          </div>
+
+          <button class="btn-primary" style="height:52px;margin-top:8px;">Submit Exam Now</button>
+
+          <div style="text-align:center;margin-top:8px;">
+            <a href="#" style="font-size:14px;color:#1A3829;font-weight:600;text-decoration:underline;">← Go back and review</a>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B9: Exam Completion -->
+  <div class="screen-block" id="screen-exam-complete">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Exam Completion</h2>
+        <code class="screen-path">/student/exam/complete</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="iphone-content" style="background:#F8FAFC;">
+        <div style="padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:20px;">
+          
+          <div style="width:80px;height:80px;background:#EFFAF4;border:2px solid #B7E4C7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:20px;">
+            <i data-lucide="check-circle" style="width:40px;height:40px;color:#1A3829;"></i>
+          </div>
+
+          <div style="font-size:28px;font-weight:700;color:#0F172A;text-align:center;">Exam Completed!</div>
+
+          <div class="ms-card" style="width:100%;text-align:center;padding:24px;">
+            <div>
+              <span style="font-family:'DM Mono',monospace;font-size:52px;font-weight:700;color:#1A3829;">18</span>
+              <span style="font-family:'DM Mono',monospace;font-size:32px;font-weight:700;color:#94A3B8;"> / 20</span>
+            </div>
+            <div style="font-size:16px;color:#475569;margin-top:4px;font-weight:600;">90% Accuracy</div>
+            
+            <div style="height:1px;background:#E2E8F0;margin:16px 0;"></div>
+            
+            <div style="display:flex;justify-content:space-around;">
+              <div style="font-size:13px;font-weight:600;color:#166534;display:flex;align-items:center;gap:5px;">
+                <i data-lucide="check-circle" style="width:16px;height:16px;"></i> 18 Correct
+              </div>
+              <div style="font-size:13px;font-weight:600;color:#DC2626;display:flex;align-items:center;gap:5px;">
+                <i data-lucide="x-circle" style="width:16px;height:16px;"></i> 2 Incorrect
+              </div>
+              <div style="font-size:13px;font-weight:600;color:#94A3B8;display:flex;align-items:center;gap:5px;">
+                <i data-lucide="minus" style="width:16px;height:16px;"></i> 0 Skipped
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-primary" style="height:52px;width:100%;margin-top:20px;">View Answer Sheet</button>
+          <button class="btn-secondary" style="height:44px;margin-top:8px;width:100%;">Back to Dashboard</button>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator" style="background:#F8FAFC;"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B10: Assessment Taking (Vertical Table) -->
+  <div class="screen-block" id="screen-assessment-v5">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Assessment Taking (Vertical Table)</h2>
+        <code class="screen-path">/student/exam/question</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div style="height:56px;background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:0 16px;display:flex;align-items:center;gap:10px;z-index:10;position:sticky;top:0;">
+        <div style="font-family:'DM Mono',monospace;font-size:13px;color:#475569;font-weight:600;">Q 3 / 20</div>
+        <div style="flex:1;height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden;">
+          <div style="width:15%;height:100%;background:#1A3829;border-radius:3px;"></div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#1A3829;">14:23</div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#166534;font-weight:600;">
+          <div style="width:5px;height:5px;background:#166534;border-radius:50%;"></div> Saved
+        </div>
+        <div style="font-size:13px;color:#DC2626;font-weight:700;margin-left:8px;cursor:pointer;">Exit</div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div class="section-label">QUESTION 3</div>
+
+          <div class="ms-card" style="padding:20px;display:flex;justify-content:center;align-items:center;">
+            <div style="display:inline-block;">
+              <div style="display:flex;align-items:center;justify-content:flex-end;">
+                <div style="width:40px;text-align:right;padding-right:8px;"></div>
+                <div style="font-family:'DM Mono',monospace;font-size:48px;font-weight:600;color:#0F172A;line-height:1;">892</div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:8px;">
+                <div style="width:40px;text-align:right;padding-right:8px;font-family:'DM Mono',monospace;font-size:28px;color:#991B1B;line-height:1;">−</div>
+                <div style="font-family:'DM Mono',monospace;font-size:48px;font-weight:600;color:#991B1B;line-height:1;">456</div>
+              </div>
+              <div style="height:2px;background:#0F172A;margin:12px 0;width:100%;"></div>
+              <div style="display:flex;align-items:center;justify-content:flex-end;">
+                <div style="width:40px;text-align:right;padding-right:8px;"></div>
+                <div style="height:48px;width:85px;border-bottom:2px dashed #CBD5E1;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">YOUR ANSWER</div>
+
+          <div class="mcq-grid">
+            <button class="mcq-btn">A) 436</button>
+            <button class="mcq-btn">B) 348</button>
+            <button class="mcq-btn selected">C) 436</button>
+            <button class="mcq-btn">D) 448</button>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button style="flex:1;background:#FEF9C3;color:#854D0E;border:1.5px solid #FDE68A;border-radius:10px;height:48px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">🚩 Flag for Review</button>
+            <button class="btn-primary" style="flex:1.5;height:48px;font-size:14px;">Next →</button>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B11: Student Results List -->
+  <div class="screen-block" id="screen-student-results">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">My Results — List</h2>
+        <code class="screen-path">/student/results</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">My Results</div>
+        <i data-lucide="filter" style="width:20px;height:20px;color:#0F172A;cursor:pointer;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div class="ms-card" style="border-left:4px solid #1A3829;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-exam">EXAM</span>
+              <span class="grade-pill grade-a">A</span>
+            </div>
+            <div style="font-size:16px;font-weight:700;color:#0F172A;margin-top:6px;">Q3 Mental Arithmetic</div>
+            <div style="font-size:13px;color:#475569;margin-top:4px;">Score: 18/20 · 90% Accuracy</div>
+            <div style="font-size:12px;color:#94A3B8;margin-top:2px;">Attempted: Apr 10, 2026</div>
+            <div style="font-size:13px;color:#1A3829;font-weight:700;margin-top:8px;">View Answer Sheet →</div>
+          </div>
+
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-top:4px;">
+            <div style="background:#1A3829;color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:9999px;white-space:nowrap;">All</div>
+            <div style="background:#F1F5F9;color:#475569;font-size:12px;font-weight:600;padding:6px 14px;border-radius:9999px;white-space:nowrap;">Exams</div>
+            <div style="background:#F1F5F9;color:#475569;font-size:12px;font-weight:600;padding:6px 14px;border-radius:9999px;white-space:nowrap;">Tests</div>
+          </div>
+
+          <div class="section-label">ALL RESULTS (12)</div>
+
+          <div class="ms-card" style="cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Q3 Mental Arithmetic</div>
+              <span class="grade-pill grade-a">A</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="chip chip-exam">EXAM</span>
+                <span style="font-size:11px;color:#94A3B8;">Apr 10, 2026</span>
+              </div>
+              <i data-lucide="chevron-right" style="width:14px;height:14px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+          <div class="ms-card" style="cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Q2 Flash Anzan</div>
+              <span class="grade-pill grade-b">B</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="chip chip-exam">EXAM</span>
+                <span style="font-size:11px;color:#94A3B8;">Mar 5, 2026</span>
+              </div>
+              <i data-lucide="chevron-right" style="width:14px;height:14px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+          <div class="ms-card" style="cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Q1 Mental Arithmetic</div>
+              <span class="chip chip-pending">Pending</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="chip chip-exam">EXAM</span>
+                <span style="font-size:11px;color:#94A3B8;">Feb 20, 2026</span>
+              </div>
+              <i data-lucide="chevron-right" style="width:14px;height:14px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+          <div class="ms-card" style="cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Mid-Term Test 1</div>
+              <span class="grade-pill grade-aplus">A+</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="chip chip-test">TEST</span>
+                <span style="font-size:11px;color:#94A3B8;">Jan 30, 2026</span>
+              </div>
+              <i data-lucide="chevron-right" style="width:14px;height:14px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="clipboard-list"></i></div>Exams</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="bar-chart-2"></i></div>Results</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="user"></i></div>Profile</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B12: Student Result Detail -->
+  <div class="screen-block" id="screen-student-result-detail">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Result Detail</h2>
+        <code class="screen-path">/student/results/q3-mental-arithmetic</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title" style="font-size:14px;font-weight:700;">Q3 Mental Arithmetic</div>
+        <div style="width:24px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div class="ms-card" style="border-left:none;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-published">Published</span>
+              <span class="chip chip-exam">Exam</span>
+            </div>
+            <div style="font-size:20px;font-weight:700;color:#0F172A;margin-top:8px;">Q3 Mental Arithmetic</div>
+            <div style="font-size:13px;color:#475569;margin-top:4px;">Level 3 · 30 min · 20 questions</div>
+          </div>
+
+          <div class="ms-card" style="border-left:4px solid #1A3829;display:flex;align-items:center;justify-content:center;gap:20px;padding:24px;">
+            <div style="text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:40px;font-weight:700;color:#1A3829;line-height:1;">18/20</div>
+              <div style="font-size:10px;text-transform:uppercase;color:#94A3B8;margin-top:6px;font-weight:700;">SCORE</div>
+            </div>
+            <div style="width:1px;height:60px;background:#E2E8F0;"></div>
+            <div style="background:#EFFAF4;border:1px solid #B7E4C7;border-radius:10px;padding:16px 24px;text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:64px;font-weight:700;color:#1A3829;line-height:1;">A</div>
+              <div style="font-size:10px;text-transform:uppercase;color:#40916C;margin-top:4px;font-weight:700;">GRADE</div>
+            </div>
+          </div>
+
+          <div class="ms-card" style="padding:0;overflow:hidden;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;">
+              <div style="text-align:center;padding:12px;border-right:1px solid #E2E8F0;">
+                <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#166534;">18</div>
+                <div style="font-size:11px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-top:2px;">Correct</div>
+              </div>
+              <div style="text-align:center;padding:12px;border-right:1px solid #E2E8F0;">
+                <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#DC2626;">2</div>
+                <div style="font-size:11px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-top:2px;">Wrong</div>
+              </div>
+              <div style="text-align:center;padding:12px;">
+                <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#1A3829;">90%</div>
+                <div style="font-size:11px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-top:2px;">Accuracy</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+            <i data-lucide="file-text" style="width:24px;height:24px;color:#1A3829;flex-shrink:0;"></i>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:700;color:#0F172A;">View Answer Sheet</div>
+              <div style="font-size:13px;color:#475569;margin-top:2px;">See all questions with your answers</div>
+            </div>
+            <i data-lucide="chevron-right" style="width:18px;height:18px;color:#1A3829;"></i>
+          </div>
+
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;cursor:not-allowed;">
+            <i data-lucide="lock" style="width:24px;height:24px;color:#94A3B8;flex-shrink:0;"></i>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:600;color:#475569;">Answer Key Locked</div>
+              <div style="font-size:13px;color:#94A3B8;margin-top:2px;">Your teacher hasn't released the key yet</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="clipboard-list"></i></div>Exams</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="bar-chart-2"></i></div>Results</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="user"></i></div>Profile</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- B13: Student Profile -->
+  <div class="screen-block" id="screen-student-profile">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Student Profile</h2>
+        <code class="screen-path">/student/profile</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Profile</div>
+        <div style="width:24px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div class="ms-card" style="text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;">
+            <div class="avatar-lg" style="background:#1A3829;">AS</div>
+            <div style="font-size:20px;font-weight:700;color:#0F172A;margin-top:14px;">Aditi Sharma</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;">
+              <span class="chip chip-student">Student</span>
+              <span class="level-badge">Level 3</span>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;color:#475569;margin-top:6px;font-weight:600;">MS-L3-001</div>
+          </div>
+
+          <div class="section-label">SCHOOL INFO</div>
+
+          <div class="ms-card">
+            <div class="info-row">
+              <span class="info-row-label">Roll Number</span>
+              <span class="info-row-value" style="font-family:'DM Mono',monospace;">MS-L3-001</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Level</span>
+              <span class="info-row-value">Level 3</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Status</span>
+              <span class="info-row-value"><span class="chip chip-active">Active</span></span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Date of Birth</span>
+              <span class="info-row-value">Jan 15, 2012</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Joined</span>
+              <span class="info-row-value">Sep 2, 2024</span>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 4px;cursor:pointer;" onclick="toggleMoreInfo('more-info-panel')">
+            <div style="font-size:14px;font-weight:600;color:#475569;">More Info</div>
+            <i data-lucide="chevron-down" id="more-info-panel-arrow" style="width:18px;height:18px;color:#94A3B8;"></i>
+          </div>
+
+          <div class="ms-card" id="more-info-panel" style="display:none;">
+            <div class="info-row">
+              <span class="info-row-label">Email</span>
+              <span class="info-row-value null">Not mentioned</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Phone</span>
+              <span class="info-row-value null">Not mentioned</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Address</span>
+              <span class="info-row-value null">Not mentioned</span>
+            </div>
+          </div>
+
+          <div style="text-align:center;font-size:13px;color:#94A3B8;padding:8px 0;font-weight:500;">
+            Contact your teacher to update any of these details.
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="clipboard-list"></i></div>Exams</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="bar-chart-2"></i></div>Results</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="user"></i></div>Profile</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- GROUP: ADMIN (1-10) -->
+  <div class="group-header"><span class="group-label">ADMIN (1-10)</span><span class="group-count">10 screens</span></div>
+
+  <!-- C1: Admin Dashboard -->
+  <div class="screen-block" id="screen-admin-dashboard">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Admin Dashboard</h2>
+        <code class="screen-path">/admin/dashboard</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="display:flex;align-items:center;gap:6px;flex:1;">
+          <i data-lucide="hexagon" style="width:20px;height:20px;color:#0F172A;"></i>
+          <span style="font-size:15px;font-weight:700;color:#0F172A;">MindSpark <span style="color:#2563EB;">Admin</span></span>
+        </div>
+        <div style="position:relative;">
+          <i data-lucide="bell" style="width:20px;height:20px;color:#0F172A;"></i>
+        </div>
+        <div class="avatar" style="margin-left:8px;background:#2563EB;">TS</div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div>
+            <div style="font-size:26px;font-weight:700;color:#0F172A;">Hello, Teacher 👋</div>
+            <div style="font-size:14px;color:#475569;margin-top:4px;">Here is your academy overview.</div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="ms-card" style="padding:16px;display:flex;flex-direction:column;gap:8px;">
+              <div style="width:32px;height:32px;background:#EFF6FF;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="users" style="width:16px;height:16px;color:#2563EB;"></i>
+              </div>
+              <div>
+                <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#0F172A;">124</div>
+                <div style="font-size:12px;color:#475569;font-weight:600;">Total Students</div>
+              </div>
+            </div>
+            
+            <div class="ms-card" style="padding:16px;display:flex;flex-direction:column;gap:8px;">
+              <div style="width:32px;height:32px;background:#FEF2F2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="activity" style="width:16px;height:16px;color:#DC2626;"></i>
+              </div>
+              <div>
+                <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#0F172A;">1</div>
+                <div style="font-size:12px;color:#475569;font-weight:600;">Live Exam</div>
+              </div>
+            </div>
+
+            <div class="ms-card" style="padding:16px;display:flex;flex-direction:column;gap:8px;">
+              <div style="width:32px;height:32px;background:#F0FDF4;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="clipboard-check" style="width:16px;height:16px;color:#16A34A;"></i>
+              </div>
+              <div>
+                <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#0F172A;">8</div>
+                <div style="font-size:12px;color:#475569;font-weight:600;">To Review</div>
+              </div>
+            </div>
+
+            <div class="ms-card" style="padding:16px;display:flex;flex-direction:column;gap:8px;">
+              <div style="width:32px;height:32px;background:#F3E8FF;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="trending-up" style="width:16px;height:16px;color:#9333EA;"></i>
+              </div>
+              <div>
+                <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#0F172A;">82%</div>
+                <div style="font-size:12px;color:#475569;font-weight:600;">Avg Pass Rate</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">QUICK ACTIONS</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <div style="width:36px;height:36px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="file-plus" style="width:18px;height:18px;color:#2563EB;"></i>
+              </div>
+              <div style="font-size:13px;font-weight:700;color:#0F172A;line-height:1.2;">Create<br>Assessment</div>
+            </div>
+            <div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <div style="width:36px;height:36px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="user-plus" style="width:18px;height:18px;color:#2563EB;"></i>
+              </div>
+              <div style="font-size:13px;font-weight:700;color:#0F172A;line-height:1.2;">Add<br>Student</div>
+            </div>
+          </div>
+
+          <div class="ms-card" style="border:1.5px solid #EF4444;background:#FFF5F5;border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div class="live-badge"><div class="live-dot"></div> LIVE NOW</div>
+              <div style="font-size:15px;font-weight:700;color:#0F172A;margin-top:8px;">Q3 Mental Arithmetic</div>
+              <div style="font-size:12px;color:#475569;margin-top:4px;">12/15 Active Participants</div>
+            </div>
+            <button class="btn-primary" style="height:36px;padding:0 12px;font-size:13px;background:#DC2626;">Monitor</button>
+          </div>
+
+        </div>
+      </div>
+      <!-- Admin Bottom Nav -->
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C2: Admin Students List -->
+  <div class="screen-block" id="screen-admin-students">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Admin Students List</h2>
+        <code class="screen-path">/admin/students</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Students</div>
+        <i data-lucide="plus" style="width:24px;height:24px;color:#2563EB;cursor:pointer;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div style="display:flex;background:#F1F5F9;border-radius:10px;padding:8px 12px;align-items:center;gap:8px;">
+            <i data-lucide="search" style="width:18px;height:18px;color:#94A3B8;"></i>
+            <input type="text" placeholder="Search by name or roll number..." style="background:transparent;border:none;outline:none;font-size:14px;flex:1;color:#0F172A;font-family:inherit;">
+          </div>
+
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-top:4px;">
+            <div style="background:#0F172A;color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:9999px;white-space:nowrap;">All</div>
+            <div style="background:#F1F5F9;color:#475569;font-size:12px;font-weight:600;padding:6px 14px;border-radius:9999px;white-space:nowrap;">Level 1</div>
+            <div style="background:#F1F5F9;color:#475569;font-size:12px;font-weight:600;padding:6px 14px;border-radius:9999px;white-space:nowrap;">Level 2</div>
+            <div style="background:#F1F5F9;color:#475569;font-size:12px;font-weight:600;padding:6px 14px;border-radius:9999px;white-space:nowrap;">Level 3</div>
+          </div>
+
+          <div class="section-label">124 STUDENTS</div>
+
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;">
+            <div class="avatar" style="background:#1A3829;">AS</div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:700;color:#0F172A;">Aditi Sharma</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <span class="level-badge">Level 3</span>
+                <span style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;font-weight:600;">MS-L3-001</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+          </div>
+
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;">
+            <div class="avatar" style="background:#475569;">RV</div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:700;color:#0F172A;">Rohan Verma</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <span class="level-badge">Level 3</span>
+                <span style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;font-weight:600;">MS-L3-002</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+          </div>
+
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;">
+            <div class="avatar" style="background:#475569;">PJ</div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:700;color:#0F172A;">Priya Jain</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <span class="level-badge">Level 2</span>
+                <span style="font-family:'DM Mono',monospace;font-size:11px;color:#94A3B8;font-weight:600;">MS-L2-041</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C3: Admin Student Detail -->
+  <div class="screen-block" id="screen-admin-student-detail">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Admin Student Detail</h2>
+        <code class="screen-path">/admin/students/MS-L3-001</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title" style="font-size:15px;">Aditi Sharma</div>
+        <i data-lucide="edit" style="width:20px;height:20px;color:#2563EB;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div class="ms-card" style="display:flex;align-items:center;gap:16px;padding:20px;">
+            <div class="avatar-lg" style="background:#1A3829;">AS</div>
+            <div>
+              <div style="font-size:20px;font-weight:700;color:#0F172A;">Aditi Sharma</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+                <span class="level-badge">Level 3</span>
+                <span class="chip chip-active">Active</span>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:12px;color:#475569;margin-top:6px;font-weight:600;">MS-L3-001</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="ms-card" style="padding:16px;">
+              <div style="font-size:11px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Avg Score</div>
+              <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#1A3829;">86%</div>
+            </div>
+            <div class="ms-card" style="padding:16px;">
+              <div style="font-size:11px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Completed</div>
+              <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#0F172A;">12</div>
+            </div>
+          </div>
+
+          <div class="section-label">LEVEL PROGRESS</div>
+          
+          <div class="ms-card" style="padding:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span style="font-size:14px;font-weight:700;color:#0F172A;">Level 3</span>
+              <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#2563EB;">60%</span>
+            </div>
+            <div style="height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden;">
+              <div style="width:60%;height:100%;background:#2563EB;border-radius:4px;"></div>
+            </div>
+            <div style="font-size:12px;color:#475569;margin-top:10px;text-align:right;">3 requirements left to pass</div>
+          </div>
+
+          <div class="section-label">RECENT ACTIVITY</div>
+
+          <div class="ms-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#0F172A;">Q2 Flash Anzan</div>
+                <div style="font-size:12px;color:#475569;margin-top:4px;">Exam · Apr 5, 2026</div>
+              </div>
+              <div style="text-align:right;">
+                <span class="grade-pill grade-a">A</span>
+                <div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#1A3829;margin-top:6px;">90%</div>
+              </div>
+            </div>
+            <div style="height:1px;background:#E2E8F0;margin:12px 0;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#0F172A;">Q1 Mental Arithmetic</div>
+                <div style="font-size:12px;color:#475569;margin-top:4px;">Exam · Mar 1, 2026</div>
+              </div>
+              <div style="text-align:right;">
+                <span class="grade-pill grade-b">B</span>
+                <div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#1A3829;margin-top:6px;">75%</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C4: Create Student (Bottom Sheet) -->
+  <div class="screen-block" id="screen-admin-create-student">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Create Student (Bottom Sheet)</h2>
+        <code class="screen-path">/admin/students/create</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame" style="position:relative;">
+      <!-- Background: Students List -->
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Students</div>
+        <i data-lucide="plus" style="width:24px;height:24px;color:#2563EB;"></i>
+      </div>
+      <div class="iphone-content" style="filter:blur(1px);">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;background:#F1F5F9;border-radius:10px;padding:8px 12px;align-items:center;gap:8px;">
+            <i data-lucide="search" style="width:18px;height:18px;color:#94A3B8;"></i>
+            <span style="color:#94A3B8;font-size:14px;">Search...</span>
+          </div>
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px 16px;">
+            <div class="avatar" style="background:#1A3829;">AS</div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:700;color:#0F172A;">Aditi Sharma</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bottom Nav -->
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      
+      <!-- Bottom Sheet Overlay -->
+      <div class="bs-overlay"></div>
+      <div class="bottom-sheet" style="padding-bottom:34px;">
+        <div class="bs-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div style="font-size:20px;font-weight:700;color:#0F172A;">Add New Student</div>
+          <div style="width:30px;height:30px;background:#F1F5F9;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="x" style="width:16px;height:16px;color:#475569;"></i>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">FULL NAME</label>
+            <input type="text" placeholder="e.g. Rahul Kumar" style="width:100%;height:48px;border:1px solid #CBD5E1;border-radius:10px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">ROLL NUMBER</label>
+            <input type="text" placeholder="e.g. MS-L1-005" style="width:100%;height:48px;border:1px solid #CBD5E1;border-radius:10px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">STARTING LEVEL</label>
+            <select style="width:100%;height:48px;border:1px solid #CBD5E1;border-radius:10px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;background:#fff;appearance:none;color:#0F172A;">
+              <option>Level 1</option>
+              <option>Level 2</option>
+              <option>Level 3</option>
+            </select>
+            <div style="position:relative;">
+              <i data-lucide="chevron-down" style="position:absolute;right:16px;bottom:14px;width:18px;height:18px;color:#94A3B8;pointer-events:none;"></i>
+            </div>
+          </div>
+          
+          <button class="btn-primary" style="height:52px;margin-top:8px;">Create Student</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C5: Levels List -->
+  <div class="screen-block" id="screen-admin-levels">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Levels List</h2>
+        <code class="screen-path">/admin/levels</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Levels &amp; Syllabus</div>
+        <i data-lucide="plus" style="width:24px;height:24px;color:#2563EB;cursor:pointer;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="font-size:16px;font-weight:700;color:#0F172A;">Level 1</div>
+                <span class="chip chip-active">Active</span>
+              </div>
+              <div style="font-size:13px;color:#475569;margin-top:6px;">Beginner · 45 Students</div>
+              <div style="font-size:12px;color:#94A3B8;margin-top:2px;">Topics: Direct Addition/Subtraction</div>
+            </div>
+            <i data-lucide="chevron-right" style="width:20px;height:20px;color:#94A3B8;"></i>
+          </div>
+
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="font-size:16px;font-weight:700;color:#0F172A;">Level 2</div>
+                <span class="chip chip-active">Active</span>
+              </div>
+              <div style="font-size:13px;color:#475569;margin-top:6px;">Intermediate · 38 Students</div>
+              <div style="font-size:12px;color:#94A3B8;margin-top:2px;">Topics: Small Friend Concept</div>
+            </div>
+            <i data-lucide="chevron-right" style="width:20px;height:20px;color:#94A3B8;"></i>
+          </div>
+
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="font-size:16px;font-weight:700;color:#0F172A;">Level 3</div>
+                <span class="chip chip-active">Active</span>
+              </div>
+              <div style="font-size:13px;color:#475569;margin-top:6px;">Advanced · 22 Students</div>
+              <div style="font-size:12px;color:#94A3B8;margin-top:2px;">Topics: Big Friend Concept</div>
+            </div>
+            <i data-lucide="chevron-right" style="width:20px;height:20px;color:#94A3B8;"></i>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C6: Level Detail -->
+  <div class="screen-block" id="screen-admin-level-detail">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Level Detail</h2>
+        <code class="screen-path">/admin/levels/3</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title" style="font-size:15px;">Level 3</div>
+        <i data-lucide="edit" style="width:20px;height:20px;color:#2563EB;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div>
+            <div style="font-size:24px;font-weight:700;color:#0F172A;">Level 3 (Advanced)</div>
+            <div style="font-size:14px;color:#475569;margin-top:4px;">Big Friend Concept &amp; Negative Numbers</div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="ms-card" style="padding:16px;text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#0F172A;">22</div>
+              <div style="font-size:12px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-top:4px;">Students</div>
+            </div>
+            <div class="ms-card" style="padding:16px;text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#1A3829;">82%</div>
+              <div style="font-size:12px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-top:4px;">Pass Rate</div>
+            </div>
+          </div>
+
+          <div class="section-label">SYLLABUS REQUIREMENTS</div>
+
+          <div class="ms-card">
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+              <i data-lucide="clipboard-list" style="width:18px;height:18px;color:#475569;"></i> Mental Arithmetic (Exam)
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Digits</span>
+              <span class="info-row-value font-mono">3 Digits</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Rows</span>
+              <span class="info-row-value font-mono">5 Rows</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Negatives</span>
+              <span class="info-row-value font-mono" style="color:#DC2626;">Yes</span>
+            </div>
+          </div>
+
+          <div class="ms-card">
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+              <i data-lucide="zap" style="width:18px;height:18px;color:#475569;"></i> Flash Anzan (Test)
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Digits</span>
+              <span class="info-row-value font-mono">2 Digits</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Flashes</span>
+              <span class="info-row-value font-mono">8 Flashes</span>
+            </div>
+            <div class="info-row">
+              <span class="info-row-label">Speed</span>
+              <span class="info-row-value font-mono">1.5s</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C7: Create Level (Bottom Sheet) -->
+  <div class="screen-block" id="screen-admin-create-level">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Create Level (Bottom Sheet)</h2>
+        <code class="screen-path">/admin/levels/create</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame" style="position:relative;">
+      <!-- Background: Levels List -->
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Levels &amp; Syllabus</div>
+        <i data-lucide="plus" style="width:24px;height:24px;color:#2563EB;"></i>
+      </div>
+      <div class="iphone-content" style="filter:blur(1px);">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="font-size:16px;font-weight:700;color:#0F172A;">Level 1</div>
+                <span class="chip chip-active">Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bottom Nav -->
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      
+      <!-- Bottom Sheet Overlay -->
+      <div class="bs-overlay"></div>
+      <div class="bottom-sheet" style="padding-bottom:34px;">
+        <div class="bs-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div style="font-size:20px;font-weight:700;color:#0F172A;">Create New Level</div>
+          <div style="width:30px;height:30px;background:#F1F5F9;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="x" style="width:16px;height:16px;color:#475569;"></i>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">LEVEL NAME</label>
+            <input type="text" placeholder="e.g. Level 4" style="width:100%;height:48px;border:1px solid #CBD5E1;border-radius:10px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">BASE PASSING SCORE (%)</label>
+            <input type="number" value="80" style="width:100%;height:48px;border:1px solid #CBD5E1;border-radius:10px;padding:0 16px;font-size:15px;font-family:'DM Mono',monospace;outline:none;">
+          </div>
+          
+          <button class="btn-primary" style="height:52px;margin-top:8px;">Create Level</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C8: Assessments List -->
+  <div class="screen-block" id="screen-admin-assessments">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Assessments List</h2>
+        <code class="screen-path">/admin/assessments</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Assessments</div>
+        <i data-lucide="plus" style="width:24px;height:24px;color:#2563EB;cursor:pointer;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div style="display:flex;background:#F1F5F9;border-radius:10px;padding:4px;gap:4px;">
+            <div style="flex:1;text-align:center;padding:8px 0;background:#fff;border-radius:6px;font-size:13px;font-weight:700;color:#0F172A;box-shadow:0 1px 2px rgba(0,0,0,0.05);">Upcoming</div>
+            <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;font-size:13px;font-weight:600;color:#475569;">Live (1)</div>
+            <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;font-size:13px;font-weight:600;color:#475569;">Completed</div>
+          </div>
+
+          <div class="ms-card" style="margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-exam">EXAM</span>
+              <span class="level-badge">Level 3</span>
+              <span style="background:#DBEAFE;color:#1D4ED8;border-radius:6px;padding:3px 8px;font-size:11px;font-family:'DM Mono',monospace;margin-left:auto;font-weight:700;">Jun 20</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-top:10px;">Q4 Flash Anzan</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+              <div style="font-size:12px;color:#475569;">22 Students Assigned</div>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+          <div class="ms-card">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-test">TEST</span>
+              <span class="level-badge">Level 2</span>
+              <span style="background:#DBEAFE;color:#1D4ED8;border-radius:6px;padding:3px 8px;font-size:11px;font-family:'DM Mono',monospace;margin-left:auto;font-weight:700;">Jun 25</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-top:10px;">Q2 Mid-Term Test</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+              <div style="font-size:12px;color:#475569;">38 Students Assigned</div>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C9: Assessment Wizard Step 1 (Type) -->
+  <div class="screen-block" id="screen-admin-assessment-wizard-1">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Assessment Wizard Step 1</h2>
+        <code class="screen-path">/admin/assessments/create/step1</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Create Assessment</div>
+        <i data-lucide="x" style="width:24px;height:24px;color:#0F172A;cursor:pointer;"></i>
+      </div>
+      <div style="height:4px;background:#E2E8F0;width:100%;">
+        <div style="width:25%;height:100%;background:#2563EB;"></div>
+      </div>
+      <div class="iphone-content" style="background:#F8FAFC;">
+        <div style="padding:24px 16px;display:flex;flex-direction:column;gap:20px;height:100%;">
+          
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#2563EB;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">STEP 1 OF 4</div>
+            <div style="font-size:24px;font-weight:700;color:#0F172A;">Select Assessment Type</div>
+            <div style="font-size:14px;color:#475569;margin-top:6px;">Choose the format of the examination you want to create.</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="ms-card" style="border:2px solid #2563EB;background:#EFF6FF;padding:20px;cursor:pointer;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div style="width:40px;height:40px;background:#DBEAFE;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                  <i data-lucide="clipboard-list" style="width:20px;height:20px;color:#2563EB;"></i>
+                </div>
+                <div style="width:20px;height:20px;border-radius:50%;border:6px solid #2563EB;background:#fff;"></div>
+              </div>
+              <div style="font-size:16px;font-weight:700;color:#0F172A;margin-top:16px;">Exam (Mental Arithmetic)</div>
+              <div style="font-size:13px;color:#475569;margin-top:4px;">Standard vertical table format for addition and subtraction.</div>
+            </div>
+
+            <div class="ms-card" style="border:2px solid transparent;padding:20px;cursor:pointer;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div style="width:40px;height:40px;background:#F1F5F9;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                  <i data-lucide="zap" style="width:20px;height:20px;color:#475569;"></i>
+                </div>
+                <div style="width:20px;height:20px;border-radius:50%;border:2px solid #CBD5E1;background:#fff;"></div>
+              </div>
+              <div style="font-size:16px;font-weight:700;color:#0F172A;margin-top:16px;">Test (Flash Anzan)</div>
+              <div style="font-size:13px;color:#475569;margin-top:4px;">Fast-paced flashing numbers with multiple choice answers.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:auto;padding-bottom:16px;">
+            <button class="btn-primary" style="height:52px;width:100%;font-size:16px;">Next Step →</button>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator" style="background:#F8FAFC;"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C10: Assessment Wizard Step 2 (Settings) -->
+  <div class="screen-block" id="screen-admin-assessment-wizard-2">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Assessment Wizard Step 2</h2>
+        <code class="screen-path">/admin/assessments/create/step2</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title">Create Assessment</div>
+        <i data-lucide="x" style="width:24px;height:24px;color:#0F172A;cursor:pointer;"></i>
+      </div>
+      <div style="height:4px;background:#E2E8F0;width:100%;">
+        <div style="width:50%;height:100%;background:#2563EB;"></div>
+      </div>
+      <div class="iphone-content" style="background:#F8FAFC;">
+        <div style="padding:24px 16px;display:flex;flex-direction:column;gap:20px;">
+          
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#2563EB;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">STEP 2 OF 4</div>
+            <div style="font-size:24px;font-weight:700;color:#0F172A;">Configure Settings</div>
+            <div style="font-size:14px;color:#475569;margin-top:6px;">Set the parameters for the Mental Arithmetic Exam.</div>
+          </div>
+
+          <div class="ms-card" style="display:flex;flex-direction:column;gap:16px;">
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">TOTAL QUESTIONS</label>
+                <input type="number" value="20" style="width:100%;height:44px;border:1px solid #CBD5E1;border-radius:8px;padding:0 12px;font-size:15px;font-family:'DM Mono',monospace;outline:none;">
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">DIGITS PER ROW</label>
+                <input type="number" value="3" style="width:100%;height:44px;border:1px solid #CBD5E1;border-radius:8px;padding:0 12px;font-size:15px;font-family:'DM Mono',monospace;outline:none;">
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">ROWS PER Q</label>
+                <input type="number" value="5" style="width:100%;height:44px;border:1px solid #CBD5E1;border-radius:8px;padding:0 12px;font-size:15px;font-family:'DM Mono',monospace;outline:none;">
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">TIME LIMIT (MIN)</label>
+                <input type="number" value="30" style="width:100%;height:44px;border:1px solid #CBD5E1;border-radius:8px;padding:0 12px;font-size:15px;font-family:'DM Mono',monospace;outline:none;">
+              </div>
+            </div>
+
+            <div style="height:1px;background:#E2E8F0;margin:4px 0;"></div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#0F172A;">Include Negative Numbers</div>
+                <div style="font-size:12px;color:#475569;margin-top:2px;">Some rows will be subtraction</div>
+              </div>
+              <div class="toggle toggle-active"></div>
+            </div>
+
+            <div style="background:#FEF2F2;border:1px dashed #FCA5A5;border-radius:8px;padding:12px;text-align:center;">
+              <span style="font-size:12px;color:#991B1B;font-weight:600;">Preview of negative number style:</span>
+              <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#991B1B;margin-top:4px;">-456</div>
+            </div>
+
+          </div>
+
+          <div style="padding-bottom:16px;">
+            <button class="btn-primary" style="height:52px;width:100%;font-size:16px;">Next Step →</button>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator" style="background:#F8FAFC;"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- GROUP: ADMIN (11-20) -->
+  <div class="group-header"><span class="group-label">ADMIN (11-20)</span><span class="group-count">10 screens</span></div>
+
+  <!-- C11: Flash Anzan Configuration -->
+  <div class="screen-block" id="screen-admin-flash-config">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Flash Anzan Configuration</h2>
+        <code class="screen-path">/admin/assessments/create/flash-config</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title" style="font-size:15px;">Flash Anzan Settings</div>
+        <div style="width:20px;"></div>
+      </div>
+      <div class="iphone-content" style="background:#F8FAFC;">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div class="ms-card" style="display:flex;flex-direction:column;gap:16px;">
+            <div style="font-size:15px;font-weight:700;color:#0F172A;">Parameters</div>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">NUMBER OF FLASHES</label>
+                <input type="number" value="8" style="width:100%;height:44px;border:1px solid #CBD5E1;border-radius:8px;padding:0 12px;font-size:15px;font-family:'DM Mono',monospace;outline:none;">
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">DIGITS</label>
+                <input type="number" value="2" style="width:100%;height:44px;border:1px solid #CBD5E1;border-radius:8px;padding:0 12px;font-size:15px;font-family:'DM Mono',monospace;outline:none;">
+              </div>
+            </div>
+
+            <div>
+              <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;">SPEED (SECONDS)</label>
+              <input type="number" value="1.5" step="0.1" style="width:100%;height:44px;border:1px solid #CBD5E1;border-radius:8px;padding:0 12px;font-size:15px;font-family:'DM Mono',monospace;outline:none;">
+            </div>
+            
+            <div style="height:1px;background:#E2E8F0;margin:4px 0;"></div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#0F172A;">Include Negative Numbers</div>
+                <div style="font-size:12px;color:#475569;margin-top:2px;">Allows subtraction flashes</div>
+              </div>
+              <div class="toggle toggle-active"></div>
+            </div>
+          </div>
+
+          <div class="section-label">LIVE PREVIEW</div>
+          <div style="background:#0F172A;border-radius:16px;height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+            <div style="font-family:'DM Mono',monospace;font-size:64px;font-weight:700;color:#991B1B;">-45</div>
+            <div style="position:absolute;bottom:16px;left:0;width:100%;text-align:center;font-size:12px;color:#64748B;">Flash 3 of 8</div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <button class="btn-primary" style="height:52px;width:100%;font-size:16px;">Create Test</button>
+          </div>
+
+        </div>
+      </div>
+      <div class="iphone-home-indicator" style="background:#F8FAFC;"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C12: Live Monitor Hub -->
+  <div class="screen-block" id="screen-admin-monitor-hub">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Live Monitor Hub</h2>
+        <code class="screen-path">/admin/monitor</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Live Monitor</div>
+        <i data-lucide="filter" style="width:24px;height:24px;color:#0F172A;cursor:pointer;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div class="ms-card" style="border:2px solid #EF4444;padding:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div class="live-badge" style="margin-bottom:8px;"><div class="live-dot"></div> EXAM IN PROGRESS</div>
+                <div style="font-size:16px;font-weight:700;color:#0F172A;">Q3 Mental Arithmetic</div>
+                <div style="font-size:13px;color:#475569;margin-top:4px;">Level 3 · 15 Students</div>
+              </div>
+            </div>
+            
+            <div style="margin-top:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:12px;font-weight:700;color:#475569;">PROGRESS</span>
+                <span style="font-size:12px;font-weight:700;color:#0F172A;">12 / 15 Completed</span>
+              </div>
+              <div style="height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden;">
+                <div style="width:80%;height:100%;background:#10B981;border-radius:3px;"></div>
+              </div>
+            </div>
+
+            <button class="btn-primary" style="width:100%;height:44px;margin-top:16px;background:#0F172A;">View Detail</button>
+          </div>
+
+          <div class="section-label">UPCOMING ASSESSMENTS</div>
+          
+          <div style="text-align:center;padding:32px 16px;background:#F8FAFC;border-radius:12px;border:1px dashed #CBD5E1;">
+            <i data-lucide="calendar" style="width:32px;height:32px;color:#94A3B8;margin:0 auto 12px;"></i>
+            <div style="font-size:14px;font-weight:600;color:#475569;">No other assessments scheduled for today.</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C13: Monitor Detail -->
+  <div class="screen-block" id="screen-admin-monitor-detail">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Monitor Detail</h2>
+        <code class="screen-path">/admin/monitor/detail</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title" style="font-size:15px;">Q3 Mental Arithmetic</div>
+        <div style="width:20px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div style="display:flex;gap:8px;">
+            <button class="btn-primary" style="flex:1;height:40px;background:#F59E0B;color:#fff;font-size:13px;"><i data-lucide="pause" style="width:16px;height:16px;margin-right:6px;"></i> Pause Exam</button>
+            <button class="btn-primary" style="flex:1;height:40px;background:#EF4444;color:#fff;font-size:13px;"><i data-lucide="square" style="width:16px;height:16px;margin-right:6px;"></i> End Exam</button>
+          </div>
+
+          <div class="section-label" style="margin-top:8px;">STUDENT PROGRESS</div>
+
+          <!-- Student 1: Completed -->
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px;">
+            <div class="avatar" style="background:#1A3829;">AS</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Aditi Sharma</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <span style="width:8px;height:8px;background:#10B981;border-radius:50%;"></span>
+                <span style="font-size:12px;color:#475569;font-weight:600;">Submitted</span>
+              </div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#10B981;">20/20</div>
+          </div>
+
+          <!-- Student 2: In Progress -->
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px;">
+            <div class="avatar" style="background:#475569;">RV</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Rohan Verma</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <span class="live-dot" style="margin:0;"></span>
+                <span style="font-size:12px;color:#475569;font-weight:600;">Working</span>
+              </div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#2563EB;">18/20</div>
+          </div>
+
+          <!-- Student 3: In Progress -->
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px;">
+            <div class="avatar" style="background:#475569;">PJ</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Priya Jain</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <span class="live-dot" style="margin:0;"></span>
+                <span style="font-size:12px;color:#475569;font-weight:600;">Working</span>
+              </div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#2563EB;">12/20</div>
+          </div>
+
+          <!-- Student 4: Not Started -->
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px;">
+            <div class="avatar" style="background:#94A3B8;">NK</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Nikhil Kumar</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <span style="width:8px;height:8px;background:#CBD5E1;border-radius:50%;"></span>
+                <span style="font-size:12px;color:#94A3B8;font-weight:600;">Not Started</span>
+              </div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#94A3B8;">0/20</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C14: Activity Log -->
+  <div class="screen-block" id="screen-admin-activity">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Activity Log</h2>
+        <code class="screen-path">/admin/activity</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Activity Log</div>
+        <div style="width:24px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div style="font-size:12px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.05em;margin-top:8px;">TODAY</div>
+          
+          <div style="display:flex;gap:12px;">
+            <div style="display:flex;flex-direction:column;align-items:center;margin-top:4px;">
+              <div style="width:12px;height:12px;border-radius:50%;background:#2563EB;"></div>
+              <div style="width:2px;flex:1;background:#E2E8F0;margin-top:4px;"></div>
+            </div>
+            <div style="padding-bottom:20px;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Aditi Sharma submitted test</div>
+              <div style="font-size:13px;color:#475569;margin-top:4px;">Q3 Mental Arithmetic (Level 3)</div>
+              <div style="font-size:11px;color:#94A3B8;margin-top:6px;font-weight:600;">10:45 AM</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;">
+            <div style="display:flex;flex-direction:column;align-items:center;margin-top:4px;">
+              <div style="width:12px;height:12px;border-radius:50%;background:#10B981;"></div>
+              <div style="width:2px;flex:1;background:#E2E8F0;margin-top:4px;"></div>
+            </div>
+            <div style="padding-bottom:20px;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Exam Q3 created</div>
+              <div style="font-size:13px;color:#475569;margin-top:4px;">Assigned to 15 students in Level 3</div>
+              <div style="font-size:11px;color:#94A3B8;margin-top:6px;font-weight:600;">09:00 AM</div>
+            </div>
+          </div>
+
+          <div style="font-size:12px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.05em;">YESTERDAY</div>
+
+          <div style="display:flex;gap:12px;">
+            <div style="display:flex;flex-direction:column;align-items:center;margin-top:4px;">
+              <div style="width:12px;height:12px;border-radius:50%;background:#F59E0B;"></div>
+            </div>
+            <div style="padding-bottom:20px;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Announcement sent</div>
+              <div style="font-size:13px;color:#475569;margin-top:4px;">"Reminder: Level 2 Mock Test tomorrow"</div>
+              <div style="font-size:11px;color:#94A3B8;margin-top:6px;font-weight:600;">04:30 PM</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C15: Announcements -->
+  <div class="screen-block" id="screen-admin-announcements">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Announcements</h2>
+        <code class="screen-path">/admin/announcements</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Announcements</div>
+        <i data-lucide="plus" style="width:24px;height:24px;color:#2563EB;cursor:pointer;"></i>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div class="ms-card" style="padding:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div style="font-size:15px;font-weight:700;color:#0F172A;">Level 2 Mock Test</div>
+              <span style="font-size:11px;color:#94A3B8;font-weight:600;">Yesterday</span>
+            </div>
+            <div style="font-size:13px;color:#475569;margin-top:8px;line-height:1.5;">
+              Reminder: All Level 2 students must complete the Mock Test before this Friday. Ensure you have a stable internet connection.
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:12px;">
+              <span class="level-badge">Level 2</span>
+              <span style="font-size:12px;color:#64748B;">Sent to 38 students</span>
+            </div>
+          </div>
+
+          <div class="ms-card" style="padding:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div style="font-size:15px;font-weight:700;color:#0F172A;">Welcome to Summer Term</div>
+              <span style="font-size:11px;color:#94A3B8;font-weight:600;">Apr 1</span>
+            </div>
+            <div style="font-size:13px;color:#475569;margin-top:8px;line-height:1.5;">
+              Welcome back everyone! The syllabus for the summer term has been uploaded. Flash Anzan sessions will happen every Tuesday.
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:12px;">
+              <span style="background:#F1F5F9;color:#475569;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;">All Students</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C16: Results Hub -->
+  <div class="screen-block" id="screen-admin-results-hub">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Results Hub</h2>
+        <code class="screen-path">/admin/results</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Results</div>
+        <div style="width:24px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          
+          <div style="display:flex;background:#F1F5F9;border-radius:10px;padding:4px;gap:4px;">
+            <div style="flex:1;text-align:center;padding:8px 0;background:#fff;border-radius:6px;font-size:13px;font-weight:700;color:#0F172A;box-shadow:0 1px 2px rgba(0,0,0,0.05);">Needs Review</div>
+            <div style="flex:1;text-align:center;padding:8px 0;border-radius:6px;font-size:13px;font-weight:600;color:#475569;">Published</div>
+          </div>
+
+          <div class="ms-card" style="margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="chip chip-test">TEST</span>
+              <span class="level-badge">Level 3</span>
+              <span style="background:#FEF3C7;color:#D97706;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;margin-left:auto;">Pending Publish</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-top:10px;">Q2 Flash Anzan</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+              <div style="font-size:12px;color:#475569;">22 / 22 Submitted</div>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C17: Results Detail -->
+  <div class="screen-block" id="screen-admin-results-detail">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Results Detail</h2>
+        <code class="screen-path">/admin/results/Q2</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title" style="font-size:15px;">Q2 Flash Anzan</div>
+        <div style="width:20px;"></div>
+      </div>
+      <div class="iphone-content">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:700;color:#0F172A;">Class Performance</div>
+            <div style="font-size:13px;color:#475569;margin-top:4px;">Level 3 · 22 Students</div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="ms-card" style="padding:16px;text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#0F172A;">85%</div>
+              <div style="font-size:12px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-top:4px;">Avg Score</div>
+            </div>
+            <div class="ms-card" style="padding:16px;text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#1A3829;">91%</div>
+              <div style="font-size:12px;color:#94A3B8;text-transform:uppercase;font-weight:700;margin-top:4px;">Pass Rate</div>
+            </div>
+          </div>
+
+          <div class="section-label">SCORE DISTRIBUTION</div>
+          <div class="ms-card" style="padding:16px;height:140px;display:flex;align-items:flex-end;gap:8px;justify-content:space-between;">
+            <div style="width:15%;height:10%;background:#E2E8F0;border-radius:4px 4px 0 0;"></div>
+            <div style="width:15%;height:30%;background:#E2E8F0;border-radius:4px 4px 0 0;"></div>
+            <div style="width:15%;height:60%;background:#9333EA;border-radius:4px 4px 0 0;"></div>
+            <div style="width:15%;height:100%;background:#2563EB;border-radius:4px 4px 0 0;"></div>
+            <div style="width:15%;height:80%;background:#10B981;border-radius:4px 4px 0 0;"></div>
+          </div>
+
+          <button class="btn-primary" style="height:48px;margin-top:8px;background:#0F172A;">View Student List</button>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C18: Student List Drawer (Bottom Sheet) -->
+  <div class="screen-block" id="screen-admin-results-students">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Student List Drawer (Bottom Sheet)</h2>
+        <code class="screen-path">/admin/results/Q2/students</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame" style="position:relative;">
+      <!-- Background: Results Detail -->
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title" style="font-size:15px;">Q2 Flash Anzan</div>
+        <div style="width:20px;"></div>
+      </div>
+      <div class="iphone-content" style="filter:blur(1px);">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:700;color:#0F172A;">Class Performance</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="ms-card" style="padding:16px;text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#0F172A;">85%</div>
+            </div>
+            <div class="ms-card" style="padding:16px;text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#1A3829;">91%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bottom Nav -->
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      
+      <!-- Bottom Sheet Overlay -->
+      <div class="bs-overlay"></div>
+      <div class="bottom-sheet" style="height:70%;padding-bottom:34px;display:flex;flex-direction:column;">
+        <div class="bs-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:20px;font-weight:700;color:#0F172A;">Student Submissions</div>
+          <div style="width:30px;height:30px;background:#F1F5F9;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="x" style="width:16px;height:16px;color:#475569;"></i>
+          </div>
+        </div>
+        
+        <div style="display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1;padding-right:4px;">
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px;">
+            <div class="avatar" style="background:#1A3829;">AS</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Aditi Sharma</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#1A3829;">90%</div>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px;">
+            <div class="avatar" style="background:#475569;">RV</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Rohan Verma</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#2563EB;">80%</div>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+            </div>
+          </div>
+
+          <div class="ms-card" style="display:flex;align-items:center;gap:12px;padding:12px;">
+            <div class="avatar" style="background:#DC2626;">PJ</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#0F172A;">Priya Jain</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#DC2626;">45%</div>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94A3B8;"></i>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" style="height:52px;margin-top:16px;flex-shrink:0;">Publish All Results</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- C19: Answer Sheet (Admin View) -->
+  <div class="screen-block" id="screen-admin-answer-sheet">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Answer Sheet (Admin View)</h2>
+        <code class="screen-path">/admin/results/Q2/aditi</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-back"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></div>
+        <div class="top-bar-title" style="font-size:15px;">Aditi's Answer Sheet</div>
+        <div style="width:20px;"></div>
+      </div>
+      <div class="iphone-content" style="background:#F8FAFC;">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div class="ms-card" style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:#1A3829;color:#fff;">
+            <div>
+              <div style="font-size:13px;color:#A7F3D0;margin-bottom:4px;font-weight:600;">FINAL SCORE</div>
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;">90%</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:13px;color:#A7F3D0;margin-bottom:4px;font-weight:600;">STATUS</div>
+              <span class="chip" style="background:#34D399;color:#064E3B;border:none;">Passed</span>
+            </div>
+          </div>
+
+          <div class="section-label">QUESTION 1</div>
+          <div class="ms-card" style="padding:16px;">
+            <div style="display:flex;gap:24px;">
+              <div style="font-family:'DM Mono',monospace;font-size:18px;text-align:right;color:#0F172A;line-height:1.6;font-weight:600;">
+                <div>34</div>
+                <div>56</div>
+                <div style="color:#991B1B;">-12</div>
+                <div>88</div>
+                <div style="border-top:2px solid #CBD5E1;margin-top:4px;padding-top:4px;color:#1A3829;">166</div>
+              </div>
+              <div style="flex:1;border-left:1px solid #E2E8F0;padding-left:24px;display:flex;flex-direction:column;justify-content:center;">
+                <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:4px;">STUDENT ANSWER</div>
+                <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#10B981;display:flex;align-items:center;gap:8px;">
+                  166 <i data-lucide="check-circle" style="width:20px;height:20px;color:#10B981;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">QUESTION 2</div>
+          <div class="ms-card" style="padding:16px;border:2px solid #FECACA;">
+            <div style="display:flex;gap:24px;">
+              <div style="font-family:'DM Mono',monospace;font-size:18px;text-align:right;color:#0F172A;line-height:1.6;font-weight:600;">
+                <div>12</div>
+                <div style="color:#991B1B;">-5</div>
+                <div>40</div>
+                <div>11</div>
+                <div style="border-top:2px solid #CBD5E1;margin-top:4px;padding-top:4px;color:#1A3829;">58</div>
+              </div>
+              <div style="flex:1;border-left:1px solid #E2E8F0;padding-left:24px;display:flex;flex-direction:column;justify-content:center;">
+                <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:4px;">STUDENT ANSWER</div>
+                <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:#DC2626;display:flex;align-items:center;gap:8px;">
+                  68 <i data-lucide="x-circle" style="width:20px;height:20px;color:#DC2626;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-primary" style="height:48px;margin-top:8px;">Publish Result</button>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator" style="background:#F8FAFC;"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- C20: Admin Settings -->
+  <div class="screen-block" id="screen-admin-settings">
+    <div class="screen-header">
+      <div>
+        <h2 class="screen-title">Admin Settings</h2>
+        <code class="screen-path">/admin/settings</code>
+      </div>
+      <a href="#top" class="top-link">↑ Top</a>
+    </div>
+    <div class="iphone-frame">
+      <div class="iphone-status-bar">
+        <span>9:41</span>
+        <span style="display:flex;gap:4px;align-items:center"><i data-lucide="signal" style="width:14px;height:14px"></i><i data-lucide="battery" style="width:14px;height:14px"></i></span>
+      </div>
+      <div class="top-bar">
+        <div style="width:24px;"></div>
+        <div class="top-bar-title">Settings</div>
+        <div style="width:24px;"></div>
+      </div>
+      <div class="iphone-content" style="background:#F8FAFC;">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:24px;">
+          
+          <div style="display:flex;flex-direction:column;align-items:center;margin-top:16px;">
+            <div class="avatar-lg" style="background:#2563EB;width:80px;height:80px;font-size:28px;">TS</div>
+            <div style="font-size:20px;font-weight:700;color:#0F172A;margin-top:12px;">Teacher Sarah</div>
+            <div style="font-size:14px;color:#475569;margin-top:4px;">Administrator</div>
+          </div>
+
+          <div>
+            <div class="section-label">ACADEMY PROFILE</div>
+            <div class="ms-card" style="padding:0;overflow:hidden;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #F1F5F9;cursor:pointer;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <i data-lucide="building" style="width:20px;height:20px;color:#475569;"></i>
+                  <span style="font-size:15px;font-weight:600;color:#0F172A;">Academy Details</span>
+                </div>
+                <i data-lucide="chevron-right" style="width:18px;height:18px;color:#94A3B8;"></i>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #F1F5F9;cursor:pointer;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <i data-lucide="shield" style="width:20px;height:20px;color:#475569;"></i>
+                  <span style="font-size:15px;font-weight:600;color:#0F172A;">Security &amp; Passwords</span>
+                </div>
+                <i data-lucide="chevron-right" style="width:18px;height:18px;color:#94A3B8;"></i>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label">PREFERENCES</div>
+            <div class="ms-card" style="padding:0;overflow:hidden;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #F1F5F9;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <i data-lucide="bell" style="width:20px;height:20px;color:#475569;"></i>
+                  <span style="font-size:15px;font-weight:600;color:#0F172A;">Push Notifications</span>
+                </div>
+                <div class="toggle toggle-active"></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #F1F5F9;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <i data-lucide="mail" style="width:20px;height:20px;color:#475569;"></i>
+                  <span style="font-size:15px;font-weight:600;color:#0F172A;">Email Summaries</span>
+                </div>
+                <div class="toggle"></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="ms-card" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;color:#DC2626;font-size:15px;font-weight:700;border:none;background:#fff;width:100%;cursor:pointer;">
+            <i data-lucide="log-out" style="width:20px;height:20px;"></i> Logout
+          </button>
+
+        </div>
+      </div>
+      <div class="student-bottom-nav">
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="layout-dashboard"></i></div>Dashboard</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="users"></i></div>Students</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="file-text"></i></div>Assessments</div>
+        <div class="bottom-nav-item"><div class="nav-icon-wrap"><i data-lucide="activity"></i></div>Monitor</div>
+        <div class="bottom-nav-item active"><div class="nav-icon-wrap"><i data-lucide="menu"></i></div>More</div>
+      </div>
+      <div class="iphone-home-indicator" style="background:#F8FAFC;"><div class="home-bar"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+// 1. Toggle Profile "More Info" accordion (B13)
+function toggleMoreInfo(id) {
+  var el = document.getElementById(id);
+  var arrow = document.getElementById(id + '-arrow');
+  var open = el.style.display === 'block';
+  el.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+  arrow.style.transition = 'transform 0.2s';
+}
+
+// 2. Tab switching (Level Detail, Assessment tabs)
+function switchTab(containerId, activeTab) {
+  var c = document.getElementById(containerId);
+  if(!c) return;
+  c.querySelectorAll('[data-tab]').forEach(function(btn) {
+    var isActive = btn.getAttribute('data-tab') === activeTab;
+    btn.classList.toggle('tab-active', isActive);
+    btn.style.color = isActive ? '#1A3829' : '#94A3B8';
+    btn.style.borderBottom = isActive ? '2px solid #1A3829' : '2px solid transparent';
+  });
+  c.querySelectorAll('[data-panel]').forEach(function(panel) {
+    panel.style.display = panel.getAttribute('data-panel') === activeTab ? 'block' : 'none';
+  });
+}
+
+// 3. MCQ selection
+function selectMCQ(groupId, selectedId) {
+  document.querySelectorAll('[data-mcq-group="' + groupId + '"]').forEach(function(btn) {
+    btn.classList.toggle('selected', btn.id === selectedId);
+  });
+}
+
+// 4. Assessment type selection (Wizard Step 1)
+function selectType(type) {
+  var examCard = document.getElementById('type-exam');
+  var testCard = document.getElementById('type-test');
+  if(!examCard || !testCard) return;
+  examCard.style.border   = type === 'exam' ? '2px solid #1A3829' : '1px solid #E2E8F0';
+  examCard.style.background = type === 'exam' ? '#EFFAF4' : '#FFFFFF';
+  testCard.style.border   = type === 'test' ? '2px solid #1A3829' : '1px solid #E2E8F0';
+  testCard.style.background = type === 'test' ? '#EFFAF4' : '#FFFFFF';
+  document.getElementById('type-exam-check').style.display = type === 'exam' ? 'flex' : 'none';
+  document.getElementById('type-test-check').style.display = type === 'test' ? 'flex' : 'none';
+}
+
+// 5. Stepper control
+function stepperChange(displayId, delta, min, max, isDecimal) {
+  var el = document.getElementById(displayId);
+  if(!el) return;
+  var val = parseFloat(el.textContent);
+  val = Math.min(max, Math.max(min, val + delta));
+  el.textContent = isDecimal ? val.toFixed(1) : val.toString();
+}
+
+// 6. Toggle switch
+function toggleSwitch(id) {
+  var el = document.getElementById(id);
+  if(!el) return;
+  var on = el.classList.toggle('on');
+  el.classList.toggle('off', !on);
+}
+
+// 7. Segmented toggle (Exam/Test)
+function segToggle(groupId, activeValue) {
+  document.querySelectorAll('[data-seg-group="' + groupId + '"]').forEach(function(btn) {
+    var isActive = btn.getAttribute('data-seg-val') === activeValue;
+    btn.style.background = isActive ? '#1A3829' : 'transparent';
+    btn.style.color       = isActive ? '#FFFFFF'  : '#475569';
+    btn.style.borderRadius = isActive ? '8px'  : '';
+  });
+}
+
+// 8. Lucide icons init
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.lucide) { lucide.createIcons(); }
+});
+</script>
+</body>
+</html>

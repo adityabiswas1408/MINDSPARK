@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F8FAFC;
+    color: #0F172A;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 24px;
+  }
+  .mono { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; }
+  h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .note { color: #475569; margin-bottom: 24px; font-size: 14px; }
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .frame-header { padding: 10px 16px; border-bottom: 1px solid #E2E8F0; font-size: 12px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .page { display: flex; min-height: 780px; background: #F8FAFC; }
+
+  /* Sidebar */
+  .sidebar { width: 240px; background: #FFFFFF; border-right: 1px solid #E2E8F0; padding: 0; flex-shrink: 0; }
+  .logo { height: 64px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 20px; font-size: 20px; font-weight: 700; color: #0F172A; letter-spacing: -0.01em; }
+  .nav { padding: 12px 12px; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 500; color: #475569; cursor: pointer; }
+  .nav-item.active { background: #EFFAF4; color: #1A3829; font-weight: 600; }
+  .nav-icon { width: 18px; height: 18px; stroke-width: 1.5; flex-shrink: 0; }
+
+  /* Top header */
+  .topbar { height: 64px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+  .topbar-title { font-size: 20px; font-weight: 700; color: #0F172A; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .bell { width: 18px; height: 18px; color: #94A3B8; }
+  .avatar { width: 36px; height: 36px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+
+  /* Main */
+  .main { flex: 1; padding: 32px; }
+  .h1 { font-size: 30px; font-weight: 700; color: #0F172A; margin-bottom: 24px; letter-spacing: -0.01em; }
+
+  /* Segmented toggle */
+  .segmented { display: inline-flex; padding: 4px; background: #F1F5F9; border-radius: 10px; margin-bottom: 16px; }
+  .seg { padding: 8px 24px; font-size: 13px; font-weight: 600; color: #64748B; border-radius: 8px; cursor: pointer; letter-spacing: 0.02em; }
+  .seg.active { background: #FFFFFF; color: #0F172A; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+  /* Filter row */
+  .filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 9999px; font-size: 12px; font-weight: 500; color: #475569; background: #FFFFFF; border: 1px solid #E2E8F0; cursor: pointer; }
+  .pill .count { font-family: 'DM Mono', monospace; font-weight: 600; background: #F1F5F9; color: #64748B; padding: 1px 8px; border-radius: 9999px; font-size: 11px; }
+  .pill.active { background: #EFFAF4; border-color: #1A3829; color: #1A3829; font-weight: 600; }
+  .pill.active .count { background: #1A3829; color: #FFFFFF; }
+  .spacer { flex: 1; }
+  .date-filter { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; color: #475569; background: #FFFFFF; border: 1px solid #E2E8F0; cursor: pointer; }
+
+  /* Search row (NEW position: below status pills) */
+  .search-row { margin-bottom: 24px; }
+  .search-input { width: 100%; height: 40px; padding: 0 14px 0 40px; border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; font-size: 14px; color: #0F172A; font-family: inherit; position: relative; }
+  .search-wrapper { position: relative; max-width: 420px; }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #94A3B8; pointer-events: none; }
+  .search-input::placeholder { color: #94A3B8; }
+
+  /* Card grid */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 20px; cursor: pointer; transition: all 150ms; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .card:hover { border-color: #CBD5E1; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+  .card.pending { border-color: #FCD34D; background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 30%); }
+  .badge-row { display: flex; gap: 6px; margin-bottom: 14px; }
+  .badge { padding: 3px 10px; font-size: 10px; font-weight: 700; border-radius: 9999px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .badge-published { background: #DCFCE7; color: #166534; }
+  .badge-pending { background: #FEF3C7; color: #92400E; }
+  .badge-archived { background: #F1F5F9; color: #64748B; }
+  .badge-exam { background: #DBEAFE; color: #1E40AF; }
+  .badge-test { background: #EDE9FE; color: #6D28D9; }
+  .card-title { font-size: 16px; font-weight: 600; color: #0F172A; margin-bottom: 4px; letter-spacing: -0.005em; }
+  .card-meta { font-size: 12px; color: #64748B; margin-bottom: 18px; }
+  .card-stats { display: flex; gap: 18px; padding-top: 14px; border-top: 1px solid #F1F5F9; }
+  .stat { flex: 1; }
+  .stat-label { font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .stat-value { font-size: 18px; font-weight: 700; color: #0F172A; font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; }
+  .stat-value.muted { color: #94A3B8; }
+  .stat-value.red { color: #DC2626; }
+  .stat-value.green { color: #1A3829; }
+
+  /* SVG icons */
+  .i { width: 16px; height: 16px; stroke-width: 1.75; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+
+  /* Date picker popover mock */
+  .date-popover { position: absolute; right: 0; top: 40px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 16px; box-shadow: 0 10px 32px rgba(0,0,0,.12); width: 300px; z-index: 10; }
+  .popover-tabs { display: flex; gap: 4px; margin-bottom: 12px; padding: 3px; background: #F1F5F9; border-radius: 8px; }
+  .popover-tab { flex: 1; text-align: center; padding: 6px 10px; font-size: 12px; font-weight: 500; color: #64748B; border-radius: 6px; cursor: pointer; }
+  .popover-tab.active { background: #FFFFFF; color: #0F172A; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .popover-content { font-size: 12px; color: #475569; text-align: center; padding: 16px 8px; background: #F8FAFC; border-radius: 8px; border: 1px dashed #CBD5E1; }
+  .filter-wrapper { position: relative; }
+</style>
+</head>
+<body>
+
+<h2>Results Hub — v2 (design polished + layout fixed)</h2>
+<p class="note">Changes: (1) Search bar moved below the status pills, (2) Date filter now opens a popover with "Single date" and "Date range" tabs, (3) Proper MINDSPARK design tokens — DM Sans, Forest Green #1A3829, 14px card radius, shadow-sm, correct badge colors, typographic hierarchy.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/results</div>
+  <div class="page">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">MINDSPARK</div>
+      <nav class="nav">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/><path d="M9 13h6"/></svg>Assessments</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Announcements</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </nav>
+    </aside>
+
+    <!-- Main column (header + content) -->
+    <div style="flex:1;display:flex;flex-direction:column">
+
+      <!-- Top bar -->
+      <div class="topbar">
+        <div class="topbar-title">Results</div>
+        <div class="topbar-right">
+          <svg class="bell" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="avatar">AP</div>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="main">
+        <div class="h1">Results</div>
+
+        <!-- 1. Segmented toggle -->
+        <div class="segmented">
+          <div class="seg active">EXAM</div>
+          <div class="seg">TEST</div>
+        </div>
+
+        <!-- 2. Status pills + date filter -->
+        <div class="filter-row">
+          <div class="pill active">Published <span class="count">8</span></div>
+          <div class="pill">Yet to Evaluate <span class="count">3</span></div>
+          <div class="pill">Archived <span class="count">12</span></div>
+          <div class="spacer"></div>
+          <div class="filter-wrapper">
+            <div class="date-filter">
+              <svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Last 30 days
+              <svg class="i" style="width:12px;height:12px" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <!-- Date popover (visible as mock) -->
+            <div class="date-popover">
+              <div class="popover-tabs">
+                <div class="popover-tab">Single date</div>
+                <div class="popover-tab active">Date range</div>
+              </div>
+              <div class="popover-content">📅 Mar 13 — Apr 13<br><span style="font-size:11px;color:#94A3B8">(calendar picker here)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Search bar (NEW position — below status pills) -->
+        <div class="search-row">
+          <div class="search-wrapper">
+            <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" placeholder="Search assessments by name…">
+          </div>
+        </div>
+
+        <!-- 4. Card grid -->
+        <div class="grid">
+
+          <div class="card">
+            <div class="badge-row">
+              <span class="badge badge-published">Published</span>
+              <span class="badge badge-exam">Exam</span>
+            </div>
+            <div class="card-title">Q3 Mental Arithmetic</div>
+            <div class="card-meta">Level 3 · 30 min · 20 questions</div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="stat-label">Gave</div>
+                <div class="stat-value">22</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Missed</div>
+                <div class="stat-value red">2</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Avg</div>
+                <div class="stat-value green">84%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="badge-row">
+              <span class="badge badge-published">Published</span>
+              <span class="badge badge-exam">Exam</span>
+            </div>
+            <div class="card-title">Midterm Arithmetic</div>
+            <div class="card-meta">Level 2 · 45 min · 25 questions</div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="stat-label">Gave</div>
+                <div class="stat-value">18</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Missed</div>
+                <div class="stat-value muted">0</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Avg</div>
+                <div class="stat-value green">76%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card pending">
+            <div class="badge-row">
+              <span class="badge badge-pending">Yet to Evaluate</span>
+              <span class="badge badge-exam">Exam</span>
+            </div>
+            <div class="card-title">Weekly Practice Drill</div>
+            <div class="card-meta">Level 1 · 20 min · 15 questions</div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="stat-label">Gave</div>
+                <div class="stat-value">24</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Missed</div>
+                <div class="stat-value red">1</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Avg</div>
+                <div class="stat-value muted">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="badge-row">
+              <span class="badge badge-published">Published</span>
+              <span class="badge badge-exam">Exam</span>
+            </div>
+            <div class="card-title">Speed Computation A</div>
+            <div class="card-meta">Level 3 · 25 min · 20 questions</div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="stat-label">Gave</div>
+                <div class="stat-value">19</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Missed</div>
+                <div class="stat-value red">3</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Avg</div>
+                <div class="stat-value green">81%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="badge-row">
+              <span class="badge badge-published">Published</span>
+              <span class="badge badge-exam">Exam</span>
+            </div>
+            <div class="card-title">Baseline Assessment</div>
+            <div class="card-meta">Level 1 · 15 min · 10 questions</div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="stat-label">Gave</div>
+                <div class="stat-value">26</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Missed</div>
+                <div class="stat-value muted">0</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Avg</div>
+                <div class="stat-value green">89%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="badge-row">
+              <span class="badge badge-published">Published</span>
+              <span class="badge badge-exam">Exam</span>
+            </div>
+            <div class="card-title">Fraction Fundamentals</div>
+            <div class="card-meta">Level 2 · 40 min · 22 questions</div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="stat-label">Gave</div>
+                <div class="stat-value">20</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Missed</div>
+                <div class="stat-value red">2</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Avg</div>
+                <div class="stat-value green">72%</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

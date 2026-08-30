@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F1F5F9; color: #0A0F1A; font-size: 16px; line-height: 1.5; padding: 32px 24px; -webkit-font-smoothing: antialiased; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; color: #0A0F1A; }
+  .note { color: #334155; margin-bottom: 24px; font-size: 16px; max-width: 860px; }
+
+  .frame { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(10, 15, 26, 0.08); margin-bottom: 32px; }
+  .frame-header { padding: 12px 20px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; background: #FAFBFC; }
+  .page { display: flex; min-height: 960px; background: #F8FAFC; }
+
+  /* Sidebar */
+  .sidebar { width: 252px; background: #FFFFFF; border-right: 1px solid #E2E8F0; flex-shrink: 0; display: flex; flex-direction: column; }
+  .logo-bar { height: 68px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: #1A3829; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark svg { width: 20px; height: 20px; color: #FFFFFF; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .nav-section { padding: 16px 12px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; font-size: 16px; font-weight: 500; color: #1E293B; cursor: pointer; position: relative; }
+  .nav-item.active { background: #EFFAF4; color: #1A3829; font-weight: 600; }
+  .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 11px; bottom: 11px; width: 3px; border-radius: 0 3px 3px 0; background: #1A3829; }
+  .nav-icon { width: 20px; height: 20px; stroke-width: 1.75; flex-shrink: 0; }
+  .sidebar-footer { padding: 14px; border-top: 1px solid #E2E8F0; margin-top: auto; }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 15px; font-weight: 600; color: #0A0F1A; }
+  .user-role { font-size: 13px; color: #475569; }
+  .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 15px; font-weight: 500; color: #1E293B; cursor: pointer; }
+  .logout-btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
+
+  /* Top header */
+  .topbar { height: 68px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+  .crumbs { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #334155; }
+  .crumbs a { color: #334155; cursor: pointer; }
+  .crumbs strong { color: #0A0F1A; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .icon-btn { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #334155; cursor: pointer; position: relative; }
+  .icon-btn svg { width: 20px; height: 20px; stroke-width: 1.75; }
+  .icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; background: #DC2626; border-radius: 9999px; border: 2px solid #FFFFFF; }
+  .divider-v { width: 1px; height: 22px; background: #E2E8F0; }
+  .top-avatar { width: 38px; height: 38px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; }
+
+  /* Main */
+  .main { flex: 1; padding: 32px 40px 40px; overflow: hidden; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; color: #334155; margin-bottom: 16px; cursor: pointer; }
+  .back-link svg { width: 16px; height: 16px; stroke-width: 2; }
+
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .h1 { font-size: 30px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.018em; }
+  .h1-meta { font-size: 14px; color: #334155; font-weight: 500; margin-top: 2px; display: inline-flex; align-items: center; gap: 8px; }
+  .live-dot-h { width: 8px; height: 8px; border-radius: 9999px; background: #DC2626; box-shadow: 0 0 0 3px #FEE2E2; animation: pulse 2s ease-in-out infinite; }
+  .h1-meta strong { color: #0A0F1A; font-weight: 700; font-family: 'DM Mono', monospace; }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; height: 42px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent; font-family: inherit; transition: all 150ms; }
+  .btn svg { width: 17px; height: 17px; stroke-width: 1.75; }
+  .btn-primary { background: #1A3829; color: #FFFFFF; box-shadow: 0 1px 3px rgba(26, 56, 41, 0.3); }
+  .btn-outline { background: #FFFFFF; border-color: #E2E8F0; color: #1E293B; }
+  .btn-danger { background: #DC2626; color: #FFFFFF; box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3); }
+  .btn-danger-outline { background: #FFFFFF; border-color: #FECACA; color: #991B1B; }
+  .btn-danger-outline:hover { background: #FEE2E2; border-color: #FCA5A5; }
+  .btn-sm { height: 34px; padding: 0 12px; font-size: 13px; font-weight: 600; }
+  .btn-sm svg { width: 13px; height: 13px; }
+  .btn-lg { height: 50px; padding: 0 22px; font-size: 16px; font-weight: 700; }
+
+  /* ═════════════════════════════════════════════ */
+  /* Hub — live exam cards grid */
+  .hub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .hub-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+    cursor: pointer;
+    transition: all 180ms;
+    position: relative;
+    overflow: hidden;
+  }
+  .hub-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #DC2626; }
+  .hub-card:hover { border-color: #DC2626; transform: translateY(-2px); box-shadow: 0 12px 24px rgba(220, 38, 38, 0.08); }
+
+  .hub-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
+  .hub-card-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { padding: 3px 10px; font-size: 10px; font-weight: 700; border-radius: 9999px; letter-spacing: 0.05em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px; }
+  .badge-live { background: #FEE2E2; color: #991B1B; }
+  .badge-live::before { content: ''; width: 5px; height: 5px; border-radius: 9999px; background: #DC2626; animation: pulse 2s ease-in-out infinite; }
+  .badge-exam { background: #EFF6FF; color: #1E3A8A; border: 1px solid #DBEAFE; }
+  .badge-test { background: #F5F3FF; color: #6D28D9; border: 1px solid #EDE9FE; }
+  .level-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; background: #EFFAF4; border: 1px solid #B7E4C7; color: #1A3829; border-radius: 9999px; font-size: 11px; font-weight: 700; }
+  .level-pill svg { width: 10px; height: 10px; stroke-width: 2; }
+
+  .hub-card-title { font-size: 17px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.012em; margin-bottom: 14px; line-height: 1.3; }
+
+  .hub-timer {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .hub-timer svg { width: 16px; height: 16px; color: #991B1B; stroke-width: 2; }
+  .hub-timer-label { font-size: 11px; font-weight: 700; color: #991B1B; text-transform: uppercase; letter-spacing: 0.06em; }
+  .hub-timer-value { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 700; color: #991B1B; letter-spacing: -0.01em; margin-left: auto; }
+
+  .hub-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 12px; border-top: 1px solid #F1F5F9; margin-bottom: 14px; }
+  .hub-stat { }
+  .hub-stat-label { font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .hub-stat-value { font-size: 20px; font-weight: 700; color: #0A0F1A; font-family: 'DM Mono', monospace; line-height: 1; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 6px; }
+  .hub-stat-value.red { color: #991B1B; }
+  .hub-stat-value .active-dot { width: 8px; height: 8px; border-radius: 9999px; background: #DC2626; animation: pulse 2s ease-in-out infinite; }
+
+  .monitor-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; height: 42px;
+    background: #DC2626;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3);
+  }
+  .monitor-btn svg { width: 15px; height: 15px; stroke-width: 2; }
+
+  /* ═════════════════════════════════════════════ */
+  /* Detail — Hero card with KPIs */
+  .monitor-hero {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .monitor-hero::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #DC2626; }
+
+  .hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .hero-title-wrap { flex: 1; min-width: 0; }
+  .hero-label { font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .hero-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .hero-title { font-size: 28px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.018em; }
+  .hero-meta { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #334155; font-weight: 500; flex-wrap: wrap; }
+  .hero-meta .sep { color: #CBD5E1; }
+  .hero-meta .item { display: inline-flex; align-items: center; gap: 6px; }
+  .hero-meta svg { width: 14px; height: 14px; stroke-width: 1.75; color: #475569; }
+
+  .hero-right { display: flex; align-items: center; gap: 24px; flex-shrink: 0; }
+
+  /* Big timer */
+  .big-timer {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+    padding: 12px 18px;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 14px;
+  }
+  .big-timer-label { font-size: 11px; font-weight: 700; color: #991B1B; text-transform: uppercase; letter-spacing: 0.08em; }
+  .big-timer-value { font-family: 'DM Mono', monospace; font-size: 36px; font-weight: 700; color: #991B1B; letter-spacing: -0.03em; line-height: 1; }
+  .big-timer.urgent .big-timer-value { animation: pulse 1s ease-in-out infinite; }
+
+  /* KPI row inside hero */
+  .hero-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    padding-top: 22px;
+    border-top: 1px solid #F1F5F9;
+  }
+  .hero-kpi {
+    padding: 16px 18px;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    background: #FAFBFC;
+  }
+  .hero-kpi-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .hero-kpi-label::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; }
+  .hero-kpi.in-progress .hero-kpi-label { color: #14532D; }
+  .hero-kpi.in-progress .hero-kpi-label::before { background: #1A3829; }
+  .hero-kpi.submitted .hero-kpi-label { color: #1E40AF; }
+  .hero-kpi.submitted .hero-kpi-label::before { background: #1E40AF; }
+  .hero-kpi.disconnected .hero-kpi-label { color: #991B1B; }
+  .hero-kpi.disconnected .hero-kpi-label::before { background: #DC2626; }
+  .hero-kpi.waiting .hero-kpi-label { color: #475569; }
+  .hero-kpi.waiting .hero-kpi-label::before { background: #94A3B8; }
+  .hero-kpi-value { font-size: 32px; font-weight: 700; color: #0A0F1A; font-family: 'DM Mono', monospace; line-height: 1; letter-spacing: -0.02em; }
+
+  /* Filter strip */
+  .filter-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+  }
+  .search-wrap { position: relative; flex: 1; max-width: 400px; }
+  .search-input { width: 100%; height: 40px; padding: 0 14px 0 40px; border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; font-size: 14px; color: #0A0F1A; font-family: inherit; }
+  .search-icon-abs { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #475569; pointer-events: none; }
+  .realtime-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 14px;
+    background: #DCFCE7;
+    border: 1px solid #BBF7D0;
+    color: #14532D;
+    border-radius: 9999px;
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-left: auto;
+  }
+  .realtime-pill::before { content: ''; width: 7px; height: 7px; border-radius: 9999px; background: #14532D; animation: pulse 2s ease-in-out infinite; }
+
+  /* Student table */
+  .student-table-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.06);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+  th { padding: 14px 22px; text-align: left; font-size: 13px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+  th.status-col { width: 160px; }
+  th.progress-col { width: 240px; }
+  th.actions-col { width: 140px; text-align: right; }
+  td { padding: 16px 22px; border-bottom: 1px solid #F1F5F9; font-size: 15px; color: #1E293B; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFBFC; }
+
+  .student-cell { display: flex; align-items: center; gap: 12px; }
+  .student-avatar { width: 36px; height: 36px; border-radius: 9999px; background: #1A3829; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .student-info { min-width: 0; }
+  .student-name { font-size: 15px; font-weight: 600; color: #0A0F1A; margin-bottom: 2px; }
+  .student-roll { font-size: 12px; font-weight: 600; color: #475569; font-family: 'DM Mono', monospace; }
+
+  .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; }
+  .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; }
+  .status-badge.in-progress { background: #DCFCE7; color: #14532D; }
+  .status-badge.in-progress::before { background: #1A3829; }
+  .status-badge.submitted { background: #DBEAFE; color: #1E40AF; }
+  .status-badge.submitted::before { background: #1E40AF; }
+  .status-badge.disconnected { background: #FEE2E2; color: #991B1B; }
+  .status-badge.disconnected::before { background: #DC2626; animation: pulse 2s ease-in-out infinite; }
+  .status-badge.waiting { background: #F1F5F9; color: #475569; }
+  .status-badge.waiting::before { background: #94A3B8; }
+
+  .progress-cell { display: flex; align-items: center; gap: 10px; }
+  .progress-bar { flex: 1; height: 6px; background: #F1F5F9; border-radius: 9999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #1A3829; border-radius: 9999px; transition: width 500ms; }
+  .progress-text { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #0A0F1A; min-width: 48px; text-align: right; }
+
+  .view-profile-link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: #1A3829; text-decoration: none; cursor: pointer; }
+  .view-profile-link svg { width: 13px; height: 13px; stroke-width: 2; }
+
+  /* ═════════════════════════════════════════════ */
+  /* Force Close Dialog */
+  .dialog-stage {
+    position: relative;
+    min-height: 680px;
+    background: rgba(10, 15, 26, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+  .dialog-card {
+    background: #FFFFFF;
+    border-radius: 18px;
+    box-shadow: 0 24px 64px rgba(10, 15, 26, 0.3);
+    overflow: hidden;
+    width: 100%;
+    max-width: 520px;
+    border-top: 4px solid #DC2626;
+  }
+  .dialog-head { padding: 28px 32px 20px; text-align: center; }
+  .dialog-icon-big {
+    width: 72px; height: 72px;
+    border-radius: 9999px;
+    background: #FEE2E2;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    color: #991B1B;
+  }
+  .dialog-icon-big svg { width: 34px; height: 34px; stroke-width: 2; }
+  .dialog-title { font-size: 22px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.018em; margin-bottom: 8px; }
+  .dialog-desc { font-size: 14px; color: #334155; font-weight: 500; line-height: 1.5; max-width: 420px; margin: 0 auto; }
+  .dialog-desc strong { color: #0A0F1A; font-weight: 700; }
+
+  .dialog-body { padding: 0 32px 24px; }
+  .impact-box {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+  .impact-title { font-size: 11px; font-weight: 700; color: #991B1B; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .impact-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; font-size: 14px; color: #1E293B; }
+  .impact-row + .impact-row { border-top: 1px solid #FECACA; margin-top: 4px; padding-top: 10px; }
+  .impact-label { font-weight: 500; }
+  .impact-value { font-family: 'DM Mono', monospace; font-weight: 700; color: #0A0F1A; }
+  .impact-value.red { color: #991B1B; }
+
+  .confirm-input-wrap { margin-bottom: 6px; }
+  .confirm-label {
+    display: block;
+    font-size: 13px; font-weight: 700;
+    color: #334155;
+    margin-bottom: 8px;
+  }
+  .confirm-label strong { font-family: 'DM Mono', monospace; color: #991B1B; padding: 2px 6px; background: #FEE2E2; border-radius: 4px; }
+  .confirm-input {
+    width: 100%; height: 46px;
+    padding: 0 16px;
+    border: 2px solid #FECACA;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0A0F1A;
+    letter-spacing: 0.04em;
+  }
+  .confirm-input:focus { outline: none; border-color: #DC2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); }
+  .confirm-input::placeholder { color: #CBD5E1; font-weight: 500; }
+
+  .dialog-foot { padding: 18px 32px; background: #FAFBFC; border-top: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+
+  /* ═════════════════════════════════════════════ */
+  /* Closed Summary variant */
+  .monitor-hero.closed::before { background: #94A3B8; }
+  .badge-closed { background: #E2E8F0; color: #475569; }
+
+  .closed-timer {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+  }
+  .closed-timer .big-timer-label { color: #475569; }
+  .closed-timer .big-timer-value { color: #334155; font-size: 18px; }
+
+  .session-summary-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 24px 26px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(10, 15, 26, 0.04);
+  }
+  .summary-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .summary-title-wrap { display: flex; align-items: center; gap: 10px; }
+  .summary-icon { width: 36px; height: 36px; border-radius: 10px; background: #EFF6FF; color: #1E3A8A; display: flex; align-items: center; justify-content: center; }
+  .summary-icon svg { width: 18px; height: 18px; stroke-width: 2; }
+  .summary-title { font-size: 17px; font-weight: 700; color: #0A0F1A; letter-spacing: -0.01em; }
+  .summary-closed-at { font-size: 13px; color: #475569; font-weight: 500; }
+  .summary-closed-at strong { color: #0A0F1A; font-weight: 700; font-family: 'DM Mono', monospace; }
+
+  .summary-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .summary-stat {
+    padding: 16px 18px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+  }
+  .summary-stat-label { font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .summary-stat-value { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 700; color: #0A0F1A; line-height: 1; letter-spacing: -0.02em; }
+  .summary-stat-value.green { color: #1A3829; }
+  .summary-stat-value.red { color: #991B1B; }
+  .summary-stat-sub { font-size: 11px; color: #475569; font-weight: 500; margin-top: 6px; }
+
+  /* Action bar for closed state */
+  .closed-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 1 — Monitor Hub</h2>
+<p class="note">Card grid of currently LIVE exams. Each card: red left accent, status + type + level badges, title, red urgent time-remaining strip, 4 mini-stats (active count + submitted + progress + started), red Monitor button.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/monitor</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Live Monitor</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page-header">
+          <div>
+            <div class="h1">Live Monitor</div>
+            <div class="h1-meta"><span class="live-dot-h"></span><strong>3</strong> exams running · <strong>48</strong> students active</div>
+          </div>
+        </div>
+
+        <div class="hub-grid">
+
+          <!-- Card 1 -->
+          <div class="hub-card">
+            <div class="hub-card-top">
+              <div class="hub-card-badges">
+                <span class="badge badge-live">Live</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span>
+              </div>
+            </div>
+            <div class="hub-card-title">Q3 Mental Arithmetic</div>
+
+            <div class="hub-timer">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span class="hub-timer-label">Time Remaining</span>
+              <span class="hub-timer-value">14:32</span>
+            </div>
+
+            <div class="hub-stats">
+              <div class="hub-stat">
+                <div class="hub-stat-label">Active</div>
+                <div class="hub-stat-value red"><span class="active-dot"></span>22</div>
+              </div>
+              <div class="hub-stat">
+                <div class="hub-stat-label">Submitted</div>
+                <div class="hub-stat-value">8 / 24</div>
+              </div>
+            </div>
+
+            <button class="monitor-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Monitor Session</button>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="hub-card">
+            <div class="hub-card-top">
+              <div class="hub-card-badges">
+                <span class="badge badge-live">Live</span>
+                <span class="badge badge-test">Test</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 2</span>
+              </div>
+            </div>
+            <div class="hub-card-title">Flash Anzan — Level 2</div>
+
+            <div class="hub-timer">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span class="hub-timer-label">Time Remaining</span>
+              <span class="hub-timer-value">08:14</span>
+            </div>
+
+            <div class="hub-stats">
+              <div class="hub-stat">
+                <div class="hub-stat-label">Active</div>
+                <div class="hub-stat-value red"><span class="active-dot"></span>18</div>
+              </div>
+              <div class="hub-stat">
+                <div class="hub-stat-label">Submitted</div>
+                <div class="hub-stat-value">12 / 30</div>
+              </div>
+            </div>
+
+            <button class="monitor-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Monitor Session</button>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="hub-card">
+            <div class="hub-card-top">
+              <div class="hub-card-badges">
+                <span class="badge badge-live">Live</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 1</span>
+              </div>
+            </div>
+            <div class="hub-card-title">Midterm Arithmetic</div>
+
+            <div class="hub-timer">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span class="hub-timer-label">Time Remaining</span>
+              <span class="hub-timer-value">31:47</span>
+            </div>
+
+            <div class="hub-stats">
+              <div class="hub-stat">
+                <div class="hub-stat-label">Active</div>
+                <div class="hub-stat-value red"><span class="active-dot"></span>8</div>
+              </div>
+              <div class="hub-stat">
+                <div class="hub-stat-label">Submitted</div>
+                <div class="hub-stat-value">0 / 12</div>
+              </div>
+            </div>
+
+            <button class="monitor-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Monitor Session</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 2 — Live Monitor Detail (during exam)</h2>
+<p class="note">Click into one exam. Hero card with 4px red accent + title + meta + BIG red countdown + Force Close button + 4 KPI mini-cards (In Progress / Submitted / Disconnected / Waiting). Below: search + realtime pill + 4-column student table with live status badges and progress bars.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/monitor/q3-mental-arithmetic</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><a>Live Monitor</a><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Q3 Mental Arithmetic</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+
+        <div class="back-link"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back to Live Monitor</div>
+
+        <!-- Hero card with KPIs -->
+        <div class="monitor-hero">
+          <div class="hero-top">
+            <div class="hero-title-wrap">
+              <div class="hero-label">Monitoring Live Session</div>
+              <div class="hero-title-row">
+                <div class="hero-title">Q3 Mental Arithmetic</div>
+                <span class="badge badge-live">Live</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span>
+              </div>
+              <div class="hero-meta">
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>30 min total</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>20 questions</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Started at 2:15 PM</span>
+              </div>
+            </div>
+            <div class="hero-right">
+              <div class="big-timer">
+                <div class="big-timer-label">Time Remaining</div>
+                <div class="big-timer-value">14:32</div>
+              </div>
+              <button class="btn btn-danger-outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Force Close Exam</button>
+            </div>
+          </div>
+
+          <div class="hero-kpi-row">
+            <div class="hero-kpi in-progress">
+              <div class="hero-kpi-label">In Progress</div>
+              <div class="hero-kpi-value">18</div>
+            </div>
+            <div class="hero-kpi submitted">
+              <div class="hero-kpi-label">Submitted</div>
+              <div class="hero-kpi-value">4</div>
+            </div>
+            <div class="hero-kpi disconnected">
+              <div class="hero-kpi-label">Disconnected</div>
+              <div class="hero-kpi-value">1</div>
+            </div>
+            <div class="hero-kpi waiting">
+              <div class="hero-kpi-label">Waiting</div>
+              <div class="hero-kpi-value">1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter strip -->
+        <div class="filter-strip">
+          <div class="search-wrap">
+            <svg class="search-icon-abs" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" placeholder="Search by name or roll number…">
+          </div>
+          <div class="realtime-pill">Live Updating</div>
+        </div>
+
+        <!-- Student table -->
+        <div class="student-table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th class="status-col">Status</th>
+                <th class="progress-col">Progress</th>
+                <th class="actions-col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">AS</div><div class="student-info"><div class="student-name">Aditi Sharma</div><div class="student-roll">MS-L3-001</div></div></div></td>
+                <td><span class="status-badge in-progress">In Progress</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div><div class="progress-text">15 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">View Profile<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">RV</div><div class="student-info"><div class="student-name">Rahul Verma</div><div class="student-roll">MS-L3-002</div></div></div></td>
+                <td><span class="status-badge submitted">Submitted</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div><div class="progress-text">20 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">View Profile<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">PP</div><div class="student-info"><div class="student-name">Priya Patel</div><div class="student-roll">MS-L3-003</div></div></div></td>
+                <td><span class="status-badge in-progress">In Progress</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div><div class="progress-text">12 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">View Profile<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">AS</div><div class="student-info"><div class="student-name">Arjun Singh</div><div class="student-roll">MS-L3-004</div></div></div></td>
+                <td><span class="status-badge disconnected">Disconnected</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:35%"></div></div><div class="progress-text">7 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">View Profile<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">SI</div><div class="student-info"><div class="student-name">Sneha Iyer</div><div class="student-roll">MS-L3-005</div></div></div></td>
+                <td><span class="status-badge submitted">Submitted</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div><div class="progress-text">20 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">View Profile<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">KM</div><div class="student-info"><div class="student-name">Kabir Mehta</div><div class="student-roll">MS-L3-006</div></div></div></td>
+                <td><span class="status-badge waiting">Waiting</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div><div class="progress-text">0 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">View Profile<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 3 — Force Close Dialog (type-to-confirm)</h2>
+<p class="note">Red-topped destructive dialog. Warning icon, scary copy, impact box showing real counts, and a type-to-confirm input. Force Close button is disabled until admin types "CLOSE" exactly.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: Force Close Dialog over /admin/monitor/q3-mental-arithmetic</div>
+  <div class="dialog-stage">
+
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <div class="dialog-icon-big">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="dialog-title">Force Close Exam?</div>
+        <div class="dialog-desc">This will immediately end <strong>Q3 Mental Arithmetic</strong> for all active students. Students who haven't submitted yet will <strong>lose any in-progress answers</strong>. This action cannot be undone.</div>
+      </div>
+
+      <div class="dialog-body">
+
+        <!-- Impact box -->
+        <div class="impact-box">
+          <div class="impact-title">Impact Summary</div>
+          <div class="impact-row">
+            <div class="impact-label">Students currently taking the exam</div>
+            <div class="impact-value red">18</div>
+          </div>
+          <div class="impact-row">
+            <div class="impact-label">Already submitted</div>
+            <div class="impact-value">4</div>
+          </div>
+          <div class="impact-row">
+            <div class="impact-label">Will be force-closed mid-answer</div>
+            <div class="impact-value red">18</div>
+          </div>
+        </div>
+
+        <!-- Confirm input -->
+        <div class="confirm-input-wrap">
+          <label class="confirm-label">Type <strong>CLOSE</strong> to confirm</label>
+          <input class="confirm-input" placeholder="CLOSE">
+        </div>
+      </div>
+
+      <div class="dialog-foot">
+        <button class="btn btn-outline">Cancel</button>
+        <button class="btn btn-danger" style="opacity:0.5;cursor:not-allowed"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Force Close Exam</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Screen 4 — Exam Closed Summary</h2>
+<p class="note">Same page, different state after force-close or timer expiry. Gray CLOSED badge, timer replaced with "Ended at" label, Force Close button replaced with "View in Results →". Below the hero: a Session Summary card with 4 final stats. Student table is frozen (no realtime pill, no animations). Action row at bottom with Export + View Results.</p>
+
+<div class="frame">
+  <div class="frame-header">Preview: /admin/monitor/q3-mental-arithmetic (post-close)</div>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="logo-bar">
+        <div class="logo-mark"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 8 V16 L12 22 L21 16 V8 Z"/><path d="M12 22 V14"/><path d="M12 14 L3 8"/><path d="M12 14 L21 8"/></svg></div>
+        <div class="logo-text">MINDSPARK</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Levels</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="9" y="2" width="6" height="4" rx="2"/></svg>Assessments</div>
+        <div class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>Live Monitor</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</div>
+        <div class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>Settings</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card"><div class="user-avatar">AP</div><div class="user-info"><div class="user-name">Alexander Pierce</div><div class="user-role">Administrator</div></div></div>
+        <button class="logout-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="topbar">
+        <div class="crumbs"><span>Admin</span><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><a>Live Monitor</a><svg width="16" height="16" fill="none" stroke="#94A3B8" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><strong>Q3 Mental Arithmetic</strong></div>
+        <div class="topbar-right">
+          <div class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></div>
+          <div class="divider-v"></div>
+          <div class="top-avatar">AP</div>
+        </div>
+      </div>
+
+      <div class="main">
+
+        <div class="back-link"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back to Live Monitor</div>
+
+        <!-- Hero (closed variant — gray accent, closed badge, grey timer, View in Results button) -->
+        <div class="monitor-hero closed">
+          <div class="hero-top">
+            <div class="hero-title-wrap">
+              <div class="hero-label">Session Complete</div>
+              <div class="hero-title-row">
+                <div class="hero-title">Q3 Mental Arithmetic</div>
+                <span class="badge badge-closed">Closed</span>
+                <span class="badge badge-exam">Exam</span>
+                <span class="level-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>Level 3</span>
+              </div>
+              <div class="hero-meta">
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>30 min total</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>20 questions</span>
+                <span class="sep">·</span>
+                <span class="item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Started 2:15 PM</span>
+              </div>
+            </div>
+            <div class="hero-right">
+              <div class="big-timer closed-timer">
+                <div class="big-timer-label">Ended At</div>
+                <div class="big-timer-value">2:47 PM</div>
+              </div>
+              <button class="btn btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>View in Results →</button>
+            </div>
+          </div>
+
+          <div class="hero-kpi-row">
+            <div class="hero-kpi in-progress">
+              <div class="hero-kpi-label">In Progress</div>
+              <div class="hero-kpi-value">0</div>
+            </div>
+            <div class="hero-kpi submitted">
+              <div class="hero-kpi-label">Submitted</div>
+              <div class="hero-kpi-value">22</div>
+            </div>
+            <div class="hero-kpi disconnected">
+              <div class="hero-kpi-label">Disconnected</div>
+              <div class="hero-kpi-value">1</div>
+            </div>
+            <div class="hero-kpi waiting">
+              <div class="hero-kpi-label">Waiting</div>
+              <div class="hero-kpi-value">1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session Summary card -->
+        <div class="session-summary-card">
+          <div class="summary-head">
+            <div class="summary-title-wrap">
+              <div class="summary-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+              <div class="summary-title">Session Summary</div>
+            </div>
+            <div class="summary-closed-at">Closed <strong>2:47 PM</strong> · Duration <strong>32 min</strong></div>
+          </div>
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <div class="summary-stat-label">Total Enrolled</div>
+              <div class="summary-stat-value">24</div>
+              <div class="summary-stat-sub">students in Level 3</div>
+            </div>
+            <div class="summary-stat">
+              <div class="summary-stat-label">Submitted</div>
+              <div class="summary-stat-value green">22</div>
+              <div class="summary-stat-sub">91.7% completion</div>
+            </div>
+            <div class="summary-stat">
+              <div class="summary-stat-label">Incomplete</div>
+              <div class="summary-stat-value red">2</div>
+              <div class="summary-stat-sub">1 disconnected · 1 no-show</div>
+            </div>
+            <div class="summary-stat">
+              <div class="summary-stat-label">Avg Progress</div>
+              <div class="summary-stat-value">91%</div>
+              <div class="summary-stat-sub">across all attempts</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student table frozen (no filter strip, no realtime pill) -->
+        <div class="student-table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th class="status-col">Final Status</th>
+                <th class="progress-col">Progress</th>
+                <th class="actions-col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">AS</div><div class="student-info"><div class="student-name">Aditi Sharma</div><div class="student-roll">MS-L3-001</div></div></div></td>
+                <td><span class="status-badge submitted">Submitted</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div><div class="progress-text">20 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">Answer Sheet<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">RV</div><div class="student-info"><div class="student-name">Rahul Verma</div><div class="student-roll">MS-L3-002</div></div></div></td>
+                <td><span class="status-badge submitted">Submitted</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div><div class="progress-text">20 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">Answer Sheet<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">AS</div><div class="student-info"><div class="student-name">Arjun Singh</div><div class="student-roll">MS-L3-004</div></div></div></td>
+                <td><span class="status-badge disconnected">Disconnected</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:35%"></div></div><div class="progress-text">7 / 20</div></div></td>
+                <td style="text-align:right"><a class="view-profile-link">Answer Sheet<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="student-avatar">KM</div><div class="student-info"><div class="student-name">Kabir Mehta</div><div class="student-roll">MS-L3-006</div></div></div></td>
+                <td><span class="status-badge waiting">No-show</span></td>
+                <td><div class="progress-cell"><div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div><div class="progress-text">0 / 20</div></div></td>
+                <td style="text-align:right" class="muted">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="closed-actions">
+          <button class="btn btn-outline"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export Summary</button>
+          <button class="btn btn-primary btn-lg"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Go to Results →</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
