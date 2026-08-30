@@ -113,4 +113,48 @@ describe('POST /api/submissions/offline-sync', () => {
       })
     );
   });
+
+  it('allows multiple offline-sync calls without rejecting as ALREADY_SUBMITTED', async () => {
+    // Mock the submission to look like it has answers already, but completed_at is null
+    (adminSupabase.from as any).mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return { select: vi.fn().mockReturnThis(), eq: vi.fn().mockReturnThis(), single: vi.fn().mockResolvedValue({ data: { institution_id: 'inst-123' } }) };
+      }
+      if (table === 'submissions') {
+        // completed_at is null, meaning session is active. Even if it was set, offline-sync doesn't set it anymore.
+        // Actually, if it WAS set (e.g., teardown happened), offline-sync should reject.
+        // Wait, Task 1 was to remove session closing. We should test that a second sync while active works.
+        return { select: vi.fn().mockReturnThis(), eq: vi.fn().mockReturnThis(), update: vi.fn().mockReturnThis(), single: vi.fn().mockResolvedValue({ data: { id: 'sub-123', completed_at: null } }) };
+      }
+      if (table === 'offline_submissions_staging') {
+        return { insert: vi.fn().mockReturnThis(), select: vi.fn().mockReturnThis(), single: vi.fn().mockResolvedValue({ data: { id: 'staging-123' }, error: null }) };
+      }
+    });
+
+    const req1 = new NextRequest('http://localhost/api/submissions/offline-sync', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer fake-token' },
+      body: JSON.stringify({
+        session_id: '123e4567-e89b-12d3-a456-426614174000',
+        batch_timestamp: Date.now(),
+        answers: [{ question_id: '123e4567-e89b-12d3-a456-426614174000', selected_option: 'A', answered_at: Date.now(), idempotency_key: '123e4567-e89b-12d3-a456-426614174000', time_spent_ms: 1000 }]
+      })
+    });
+
+    const res1 = await POST(req1);
+    expect(res1.status).toBe(200);
+
+    const req2 = new NextRequest('http://localhost/api/submissions/offline-sync', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer fake-token' },
+      body: JSON.stringify({
+        session_id: '123e4567-e89b-12d3-a456-426614174000',
+        batch_timestamp: Date.now(),
+        answers: [{ question_id: '123e4567-e89b-12d3-a456-426614174001', selected_option: 'B', answered_at: Date.now(), idempotency_key: '123e4567-e89b-12d3-a456-426614174001', time_spent_ms: 2000 }]
+      })
+    });
+
+    const res2 = await POST(req2);
+    expect(res2.status).toBe(200); // Should not be 409 ALREADY_SUBMITTED
+  });
 });

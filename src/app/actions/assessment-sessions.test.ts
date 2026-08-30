@@ -114,6 +114,23 @@ describe('assessment-sessions server actions', () => {
       }); 
       expect(result.ok).toBe(true);
       expect((result as any).data.submitted).toBe(true);
+
+      // Verify that the finalization path sets closed_at exactly once
+      expect(adminSupabase.from).toHaveBeenCalledWith('assessment_sessions');
+      const mockUpdate = (adminSupabase.from('assessment_sessions') as any).update;
+      expect(mockUpdate).toHaveBeenCalledTimes(1);
+      expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
+        closed_at: expect.any(String)
+      }));
+
+      // Verify that anti_cheat_flags is set exactly once on submissions
+      const mockUpsert = (adminSupabase.from('submissions') as any).upsert;
+      const submissionsUpsertCall = mockUpsert.mock.calls.find((call: any[]) => call[0] && call[0].anti_cheat_flags);
+      expect(submissionsUpsertCall).toBeDefined();
+      expect(submissionsUpsertCall[0]).toEqual(expect.objectContaining({
+        completed_at: expect.any(String),
+        anti_cheat_flags: expect.any(Array)
+      }));
     });
   }); 
 

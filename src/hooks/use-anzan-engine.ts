@@ -170,6 +170,7 @@ export function useAnzanEngine({
     } else {
       // All questions done — enter SUBMITTED
       setPhase('SUBMITTED');
+      onSubmitRef.current();
     }
   }, [currentQuestionIndex, totalQuestions, incrementQuestion, setPhase]);
 

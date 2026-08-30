@@ -29,13 +29,6 @@ const BodySchema = z.object({
   session_id: z.string().uuid(),
   answers: z.array(AnswerSchema),
   batch_timestamp: z.number(),
-  tab_switches: z.number().int().nonnegative().optional(),
-  clock_guard_submission: z.object({
-    seal: z.string(),
-    server_timestamp: z.number(),
-    performance_elapsed: z.number(),
-    wall_elapsed: z.number(),
-  }).optional(),
 });
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -82,7 +75,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'VALIDATION_ERROR' }, { status: 422 });
     }
 
-    const { session_id, answers, batch_timestamp, tab_switches, clock_guard_submission } = parsed.data;
+    const { session_id, answers, batch_timestamp } = parsed.data;
 
     // Compute HMAC server-side — secret never touches the client
     const hmac_timestamp = createHmac('sha256', HMAC_SECRET)
@@ -172,56 +165,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       }, { status: 200 });
     }
 
-    // 7. Update anti_cheat_flags and close session if successful
-    if (resultObj?.status === 'success' || resultObj?.status === 'migrated') {
-      let antiCheatFlags: string[] = [];
-      let finalSeal = clock_guard_submission?.seal ?? null;
-      
-      if (clock_guard_submission) {
-        const { validateClockGuard } = await import('@/lib/anticheat/clock-guard');
-        
-        // Fetch paper duration to compute real clock-guard HMAC seal
-        const { data: session } = await adminSupabase
-          .from('assessment_sessions')
-          .select('paper_id')
-          .eq('id', session_id)
-          .single();
-          
-        if (session) {
-          const { data: paperRow } = await adminSupabase
-            .from('exam_papers')
-            .select('duration_minutes')
-            .eq('id', session.paper_id)
-            .maybeSingle();
-            
-          const durationMs = ((paperRow?.duration_minutes as number | null) ?? 60) * 60_000;
-          
-          const clockResult = validateClockGuard(
-            clock_guard_submission,
-            session.paper_id,
-            user.id,
-            durationMs,
-            Date.now()
-          );
-          antiCheatFlags = clockResult.flags;
-        }
-      } else {
-        antiCheatFlags.push('MISSING_CLOCK_GUARD_PAYLOAD');
-      }
-      
-      const now = new Date().toISOString();
-      
-      await adminSupabase.from('submissions').update({
-        completed_at: now,
-        completion_seal: finalSeal,
-        anti_cheat_flags: antiCheatFlags,
-        tab_switches: tab_switches ?? 0
-      }).eq('id', submission.id);
-      
-      await adminSupabase.from('assessment_sessions')
-        .update({ closed_at: now })
-        .eq('id', session_id);
-    }
 
     return NextResponse.json({
       ok: true,

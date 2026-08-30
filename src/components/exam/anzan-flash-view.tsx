@@ -11,6 +11,7 @@ import { CompletionCard } from '@/components/exam/completion-card';
 import { useExamSessionStore } from '@/stores/exam-session-store';
 import { useAnzanEngine } from '@/hooks/use-anzan-engine';
 import { TickerMode } from '@/components/a11y/a11y-ticker-mode';
+import { submitExam } from '@/app/actions/assessment-sessions';
 
 interface AnzanQuestion {
   id: string;
@@ -84,8 +85,26 @@ export function AnzanFlashView({
     anzanConfig,
     serverTimestamp,
     completionSeal,
-    onSubmitComplete: () => {
-      // Submission complete — teardown handled by hook
+    onSubmitComplete: async () => {
+      // Submission complete — fire the finalization action
+      const state = useExamSessionStore.getState();
+      const clock_guard_submission = (state.serverTimestamp && state.completionSeal && state.initWallTime) ? {
+        seal: state.completionSeal,
+        server_timestamp: state.serverTimestamp,
+        performance_elapsed: Math.round(performance.now()),
+        wall_elapsed: Math.round(Date.now() - state.initWallTime)
+      } : undefined;
+
+      try {
+        await submitExam({
+          session_id: sessionId,
+          final_answers_snapshot: [], // Answers synced via offline-sync engine
+          tab_switches: state.tabSwitchCount,
+          ...(clock_guard_submission ? { clock_guard_submission } : {})
+        });
+      } catch (err) {
+        console.error('Finalization failed:', err);
+      }
     },
     onError: (err) => setError(err),
   });
