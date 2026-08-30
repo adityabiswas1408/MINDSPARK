@@ -26,22 +26,15 @@ export async function publishResult(input: PublishResultInput): Promise<ActionRe
   if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
   const validData = parsed.data;
 
-  const supabase = await createClient();
-
-  // Validate session exists
-  const { data: session } = await supabase
+  // Validate session exists and belongs to caller's institution
+  const { data: session } = await adminSupabase
     .from('submissions')
-    .select('id, student_id, completed_at, paper_id, score, grade')
+    .select('id, student_id, completed_at, paper_id, score, grade, exam_papers!inner(institution_id)')
     .eq('id', validData.session_id)
-    .single();
+    .maybeSingle();
 
-  if (!session) return { error: 'NOT_FOUND', message: 'Session not found' };
+  if (!session || (session.exam_papers as any).institution_id !== institutionId) return { error: 'NOT_FOUND', message: 'Session not found' };
   if (!session.completed_at) return { error: 'SESSION_NOT_COMPLETE', message: 'Cannot publish incomplete session' };
-
-  if (role === 'teacher') {
-    // Relying on RLS for now to ensure visibility. If teacher tries to publish an outside student,
-    // they wouldn't have effectively bypassed RLS here thanks to the regular client fetch above.
-  }
 
   if (session.score === null || session.grade === null) {
     return { error: 'VALIDATION_ERROR', message: 'Must calculate results before publishing.' };
@@ -77,15 +70,13 @@ export async function unpublishResult(input: UnpublishResultInput): Promise<Acti
   if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
   const validData = parsed.data;
 
-  const supabase = await createClient();
-
-  const { data: session } = await supabase
+  const { data: session } = await adminSupabase
     .from('submissions')
-    .select('id')
+    .select('id, exam_papers!inner(institution_id)')
     .eq('id', validData.session_id)
-    .single();
+    .maybeSingle();
 
-  if (!session) return { error: 'NOT_FOUND', message: 'Session not found' };
+  if (!session || (session.exam_papers as any).institution_id !== institutionId) return { error: 'NOT_FOUND', message: 'Session not found' };
 
   await adminSupabase.from('submissions').update({ result_published_at: null }).eq('id', validData.session_id);
 
@@ -155,12 +146,24 @@ export async function publishResults(session_ids: string[]): Promise<ActionResul
 
   if (!session_ids.length) return { ok: true, data: { published_count: 0 } };
 
+  // Filter session_ids to only those belonging to caller's institution
+  const { data: validSessions } = await adminSupabase
+    .from('submissions')
+    .select('id, exam_papers!inner(institution_id)')
+    .in('id', session_ids)
+    .eq('exam_papers.institution_id', institutionId);
+
+  if (!validSessions || validSessions.length === 0) {
+    return { ok: true, data: { published_count: 0 } };
+  }
+
+  const validIds = validSessions.map(s => s.id);
   const now = new Date().toISOString();
 
   const { error } = await adminSupabase
     .from('submissions')
     .update({ result_published_at: now })
-    .in('id', session_ids);
+    .in('id', validIds);
 
   if (error) return { error: 'INTERNAL_ERROR', message: 'Failed to bulk publish results' };
 
@@ -168,12 +171,119 @@ export async function publishResults(session_ids: string[]): Promise<ActionResul
     user_id: userId,
     institution_id: institutionId,
     entity_type: 'submissions',
-    entity_id: session_ids[0],
+    entity_id: validIds[0], // just referencing the first one
     action_type: 'BULK_PUBLISH_RESULTS',
-    metadata: { count: session_ids.length },
+    metadata: { count: validIds.length },
   });
 
-  return { ok: true, data: { published_count: session_ids.length } };
+  return { ok: true, data: { published_count: validIds.length } };
+}
+
+const PublishAllPaperResultsSchema = z.object({
+  paper_id: z.string().uuid()
+});
+export type PublishAllPaperResultsInput = z.infer<typeof PublishAllPaperResultsSchema>;
+
+export async function publishAllPaperResults(input: PublishAllPaperResultsInput): Promise<ActionResult<{ published: true, count: number }>> {
+  const authResult = await requireRole(['admin', 'teacher']);
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
+  const { userId, institutionId } = authResult;
+
+  const parsed = PublishAllPaperResultsSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  
+  const { data: paper } = await adminSupabase
+    .from('exam_papers')
+    .select('id, status, institution_id')
+    .eq('id', parsed.data.paper_id)
+    .maybeSingle();
+    
+  if (!paper || paper.institution_id !== institutionId) return { error: 'NOT_FOUND', message: 'Paper not found' };
+  if (paper.status !== 'CLOSED') return { error: 'ASSESSMENT_NOT_CLOSED', message: 'Must be closed before publishing all results' };
+
+  const now = new Date().toISOString();
+
+  // Update submissions
+  const { data: updatedSubs, error: subsErr } = await adminSupabase
+    .from('submissions')
+    .update({ result_published_at: now })
+    .eq('paper_id', parsed.data.paper_id)
+    .not('completed_at', 'is', null)
+    .select('id');
+    
+  if (subsErr) return { error: 'INTERNAL_ERROR', message: 'Failed to publish submissions' };
+
+  // Update exam_papers
+  const { error: paperErr } = await adminSupabase
+    .from('exam_papers')
+    .update({ result_published_at: now })
+    .eq('id', parsed.data.paper_id);
+
+  if (paperErr) return { error: 'INTERNAL_ERROR', message: 'Failed to update paper status' };
+
+  await adminSupabase.from('activity_logs').insert({
+    user_id: userId,
+    institution_id: institutionId,
+    entity_type: 'exam_papers',
+    entity_id: parsed.data.paper_id,
+    action_type: 'PUBLISH_ALL_PAPER_RESULTS',
+    metadata: { count: updatedSubs?.length ?? 0 }
+  });
+
+  revalidatePath(`/admin/assessments/${parsed.data.paper_id}`);
+  return { ok: true, data: { published: true, count: updatedSubs?.length ?? 0 } };
+}
+
+const UnpublishAllPaperResultsSchema = z.object({
+  paper_id: z.string().uuid(),
+  reason: z.string().min(1),
+});
+export type UnpublishAllPaperResultsInput = z.infer<typeof UnpublishAllPaperResultsSchema>;
+
+export async function unpublishAllPaperResults(input: UnpublishAllPaperResultsInput): Promise<ActionResult<{ unpublished: true, count: number }>> {
+  const authResult = await requireRole('admin');
+  if ('error' in authResult) return { error: authResult.error as unknown as 'UNAUTHORIZED', message: authResult.message };
+  const { userId, institutionId } = authResult;
+
+  const parsed = UnpublishAllPaperResultsSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  
+  const { data: paper } = await adminSupabase
+    .from('exam_papers')
+    .select('id, institution_id')
+    .eq('id', parsed.data.paper_id)
+    .maybeSingle();
+    
+  if (!paper || paper.institution_id !== institutionId) return { error: 'NOT_FOUND', message: 'Paper not found' };
+
+  // Update submissions
+  const { data: updatedSubs, error: subsErr } = await adminSupabase
+    .from('submissions')
+    .update({ result_published_at: null })
+    .eq('paper_id', parsed.data.paper_id)
+    .select('id');
+    
+  if (subsErr) return { error: 'INTERNAL_ERROR', message: 'Failed to unpublish submissions' };
+
+  // Update exam_papers
+  const { error: paperErr } = await adminSupabase
+    .from('exam_papers')
+    .update({ result_published_at: null })
+    .eq('id', parsed.data.paper_id);
+
+  if (paperErr) return { error: 'INTERNAL_ERROR', message: 'Failed to update paper status' };
+
+  await adminSupabase.from('activity_logs').insert({
+    user_id: userId,
+    institution_id: institutionId,
+    entity_type: 'exam_papers',
+    entity_id: parsed.data.paper_id,
+    action_type: 'UNPUBLISH_ALL_PAPER_RESULTS',
+    metadata: { reason: parsed.data.reason, count: updatedSubs?.length ?? 0 }
+  });
+
+  revalidatePath(`/admin/assessments/${parsed.data.paper_id}`);
+  return { ok: true, data: { unpublished: true, count: updatedSubs?.length ?? 0 } };
 }
 
 export async function releaseAnswerKey(

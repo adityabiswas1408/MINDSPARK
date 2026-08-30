@@ -123,13 +123,10 @@ describe('results server actions', () => {
   describe('publishResult', () => {
     it('successfully publishes result', async () => {
       requireRoleMock.mockResolvedValue({ userId: validUserId, institutionId: validInstId, role: 'admin' });
-      const sessionMock = { id: '123e4567-e89b-12d3-a456-426614174000', completed_at: '2025', score: 10, grade: 'A' };
-      (createClient as Mock).mockResolvedValue({ from: vi.fn().mockReturnValue(buildSelectChain(sessionMock)) });
-      fromMock.mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      const sessionMock = { id: '123e4567-e89b-12d3-a456-426614174000', completed_at: '2025', score: 10, grade: 'A', exam_papers: { institution_id: validInstId } };
+      fromMock.mockReturnValueOnce(buildSelectChain(sessionMock)).mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
       
       const result = await publishResult({ session_id: '123e4567-e89b-12d3-a456-426614174000' });
-      if (!(result as any).ok) console.log('PUB FAIL:', result);
-      if (!(result as any).ok) console.log('UNPUB FAIL:', result);
       expect((result as any).ok).toBe(true);
     });
   });
@@ -137,9 +134,8 @@ describe('results server actions', () => {
   describe('unpublishResult', () => {
     it('successfully unpublishes result', async () => {
       requireRoleMock.mockResolvedValue({ userId: validUserId, institutionId: validInstId, role: 'admin' });
-      const sessionMock = { id: '123e4567-e89b-12d3-a456-426614174000' };
-      (createClient as Mock).mockResolvedValue({ from: vi.fn().mockReturnValue(buildSelectChain(sessionMock)) });
-      fromMock.mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      const sessionMock = { id: '123e4567-e89b-12d3-a456-426614174000', exam_papers: { institution_id: validInstId } };
+      fromMock.mockReturnValueOnce(buildSelectChain(sessionMock)).mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
       
       const result = await unpublishResult({ session_id: '123e4567-e89b-12d3-a456-426614174000', reason: 'test' });
       expect((result as any).ok).toBe(true);
@@ -163,7 +159,17 @@ describe('results server actions', () => {
   describe('publishResults', () => {
     it('successfully publishes multiple results', async () => {
       requireRoleMock.mockResolvedValue({ userId: validUserId, institutionId: validInstId, role: 'admin' });
-      fromMock.mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      
+      const sessionsMock = [
+        { id: '123e4567-e89b-12d3-a456-426614174000', exam_papers: { institution_id: validInstId } },
+        { id: '123e4567-e89b-12d3-a456-426614174001', exam_papers: { institution_id: validInstId } }
+      ];
+      const selectChain = buildSelectChain(sessionsMock);
+      // For bulk, it uses .in() after .eq(), so we need to ensure the select chain returns the array in data.
+      selectChain.in = vi.fn().mockReturnValue(selectChain);
+      
+      fromMock.mockReturnValueOnce(selectChain).mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      
       const result = await publishResults(['123e4567-e89b-12d3-a456-426614174000', '123e4567-e89b-12d3-a456-426614174001']);
       expect((result as any).ok).toBe(true);
     });

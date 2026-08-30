@@ -21,7 +21,7 @@ export default async function AdminResultsPage({ searchParams }: PageProps) {
 
   const { data: papersData } = await supabase
     .from('exam_papers')
-    .select('id, title')
+    .select('id, title, result_published_at')
     .eq('institution_id', institutionId)
     .eq('status', 'CLOSED')
     .order('created_at', { ascending: false });
@@ -29,6 +29,7 @@ export default async function AdminResultsPage({ searchParams }: PageProps) {
   const papers: Paper[] = (papersData ?? []).map((p) => ({
     id: p.id as string,
     title: p.title as string,
+    result_published_at: p.result_published_at as string | null,
   }));
 
   let submissions: SubmissionRow[] = [];

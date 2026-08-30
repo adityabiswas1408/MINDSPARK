@@ -18,7 +18,7 @@ import {
   type ColumnDef,
   type RowSelectionState,
 } from '@tanstack/react-table';
-import { publishResult, publishResults, reEvaluateResults } from '@/app/actions/results';
+import { publishResult, publishResults, reEvaluateResults, publishAllPaperResults, unpublishAllPaperResults } from '@/app/actions/results';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, X } from 'lucide-react';
 
@@ -46,6 +46,7 @@ export interface SubmissionRow {
 export interface Paper {
   id: string;
   title: string;
+  result_published_at?: string | null;
 }
 
 interface ResultsClientProps {
@@ -72,6 +73,11 @@ export function ResultsClient({ papers, selectedPaperId, submissions }: ResultsC
   const graded = useMemo(
     () => submissions.filter((s) => s.grade !== null && s.percentage !== null),
     [submissions],
+  );
+
+  const selectedPaper = useMemo(
+    () => papers.find(p => p.id === selectedPaperId),
+    [papers, selectedPaperId]
   );
 
   const stats = useMemo(() => {
@@ -131,6 +137,22 @@ export function ResultsClient({ papers, selectedPaperId, submissions }: ResultsC
         assessment_id: selectedPaperId,
         reason: 'Manual re-evaluation from admin panel',
       });
+      router.refresh();
+    });
+  }
+
+  function handlePublishAll() {
+    if (!selectedPaperId) return;
+    startTransition(async () => {
+      await publishAllPaperResults({ paper_id: selectedPaperId });
+      router.refresh();
+    });
+  }
+
+  function handleUnpublishAll() {
+    if (!selectedPaperId) return;
+    startTransition(async () => {
+      await unpublishAllPaperResults({ paper_id: selectedPaperId, reason: 'Admin unpublished all' });
       router.refresh();
     });
   }
@@ -317,7 +339,7 @@ export function ResultsClient({ papers, selectedPaperId, submissions }: ResultsC
                 {stats.dpmAvg.toFixed(1)}
               </span>
             </div>
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -328,6 +350,26 @@ export function ResultsClient({ papers, selectedPaperId, submissions }: ResultsC
                 <RefreshCw className="h-3.5 w-3.5" />
                 Re-evaluate
               </Button>
+              {selectedPaper?.result_published_at ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={isPending}
+                  onClick={handleUnpublishAll}
+                  className="h-8 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                >
+                  Unpublish All
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  disabled={isPending}
+                  onClick={handlePublishAll}
+                  className="h-8 text-xs bg-green-800 hover:bg-green-700 text-white"
+                >
+                  Publish All
+                </Button>
+              )}
             </div>
           </div>
 
