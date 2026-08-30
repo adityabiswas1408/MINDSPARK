@@ -98,7 +98,7 @@ export function AnzanFlashView({
       try {
         await submitExam({
           session_id: sessionId,
-          final_answers_snapshot: [], // Answers synced via offline-sync engine
+          final_answers_snapshot: Object.values(state.answers), // Answers synced via offline-sync engine but passed here to close race condition
           tab_switches: state.tabSwitchCount,
           ...(clock_guard_submission ? { clock_guard_submission } : {})
         });
