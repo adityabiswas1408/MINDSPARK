@@ -7,7 +7,6 @@ import { z } from 'zod';
 
 const CreateLevelSchema = z.object({
   name: z.string().min(1),
-  sequence_order: z.number().int(),
 });
 export type CreateLevelInput = z.infer<typeof CreateLevelSchema>;
 
@@ -20,13 +19,43 @@ export async function createLevel(input: CreateLevelInput): Promise<ActionResult
   if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
   const validData = parsed.data;
 
-  const { data: level, error } = await adminSupabase.from('levels').insert({
-    institution_id: institutionId,
-    name: validData.name,
-    sequence_order: validData.sequence_order
-  }).select('id').single();
+  let retries = 0;
+  let level = null;
+  let lastError = null;
 
-  if (error || !level) return { error: 'INTERNAL_ERROR', message: 'Failed' };
+  while (retries < 5) {
+    const { data: maxSeqData } = await adminSupabase
+      .from('levels')
+      .select('sequence_order')
+      .eq('institution_id', institutionId)
+      .order('sequence_order', { ascending: false })
+      .limit(1);
+
+    const nextSequenceOrder = maxSeqData && maxSeqData.length > 0 ? maxSeqData[0].sequence_order + 1 : 1;
+
+    const { data, error } = await adminSupabase.from('levels').insert({
+      institution_id: institutionId,
+      name: validData.name,
+      sequence_order: nextSequenceOrder
+    }).select('id').single();
+
+    if (!error && data) {
+      level = data;
+      lastError = null;
+      break;
+    }
+
+    if (error.code === '23505') { // unique_violation
+      retries++;
+      await new Promise(r => setTimeout(r, Math.random() * 50));
+      continue;
+    }
+
+    lastError = error;
+    break;
+  }
+
+  if (lastError || !level) return { error: 'INTERNAL_ERROR', message: 'Failed' };
 
   await adminSupabase.from('activity_logs').insert({
     user_id: userId,

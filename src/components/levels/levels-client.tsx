@@ -17,10 +17,9 @@ export interface LevelItem {
 
 interface LevelsClientProps {
   levels: LevelItem[];
-  nextSequenceOrder: number;
 }
 
-export function LevelsClient({ levels: initialLevels, nextSequenceOrder }: LevelsClientProps) {
+export function LevelsClient({ levels: initialLevels }: LevelsClientProps) {
   const router = useRouter();
   const [levels, setLevels] = useState(initialLevels);
   const [, startTransition] = useTransition();
@@ -58,7 +57,7 @@ export function LevelsClient({ levels: initialLevels, nextSequenceOrder }: Level
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-green-800">Levels</h1>
-        <CreateLevelDialog nextSequenceOrder={nextSequenceOrder} />
+        <CreateLevelDialog />
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>

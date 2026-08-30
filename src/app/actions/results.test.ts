@@ -29,6 +29,7 @@ type SelectChain = {
   eq: Mock;
   single: Mock;
   maybeSingle: Mock;
+  in: Mock;
 };
 type UpdateChain = {
   update: Mock;
@@ -43,10 +44,12 @@ function buildSelectChain(row: { id: string } | null | any): SelectChain {
     eq: vi.fn(),
     single: vi.fn().mockResolvedValue({ data: row, error: null }),
     maybeSingle: vi.fn().mockResolvedValue({ data: row, error: null }),
+    in: vi.fn(),
   };
   chain.select.mockReturnValue(chain);
   chain.eq.mockReturnValue(chain);
-  return chain;
+  chain.in.mockReturnValue(chain);
+  return chain as SelectChain;
 }
 
 function buildUpdateChain(eqCount = 1): UpdateChain {

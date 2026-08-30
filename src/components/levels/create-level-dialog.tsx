@@ -11,11 +11,9 @@ import {
 } from '@/components/ui/dialog';
 import { PlusCircle } from 'lucide-react';
 
-interface CreateLevelDialogProps {
-  nextSequenceOrder: number;
-}
+interface CreateLevelDialogProps {}
 
-export function CreateLevelDialog({ nextSequenceOrder }: CreateLevelDialogProps) {
+export function CreateLevelDialog({}: CreateLevelDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
@@ -32,7 +30,6 @@ export function CreateLevelDialog({ nextSequenceOrder }: CreateLevelDialogProps)
     startTransition(async () => {
       const result = await createLevel({
         name: name.trim(),
-        sequence_order: nextSequenceOrder,
       });
       if (!result.ok) {
         setError(result.message ?? 'Failed to create level.');
@@ -67,9 +64,6 @@ export function CreateLevelDialog({ nextSequenceOrder }: CreateLevelDialogProps)
               autoFocus
             />
           </div>
-          <p className="text-xs text-slate-400">
-            Will be assigned sequence order: {nextSequenceOrder}
-          </p>
           {error && <p className="text-xs text-red-600">{error}</p>}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>

@@ -45,10 +45,7 @@ export default async function AdminLevelsPage() {
     enrolled_count: enrolledMap[l.id as string] ?? 0,
   }));
 
-  const maxSeq = levelItems.reduce((max, l) => Math.max(max, l.sequence_order), 0);
-  const nextSequenceOrder = maxSeq + 1;
-
   return (
-    <LevelsClient levels={levelItems} nextSequenceOrder={nextSequenceOrder} />
+    <LevelsClient levels={levelItems} />
   );
 }
