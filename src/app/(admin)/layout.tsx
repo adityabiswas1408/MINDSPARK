@@ -4,6 +4,10 @@ import { AdminSidebar } from '@/components/layout/admin-sidebar';
 import { TopHeader } from '@/components/layout/top-header';
 import { AdminClientProvider } from '@/components/layout/admin-client-provider';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 export default async function AdminLayout({
   children,
 }: Readonly<{

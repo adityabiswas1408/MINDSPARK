@@ -5,7 +5,8 @@
 ---
 
 ## 1. Stack & Versions
-- **Runtime & Framework:** Next.js `^15.0.0` (App Router), React `^19.0.0` (*Source: `package.json`*).
+- **Runtime & Framework:** Next.js `^16.3.2` (App Router, Turbopack default bundler), React `^19.0.0` (*Source: `package.json`*). Floor: Node 20.9+ / TypeScript 5.1+.
+- **Middleware:** `src/proxy.ts` acts as the edge proxy router, previously named `middleware.ts`.
 - **Styling:** Tailwind CSS `latest` (unpinned range in `package.json`, currently resolved to `tailwindcss@4.2.2` and `@tailwindcss/postcss@4.2.2`), `tw-animate-css` (*Source: `package.json`, `npm list`*).
 - **Backend / Database:** Supabase (`@supabase/ssr`, `@supabase/supabase-js`, PostgreSQL with 27 migrations in `supabase/migrations/`).
 - **Offline / Local DB:** Dexie `latest` (unpinned range in `package.json`, currently resolved to `dexie@4.3.0`) (*Source: `package.json`, `npm list`*).

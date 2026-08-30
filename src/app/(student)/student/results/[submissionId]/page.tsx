@@ -6,6 +6,10 @@ import { createClient } from '@/lib/supabase/server';
 import { ScoreFraction } from '@/components/results/score-fraction';
 import type { GradeLetter } from '@/components/results/grade-pill';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 type DetailRow = {
   id: string;
   score: number;

@@ -10,6 +10,10 @@ import {
 import type { GradeLetter } from '@/components/results/grade-pill';
 import { ResultsListClient } from './results-list-client';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 /**
  * Local row shape for the student results list page. Mirrors the
  * Supabase inner-join query below — kept colocated (not in a shared

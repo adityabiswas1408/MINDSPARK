@@ -38,12 +38,12 @@
     "isomorphic-dompurify": "^2.36.0",
     "lottie-react": "latest",
     "lucide-react": "^1.6.0",
-    "next": "^15.0.0",
+    "next": "16.3.2",
     "next-themes": "^0.4.6",
     "papaparse": "latest",
     "playwright": "^1.59.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "recharts": "latest",
     "sanitize-html": "^2.17.2",
     "shadcn": "^4.1.0",
@@ -55,21 +55,22 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@playwright/test": "latest",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "latest",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "latest",
     "@types/papaparse": "latest",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
     "@types/sanitize-html": "^2.16.1",
     "@vitejs/plugin-react": "latest",
     "@vitest/coverage-v8": "^4.1.2",
     "axe-playwright": "latest",
-    "eslint": "latest",
-    "eslint-config-next": "^15.0.0",
+    "eslint": "10.9.1",
+    "eslint-config-next": "16.3.2",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^29.0.1",
     "postcss": "latest",
     "supabase": "^2.83.0",
@@ -78,7 +79,7 @@
     "vitest": "latest"
   },
   "overrides": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5"
   }
 }

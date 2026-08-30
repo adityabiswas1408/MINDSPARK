@@ -1,3 +1,6 @@
+import { config } from 'dotenv';
+config({ path: '.env.local' });
+
 /**
  * Vitest global setup — mocks browser APIs that don't exist in jsdom
  * and provides test helpers for timing-critical code.

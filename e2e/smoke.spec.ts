@@ -7,6 +7,7 @@
  *   2. A student can authenticate with roll number + date of birth
  *   3. After login, the student lands on /student/dashboard
  *   4. The dashboard renders key structural elements (sidebar, heading)
+ *   5. The student can navigate to exams and start a live exam
  *
  * Credentials are read from environment variables — never hardcoded.
  * Set these in .env.test.local (not committed) for local runs:
@@ -98,6 +99,44 @@ test.describe('@smoke Student authentication and dashboard navigation', () => {
     // We check for any element with role="alert" or data-testid="login-error"
     const errorLocator = page.locator('[role="alert"], [data-testid="login-error"]');
     await expect(errorLocator).toBeVisible({ timeout: 5_000 });
+  });
+
+  // SM-06: Student can navigate to exam lobby and reach the exam screen
+  test('SM-06: student navigates to lobby and exam screen', async ({ page }) => {
+    await loginAsStudent(page, ROLL, DOB);
+    await expect(page).toHaveURL('/student/dashboard', { timeout: 10_000 });
+
+    // Navigate to Exams page
+    await page.goto('/student/exams');
+    await expect(page).toHaveURL(/\/student\/exams/);
+
+    // Wait for the exam cards to load
+    await page.waitForTimeout(1000);
+
+    // Find the first available exam and click it
+    const enterBtn = page.getByRole('link', { name: /Enter Examination Hall/i }).first();
+    const isLiveExam = await enterBtn.isVisible();
+
+    if (isLiveExam) {
+      await enterBtn.click();
+
+      // Verify navigation to lobby
+      await expect(page).toHaveURL(/\/student\/exams\/.*\/lobby/);
+
+      // Check consent box
+      await page.locator('input[type="checkbox"]').check();
+
+      // Start exam
+      await page.getByRole('button', { name: /Start Exam/i }).click();
+
+      // Verify navigation to active exam screen
+      await expect(page).toHaveURL(/\/student\/assessment\/.*/);
+      
+      // Verify some UI element of the exam is visible
+      await expect(page.locator('text="Time Left"').first()).toBeVisible({ timeout: 10000 });
+    } else {
+      console.log('No live exams available for testing.');
+    }
   });
 
 });

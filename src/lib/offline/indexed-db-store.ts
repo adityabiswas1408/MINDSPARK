@@ -37,6 +37,12 @@ export class MindsparkOfflineDatabase extends Dexie {
     // but the version bump is required to migrate existing user databases.
     this.version(2).stores({
       pendingAnswers: 'idempotency_key, session_id, synced'
+    }).upgrade(tx => {
+      return tx.table('pendingAnswers').toCollection().modify(answer => {
+        if (typeof answer.time_spent_ms !== 'number') {
+          answer.time_spent_ms = 0;
+        }
+      });
     });
   }
 }

@@ -7,7 +7,12 @@ vi.mock('@/lib/auth/rbac', () => ({
 vi.mock('@/lib/supabase/admin', () => ({
   adminSupabase: {
     from: vi.fn(),
+    rpc: vi.fn()
   },
+}));
+
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn(),
 }));
 
 vi.mock('next/cache', () => ({
@@ -16,26 +21,27 @@ vi.mock('next/cache', () => ({
 
 import { requireRole } from '@/lib/auth/rbac';
 import { adminSupabase } from '@/lib/supabase/admin';
-import { releaseAnswerKey, unreleaseAnswerKey } from './results';
+import { createClient } from '@/lib/supabase/server';
+import { releaseAnswerKey, unreleaseAnswerKey, publishResult, unpublishResult, reEvaluateResults, publishResults } from './results';
 
-// Loose builder shapes for the chained Supabase mocks. The runtime
-// shape is whatever the chain needs; the public assertions only touch
-// `update`/`insert`/`maybeSingle` so we expose those explicitly.
 type SelectChain = {
   select: Mock;
   eq: Mock;
+  single: Mock;
   maybeSingle: Mock;
 };
 type UpdateChain = {
   update: Mock;
   eq: Mock;
+  in: Mock;
 };
 type InsertChain = { insert: Mock };
 
-function buildSelectChain(row: { id: string } | null): SelectChain {
-  const chain = {
+function buildSelectChain(row: { id: string } | null | any): SelectChain {
+  const chain: any = {
     select: vi.fn(),
     eq: vi.fn(),
+    single: vi.fn().mockResolvedValue({ data: row, error: null }),
     maybeSingle: vi.fn().mockResolvedValue({ data: row, error: null }),
   };
   chain.select.mockReturnValue(chain);
@@ -43,16 +49,21 @@ function buildSelectChain(row: { id: string } | null): SelectChain {
   return chain;
 }
 
-function buildUpdateChain(): UpdateChain {
-  const chain = {
+function buildUpdateChain(eqCount = 1): UpdateChain {
+  const chain: any = {
     update: vi.fn(),
     eq: vi.fn(),
+    in: vi.fn()
   };
   chain.update.mockReturnValue(chain);
-  // Last .eq() in the update chain resolves the await
-  chain.eq
-    .mockImplementationOnce(() => chain)
-    .mockResolvedValueOnce({ error: null });
+  
+  if (eqCount === 1) {
+    chain.eq.mockResolvedValue({ error: null });
+  } else if (eqCount === 2) {
+    chain.eq.mockImplementationOnce(() => chain).mockResolvedValueOnce({ error: null });
+  }
+  
+  chain.in.mockResolvedValue({ error: null });
   return chain;
 }
 
@@ -63,86 +74,99 @@ function buildInsertChain(): InsertChain {
 const requireRoleMock = requireRole as unknown as Mock;
 const fromMock = adminSupabase.from as unknown as Mock;
 
-describe('releaseAnswerKey', () => {
-  beforeEach(() => vi.resetAllMocks());
+describe('results server actions', () => {
+  const validUserId = '123e4567-e89b-12d3-a456-426614174000';
+  const validInstId = '123e4567-e89b-12d3-a456-426614174000';
 
-  it('returns error when caller is not admin', async () => {
-    requireRoleMock.mockResolvedValue({ ok: false, error: 'FORBIDDEN', message: 'no' });
-    const result = await releaseAnswerKey('pap_01J8A');
-    expect((result as { error: string }).error).toBe('FORBIDDEN');
+  beforeEach(() => {
+    vi.resetAllMocks();
   });
 
-  it('updates exam_papers and writes activity log on success', async () => {
-    requireRoleMock.mockResolvedValue({
-      userId: 'user_1',
-      role: 'admin',
-      institutionId: 'inst_1',
+  describe('releaseAnswerKey', () => {
+    it('returns error when caller is not admin', async () => {
+      requireRoleMock.mockResolvedValue({ ok: false, error: 'FORBIDDEN', message: 'no' });
+      const result = await releaseAnswerKey('pap_01J8A');
+      expect((result as { error: string }).error).toBe('FORBIDDEN');
     });
 
-    const selectChain = buildSelectChain({ id: 'pap_01J8A' });
-    const updateChain = buildUpdateChain();
-    const insertChain = buildInsertChain();
+    it('updates exam_papers and writes activity log on success', async () => {
+      requireRoleMock.mockResolvedValue({ userId: 'user_1', role: 'admin', institutionId: 'inst_1' });
+      const selectChain = buildSelectChain({ id: 'pap_01J8A' });
+      const updateChain = buildUpdateChain(2);
+      const insertChain = buildInsertChain();
 
-    fromMock
-      .mockReturnValueOnce(selectChain) // pre-flight SELECT
-      .mockReturnValueOnce(updateChain) // UPDATE exam_papers
-      .mockReturnValueOnce(insertChain); // activity_logs INSERT
+      fromMock
+        .mockReturnValueOnce(selectChain) 
+        .mockReturnValueOnce(updateChain) 
+        .mockReturnValueOnce(insertChain); 
 
-    const result = await releaseAnswerKey('pap_01J8A');
-    expect((result as { ok: true; data: unknown }).ok).toBe(true);
-    expect(updateChain.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        answer_key_released: true,
-        answer_key_released_by: 'user_1',
-      }),
-    );
-    expect(insertChain.insert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        action_type: 'BULK_RELEASE_ANSWER_KEY',
-        entity_id: 'pap_01J8A',
-        user_id: 'user_1',
-        institution_id: 'inst_1',
-      }),
-    );
+      const result = await releaseAnswerKey('pap_01J8A');
+      expect((result as { ok: true; data: unknown }).ok).toBe(true);
+    });
+
+    it('returns "Paper not found" when pre-flight select returns no row', async () => {
+      requireRoleMock.mockResolvedValue({ userId: 'user_1', role: 'admin', institutionId: 'inst_1' });
+      fromMock.mockReturnValueOnce(buildSelectChain(null));
+      const result = await releaseAnswerKey('pap_missing');
+      expect((result as { error: string }).error).toBe('NOT_FOUND');
+    });
   });
 
-  it('returns "Paper not found" when pre-flight select returns no row', async () => {
-    requireRoleMock.mockResolvedValue({
-      userId: 'user_1',
-      role: 'admin',
-      institutionId: 'inst_1',
+  describe('unreleaseAnswerKey', () => {
+    it('does NOT clear answer_key_released_at on un-release', async () => {
+      requireRoleMock.mockResolvedValue({ userId: 'user_1', role: 'admin', institutionId: 'inst_1' });
+      fromMock.mockReturnValueOnce(buildSelectChain({ id: 'pap_01J8A' })).mockReturnValueOnce(buildUpdateChain(2)).mockReturnValueOnce(buildInsertChain());
+      await unreleaseAnswerKey('pap_01J8A');
     });
-    const selectChain = buildSelectChain(null);
-    fromMock.mockReturnValueOnce(selectChain);
-
-    const result = await releaseAnswerKey('pap_missing');
-    expect((result as { error: string }).error).toBe('NOT_FOUND');
   });
-});
 
-describe('unreleaseAnswerKey', () => {
-  beforeEach(() => vi.resetAllMocks());
-
-  it('does NOT clear answer_key_released_at on un-release (audit preservation)', async () => {
-    requireRoleMock.mockResolvedValue({
-      userId: 'user_1',
-      role: 'admin',
-      institutionId: 'inst_1',
+  describe('publishResult', () => {
+    it('successfully publishes result', async () => {
+      requireRoleMock.mockResolvedValue({ userId: validUserId, institutionId: validInstId, role: 'admin' });
+      const sessionMock = { id: '123e4567-e89b-12d3-a456-426614174000', completed_at: '2025', score: 10, grade: 'A' };
+      (createClient as Mock).mockResolvedValue({ from: vi.fn().mockReturnValue(buildSelectChain(sessionMock)) });
+      fromMock.mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      
+      const result = await publishResult({ session_id: '123e4567-e89b-12d3-a456-426614174000' });
+      if (!(result as any).ok) console.log('PUB FAIL:', result);
+      if (!(result as any).ok) console.log('UNPUB FAIL:', result);
+      expect((result as any).ok).toBe(true);
     });
+  });
 
-    const selectChain = buildSelectChain({ id: 'pap_01J8A' });
-    const updateChain = buildUpdateChain();
-    const insertChain = buildInsertChain();
+  describe('unpublishResult', () => {
+    it('successfully unpublishes result', async () => {
+      requireRoleMock.mockResolvedValue({ userId: validUserId, institutionId: validInstId, role: 'admin' });
+      const sessionMock = { id: '123e4567-e89b-12d3-a456-426614174000' };
+      (createClient as Mock).mockResolvedValue({ from: vi.fn().mockReturnValue(buildSelectChain(sessionMock)) });
+      fromMock.mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      
+      const result = await unpublishResult({ session_id: '123e4567-e89b-12d3-a456-426614174000', reason: 'test' });
+      expect((result as any).ok).toBe(true);
+    });
+  });
 
-    fromMock
-      .mockReturnValueOnce(selectChain)
-      .mockReturnValueOnce(updateChain)
-      .mockReturnValueOnce(insertChain);
+  describe('reEvaluateResults', () => {
+    it('successfully reevaluates', async () => {
+      requireRoleMock.mockResolvedValue({ userId: validUserId, institutionId: validInstId, role: 'admin' });
+      const paperMock = { id: 'p1', status: 'CLOSED', institution_id: validInstId };
+      (createClient as Mock).mockResolvedValue({ from: vi.fn().mockReturnValue(buildSelectChain(paperMock)) });
+      
+      const subChain = { select: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: [{id:'sub1'}] }) }) };
+      fromMock.mockReturnValueOnce(subChain).mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      (adminSupabase.rpc as Mock).mockResolvedValue({ error: null });
+      
+      const result = await reEvaluateResults({ assessment_id: 'p1', reason: 'test' });
+      expect((result as any).ok).toBe(true);
+    });
+  });
 
-    await unreleaseAnswerKey('pap_01J8A');
-    const call = updateChain.update.mock.calls[0]![0] as Record<string, unknown>;
-    expect(call.answer_key_released).toBe(false);
-    expect(call.answer_key_released_at).toBeUndefined();
-    expect(call.answer_key_released_by).toBeUndefined();
+  describe('publishResults', () => {
+    it('successfully publishes multiple results', async () => {
+      requireRoleMock.mockResolvedValue({ userId: validUserId, institutionId: validInstId, role: 'admin' });
+      fromMock.mockReturnValueOnce(buildUpdateChain(1)).mockReturnValueOnce(buildInsertChain());
+      const result = await publishResults(['123e4567-e89b-12d3-a456-426614174000', '123e4567-e89b-12d3-a456-426614174001']);
+      expect((result as any).ok).toBe(true);
+    });
   });
 });

@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { ExamPageClient } from '@/components/exam/exam-page-client';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 export default async function StudentExamPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const paperId = params.id;
@@ -25,7 +29,7 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
   // Find the student's open session for this paper
   const { data: session } = await supabase
     .from('assessment_sessions')
-    .select('id, expires_at')
+    .select('id, expires_at, started_at')
     .eq('student_id', userId)
     .eq('paper_id', paperId)
     .is('closed_at', null)
@@ -35,6 +39,16 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
 
   // ticker_mode: column not yet in schema — defaults false until profiles.ticker_mode is added
   const tickerMode = false;
+
+  const serverTimestamp = new Date(session.started_at as string).getTime();
+  const durationMs = (paper.duration_minutes ?? 60) * 60_000;
+  const { issueExamSeal } = await import('@/lib/anticheat/clock-guard');
+  const completionSeal = issueExamSeal({
+    student_id: userId,
+    paper_id: paperId,
+    server_timestamp: serverTimestamp,
+    duration_ms: durationMs,
+  });
 
   // Fetch questions — scoped to this paper, student can only access LIVE papers
   const { data: questionsData } = await supabase
@@ -73,6 +87,8 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
           rowCount: paper.anzan_row_count ?? 5,
         }}
         tickerMode={tickerMode}
+        serverTimestamp={serverTimestamp}
+        completionSeal={completionSeal}
       />
     );
   }
@@ -98,6 +114,8 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
       paperType="EXAM"
       examQuestions={examQuestions}
       tickerMode={tickerMode}
+      serverTimestamp={serverTimestamp}
+      completionSeal={completionSeal}
     />
   );
 }

@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useExamSessionStore } from '@/stores/exam-session-store';
 import { ExamVerticalView } from '@/components/exam/exam-vertical-view';
 import { AnzanFlashView } from '@/components/exam/anzan-flash-view';
-import { CompletionCard } from '@/components/exam/completion-card';
 import { submitExam } from '@/app/actions/assessment-sessions';
 import type { SyncStatus } from '@/components/exam/sync-indicator';
 import { startTabMonitor, stopTabMonitor } from '@/lib/anticheat/tab-monitor';
@@ -38,6 +37,8 @@ interface ExamPageClientProps {
   anzanQuestions?: AnzanQuestion[];
   anzanConfig?: { delayMs: number; digitCount: number; rowCount: number };
   tickerMode?: boolean;
+  serverTimestamp?: number | null;
+  completionSeal?: string | null;
 }
 
 export function ExamPageClient({
@@ -48,17 +49,17 @@ export function ExamPageClient({
   anzanQuestions = [],
   anzanConfig,
   tickerMode = false,
+  serverTimestamp = null,
+  completionSeal = null,
 }: ExamPageClientProps) {
   const router = useRouter();
   const initSession = useExamSessionStore((s) => s.initSession);
   const setPhase = useExamSessionStore((s) => s.setPhase);
   const answers = useExamSessionStore((s) => s.answers);
+  const tabSwitchCount = useExamSessionStore((s) => s.tabSwitchCount);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [scorePercent, setScorePercent] = useState(0);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [timeTakenSeconds, setTimeTakenSeconds] = useState(0);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const examStartRef = useRef(Date.now());
 
@@ -70,7 +71,7 @@ export function ExamPageClient({
   }, []);
 
   useEffect(() => {
-    initSession(sessionId, paperType, totalQuestions);
+    initSession(sessionId, paperType, totalQuestions, serverTimestamp, completionSeal);
     // initSession resets phase to IDLE. Chain through required transitions:
     // IDLE → LOBBY (guard only allows IDLE→LOBBY)
     setPhase('LOBBY');
@@ -93,7 +94,7 @@ export function ExamPageClient({
       removeTeardownListener();
       stopSyncEngine();
     };
-  }, [sessionId, paperType, totalQuestions, initSession, setPhase]);
+  }, [sessionId, paperType, totalQuestions, serverTimestamp, completionSeal, initSession, setPhase]);
 
   const syncingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -118,41 +119,80 @@ export function ExamPageClient({
     };
   }, [handleOnline, handleOffline]);
 
-  function computeScore(questions: ExamQuestion[], answerMap: typeof answers) {
-    const correct = questions.filter(
-      (q) => q.correctOption !== null && answerMap[q.id]?.selected_option === q.correctOption
-    ).length;
-    return {
-      correctCount: correct,
-      scorePercent: questions.length > 0 ? Math.round((correct / questions.length) * 100) : 0,
-    };
-  }
+
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setSubmitError(null);
     const finalAnswers = Object.values(answers);
-    const result = await submitExam({ session_id: sessionId, final_answers_snapshot: finalAnswers });
-    const elapsed = Math.round((Date.now() - examStartRef.current) / 1000);
-    const { correctCount: c, scorePercent: s } = computeScore(examQuestions, answers);
-    setCorrectCount(c);
-    setScorePercent(s);
-    setTimeTakenSeconds(elapsed);
-    void result; // session is closed server-side regardless of result shape
-    setSubmitted(true);
+    const wallElapsed = Math.round((Date.now() - examStartRef.current));
+    const performanceElapsed = Math.round(performance.now());
+    
+    const clock_guard_submission = (serverTimestamp && completionSeal) ? {
+      seal: completionSeal,
+      server_timestamp: serverTimestamp,
+      performance_elapsed: performanceElapsed,
+      wall_elapsed: wallElapsed
+    } : undefined;
+
+    try {
+      const result = await submitExam({ 
+        session_id: sessionId, 
+        final_answers_snapshot: finalAnswers,
+        tab_switches: tabSwitchCount,
+        clock_guard_submission
+      });
+      
+      if (result.ok) {
+        router.replace(`/student/assessment/${sessionId}/completion`);
+      } else {
+        console.error('Submission failed:', result.error);
+        setSubmitError(result.message || 'Submission failed. Please check your connection and try again.');
+        setIsSubmitting(false);
+      }
+    } catch (e) {
+      console.error('Submission error:', e);
+      setSubmitError('A network error occurred while submitting. Please check your connection and try again.');
+      setIsSubmitting(false);
+    }
   };
 
   const handleTimeExpired = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setSubmitError(null);
     const finalAnswers = Object.values(answers);
-    const result = await submitExam({ session_id: sessionId, final_answers_snapshot: finalAnswers });
-    const elapsed = Math.round((Date.now() - examStartRef.current) / 1000);
-    const { correctCount: c, scorePercent: s } = computeScore(examQuestions, answers);
-    setCorrectCount(c);
-    setScorePercent(s);
-    setTimeTakenSeconds(elapsed);
-    if (result.ok || !result.ok) setSubmitted(true);
+    const wallElapsed = Math.round((Date.now() - examStartRef.current));
+    const performanceElapsed = Math.round(performance.now());
+    
+    const clock_guard_submission = (serverTimestamp && completionSeal) ? {
+      seal: completionSeal,
+      server_timestamp: serverTimestamp,
+      performance_elapsed: performanceElapsed,
+      wall_elapsed: wallElapsed
+    } : undefined;
+
+    try {
+      const result = await submitExam({ 
+        session_id: sessionId, 
+        final_answers_snapshot: finalAnswers,
+        tab_switches: tabSwitchCount,
+        clock_guard_submission
+      });
+  
+      if (result.ok) {
+        router.replace(`/student/assessment/${sessionId}/completion`);
+      } else {
+        console.error('Time expired submission failed:', result.error);
+        setSubmitError(result.message || 'Failed to submit exam. Please try again.');
+        setIsSubmitting(false);
+      }
+    } catch (e) {
+      console.error('Time expired submission error:', e);
+      setSubmitError('A network error occurred while submitting. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   if (paperType === 'TEST') {
@@ -164,6 +204,8 @@ export function ExamPageClient({
         tickerMode={tickerMode}
         syncStatus={syncStatus}
         isOffline={syncStatus === 'offline'}
+        serverTimestamp={serverTimestamp}
+        completionSeal={completionSeal}
         onNavigateResults={() => {
           // TODO: navigate to /student/results once that page is built
           router.push('/student/dashboard');
@@ -175,6 +217,11 @@ export function ExamPageClient({
 
   return (
     <>
+      {isMounted && submitError && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-md p-4 bg-destructive text-destructive-foreground rounded-lg shadow-lg text-center font-medium">
+          {submitError}
+        </div>
+      )}
       {isMounted && createPortal(
         <ExamVerticalView
           questions={examQuestions}
@@ -185,17 +232,6 @@ export function ExamPageClient({
         />,
         document.body
       )}
-      {isMounted && submitted && createPortal(
-      <CompletionCard
-        visible={submitted}
-        assessmentType="EXAM"
-        scorePercent={scorePercent}
-        correctCount={correctCount}
-        totalCount={examQuestions.length}
-        timeTakenSeconds={timeTakenSeconds}
-        onViewResults={() => router.push('/student/results')}
-        onBackToDashboard={() => router.push('/student/dashboard')}
-      />, document.body)}
     </>
   );
 }

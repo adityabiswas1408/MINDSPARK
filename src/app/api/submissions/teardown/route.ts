@@ -16,6 +16,7 @@ const BodySchema = z.object({
       time_spent_ms: z.number().int().nonnegative(),
     })
   ),
+  tab_switches: z.number().int().nonnegative().optional(),
 });
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const { submission_id, session_id, answers_snapshot, client_timestamp } = parsed.data;
+    const { submission_id, session_id, answers_snapshot, client_timestamp, tab_switches } = parsed.data;
 
     // 1. Validate submission belongs to this user & get their institution
     const { data: profile } = await adminSupabase
@@ -90,6 +91,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           payload: {
             submission_id,
             answers: answers_snapshot,
+            tab_switches: tab_switches ?? 0,
           },
         });
       

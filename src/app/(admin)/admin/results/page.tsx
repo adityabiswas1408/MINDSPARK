@@ -2,6 +2,10 @@ import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { ResultsClient, type SubmissionRow, type Paper } from '@/components/results/results-client';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 interface PageProps {
   searchParams: Promise<{ paper_id?: string }>;
 }

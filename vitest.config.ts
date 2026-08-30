@@ -11,7 +11,7 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
-      include: ['src/lib/anzan/**', 'src/lib/anticheat/**', 'src/lib/offline/**'],
+      include: ['src/lib/anzan/**', 'src/lib/anticheat/**', 'src/lib/offline/**', 'src/app/actions/**'],
       thresholds: { lines: 90, functions: 90 },
     },
   },

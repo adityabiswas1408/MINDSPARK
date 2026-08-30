@@ -95,3 +95,15 @@
 - **What:** Replaced the global `USING (true)` read policy on `announcements` with a strict `institution_id` scoped policy for all users. Also updated `createAnnouncement` action and RLS to allow teachers to INSERT and SELECT (but not UPDATE/DELETE) announcements within their institution.
 - **Why:** The previous RLS policy created a massive cross-tenant data leak by allowing any authenticated user to read all announcements globally. Teacher write access was added to unblock scoped classroom broadcasts.
 - **Status:** CONFIRMED
+
+---
+
+### DEC-012: Next.js 16.3 cacheComponents Enablement
+- **Date:** 2026-08-25
+- **What:** Enabled `cacheComponents: true` in `next.config.ts` during the Next.js 16.3 upgrade.
+- **Why:** The official Next.js canary codemod (cache-components-instant-false) added `export const instant = false;` to 25 files, but didn't automatically enable the required config flag. This caused Turbopack and Webpack builds to crash with 'requires nextConfig.cacheComponents to be enabled'. Manually enabled to proceed with the build.
+- **Status:** PROPOSED
+
+### Cross-Tenant Isolation Fixes (Phase 5/Audit)
+- **Institutions**: Although previously open (USING true), it was confirmed that normal clients only request rows where id = auth.jwt.institution_id (e.g. via session.ts). The table is now strictly scoped to institution_id without breaking behavior.
+- **cohort_history & grade_boundaries**: These tables possess RLS but have 0 policies. A code audit (grep) proved they are accessed exclusively via dminSupabase (service role). The default DENY posture effectively secures them from client access. Do NOT add policies to these tables to fix " missing\ RLS unless a new feature legitimately requires client access.

@@ -3,6 +3,10 @@ import { requireRole } from '@/lib/auth/rbac';
 import { createClient } from '@/lib/supabase/server';
 import MonitorClient, { type InitialSession } from './monitor-client';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 interface Props {
   params: Promise<{ id: string }>;
 }

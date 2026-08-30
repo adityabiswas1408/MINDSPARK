@@ -29,6 +29,8 @@ interface ExamSessionState {
   // Stored as a Record instead of Map for native Zustand reactivity 
   answers: Record<string, AnswerPayload>;
   sessionId: string | null;
+  serverTimestamp: number | null;
+  completionSeal: string | null;
   rafHandle: number | null;
   cooldownStart: number | null;
   tabSwitchCount: number;
@@ -39,7 +41,9 @@ interface ExamSessionState {
   initSession: (
     sessionId: string,
     assessmentType: 'EXAM' | 'TEST',
-    totalQuestions: number
+    totalQuestions: number,
+    serverTimestamp: number | null,
+    completionSeal: string | null
   ) => void;
   recordAnswer: (questionId: string, answer: AnswerPayload) => void;
   incrementQuestion: () => void;
@@ -72,6 +76,8 @@ export const useExamSessionStore = create<ExamSessionState>((set, get) => ({
   totalQuestions: 0,
   answers: {},
   sessionId: null,
+  serverTimestamp: null,
+  completionSeal: null,
   rafHandle: null,
   cooldownStart: null,
   tabSwitchCount: 0,
@@ -87,9 +93,11 @@ export const useExamSessionStore = create<ExamSessionState>((set, get) => ({
 
   setPaused: (isPaused) => set({ isPaused }),
 
-  initSession: (sessionId, assessmentType, totalQuestions) =>
+  initSession: (sessionId, assessmentType, totalQuestions, serverTimestamp, completionSeal) =>
     set({
       sessionId,
+      serverTimestamp,
+      completionSeal,
       assessmentType,
       totalQuestions,
       currentQuestionIndex: 0,

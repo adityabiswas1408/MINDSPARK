@@ -2,6 +2,10 @@ import { createClient } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/auth/rbac';
 import { LevelsClient, type LevelItem } from '@/components/levels/levels-client';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 export default async function AdminLevelsPage() {
   const authResult = await requireRole(['admin', 'teacher']);
   if ('error' in authResult) return null;

@@ -31,6 +31,8 @@ interface AnzanFlashViewProps {
   tickerMode?: boolean;
   syncStatus: 'synced' | 'offline' | 'syncing' | 'error';
   isOffline: boolean;
+  serverTimestamp?: number | null;
+  completionSeal?: string | null;
   onNavigateResults: () => void;
   onNavigateDashboard: () => void;
 }
@@ -56,6 +58,8 @@ export function AnzanFlashView({
   tickerMode = false,
   syncStatus,
   isOffline,
+  serverTimestamp = null,
+  completionSeal = null,
   onNavigateResults,
   onNavigateDashboard,
 }: AnzanFlashViewProps) {
@@ -78,6 +82,8 @@ export function AnzanFlashView({
     sessionId,
     questions,
     anzanConfig,
+    serverTimestamp,
+    completionSeal,
     onSubmitComplete: () => {
       // Submission complete — teardown handled by hook
     },

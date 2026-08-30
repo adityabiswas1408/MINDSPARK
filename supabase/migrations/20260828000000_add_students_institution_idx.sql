@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS students_institution_idx ON public.students USING btree (institution_id);

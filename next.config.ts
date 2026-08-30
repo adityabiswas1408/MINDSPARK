@@ -51,6 +51,7 @@ const cspHeader = isDev
   `.replace(/\s{2,}/g, ' ').trim();
 
 const nextConfig: NextConfig = {
+  cacheComponents: true,
   images: {
     remotePatterns: [
       {

@@ -31,6 +31,8 @@ interface UseAnzanEngineOptions {
   questions: AnzanQuestion[];
   /** Flash anzan configuration from exam_papers */
   anzanConfig: AnzanConfig;
+  serverTimestamp?: number | null;
+  completionSeal?: string | null;
   /** Called when exam submission completes */
   onSubmitComplete: () => void;
   /** Called on unrecoverable error */
@@ -76,6 +78,8 @@ export function useAnzanEngine({
   sessionId,
   questions,
   anzanConfig,
+  serverTimestamp = null,
+  completionSeal = null,
   onSubmitComplete,
   onError,
 }: UseAnzanEngineOptions): AnzanEngineReturn {
@@ -100,7 +104,7 @@ export function useAnzanEngine({
     isInitialised.current = true;
 
     // Init Zustand store
-    initSession(sessionId, 'TEST', questions.length);
+    initSession(sessionId, 'TEST', questions.length, serverTimestamp, completionSeal);
 
     // Init offline infrastructure
     initStorageProbe();
@@ -114,7 +118,7 @@ export function useAnzanEngine({
       removeTeardownListener();
       stopSyncEngine();
     };
-  }, [sessionId, questions.length, initSession]);
+  }, [sessionId, questions.length, serverTimestamp, completionSeal, initSession]);
 
   // ---- 2. Generate flash sequence for current question ----
   const currentQuestion = questions[currentQuestionIndex] ?? null;

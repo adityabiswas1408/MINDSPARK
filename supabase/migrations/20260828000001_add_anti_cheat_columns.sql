@@ -1,0 +1,1 @@
+ALTER TABLE public.submissions ADD COLUMN IF NOT EXISTS completion_seal TEXT, ADD COLUMN IF NOT EXISTS anti_cheat_flags TEXT[] DEFAULT '{}', ADD COLUMN IF NOT EXISTS tab_switches INTEGER NOT NULL DEFAULT 0;

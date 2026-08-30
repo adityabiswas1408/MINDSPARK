@@ -43,10 +43,10 @@ export interface ClockValidationResult {
 }
 
 export type ClockFlag =
-  | 'HMAC_MISMATCH'
-  | 'DURATION_EXCEEDED'
-  | 'CLOCK_DRIFT_DETECTED'
-  | 'INSTANT_SUBMISSION';
+  | 'HMAC_MISMATCH' // Cryptographically secure (tamper-proof)
+  | 'DURATION_EXCEEDED' // Server-side authoritative (tamper-proof)
+  | 'CLOCK_DRIFT_DETECTED' // ADVISORY ONLY (telemetry based on unsealed client data)
+  | 'INSTANT_SUBMISSION'; // ADVISORY ONLY (telemetry based on unsealed client data)
 
 export function validateClockGuard(
   submission: ClockGuardSubmission,
@@ -76,8 +76,10 @@ export function validateClockGuard(
     flags.push('DURATION_EXCEEDED');
   }
 
-  // 4. Monotonic drift check
+  // 4. Monotonic drift check (ADVISORY ONLY)
   // If wall_elapsed and performance_elapsed diverge by > 10%: clock manipulation
+  // Note: These fields are not part of the HMAC payload and are generated client-side.
+  // A malicious client can forge matching values to bypass this check.
   const divergence = Math.abs(
     submission.wall_elapsed - submission.performance_elapsed
   );
@@ -91,7 +93,8 @@ export function validateClockGuard(
     flags.push('CLOCK_DRIFT_DETECTED');
   }
 
-  // 5. Instant submission guard
+  // 5. Instant submission guard (ADVISORY ONLY)
+  // Relies on unsealed performance_elapsed telemetry.
   if (submission.performance_elapsed < CLOCK_GUARD_CONSTANTS.MIN_ELAPSED_MS) {
     flags.push('INSTANT_SUBMISSION');
   }
@@ -104,7 +107,10 @@ export function validateClockGuard(
 }
 
 /** Constant-time string comparison — prevents timing attacks on HMAC */
-function timingSafeCompare(a: string, b: string): boolean {
+export function timingSafeCompare(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
-  return timingSafeEqual(Buffer.from(a, 'hex'), Buffer.from(b, 'hex'));
+  const aBuf = Buffer.from(a, 'hex');
+  const bBuf = Buffer.from(b, 'hex');
+  if (aBuf.length !== bBuf.length) return false;
+  return timingSafeEqual(aBuf, bBuf);
 }

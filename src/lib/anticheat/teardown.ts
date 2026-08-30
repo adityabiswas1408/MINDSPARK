@@ -55,6 +55,7 @@ async function handlePageHide(): Promise<void> {
           time_spent_ms: a.time_spent_ms,
         })),
         client_timestamp: Date.now(),
+        tab_switches: state.tabSwitchCount,
       }),
     });
     // No await on response — keepalive fires and forgets

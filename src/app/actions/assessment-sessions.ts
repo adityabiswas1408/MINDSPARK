@@ -24,6 +24,8 @@ interface InitSessionOutput {
     option_c: string;
     option_d: string;
   }>;
+  server_timestamp?: number;
+  completion_seal?: string;
 }
 
 export async function initSession(input: InitSessionInput): Promise<ActionResult<InitSessionOutput>> {
@@ -84,6 +86,8 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
         session_id: existingSession.id, 
         expires_at: existingSession.expires_at, 
         questions: formattedQuestions 
+        // Note: For resumed sessions, we might need to issue a new seal or look up the old one.
+        // For now, we issue a new seal based on the remaining duration.
       } 
     };
   }
@@ -116,29 +120,52 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
     action_type: 'INIT_SESSION'
   });
 
-  return { ok: true, data: { session_id: newSession.id, expires_at: expiresAt, questions: formattedQuestions } };
+  const serverTimestamp = Date.now();
+  const durationMs = durationStr * 60000;
+  const completionSeal = issueExamSeal({
+    student_id: userId,
+    paper_id: input.paper_id,
+    server_timestamp: serverTimestamp,
+    duration_ms: durationMs,
+  });
+
+  return { 
+    ok: true, 
+    data: { 
+      session_id: newSession.id, 
+      expires_at: expiresAt, 
+      questions: formattedQuestions,
+      server_timestamp: serverTimestamp,
+      completion_seal: completionSeal
+    } 
+  };
 }
 
-interface SubmitAnswerInput {
-  session_id:      string;
-  question_id:     string;
-  selected_option: 'A' | 'B' | 'C' | 'D' | null;
-  answered_at:     number;
-  idempotency_key: string;
-  time_spent_ms:   number;
-}
+const SubmitAnswerSchema = z.object({
+  session_id: z.string().uuid(),
+  question_id: z.string().uuid(),
+  selected_option: z.enum(['A', 'B', 'C', 'D']).nullable(),
+  answered_at: z.number(),
+  idempotency_key: z.string().uuid(),
+  time_spent_ms: z.number().int().nonnegative(),
+});
+export type SubmitAnswerInput = z.infer<typeof SubmitAnswerSchema>;
 
 export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResult<{ saved: true }>> {
   const authResult = await requireRole('student');
   if ('error' in authResult) return { error: authResult.error, message: authResult.message };
   const { userId } = authResult;
 
+  const parsed = SubmitAnswerSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
   const supabase = await createClient();
 
   const { data: session } = await supabase
     .from('assessment_sessions')
     .select('id, student_id, paper_id, closed_at')
-    .eq('id', input.session_id)
+    .eq('id', validData.session_id)
     .single();
 
   if (!session) return { error: 'SESSION_NOT_FOUND', message: 'Invalid session' };
@@ -150,11 +177,11 @@ export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResu
   const { data: sub } = await adminSupabase
     .from('submissions')
     .select('id')
-    .eq('session_id', input.session_id)
+    .eq('session_id', validData.session_id)
     .eq('student_id', userId)
     .maybeSingle();
 
-  const submissionId = sub?.id ?? input.session_id;
+  const submissionId = sub?.id ?? validData.session_id;
 
   // Server-authoritative is_correct: look up correct_option from questions
   // and compare against the client-supplied selected_option. NEVER trust a
@@ -162,21 +189,21 @@ export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResu
   const { data: questionRow } = await adminSupabase
     .from('questions')
     .select('correct_option')
-    .eq('id', input.question_id)
+    .eq('id', validData.question_id)
     .maybeSingle();
 
   const isCorrect =
     questionRow?.correct_option != null &&
-    input.selected_option != null &&
-    questionRow.correct_option === input.selected_option;
+    validData.selected_option != null &&
+    questionRow.correct_option === validData.selected_option;
 
   await adminSupabase.from('student_answers').upsert({
-    idempotency_key: input.idempotency_key,
+    idempotency_key: validData.idempotency_key,
     submission_id:   submissionId,
-    question_id:     input.question_id,
-    selected_option: input.selected_option,
-    answered_at:     new Date(input.answered_at).toISOString(),
-    time_spent_ms:   input.time_spent_ms,
+    question_id:     validData.question_id,
+    selected_option: validData.selected_option,
+    answered_at:     new Date(validData.answered_at).toISOString(),
+    time_spent_ms:   validData.time_spent_ms,
     is_correct:      isCorrect,
   }, { onConflict: 'idempotency_key' });
 
@@ -199,30 +226,42 @@ export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResu
   return { ok: true, data: { saved: true } };
 }
 
-interface Answer {
-  question_id:      string;
-  selected_option:  'A' | 'B' | 'C' | 'D' | null;
-  answered_at:      number;
-  idempotency_key:  string;
-  time_spent_ms:    number;
-}
+const AnswerSchema = z.object({
+  question_id: z.string().uuid(),
+  selected_option: z.enum(['A', 'B', 'C', 'D']).nullable(),
+  answered_at: z.number(),
+  idempotency_key: z.string().uuid(),
+  time_spent_ms: z.number().int().nonnegative(),
+});
 
-interface SubmitExamInput {
-  session_id:             string;
-  final_answers_snapshot: Answer[];
-}
+const SubmitExamSchema = z.object({
+  session_id: z.string().uuid(),
+  final_answers_snapshot: z.array(AnswerSchema),
+  tab_switches: z.number().int().nonnegative().optional(),
+  clock_guard_submission: z.object({
+    seal: z.string(),
+    server_timestamp: z.number(),
+    performance_elapsed: z.number(),
+    wall_elapsed: z.number(),
+  }).optional(),
+});
+export type SubmitExamInput = z.infer<typeof SubmitExamSchema>;
 
 export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{ submitted: true; completed_at: string }>> {
   const authResult = await requireRole('student');
   if ('error' in authResult) return { error: authResult.error, message: authResult.message };
   const { userId, institutionId } = authResult;
 
+  const parsed = SubmitExamSchema.safeParse(input);
+  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  const validData = parsed.data;
+
   const supabase = await createClient();
 
   const { data: session } = await supabase
     .from('assessment_sessions')
     .select('id, student_id, paper_id, closed_at')
-    .eq('id', input.session_id)
+    .eq('id', validData.session_id)
     .single();
 
   if (!session) return { error: 'SESSION_NOT_FOUND', message: 'Session not found' };
@@ -234,9 +273,7 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
     return { ok: true, data: { submitted: true, completed_at: session.closed_at } };
   }
 
-  // Fetch paper duration to compute a real clock-guard HMAC seal.
-  // Previously this was a fake string — the clock-guard validator would
-  // always flag HMAC_MISMATCH on any replay-validation path.
+  // Fetch paper duration to compute the real clock-guard HMAC seal.
   const { data: paperRow } = await adminSupabase
     .from('exam_papers')
     .select('duration_minutes')
@@ -244,32 +281,44 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
     .maybeSingle();
 
   const durationMs = ((paperRow?.duration_minutes as number | null) ?? 60) * 60_000;
-  const serverTimestamp = Date.now();
-  const seal = issueExamSeal({
-    student_id: userId,
-    paper_id: session.paper_id,
-    server_timestamp: serverTimestamp,
-    duration_ms: durationMs,
-  });
+  
+  let antiCheatFlags: string[] = [];
+  let finalSeal = validData.clock_guard_submission?.seal ?? null;
+
+  if (validData.clock_guard_submission) {
+    const { validateClockGuard } = await import('@/lib/anticheat/clock-guard');
+    const clockResult = validateClockGuard(
+      validData.clock_guard_submission,
+      session.paper_id,
+      userId,
+      durationMs,
+      Date.now()
+    );
+    antiCheatFlags = clockResult.flags;
+  } else {
+    antiCheatFlags.push('MISSING_CLOCK_GUARD_PAYLOAD');
+  }
 
   const { data: sub } = await adminSupabase.from('submissions').upsert({
-    session_id: input.session_id,
+    session_id: validData.session_id,
     student_id: userId,
     paper_id: session.paper_id,
     completed_at: now,
-    completion_seal: seal
+    completion_seal: finalSeal,
+    anti_cheat_flags: antiCheatFlags,
+    tab_switches: validData.tab_switches ?? 0
   }, { onConflict: 'session_id,student_id' }).select('id, completed_at').single();
 
-  await adminSupabase.from('assessment_sessions').update({ closed_at: now }).eq('id', input.session_id);
+  await adminSupabase.from('assessment_sessions').update({ closed_at: now }).eq('id', validData.session_id);
 
-  if (input.final_answers_snapshot && input.final_answers_snapshot.length > 0) {
+  if (validData.final_answers_snapshot && validData.final_answers_snapshot.length > 0) {
     // sub was upserted above and its id is the correct submissions FK value
-    const submissionRowId = sub?.id ?? input.session_id;
+    const submissionRowId = sub?.id ?? validData.session_id;
 
     // Server-authoritative is_correct: batch-fetch correct_option for every
     // question referenced in the snapshot, then compare against each
     // client-supplied selected_option. Never trust client-supplied is_correct.
-    const questionIds = input.final_answers_snapshot.map(a => a.question_id);
+    const questionIds = validData.final_answers_snapshot.map(a => a.question_id);
     const { data: questionRows } = await adminSupabase
       .from('questions')
       .select('id, correct_option')
@@ -279,7 +328,7 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
       (questionRows ?? []).map(q => [q.id as string, (q.correct_option as string | null) ?? null])
     );
 
-    const payloads = input.final_answers_snapshot.map(a => {
+    const payloads = validData.final_answers_snapshot.map(a => {
       const correctOption = correctOptionById.get(a.question_id) ?? null;
       const isCorrect =
         correctOption != null &&
@@ -302,7 +351,7 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
     user_id: userId,
     institution_id: institutionId,
     entity_type: 'assessment_sessions',
-    entity_id: input.session_id,
+    entity_id: validData.session_id,
     action_type: 'SUBMIT_EXAM'
   });
 

@@ -10,6 +10,10 @@ import {
   type ProfileLevel,
 } from '@/components/students/student-profile-actions';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 const AVATAR_COLOURS = [
   'bg-blue-100 text-blue-800',
   'bg-purple-100 text-purple-800',

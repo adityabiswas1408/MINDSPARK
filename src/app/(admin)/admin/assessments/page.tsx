@@ -5,6 +5,10 @@ import { FileText } from 'lucide-react';
 import { CreateAssessmentWizard } from '@/components/assessments/create-assessment-wizard';
 import { AssessmentCard } from '@/components/assessments/assessment-card';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 export default async function AdminAssessmentsPage() {
   const authResult = await requireRole(['admin', 'teacher']);
   if ('error' in authResult) return null;

@@ -60,7 +60,10 @@ export function startFlashLoop(state: TimingState): StopFlashLoop {
     const clampedDelta = Math.min(delta, state.interval * DELTA_CLAMP_FACTOR);
     state.accumulator += clampedDelta;
 
-    if (state.accumulator >= state.interval) {
+    // Tolerance: fire if we are within half of the current frame delta from the target.
+    // This dynamically eliminates beat-frequency oscillation across any monitor refresh rate.
+    const tolerance = delta / 2;
+    if (state.accumulator >= state.interval - tolerance) {
       const n = state.numbers[state.questionIndex];
 
       // onFlash: ONLY sets element.textContent — no state, no classList

@@ -2,6 +2,10 @@ import { requireRole } from '@/lib/auth/rbac';
 import { adminSupabase } from '@/lib/supabase/admin';
 import SettingsClient, { type GradeBoundaryInput, type InstitutionInput } from './settings-client';
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 export default async function AdminSettingsPage() {
   const authResult = await requireRole('admin');
   if ('error' in authResult) return null;

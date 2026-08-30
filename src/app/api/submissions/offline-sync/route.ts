@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createHmac } from 'crypto';
 import { z } from 'zod';
 import { adminSupabase } from '@/lib/supabase/admin';
+import { timingSafeCompare } from '@/lib/anticheat/clock-guard';
 
 // Fail-closed: refuse to load the module at all when the HMAC secret is
 // missing. Computing HMACs with an empty key is trivially forgeable, so the
@@ -135,13 +136,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       throw new Error(`Staging insert failed: ${insertError?.message}`);
     }
 
-    // 6. Execute RPC 
+    // 6. Execute RPC (HMAC verification moved to Node/removed from DB to prevent secret logging)
+    // Note: Since the client does not send an HMAC for batch syncs, we only generate it here
+    // for staging integrity. There is no client seal to timingSafeCompare against.
     const { data: rpcResult, error: rpcError } = await adminSupabase.rpc('validate_and_migrate_offline_submission', {
       p_staging_id: stagingRow.id,
-      p_hmac_timestamp: hmac_timestamp,
-      p_client_ts: batch_timestamp,
-      p_secret: HMAC_SECRET,
-    });
+    } as any);
 
     if (rpcError) {
       console.error('[OfflineSync] RPC Execution Error:', rpcError);
