@@ -38,6 +38,13 @@ async function handlePageHide(): Promise<void> {
     // 3. POST with keepalive: true — browser allows completion after page unload
     //    Body limit for keepalive: 64KB — answers snapshot is well within this
     //    for up to 50 questions (~3KB total)
+    const clock_guard_submission = (state.serverTimestamp && state.completionSeal && state.initWallTime) ? {
+      seal: state.completionSeal,
+      server_timestamp: state.serverTimestamp,
+      performance_elapsed: Math.round(performance.now()),
+      wall_elapsed: Math.round(Date.now() - state.initWallTime)
+    } : undefined;
+
     fetch('/api/submissions/teardown', {
       method: 'POST',
       keepalive: true,
@@ -56,6 +63,7 @@ async function handlePageHide(): Promise<void> {
         })),
         client_timestamp: Date.now(),
         tab_switches: state.tabSwitchCount,
+        ...(clock_guard_submission ? { clock_guard_submission } : {})
       }),
     });
     // No await on response — keepalive fires and forgets

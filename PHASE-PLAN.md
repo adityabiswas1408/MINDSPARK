@@ -33,7 +33,8 @@ Upon concluding **any** phase:
 | **6**     | Core Engine Hardening (Timing & Anti-Cheat)               | `karpathy-guidelines`, `tdd-workflow`                                                                                                                    | Timing engine <5ms jitter verified, clock guard green        |
 | **7**     | State & Storage Refactor (Dexie & Hydration)              | `inherit-legacy-style`, `ponytail-audit`                                                                                                                 | Local storage sync & state lifecycles verified               |
 | **8**     | Test Suite Completion & E2E Setup                         | `tdd-workflow` (`.agents/skills/tdd-workflow/SKILL.md`)                                                                                                  | Vitest unit + Playwright E2E smoke tests green               |
-| **9.1**   | Feature: Submit → Completion Screen Flow                 | `writing-plans`, `tdd-workflow`, `minimalist-ui`                                                                                                       | Live exam submission redirects to completion screen          |
+| **9.1**   | Feature: Submit → Completion Screen Flow                 | `writing-plans`, `tdd-workflow`, `minimalist-ui`                                                                                                       | **CLOSED** (Instant score deferred to 9.3)                   |
+| **X**     | TEST Lifecycle & Anti-Cheat Remediation                  | `systematic-debugging`, `verification-before-completion`                                                                                               | **CLOSED** (Fixed EXAM vs TEST parity gaps)                  |
 | **9.2**   | Feature: Student Results View (`/student/results/[id]`) | `writing-plans`, `minimalist-ui`                                                                                                                         | Verified score & breakdown display with correct RBAC         |
 | **9.3**   | Feature: Admin Results Publish Flow                       | `writing-plans`, `tdd-workflow`                                                                                                                          | Batch publish action transitions exam status cleanly         |
 | **9.4**   | Feature: Wire "Create Level" Dialog & Action              | `writing-plans`, `minimalist-ui`                                                                                                                         | Level creation persists to DB and updates table              |
@@ -256,7 +257,8 @@ hypothetical — treat them as hard rules, not suggestions.
 
 ## Phase 9 Feature Menu (per PHASE-PLAN.md, skills noted)
 
-- 9.1 Submit → Completion Screen Flow — `writing-plans`, `tdd-workflow`, `minimalist-ui`
+- 9.1 Submit → Completion Screen Flow — **CLOSED** (Instant score deferred to 9.3)
+- Phase X: TEST Lifecycle & Anti-Cheat Remediation — **CLOSED**
 - 9.2 Student Results View — `writing-plans`, `minimalist-ui`
 - 9.3 Admin Results Publish Flow — `writing-plans`, `tdd-workflow`
 - 9.4 "Create Level" Dialog & Action — `writing-plans`, `minimalist-ui`

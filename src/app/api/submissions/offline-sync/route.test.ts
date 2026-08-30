@@ -26,21 +26,25 @@ describe('POST /api/submissions/offline-sync', () => {
       error: null,
     });
 
-    // Mock from('profiles') and from('submissions') and from('offline_submissions_staging')
+    // Mock from('profiles') and from('submissions') and from('offline_submissions_staging') and from('assessment_sessions')
     const mockSelect = vi.fn().mockReturnThis();
     const mockEq = vi.fn().mockReturnThis();
     const mockSingle = vi.fn();
     const mockInsert = vi.fn().mockReturnThis();
+    const mockUpdate = vi.fn().mockReturnThis();
 
     (adminSupabase.from as any).mockImplementation((table: string) => {
       if (table === 'profiles') {
         return { select: mockSelect, eq: mockEq, single: mockSingle.mockResolvedValue({ data: { institution_id: 'inst-123' } }) };
       }
       if (table === 'submissions') {
-        return { select: mockSelect, eq: mockEq, single: mockSingle.mockResolvedValue({ data: { id: 'sub-123', completed_at: null } }) };
+        return { select: mockSelect, eq: mockEq, update: mockUpdate, single: mockSingle.mockResolvedValue({ data: { id: 'sub-123', completed_at: null } }) };
       }
       if (table === 'offline_submissions_staging') {
         return { insert: mockInsert.mockReturnThis(), select: mockSelect, single: mockSingle.mockResolvedValue({ data: { id: 'staging-123' }, error: null }) };
+      }
+      if (table === 'assessment_sessions') {
+        return { update: mockUpdate, eq: mockEq };
       }
     });
 

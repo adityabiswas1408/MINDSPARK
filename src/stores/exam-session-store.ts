@@ -31,6 +31,7 @@ interface ExamSessionState {
   sessionId: string | null;
   serverTimestamp: number | null;
   completionSeal: string | null;
+  initWallTime: number | null;
   rafHandle: number | null;
   cooldownStart: number | null;
   tabSwitchCount: number;
@@ -78,6 +79,7 @@ export const useExamSessionStore = create<ExamSessionState>((set, get) => ({
   sessionId: null,
   serverTimestamp: null,
   completionSeal: null,
+  initWallTime: null,
   rafHandle: null,
   cooldownStart: null,
   tabSwitchCount: 0,
@@ -98,6 +100,7 @@ export const useExamSessionStore = create<ExamSessionState>((set, get) => ({
       sessionId,
       serverTimestamp,
       completionSeal,
+      initWallTime: Date.now(),
       assessmentType,
       totalQuestions,
       currentQuestionIndex: 0,
