@@ -46,7 +46,7 @@ export default async function ResultsDetailPage({
 
   const supabase = await createClient();
   const { data: rawRow } = await supabase
-    .from('submissions')
+    .from('student_submissions_view')
     .select(
       `
       id,
@@ -76,9 +76,9 @@ export default async function ResultsDetailPage({
   if (!paperRel) notFound();
 
   const row: DetailRow = {
-    id: rawRow.id,
-    score: rawRow.score,
-    total_questions: rawRow.total_questions,
+    id: rawRow.id!,
+    score: rawRow.score!,
+    total_questions: rawRow.total_questions!,
     grade: rawRow.grade as GradeLetter | null,
     completed_at: rawRow.completed_at,
     result_published_at: rawRow.result_published_at,

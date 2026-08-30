@@ -57,9 +57,8 @@ export async function importStudentsCSV(input: ImportStudentsCSVInput): Promise<
 
   const { data, error } = await supabase.rpc('bulk_import_students', {
     p_institution_id: institutionId,
-    p_level_id: validData.level_id,
     p_cohort_id: validData.cohort_id ?? '',
-    p_students
+    p_rows: p_students
   });
 
   if (error) {

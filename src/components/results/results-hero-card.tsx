@@ -22,8 +22,8 @@ export function ResultsHeroCard({
   submissionId: string;
   paperTitle: string;
   publishedAt: string;
-  score: number;
-  totalQuestions: number;
+  score: number | null;
+  totalQuestions: number | null;
   grade: GradeLetter | null;
 }) {
   const dateLabel = new Date(publishedAt).toLocaleDateString('en-GB', {

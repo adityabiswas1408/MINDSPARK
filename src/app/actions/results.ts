@@ -126,19 +126,13 @@ export async function reEvaluateResults(input: ReEvaluateResultsInput): Promise<
   if (!paper || paper.institution_id !== institutionId) return { error: 'NOT_FOUND', message: 'Not found' };
   if (paper.status !== 'CLOSED') return { error: 'ASSESSMENT_NOT_CLOSED', message: 'Must be closed' };
 
-  // Call calculate_results on all submissions
-  const { data: subs } = await adminSupabase
-    .from('submissions')
-    .select('id')
-    .eq('paper_id', input.assessment_id);
-
-  let count = 0;
-  if (subs && subs.length > 0) {
-    for (const sub of subs) {
-      await adminSupabase.rpc('calculate_results', { p_submission_id: sub.id });
-      count++;
-    }
+  // Call calculate_results for the paper
+  const { data: rpcResult, error: rpcErr } = await adminSupabase.rpc('calculate_results', { p_paper_id: input.assessment_id });
+  if (rpcErr) {
+    console.error('[reEvaluateResults] RPC failed:', rpcErr);
+    return { error: 'INTERNAL_ERROR', message: 'Failed to calculate results' };
   }
+  const count = (rpcResult as any)?.submissions_scored ?? 0;
 
   await adminSupabase.from('submissions').update({ result_published_at: null }).eq('paper_id', input.assessment_id);
 

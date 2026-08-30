@@ -22,7 +22,7 @@ export const instant = false;
 export type LedgerRow = {
   id: string;
   paper_id: string;
-  score: number;
+  score: number | null;
   total_questions: number;
   grade: GradeLetter | null;
   completed_at: string | null;
@@ -64,7 +64,7 @@ export default async function StudentResultsPage({
   const supabase = await createClient();
 
   const { data: rawRows, error } = await supabase
-    .from('submissions')
+    .from('student_submissions_view')
     .select(
       `
       id,
@@ -99,10 +99,10 @@ export default async function StudentResultsPage({
       | LedgerRow['paper']
       | null;
     return {
-      id: r.id,
+      id: r.id!,
       paper_id: r.paper_id ?? '',
       score: r.score,
-      total_questions: r.total_questions,
+      total_questions: r.total_questions!,
       grade: r.grade as GradeLetter | null,
       completed_at: r.completed_at,
       result_published_at: r.result_published_at,

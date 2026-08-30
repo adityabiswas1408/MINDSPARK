@@ -10,8 +10,8 @@ export type LedgerTableRow = {
   paperTitle: string;
   paperType: 'EXAM' | 'TEST';
   paperDurationMinutes: number;
-  score: number;
-  totalQuestions: number;
+  score: number | null;
+  totalQuestions: number | null;
   grade: GradeLetter | null;
   completedAt: string | null;
   resultPublishedAt: string | null;
