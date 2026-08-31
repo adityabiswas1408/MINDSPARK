@@ -78,6 +78,7 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
     return (
       <ExamPageClient
         sessionId={session.id}
+        paperId={paperId}
         expiresAt={session.expires_at}
         paperType="TEST"
         anzanQuestions={anzanQuestions}
@@ -110,6 +111,7 @@ export default async function StudentExamPage(props: { params: Promise<{ id: str
   return (
     <ExamPageClient
       sessionId={session.id}
+      paperId={paperId}
       expiresAt={session.expires_at}
       paperType="EXAM"
       examQuestions={examQuestions}

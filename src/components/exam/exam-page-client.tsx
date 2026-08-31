@@ -12,6 +12,7 @@ import { startTabMonitor, stopTabMonitor } from '@/lib/anticheat/tab-monitor';
 import { registerTeardownListener, removeTeardownListener } from '@/lib/anticheat/teardown';
 import { startSyncEngine, stopSyncEngine } from '@/lib/offline/sync-engine';
 import { initStorageProbe } from '@/lib/offline/storage-probe';
+import { createClient } from '@/lib/supabase/client';
 
 interface ExamQuestion {
   id: string;
@@ -31,6 +32,7 @@ interface AnzanQuestion {
 
 interface ExamPageClientProps {
   sessionId: string;
+  paperId: string;
   expiresAt: string;
   paperType: 'EXAM' | 'TEST';
   examQuestions?: ExamQuestion[];
@@ -43,6 +45,7 @@ interface ExamPageClientProps {
 
 export function ExamPageClient({
   sessionId,
+  paperId,
   expiresAt,
   paperType,
   examQuestions = [],
@@ -112,12 +115,33 @@ export function ExamPageClient({
     if (!navigator.onLine) setSyncStatus('offline');
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+    
+    // Presence tracking
+    const supabase = createClient();
+    let presenceChannel: ReturnType<typeof supabase.channel> | null = null;
+    const initPresence = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      presenceChannel = supabase.channel(`lobby:${paperId}`, { config: { private: true } });
+      presenceChannel.subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await presenceChannel!.track({
+            student_id: user.id,
+            online_at: new Date().toISOString()
+          });
+        }
+      });
+    };
+    initPresence();
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       if (syncingTimerRef.current) clearTimeout(syncingTimerRef.current);
+      if (presenceChannel) supabase.removeChannel(presenceChannel);
     };
-  }, [handleOnline, handleOffline]);
+  }, [handleOnline, handleOffline, paperId]);
 
 
 

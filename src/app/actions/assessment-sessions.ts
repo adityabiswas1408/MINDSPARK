@@ -211,13 +211,18 @@ export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResu
   // admin monitor clients update in near-real-time (Zone 2 migration from
   // postgres_changes to broadcast per 10_architecture.md §5).
   try {
-    await supabase.channel(`exam:${session.paper_id}`).send({
-      type: 'broadcast',
-      event: 'answer_saved',
-      payload: {
-        student_id: userId,
-        timestamp: Date.now(),
-      },
+    const channel = adminSupabase.channel(`exam:${session.paper_id}`, { config: { private: true } });
+    await channel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        channel.send({
+          type: 'broadcast',
+          event: 'answer_saved',
+          payload: {
+            student_id: userId,
+            timestamp: Date.now(),
+          },
+        }).then(() => adminSupabase.removeChannel(channel));
+      }
     });
   } catch {
     // Broadcast is fire-and-forget; never block the answer save on it.
@@ -359,13 +364,18 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
   // transitions this student to 'submitted' in real-time (Zone 2 migration
   // from postgres_changes to broadcast per 10_architecture.md §5).
   try {
-    await supabase.channel(`exam:${session.paper_id}`).send({
-      type: 'broadcast',
-      event: 'submitted',
-      payload: {
-        student_id: userId,
-        timestamp: Date.now(),
-      },
+    const channel = adminSupabase.channel(`exam:${session.paper_id}`, { config: { private: true } });
+    await channel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        channel.send({
+          type: 'broadcast',
+          event: 'submitted',
+          payload: {
+            student_id: userId,
+            timestamp: Date.now(),
+          },
+        }).then(() => adminSupabase.removeChannel(channel));
+      }
     });
   } catch {
     // Broadcast is fire-and-forget; never block the submission on it.

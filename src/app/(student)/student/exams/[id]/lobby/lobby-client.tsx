@@ -115,7 +115,30 @@ export function LobbyClient({
       }
     }, 30000);
 
-    return () => clearInterval(pollIntervalId);
+    // Presence tracking
+    let presenceChannel: ReturnType<typeof supabase.channel> | null = null;
+    const initPresence = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      presenceChannel = supabase.channel(`lobby:${paperId}`, { config: { private: true } });
+      presenceChannel.subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await presenceChannel!.track({
+            student_id: user.id,
+            online_at: new Date().toISOString()
+          });
+        }
+      });
+    };
+    initPresence();
+
+    return () => {
+      clearInterval(pollIntervalId);
+      if (presenceChannel) {
+        supabase.removeChannel(presenceChannel);
+      }
+    };
   }, [paperId, router]);
 
   const handleStart = async () => {

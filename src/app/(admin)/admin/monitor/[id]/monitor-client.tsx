@@ -132,7 +132,7 @@ export default function MonitorClient({
     // Broadcast channel `exam:{paperId}` — receives lifecycle, heartbeat,
     // answer_saved, status_change, and submitted events from clients.
     const examCh = supabase
-      .channel(`exam:${paperId}`)
+      .channel(`exam:${paperId}`, { config: { private: true } })
       .on('broadcast', { event: 'heartbeat' }, payload => {
         const p = (payload.payload ?? {}) as {
           student_id?: string;
@@ -227,7 +227,7 @@ export default function MonitorClient({
 
     // 3. Presence on lobby:{paperId} — active / disconnected state
     const lobbyCh = supabase
-      .channel(`lobby:${paperId}`)
+      .channel(`lobby:${paperId}`, { config: { private: true } })
       .on('presence', { event: 'join' }, ({ newPresences }) => {
         const sid = (newPresences[0] as { student_id?: string })?.student_id;
         if (!sid) return;

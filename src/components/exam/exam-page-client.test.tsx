@@ -69,6 +69,7 @@ describe('ExamPageClient', () => {
     render(
       <ExamPageClient
         sessionId="sess-123"
+        paperId="mock-paper"
         expiresAt={new Date(Date.now() + 10000).toISOString()}
         paperType="EXAM"
         examQuestions={[]}
@@ -93,6 +94,7 @@ describe('ExamPageClient', () => {
     render(
       <ExamPageClient
         sessionId="sess-123"
+        paperId="mock-paper"
         expiresAt={new Date(Date.now() + 10000).toISOString()}
         paperType="EXAM"
         examQuestions={[]}
