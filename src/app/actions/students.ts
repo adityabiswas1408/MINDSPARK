@@ -46,7 +46,7 @@ export async function importStudentsCSV(input: ImportStudentsCSVInput): Promise<
       return {
         roll_number: parts[0] || '',
         full_name: parts[1] || '',
-        date_of_birth: parts[2] || null
+        dob: parts[2] || null
       };
     })
     .filter(s => s.roll_number && s.full_name);
@@ -61,38 +61,85 @@ export async function importStudentsCSV(input: ImportStudentsCSVInput): Promise<
 
   const existingRollNumbers = new Set((existing || []).map(s => s.roll_number));
   
-  const toInsert: typeof p_students = [];
+  const toInsert: (typeof p_students[0] & { auth_user_id: string, original_idx: number })[] = [];
   const errors: ImportStudentsCSVOutput['errors'] = [];
   let skipped = 0;
 
-  p_students.forEach((s, idx) => {
+  const validStudents = p_students.map((s, idx) => ({ ...s, original_idx: idx }));
+
+  for (const s of validStudents) {
     if (existingRollNumbers.has(s.roll_number)) {
       skipped++;
-      errors.push({ row: idx + 2, reason: 'Roll number already exists in this institution' });
+      errors.push({ row: s.original_idx + 2, reason: 'Roll number already exists in this institution' });
     } else {
-      toInsert.push(s);
+      if (validData.dry_run) {
+        toInsert.push({ ...s, auth_user_id: '' });
+      } else {
+        const placeholderEmail = `${s.roll_number.toLowerCase()}@student.${institutionId}.invalid`;
+        const initialPassword = randomUUID().replace(/-/g, '') + '!Ab1';
+
+        const { data: authUser, error: authErr } = await adminSupabase.auth.admin.createUser({
+          email: placeholderEmail,
+          password: initialPassword,
+          email_confirm: true,
+          user_metadata: { role: 'student' }
+        });
+
+        if (authErr || !authUser.user) {
+          skipped++;
+          errors.push({ row: s.original_idx + 2, reason: 'Failed to create auth user: ' + (authErr?.message || 'Unknown') });
+        } else {
+          toInsert.push({ ...s, auth_user_id: authUser.user.id });
+        }
+      }
     }
-  });
+  }
 
   if (validData.dry_run) {
     return { ok: true, data: { inserted: toInsert.length, skipped, errors } };
   }
 
+  if (toInsert.length === 0) {
+    return { ok: true, data: { inserted: 0, skipped, errors } };
+  }
+
   const { data, error } = await supabase.rpc('bulk_import_students', {
     p_institution_id: institutionId,
+    p_level_id: validData.level_id,
     p_cohort_id: validData.cohort_id ?? '',
     p_rows: toInsert
   });
 
   if (error) {
+    for (const s of toInsert) {
+      await adminSupabase.auth.admin.deleteUser(s.auth_user_id);
+    }
     return { error: 'INTERNAL_ERROR', message: 'Bulk import failed.' };
   }
 
   const rpcResult = data as unknown as { inserted: number; skipped: number; errors: any[] };
+  
+  if (rpcResult.errors && rpcResult.errors.length > 0) {
+    const failedRollNumbers = new Set(rpcResult.errors.map(e => e.roll_number));
+    for (const s of toInsert) {
+      if (failedRollNumbers.has(s.roll_number)) {
+        await adminSupabase.auth.admin.deleteUser(s.auth_user_id);
+      }
+    }
+  }
+
+  const rpcErrorsFormatted = rpcResult.errors.map(e => {
+    const orig = toInsert.find(s => s.roll_number === e.roll_number);
+    return {
+      row: orig ? orig.original_idx + 2 : 0,
+      reason: e.reason
+    };
+  });
+
   const result: ImportStudentsCSVOutput = {
     inserted: rpcResult.inserted,
     skipped: skipped + rpcResult.skipped,
-    errors: [...errors, ...rpcResult.errors]
+    errors: [...errors, ...rpcErrorsFormatted]
   };
 
   if (!input.dry_run && result.inserted > 0) {
