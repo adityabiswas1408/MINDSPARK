@@ -233,6 +233,7 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
       full_name: validData.full_name,
       roll_number: validData.roll_number,
       date_of_birth: validData.date_of_birth,
+      dob: validData.date_of_birth,
       level_id: validData.level_id,
       cohort_id: validData.cohort_id as unknown as string,
       institution_id: institutionId
