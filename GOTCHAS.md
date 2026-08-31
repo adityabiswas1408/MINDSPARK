@@ -378,3 +378,6 @@ Implications:
     ALTER TABLE student_answers ENABLE TRIGGER update_student_answers_modtime;
 Future cleanup (out of Wave 1 scope): either DROP the trigger or ADD
 the `updated_at TIMESTAMPTZ DEFAULT NOW()` column. Pick one.
+
+## Realtime Presence Payload Limitation
+Supabase realtime.messages RLS gates topic access only (so unauthorized users cannot join the lobby), but it does not validate the presence payload contents. A student can technically claim any student_id in their own presence.track() call. This is accepted for now given its low severity.
