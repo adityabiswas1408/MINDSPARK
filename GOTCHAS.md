@@ -316,6 +316,18 @@ paper_id on submissions has no FK — use two queries.
 Check pg_constraint or information_schema before assuming
 a join will work.
 
+### Vitest Concurrent Execution & Connection Exhaustion
+By default, Vitest runs all test files concurrently. When dozens of integration
+test files each establish multiple DB connections in their `beforeAll` hooks 
+(creating auth users, seeding tenant data), this can rapidly exhaust the database
+connection pool (or hit local CPU/port limits). 
+Symptom: Entire suites randomly fail with `Error: Hook timed out in 30000ms`. 
+Fix: Limit test file concurrency in `vitest.config.ts`:
+  `poolOptions: { threads: { maxThreads: 2, minThreads: 1 } }`
+*Note: This root cause was empirically inferred by observing timeouts disappear 
+when concurrency was capped, as direct DB connection visibility (`pg_stat_activity`) 
+was unavailable in the environment to definitively prove the 200-connection ceiling was hit.*
+
 ---
 
 ## Fake Data Landmines

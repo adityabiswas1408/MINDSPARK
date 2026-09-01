@@ -9,7 +9,12 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
-    fileParallelism: false,
+    poolOptions: {
+      threads: {
+        maxThreads: 2,
+        minThreads: 1,
+      }
+    },
     testTimeout: 30000,
     hookTimeout: 60000,
     coverage: {
