@@ -9,13 +9,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
-    // @ts-expect-error - vitest typings are outdated
-    poolOptions: {
-      threads: {
-        maxThreads: 2,
-        minThreads: 1,
-      }
-    },
+    maxWorkers: 2,
     testTimeout: 30000,
     hookTimeout: 60000,
     coverage: {

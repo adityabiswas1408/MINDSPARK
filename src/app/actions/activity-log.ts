@@ -54,11 +54,13 @@ export async function fetchActivityLogs(
   // Resolve userSearch → user_ids first (can't filter on joined column in PostgREST)
   let userIdFilter: string[] | null = null;
   if (userSearch && userSearch.trim()) {
+    // Sanitize search to prevent injection in the custom string passed to .or()
+    const sanitizedSearch = userSearch.trim().replace(/%/g, '\\%').replace(/_/g, '\\_').replace(/"/g, '""');
     const { data: matchedProfiles } = await adminSupabase
       .from('profiles')
       .select('id')
       .eq('institution_id', institutionId)
-      .or(`email.ilike.%${userSearch.trim()}%,full_name.ilike.%${userSearch.trim()}%`);
+      .or(`email.ilike."%${sanitizedSearch}%",full_name.ilike."%${sanitizedSearch}%"`);
     userIdFilter = (matchedProfiles ?? []).map(p => p.id);
     if (userIdFilter.length === 0) {
       return { ok: true, data: { logs: [], total: 0 } };
@@ -127,11 +129,12 @@ export async function exportActivityLogsCsv(
 
   let userIdFilter: string[] | null = null;
   if (userSearch && userSearch.trim()) {
+    const sanitizedSearch = userSearch.trim().replace(/%/g, '\\%').replace(/_/g, '\\_').replace(/"/g, '""');
     const { data: matchedProfiles } = await adminSupabase
       .from('profiles')
       .select('id')
       .eq('institution_id', institutionId)
-      .or(`email.ilike.%${userSearch.trim()}%,full_name.ilike.%${userSearch.trim()}%`);
+      .or(`email.ilike."%${sanitizedSearch}%",full_name.ilike."%${sanitizedSearch}%"`);
     userIdFilter = (matchedProfiles ?? []).map(p => p.id);
     if (userIdFilter.length === 0) {
       return { ok: true, data: { csv: 'Timestamp (UTC),Actor Email,Actor Name,Action,Entity Type,Entity ID,IP Address\n' } };
