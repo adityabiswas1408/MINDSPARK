@@ -11,7 +11,7 @@ const UpdateSettingsSchema = z.object({
   timezone: z.string().optional(),
   logo_url: z.string().url().optional(),
   auto_archive_enabled: z.boolean().optional(),
-  default_duration_minutes: z.number().int().min(1).max(180).optional().nullable(),
+  default_duration_minutes: z.number().int().min(1).optional().nullable(),
   default_per_question_time_seconds: z.number().int().min(5).max(600).optional().nullable(),
   grade_boundaries: z.array(z.object({
     assessment_type: z.enum(['EXAM', 'TEST', 'ALL']),

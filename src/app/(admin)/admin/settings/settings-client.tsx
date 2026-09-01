@@ -291,7 +291,6 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
               onChange={e => setDefaultDuration(e.target.value)}
               type="number"
               min={1}
-              max={180}
               className="h-9 font-mono"
             />
           </div>

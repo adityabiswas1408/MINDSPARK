@@ -22,7 +22,6 @@ export async function createAssessment(input: CreateAssessmentInput): Promise<Ac
 
   const parsed = CreateAssessmentSchema.safeParse(input);
   if (!parsed.success) {
-    console.log("CreateAssessment Validation Error:", parsed.error);
     return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
   }
   const validData = parsed.data;
@@ -45,7 +44,6 @@ export async function createAssessment(input: CreateAssessmentInput): Promise<Ac
     .single();
 
   if (error || !assessment) {
-    console.log("CreateAssessment Insert Error:", error);
     return { error: 'VALIDATION_ERROR' };
   }
 
