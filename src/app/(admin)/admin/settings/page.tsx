@@ -14,7 +14,7 @@ export default async function AdminSettingsPage() {
   const [{ data: inst }, { data: bounds }] = await Promise.all([
     adminSupabase
       .from('institutions')
-      .select('name, timezone, session_timeout_seconds')
+      .select('name, timezone, session_timeout_seconds, auto_archive_enabled, default_duration_minutes, default_per_question_time_seconds')
       .eq('id', institutionId)
       .single(),
     adminSupabase
@@ -36,6 +36,9 @@ export default async function AdminSettingsPage() {
     name: inst?.name ?? '',
     timezone: inst?.timezone ?? 'Asia/Kolkata',
     session_timeout_seconds: inst?.session_timeout_seconds ?? 3600,
+    auto_archive_enabled: inst?.auto_archive_enabled ?? false,
+    default_duration_minutes: inst?.default_duration_minutes ?? null,
+    default_per_question_time_seconds: inst?.default_per_question_time_seconds ?? null,
   };
 
   return (

@@ -18,12 +18,15 @@ import { WizardState, WizardQuestion, WizardConfig } from './wizard-types';
 
 interface CreateAssessmentWizardProps {
   levels: { id: string; name: string }[];
+  defaultDurationMinutes: number | null;
+  defaultPerQuestionTimeSeconds: number | null;
 }
 
 const INITIAL_CONFIG: WizardConfig = {
   title: '',
   level_id: '',
   duration_minutes: 30,
+  per_question_time_seconds: null,
   delay_ms: 500,
   digit_count: 2,
   row_count: 5,
@@ -37,17 +40,31 @@ const INITIAL_STATE: WizardState = {
   config: INITIAL_CONFIG,
 };
 
-export function CreateAssessmentWizard({ levels }: CreateAssessmentWizardProps) {
+export function CreateAssessmentWizard({ levels, defaultDurationMinutes, defaultPerQuestionTimeSeconds }: CreateAssessmentWizardProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [state, setState] = useState<WizardState>(INITIAL_STATE);
+  const [state, setState] = useState<WizardState>(() => ({
+    ...INITIAL_STATE,
+    config: {
+      ...INITIAL_CONFIG,
+      duration_minutes: defaultDurationMinutes ?? 30,
+      per_question_time_seconds: defaultPerQuestionTimeSeconds,
+    }
+  }));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function handleClose() {
     setIsOpen(false);
     setTimeout(() => {
-      setState(INITIAL_STATE);
+      setState({
+        ...INITIAL_STATE,
+        config: {
+          ...INITIAL_CONFIG,
+          duration_minutes: defaultDurationMinutes ?? 30,
+          per_question_time_seconds: defaultPerQuestionTimeSeconds,
+        }
+      });
       setError(null);
       setLoading(false);
     }, 300);
@@ -87,7 +104,8 @@ export function CreateAssessmentWizard({ levels }: CreateAssessmentWizardProps) 
       const result = await createAssessment({
         title: 'Untitled Assessment',
         type: state.type,
-        duration_minutes: 30,
+        duration_minutes: defaultDurationMinutes ?? 30,
+        per_question_time_seconds: defaultPerQuestionTimeSeconds,
         level_id: state.config.level_id,
       });
       setLoading(false);
@@ -132,6 +150,7 @@ export function CreateAssessmentWizard({ levels }: CreateAssessmentWizardProps) 
       assessment_id: state.paper_id,
       title: state.config.title,
       duration_minutes: state.config.duration_minutes,
+      per_question_time_seconds: state.config.per_question_time_seconds,
     });
 
     setLoading(false);
@@ -159,6 +178,7 @@ export function CreateAssessmentWizard({ levels }: CreateAssessmentWizardProps) 
       assessment_id: state.paper_id,
       title: state.config.title,
       duration_minutes: state.config.duration_minutes,
+      per_question_time_seconds: state.config.per_question_time_seconds,
     });
 
     if (!updateResult.ok) {

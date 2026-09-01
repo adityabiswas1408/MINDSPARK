@@ -72,6 +72,7 @@ export default function AnnouncementsClient({
       const result = await createAnnouncement({
         title: title.trim(),
         body_html: bodyHtml,
+        body_json: {},
         target_level_id: targetLevelId === 'all' ? undefined : targetLevelId,
         publish_now: true,
       });

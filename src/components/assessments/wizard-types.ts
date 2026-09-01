@@ -15,6 +15,7 @@ export interface WizardConfig {
   title: string;
   level_id: string;
   duration_minutes: number;
+  per_question_time_seconds: number | null;
   delay_ms: number;
   digit_count: number;
   row_count: number;

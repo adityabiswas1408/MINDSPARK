@@ -10,6 +10,7 @@ const CreateAssessmentSchema = z.object({
   title: z.string().min(1),
   type: z.enum(['EXAM', 'TEST']),
   duration_minutes: z.number().int().positive(),
+  per_question_time_seconds: z.number().int().min(5).max(600).optional().nullable(),
   level_id: z.string().uuid(),
 });
 export type CreateAssessmentInput = z.infer<typeof CreateAssessmentSchema>;
@@ -20,7 +21,10 @@ export async function createAssessment(input: CreateAssessmentInput): Promise<Ac
   const { userId, institutionId } = authResult;
 
   const parsed = CreateAssessmentSchema.safeParse(input);
-  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  if (!parsed.success) {
+    console.log("CreateAssessment Validation Error:", parsed.error);
+    return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
+  }
   const validData = parsed.data;
 
   const supabase = await createClient();
@@ -31,6 +35,7 @@ export async function createAssessment(input: CreateAssessmentInput): Promise<Ac
       title: validData.title,
       type: validData.type,
       duration_minutes: validData.duration_minutes,
+      per_question_time_seconds: validData.per_question_time_seconds,
       level_id: validData.level_id,
       institution_id: institutionId,
       status: 'DRAFT',
@@ -39,7 +44,10 @@ export async function createAssessment(input: CreateAssessmentInput): Promise<Ac
     .select('id')
     .single();
 
-  if (error || !assessment) return { error: 'VALIDATION_ERROR' };
+  if (error || !assessment) {
+    console.log("CreateAssessment Insert Error:", error);
+    return { error: 'VALIDATION_ERROR' };
+  }
 
   await supabase.from('activity_logs').insert({
     user_id: userId,
@@ -56,6 +64,7 @@ const UpdateAssessmentSchema = z.object({
   assessment_id: z.string().uuid(),
   title: z.string().min(1).optional(),
   duration_minutes: z.number().int().positive().optional(),
+  per_question_time_seconds: z.number().int().min(5).max(600).optional().nullable(),
 });
 export type UpdateAssessmentInput = z.infer<typeof UpdateAssessmentSchema>;
 
@@ -85,6 +94,7 @@ export async function updateAssessment(input: UpdateAssessmentInput): Promise<Ac
   const updates: Record<string, unknown> = {};
   if (validData.title !== undefined) updates.title = validData.title;
   if (validData.duration_minutes !== undefined) updates.duration_minutes = validData.duration_minutes;
+  if (validData.per_question_time_seconds !== undefined) updates.per_question_time_seconds = validData.per_question_time_seconds;
 
   const { error: updateErr } = await supabase
     .from('exam_papers')

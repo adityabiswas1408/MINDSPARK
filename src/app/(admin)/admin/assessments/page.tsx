@@ -15,16 +15,21 @@ export default async function AdminAssessmentsPage() {
   const { institutionId } = authResult;
 
   const supabase = await createClient();
-  const [{ data: papers }, { data: levels }] = await Promise.all([
+  const [{ data: papers }, { data: levels }, { data: inst }] = await Promise.all([
     supabase.from('exam_papers').select('*').eq('institution_id', institutionId).order('created_at', { ascending: false }),
     supabase.from('levels').select('id, name').eq('institution_id', institutionId).order('sequence_order'),
+    supabase.from('institutions').select('default_duration_minutes, default_per_question_time_seconds').eq('id', institutionId).single(),
   ]);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-green-800">Assessments</h1>
-        <CreateAssessmentWizard levels={levels ?? []} />
+        <CreateAssessmentWizard 
+          levels={levels ?? []} 
+          defaultDurationMinutes={inst?.default_duration_minutes ?? null}
+          defaultPerQuestionTimeSeconds={inst?.default_per_question_time_seconds ?? null}
+        />
       </div>
       {!papers || papers.length === 0 ? (
         <div className="max-w-xl mx-auto mt-12">
@@ -32,7 +37,11 @@ export default async function AdminAssessmentsPage() {
             icon={<FileText size={48} />}
             title="No Assessments Found"
             description="Create a new assessment to get started."
-            action={<CreateAssessmentWizard levels={levels ?? []} />}
+            action={<CreateAssessmentWizard 
+              levels={levels ?? []} 
+              defaultDurationMinutes={inst?.default_duration_minutes ?? null}
+              defaultPerQuestionTimeSeconds={inst?.default_per_question_time_seconds ?? null}
+            />}
           />
         </div>
       ) : (

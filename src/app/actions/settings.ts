@@ -10,6 +10,9 @@ const UpdateSettingsSchema = z.object({
   session_timeout_seconds: z.number().int().min(900).max(86400).optional(),
   timezone: z.string().optional(),
   logo_url: z.string().url().optional(),
+  auto_archive_enabled: z.boolean().optional(),
+  default_duration_minutes: z.number().int().min(1).max(180).optional().nullable(),
+  default_per_question_time_seconds: z.number().int().min(5).max(600).optional().nullable(),
   grade_boundaries: z.array(z.object({
     assessment_type: z.enum(['EXAM', 'TEST', 'ALL']),
     min_score: z.number(),
@@ -56,6 +59,9 @@ export async function updateSettings(input: UpdateSettingsInput): Promise<Action
   if (validData.session_timeout_seconds !== undefined) updates.session_timeout_seconds = validData.session_timeout_seconds;
   if (validData.timezone !== undefined) updates.timezone = validData.timezone;
   if (validData.logo_url !== undefined) updates.logo_url = validData.logo_url;
+  if (validData.auto_archive_enabled !== undefined) updates.auto_archive_enabled = validData.auto_archive_enabled;
+  if (validData.default_duration_minutes !== undefined) updates.default_duration_minutes = validData.default_duration_minutes;
+  if (validData.default_per_question_time_seconds !== undefined) updates.default_per_question_time_seconds = validData.default_per_question_time_seconds;
   
   if (Object.keys(updates).length > 0) {
     await adminSupabase.from('institutions').update(updates).eq('id', institutionId);

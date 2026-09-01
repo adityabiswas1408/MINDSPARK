@@ -72,6 +72,22 @@ export function StepConfig({ config, assessment_type, levels, onChange }: StepCo
         />
       </div>
 
+      <div>
+        <label style={labelStyle}>Per-question time limit (seconds, optional)</label>
+        <input
+          type="number"
+          min={5}
+          max={600}
+          value={config.per_question_time_seconds ?? ''}
+          onChange={(e) => {
+            const val = e.target.value;
+            onChange({ per_question_time_seconds: val === '' ? null : Number(val) });
+          }}
+          placeholder="e.g. 60"
+          style={fieldStyle}
+        />
+      </div>
+
       {assessment_type === 'TEST' && (
         <>
           <div>

@@ -78,6 +78,9 @@ export interface InstitutionInput {
   name: string;
   timezone: string;
   session_timeout_seconds: number;
+  auto_archive_enabled: boolean;
+  default_duration_minutes: number | null;
+  default_per_question_time_seconds: number | null;
 }
 
 interface SettingsClientProps {
@@ -122,7 +125,9 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
   const [name, setName] = useState(institution.name);
   const [timezone, setTimezone] = useState(institution.timezone);
   const [sessionTimeout, setSessionTimeout] = useState(String(institution.session_timeout_seconds));
-  const [autoArchive, setAutoArchive] = useState(false);
+  const [autoArchive, setAutoArchive] = useState(institution.auto_archive_enabled);
+  const [defaultDuration, setDefaultDuration] = useState(institution.default_duration_minutes ? String(institution.default_duration_minutes) : '');
+  const [defaultPerQuestion, setDefaultPerQuestion] = useState(institution.default_per_question_time_seconds ? String(institution.default_per_question_time_seconds) : '');
   const [boundaries, setBoundaries] = useState<BoundaryRow[]>(() => initBoundaries(gradeBoundaries));
   const [sessionExpiry, setSessionExpiry] = useState<number | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -159,7 +164,14 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
       return;
     }
     startInstTransition(async () => {
-      const result = await updateSettings({ name: name.trim(), timezone, session_timeout_seconds: timeout });
+      const result = await updateSettings({ 
+        name: name.trim(), 
+        timezone, 
+        session_timeout_seconds: timeout,
+        auto_archive_enabled: autoArchive,
+        default_duration_minutes: defaultDuration ? parseInt(defaultDuration, 10) : null,
+        default_per_question_time_seconds: defaultPerQuestion ? parseInt(defaultPerQuestion, 10) : null,
+      });
       if (result.ok) {
         toast.success('Settings saved');
       } else {
@@ -253,6 +265,7 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
               max={86400}
               className="h-9 font-mono"
             />
+            <p className="text-xs text-slate-500 italic">Not yet functionally connected.</p>
           </div>
 
           <Button
@@ -261,6 +274,48 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
             className="bg-green-800 hover:bg-green-700 text-white"
           >
             {isPendingInst ? 'Saving…' : 'Save Institution'}
+          </Button>
+        </div>
+
+        {/* Default Exam Timing */}
+        <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-5">
+          <h2 className="text-lg font-semibold text-slate-900">Default Exam Timing</h2>
+          <p className="text-xs text-slate-500">These pre-fill defaults are applied only when creating a new paper — not retroactive.</p>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">
+              Default Duration (minutes)
+            </label>
+            <Input
+              value={defaultDuration}
+              onChange={e => setDefaultDuration(e.target.value)}
+              type="number"
+              min={1}
+              max={180}
+              className="h-9 font-mono"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">
+              Default Per-Question Time (seconds)
+            </label>
+            <Input
+              value={defaultPerQuestion}
+              onChange={e => setDefaultPerQuestion(e.target.value)}
+              type="number"
+              min={5}
+              max={600}
+              className="h-9 font-mono"
+            />
+          </div>
+
+          <Button
+            onClick={handleSaveInstitution}
+            disabled={isPendingInst}
+            className="bg-green-800 hover:bg-green-700 text-white"
+          >
+            {isPendingInst ? 'Saving…' : 'Save Timing Settings'}
           </Button>
         </div>
 
@@ -358,12 +413,30 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
                 Move inactive student data to cold storage after 12 months
               </p>
             </div>
-            {/* Manual toggle — no DB column backing */}
             <button
               type="button"
               role="switch"
               aria-checked={autoArchive}
-              onClick={() => setAutoArchive(v => !v)}
+              onClick={() => {
+                setAutoArchive(!autoArchive);
+                // Call update immediately since there's no other save button in this section
+                startInstTransition(async () => {
+                  const result = await updateSettings({ 
+                    name: name.trim(), 
+                    timezone, 
+                    session_timeout_seconds: parseInt(sessionTimeout, 10),
+                    auto_archive_enabled: !autoArchive,
+                    default_duration_minutes: defaultDuration ? parseInt(defaultDuration, 10) : null,
+                    default_per_question_time_seconds: defaultPerQuestion ? parseInt(defaultPerQuestion, 10) : null,
+                  });
+                  if (result.ok) {
+                    toast.success('Auto-archive setting updated');
+                  } else {
+                    toast.error((result as { message?: string }).message ?? 'Failed to update setting');
+                    setAutoArchive(autoArchive); // Revert on failure
+                  }
+                });
+              }}
               className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-800 focus-visible:ring-offset-2 ${autoArchive ? 'bg-green-800' : 'bg-slate-200'}`}
             >
               <span
@@ -375,7 +448,7 @@ export default function SettingsClient({ institution, gradeBoundaries }: Setting
           <div className="flex items-start gap-2 rounded-md bg-amber-50 border border-amber-200 px-3 py-2.5 text-xs text-amber-800">
             <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
             <span>
-              Changes to data retention policy require manual configuration. Contact support.
+              This will automatically archive any records that haven't been modified in 12 months. Ensure compliance with your local retention laws before enabling.
             </span>
           </div>
         </div>
