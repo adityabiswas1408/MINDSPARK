@@ -1,0 +1,295 @@
+﻿
+> mindspark@1.0.0 test
+> vitest run
+
+node.exe : [1m[43m DEPRECATED [49m[22m [33m`test.poolOptions` was removed in Vitest 4. All previous `poolOptions` 
+are now top-level options. Please, refer to the migration guide: https://vitest.dev/guide/migration#pool-rework[39m
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Users\ADI\AppData\Roaming\np ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([1m[43m DEPRE...ool-rework[39m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+[1m[46m RUN [49m[22m [36mv4.1.2 [39m[90mA:/MS/mindspark[39m
+
+[90mstdout[2m | src/app/actions/dashboard-metrics-cross-tenant.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+
+[90mstdout[2m | src/app/actions/students-creation.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+
+[90mstdout[2m | src/app/actions/settings.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒ¢í∩╕Å auth for agents: https://vestauth.com
+
+[90mstdout[2m | src/app/actions/results-publish-all.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+
+[90mstdout[2m | src/app/actions/results-cross-tenant.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+
+[90mstdout[2m | src/app/actions/levels-cross-tenant.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+
+[90mstdout[2m | src/app/actions/students-bulk-import.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+
+[90mstdout[2m | src/app/(admin)/admin/students/page.test.tsx
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜí∩╕Å secrets for agents: https://dotenvx.com/as2
+
+[90mstdout[2m | src/lib/auth/realtime-security.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+
+[90mstdout[2m | src/lib/anticheat/clock-guard.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+
+[90mstdout[2m | src/app/api/submissions/offline-sync/route.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒñû agentic secret storage: https://dotenvx.com/as2
+
+[90mstdout[2m | src/app/actions/assessment-sessions.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+
+[90mstdout[2m | src/lib/auth/realtime-security.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  suppress all logs with { quiet: true }
+
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+
+[90mstdout[2m | src/app/actions/dashboard-metrics-cross-tenant.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts[2m > [22m[2mCross-Tenant Isolation RLS Tests
+[22m[39mSUPABASE_URL: set
+SERVICE_ROLE: set
+Inserting Inst A...
+
+ [32mΓ£ô[39m src/lib/anticheat/clock-guard.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 161[2mms[22m[39m
+ [32mΓ£ô[39m src/app/api/submissions/offline-sync/route.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+[90mstdout[2m | src/app/actions/results-cross-tenant.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+
+[90mstdout[2m | src/app/actions/levels-cross-tenant.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+
+ [32mΓ£ô[39m src/app/actions/assessment-sessions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+[90mstdout[2m | src/app/actions/results-publish-all.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+
+[90mstdout[2m | src/app/actions/results-publish-all.test.ts[2m > [22m[2mLive Happy-Path Publish/Unpublish All
+[22m[39mLooking for a CLOSED paper with completed submissions...
+
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts[2m > [22m[2mCross-Tenant Isolation RLS Tests
+[22m[39mInserted Inst A: { id: [32m'f21dcb8e-84e1-4625-8dec-7ca6641f078c'[39m }
+
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts[2m > [22m[2mCross-Tenant Isolation RLS Tests
+[22m[39mInserted Inst B: { id: [32m'3bfd3b99-d841-467c-aef5-b52a947e1905'[39m }
+Inserting level A...
+
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts[2m > [22m[2mCross-Tenant Isolation RLS Tests
+[22m[39mInserted level A
+Inserting cohort A...
+
+[90mstdout[2m | src/lib/auth/results-rls.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜÖ∩╕Å  suppress all logs with { quiet: true }
+
+[90mstdout[2m | src/components/exam/exam-page-client.test.tsx
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+
+[90mstdout[2m | src/lib/auth/results-rls.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ≡ƒ¢í∩╕Å auth for agents: https://vestauth.com
+
+[90mstdout[2m | src/lib/offline/indexed-db-store.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+
+[90mstdout[2m | src/components/exam/anzan-flash-view.test.tsx
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+
+ [32mΓ£ô[39m src/lib/offline/indexed-db-store.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+[90mstdout[2m | src/app/actions/results.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+
+[90mstdout[2m | src/lib/anzan/number-generator.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜí∩╕Å secrets for agents: https://dotenvx.com/as2
+
+[90mstdout[2m | src/components/results/score-fraction.test.tsx
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜÖ∩╕Å  load multiple .env files with { path: ['.env.local', '.env'] }
+
+[90mstdout[2m | src/app/actions/announcements.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+
+[90mstdout[2m | src/components/profile/profile-helpers.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜí∩╕Å secrets for agents: https://dotenvx.com/as2
+
+[90mstderr[2m | src/components/exam/exam-page-client.test.tsx[2m > [22m[2mExamPageClient[2m > [22m[2mdoes not 
+redirect on submission validation error
+[22m[39mSubmission failed: VALIDATION_ERROR
+
+[90mstdout[2m | src/components/profile/profile-card.test.tsx
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+
+ [32mΓ£ô[39m src/components/exam/exam-page-client.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/anzan/number-generator.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m src/app/actions/results.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m src/components/profile/profile-helpers.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m src/app/actions/announcements.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m src/components/exam/anzan-flash-view.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 36[2mms[22m[39m
+[90mstdout[2m | src/app/actions/auth.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+
+ [32mΓ£ô[39m src/components/results/score-fraction.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+[90mstdout[2m | src/lib/anzan/timing-engine.test.ts
+[22m[39m[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ΓÜí∩╕Å secrets for agents: https://dotenvx.com/as2
+
+ [32mΓ£ô[39m src/lib/anzan/timing-engine.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m src/app/actions/auth.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m src/components/profile/profile-card.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 382[2mms[22m[39m
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts[2m > [22m[2mCross-Tenant Isolation RLS Tests
+[22m[39mInserted cohort A
+Creating auth user A...
+
+[90mstdout[2m | src/app/actions/settings.test.ts[2m > [22m[2mSettings and Timing Defaults[2m > [22m[2mupdates settings and creates assessment reflecting those settings without retroactively affecting old ones
+[22m[39mP1 result: {
+  ok: [33mtrue[39m,
+  data: { assessment_id: [32m'b46d8495-9061-48ea-8464-bd319d1d2a47'[39m }
+}
+
+[90mstdout[2m | src/app/actions/students-bulk-import.test.ts[2m > [22m[2mBulk Import CSV Integration[2m > [22m[2mimports valid CSV rows end-to-end, creating real auth users and student records
+[22m[39mResult data: {
+  "inserted": 2,
+  "skipped": 0,
+  "errors": []
+}
+
+[90mstdout[2m | src/app/actions/settings.test.ts[2m > [22m[2mSettings and Timing Defaults[2m > [22m[2mupdates settings and creates assessment reflecting those settings without retroactively affecting old ones
+[22m[39mUpdate result: { ok: [33mtrue[39m, data: { updated: [33mtrue[39m } }
+
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts[2m > [22m[2mCross-Tenant Isolation RLS Tests
+[22m[39mCreated auth user A
+Inserting profile A...
+
+[90mstdout[2m | src/app/actions/results-publish-all.test.ts[2m > [22m[2mLive Happy-Path Publish/Unpublish All
+[22m[39mFound Target Paper: 1968845c-38b9-444e-ac43-9b9105d8211a (Inst: b0d173d7-c729-4fe8-a31b-3feffec25a77)
+
+[90mstdout[2m | src/lib/auth/cross-tenant-isolation.test.ts[2m > [22m[2mCross-Tenant Isolation RLS Tests
+[22m[39mInserted profile A
+
+[90mstdout[2m | src/app/actions/results-publish-all.test.ts[2m > [22m[2mLive Happy-Path Publish/Unpublish All[2m > [22m[2mTask 2: Happy path publishAllPaperResults and unpublishAllPaperResults
+[22m[39m
+--- Publishing All Results ---
+
+[90mstdout[2m | src/app/actions/settings.test.ts[2m > [22m[2mSettings and Timing Defaults[2m > [22m[2mupdates settings and creates assessment reflecting those settings without retroactively affecting old ones
+[22m[39mP2 result: {
+  ok: [33mtrue[39m,
+  data: { assessment_id: [32m'5aed896a-d58d-42f5-9992-6e6fdcdea888'[39m }
+}
+
+ [32mΓ£ô[39m src/app/actions/levels-cross-tenant.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 11750[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m scoping: Admin A always creates level in Inst A, ignoring client input [33m 4208[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m race condition: concurrent creations properly assign distinct sequence_order [33m 1786[2mms[22m[39m
+[90mstdout[2m | src/app/actions/results-publish-all.test.ts[2m > [22m[2mLive Happy-Path Publish/Unpublish All[2m > [22m[2mTask 2: Happy path publishAllPaperResults and unpublishAllPaperResults
+[22m[39mDB exam_papers.result_published_at: 2026-09-01T11:48:44.246+00:00
+DB submissions.result_published_at (sample): 2026-09-01T11:48:44.246+00:00
+
+--- Unpublishing All Results ---
+
+ [32mΓ£ô[39m src/app/actions/settings.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 12299[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m updates settings and creates assessment reflecting those settings without retroactively affecting old ones [33m 12297[2mms[22m[39m
+[90mstdout[2m | src/app/actions/results-publish-all.test.ts[2m > [22m[2mLive Happy-Path Publish/Unpublish All[2m > [22m[2mTask 2: Happy path publishAllPaperResults and unpublishAllPaperResults
+[22m[39mDB exam_papers.result_published_at: [1mnull[22m
+DB submissions.result_published_at (sample): [1mnull[22m
+
+ [32mΓ£ô[39m src/app/actions/results-publish-all.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 12735[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m Task 2: Happy path publishAllPaperResults and unpublishAllPaperResults [33m 2248[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/auth/cross-tenant-isolation.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 13249[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m rejects cross-tenant read access for all tables [33m 742[2mms[22m[39m
+[90mstdout[2m | src/lib/auth/results-rls.test.ts[2m > [22m[2mResults RLS Gate Tests[2m > [22m[2mevaluates RLS gates sequentially
+[22m[39mINSERTED ANSWER: [
+  {
+    id: [32m'533b2a38-9594-4b67-bc0b-f1a3a0edc63a'[39m,
+    submission_id: [32m'08aee184-bf1b-4e5b-b0cc-9ccc957ba9fa'[39m,
+    question_id: [32m'83745165-b67e-41dc-97d4-d7d25b84e902'[39m,
+    is_correct: [33mtrue[39m,
+    created_at: [32m'2026-09-01T11:48:30.2342+00:00'[39m,
+    idempotency_key: [32m'c87bb1e2-927f-4119-9bc7-1060e487842a'[39m,
+    selected_option: [32m'A'[39m,
+    answered_at: [32m'2026-09-01T11:48:30.2342+00:00'[39m,
+    time_spent_ms: [33m1000[39m,
+    updated_at: [32m'2026-09-01T11:48:30.2342+00:00'[39m
+  }
+]
+
+[90mstderr[2m | src/lib/auth/results-rls.test.ts[2m > [22m[2mResults RLS Gate Tests[2m > [22m[2mevaluates RLS 
+gates sequentially
+[22m[39mGoTrueClient@sb-ahrnkwuqlhmwenhvnupb-auth-token:1 (2.100.0) 2026-09-01T11:48:46.254Z Multiple GoTrueClient 
+instances detected in the same browser context. It is not an error, but this should be avoided as it may produce 
+undefined behavior when used concurrently under the same storage key.
+
+ [32mΓ£ô[39m src/app/actions/results-cross-tenant.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 12933[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m rejects cross-tenant publishResult [33m 385[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m rejects cross-tenant batch publishResults (does not publish other tenant) [33m 365[2mms[22m[39m
+[90mstderr[2m | src/lib/auth/results-rls.test.ts[2m > [22m[2mResults RLS Gate Tests[2m > [22m[2mevaluates RLS 
+gates sequentially
+[22m[39mGoTrueClient@sb-ahrnkwuqlhmwenhvnupb-auth-token:2 (2.100.0) 2026-09-01T11:48:46.550Z Multiple GoTrueClient 
+instances detected in the same browser context. It is not an error, but this should be avoided as it may produce 
+undefined behavior when used concurrently under the same storage key.
+
+[90mstdout[2m | src/app/actions/students-creation.test.ts[2m > [22m[2mStudent Creation Integrity[2m > [22m[2mrolls back completely if student insert fails due to invalid FK
+[22m[39mRollback test result: { error: [32m'INTERNAL_ERROR'[39m, message: [32m'Failed to create student.'[39m }
+
+ [32mΓ£ô[39m src/app/actions/dashboard-metrics-cross-tenant.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 14101[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m correctly scopes to institution and excludes soft-deleted students [33m 443[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m includes scores from avgScore even if answer_key_released=false and result_published_at=null [33m 1509[2mms[22m[39m
+ [32mΓ£ô[39m src/app/actions/students-creation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 13885[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m rejects duplicate roll number and leaves no orphaned rows [33m 3871[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m rolls back completely if student insert fails due to invalid FK [33m 1715[2mms[22m[39m
+[90mstdout[2m | src/lib/auth/results-rls.test.ts[2m > [22m[2mResults RLS Gate Tests[2m > [22m[2mevaluates RLS gates sequentially
+[22m[39mQUESTIONS READABLE? [33m1[39m
+JWT PAYLOAD: {
+  iss: [32m'https://ahrnkwuqlhmwenhvnupb.supabase.co/auth/v1'[39m,
+  sub: [32m'ff171c17-9f44-4b90-9872-7bcf024b8377'[39m,
+  aud: [32m'authenticated'[39m,
+  exp: [33m1788266910[39m,
+  iat: [33m1788263310[39m,
+  email: [32m'student-1788263315992@test.com'[39m,
+  phone: [32m''[39m,
+  app_metadata: {
+    institution_id: [32m'67f431c1-ff23-4374-aebb-d36636a23f36'[39m,
+    provider: [32m'email'[39m,
+    providers: [ [32m'email'[39m ],
+    role: [32m'student'[39m
+  },
+  user_metadata: { email_verified: [33mtrue[39m },
+  role: [32m'authenticated'[39m,
+  aal: [32m'aal1'[39m,
+  amr: [ { method: [32m'password'[39m, timestamp: [33m1788263310[39m } ],
+  session_id: [32m'7efe006d-38ce-48a5-ac40-28389d52aac3'[39m,
+  is_anonymous: [33mfalse[39m
+}
+
+ [32mΓ£ô[39m src/app/actions/students-bulk-import.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 14259[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m imports valid CSV rows end-to-end, creating real auth users and student records [33m 5607[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m handles mixed batches: creates valid rows and cleans up auth users for failed rows [33m 2335[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/auth/results-rls.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 11966[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m evaluates RLS gates sequentially [33m 11964[2mms[22m[39m
+[90mstderr[2m | src/lib/auth/realtime-security.test.ts[2m > [22m[2mRealtime Security & Isolation Tests[2m > 
+[22m[2mdenies INSERT/publish for unauthorized users on exam channel
+[22m[39mRealtime send() is automatically falling back to REST API. This behavior will be deprecated in the future. 
+Please use httpSend() explicitly for REST delivery.
+
+ [32mΓ£ô[39m src/app/(admin)/admin/students/page.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 32589[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m finds a student on page 2 using server-side search parameter [33m 705[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/auth/realtime-security.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 38362[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m rejects unauthorized/wrong-institution user from subscribing to exam channel [33m 5534[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m denies INSERT/publish for unauthorized users on exam channel [33m 4372[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m allows authorized admin subscriber to receive legitimate server broadcast [33m 4066[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m presence track/join/leave events fire and are received correctly [33m 10331[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m25 passed[39m[22m[90m (25)[39m
+[2m      Tests [22m [1m[32m98 passed[39m[22m[90m (98)[39m
+[2m   Start at [22m 17:18:31
+[2m   Duration [22m 39.42s[2m (transform 4.26s, setup 1.21s, import 10.02s, tests 189.04s, environment 41.04s)[22m
+
+TEST_EXIT:0

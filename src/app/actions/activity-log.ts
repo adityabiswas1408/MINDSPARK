@@ -58,7 +58,7 @@ export async function fetchActivityLogs(
       .from('profiles')
       .select('id')
       .eq('institution_id', institutionId)
-      .ilike('email', `%${userSearch.trim()}%`);
+      .or(`email.ilike.%${userSearch.trim()}%,full_name.ilike.%${userSearch.trim()}%`);
     userIdFilter = (matchedProfiles ?? []).map(p => p.id);
     if (userIdFilter.length === 0) {
       return { ok: true, data: { logs: [], total: 0 } };
@@ -131,10 +131,10 @@ export async function exportActivityLogsCsv(
       .from('profiles')
       .select('id')
       .eq('institution_id', institutionId)
-      .ilike('email', `%${userSearch.trim()}%`);
+      .or(`email.ilike.%${userSearch.trim()}%,full_name.ilike.%${userSearch.trim()}%`);
     userIdFilter = (matchedProfiles ?? []).map(p => p.id);
     if (userIdFilter.length === 0) {
-      return { ok: true, data: { csv: 'Timestamp (UTC),Actor Email,Action,Entity Type,Entity ID,IP Address\n' } };
+      return { ok: true, data: { csv: 'Timestamp (UTC),Actor Email,Actor Name,Action,Entity Type,Entity ID,IP Address\n' } };
     }
   }
 
@@ -161,27 +161,34 @@ export async function exportActivityLogsCsv(
         .filter((id): id is string => id !== null && id !== undefined)
     ),
   ];
-  const emailMap: Record<string, string> = {};
+  const emailMap: Record<string, { email: string; name: string }> = {};
   if (userIds.length > 0) {
     const { data: profiles } = await adminSupabase
       .from('profiles')
-      .select('id, email')
+      .select('id, email, full_name')
       .in('id', userIds);
     for (const p of profiles ?? []) {
-      emailMap[p.id] = p.email ?? '';
+      emailMap[p.id] = { 
+        email: p.email ?? '', 
+        name: p.full_name ?? '' 
+      };
     }
   }
 
   const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const header = 'Timestamp (UTC),Actor Email,Action,Entity Type,Entity ID,IP Address';
-  const csvRows = (rows ?? []).map(row => [
-    esc(new Date(row.timestamp).toISOString()),
-    esc(row.user_id ? (emailMap[row.user_id] ?? '') : ''),
-    esc(row.action_type),
-    esc(row.entity_type),
-    esc(row.entity_id ?? ''),
-    esc(row.ip_address ?? ''),
-  ].join(','));
+  const header = 'Timestamp (UTC),Actor Email,Actor Name,Action,Entity Type,Entity ID,IP Address';
+  const csvRows = (rows ?? []).map(row => {
+    const actorInfo = row.user_id ? emailMap[row.user_id] : null;
+    return [
+      esc(new Date(row.timestamp).toISOString()),
+      esc(actorInfo?.email ?? ''),
+      esc(actorInfo?.name ?? ''),
+      esc(row.action_type),
+      esc(row.entity_type),
+      esc(row.entity_id ?? ''),
+      esc(row.ip_address ?? ''),
+    ].join(',');
+  });
 
   return { ok: true, data: { csv: [header, ...csvRows].join('\n') } };
 }

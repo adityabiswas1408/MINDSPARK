@@ -21,35 +21,61 @@ import { toast } from 'sonner';
 
 const ACTION_TYPES = [
   'ALL',
+  'BULK_PUBLISH_RESULTS',
+  'BULK_RELEASE_ANSWER_KEY',
+  'BULK_UNRELEASE_ANSWER_KEY',
+  'CONSENT_VERIFIED',
   'CREATE_ANNOUNCEMENT',
   'CREATE_ASSESSMENT',
   'CREATE_LEVEL',
   'CREATE_QUESTION',
+  'CREATE_STUDENT',
   'DEACTIVATE_STUDENT',
   'FORCE_CLOSE_EXAM',
   'FORCE_OPEN_EXAM',
+  'IMPORT_STUDENTS',
   'INIT_SESSION',
+  'PUBLISH_ALL_PAPER_RESULTS',
   'PUBLISH_ASSESSMENT',
   'PUBLISH_RESULT',
   'RE_EVALUATE_RESULTS',
+  'RESET_PASSWORD',
   'SUBMIT_EXAM',
+  'TEARDOWN',
+  'UNPUBLISH_ALL_PAPER_RESULTS',
+  'UNPUBLISH_RESULT',
   'UPDATE_ASSESSMENT',
+  'UPDATE_SETTINGS',
+  'UPDATE_STUDENT',
 ];
 
 const BADGE_STYLES: Record<string, string> = {
-  PUBLISH_RESULT:      'bg-green-100 text-green-800',
-  PUBLISH_ASSESSMENT:  'bg-green-100 text-green-800',
-  FORCE_CLOSE_EXAM:    'bg-red-100 text-red-800',
-  CREATE_ASSESSMENT:   'bg-blue-100 text-blue-800',
-  CREATE_ANNOUNCEMENT: 'bg-blue-100 text-blue-800',
-  CREATE_LEVEL:        'bg-blue-100 text-blue-800',
-  CREATE_QUESTION:     'bg-blue-100 text-blue-800',
-  UPDATE_ASSESSMENT:   'bg-blue-100 text-blue-800',
-  FORCE_OPEN_EXAM:     'bg-orange-100 text-orange-800',
-  DEACTIVATE_STUDENT:  'bg-orange-100 text-orange-800',
-  RE_EVALUATE_RESULTS: 'bg-amber-100 text-amber-800',
-  INIT_SESSION:        'bg-slate-100 text-slate-700',
-  SUBMIT_EXAM:         'bg-slate-100 text-slate-700',
+  PUBLISH_RESULT:              'bg-green-100 text-green-800',
+  PUBLISH_ASSESSMENT:          'bg-green-100 text-green-800',
+  PUBLISH_ALL_PAPER_RESULTS:   'bg-green-100 text-green-800',
+  BULK_PUBLISH_RESULTS:        'bg-green-100 text-green-800',
+  FORCE_CLOSE_EXAM:            'bg-red-100 text-red-800',
+  UNPUBLISH_RESULT:            'bg-red-100 text-red-800',
+  UNPUBLISH_ALL_PAPER_RESULTS: 'bg-red-100 text-red-800',
+  TEARDOWN:                    'bg-red-100 text-red-800',
+  CREATE_ASSESSMENT:           'bg-blue-100 text-blue-800',
+  CREATE_ANNOUNCEMENT:         'bg-blue-100 text-blue-800',
+  CREATE_LEVEL:                'bg-blue-100 text-blue-800',
+  CREATE_QUESTION:             'bg-blue-100 text-blue-800',
+  CREATE_STUDENT:              'bg-blue-100 text-blue-800',
+  IMPORT_STUDENTS:             'bg-blue-100 text-blue-800',
+  UPDATE_ASSESSMENT:           'bg-blue-100 text-blue-800',
+  UPDATE_STUDENT:              'bg-blue-100 text-blue-800',
+  UPDATE_SETTINGS:             'bg-blue-100 text-blue-800',
+  FORCE_OPEN_EXAM:             'bg-orange-100 text-orange-800',
+  DEACTIVATE_STUDENT:          'bg-orange-100 text-orange-800',
+  RE_EVALUATE_RESULTS:         'bg-amber-100 text-amber-800',
+  BULK_RELEASE_ANSWER_KEY:     'bg-amber-100 text-amber-800',
+  BULK_UNRELEASE_ANSWER_KEY:   'bg-amber-100 text-amber-800',
+  RESET_PASSWORD:              'bg-amber-100 text-amber-800',
+  CONSENT_VERIFIED:            'bg-teal-100 text-teal-800',
+  INIT_SESSION:                'bg-slate-100 text-slate-700',
+  SUBMIT_EXAM:                 'bg-slate-100 text-slate-700',
 };
 
 function formatUtc(iso: string): string {
@@ -221,7 +247,10 @@ export default function ActivityLogClient({
                   Timestamp (UTC)
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  Actor
+                  Actor Name
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Actor Email
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
                   Action
@@ -235,7 +264,7 @@ export default function ActivityLogClient({
             <tbody className="divide-y divide-slate-100">
               {logs.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-400">
+                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-400">
                     No activity logs found
                   </td>
                 </tr>
@@ -252,10 +281,13 @@ export default function ActivityLogClient({
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className="h-7 w-7 rounded-full bg-green-800/10 flex items-center justify-center text-xs font-semibold text-green-800 shrink-0">
-                          {(log.actor_email?.[0] ?? '?').toUpperCase()}
+                          {(log.actor_name?.[0] ?? log.actor_email?.[0] ?? '?').toUpperCase()}
                         </div>
-                        <span className="text-xs text-slate-700">{log.actor_email ?? 'System'}</span>
+                        <span className="text-xs font-medium text-slate-700">{log.actor_name ?? 'System'}</span>
                       </div>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-600">
+                      {log.actor_email ?? '-'}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -284,7 +316,7 @@ export default function ActivityLogClient({
                   </tr>
                   {expandedId === log.id && (
                     <tr className="bg-slate-50/70">
-                      <td colSpan={5} className="px-6 py-4">
+                      <td colSpan={6} className="px-6 py-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Metadata panel */}
                           <div className="space-y-2">
