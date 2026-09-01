@@ -33,8 +33,10 @@ export default function LoginPage() {
     const { data: { user } } = await supabase.auth.getUser();
     const role = user?.app_metadata?.role;
 
-    if (role === 'admin' || role === 'teacher') {
+    if (role === 'admin') {
       router.push('/admin/dashboard');
+    } else if (role === 'teacher') {
+      router.push('/teacher/announcements');
     } else if (role === 'student') {
       router.push('/student/dashboard');
     } else {
