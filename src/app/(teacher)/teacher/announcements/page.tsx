@@ -18,7 +18,7 @@ export default async function TeacherAnnouncementsPage() {
     .from('levels')
     .select('id, name')
     .eq('institution_id', institutionId)
-    .order('sort_order');
+    .order('sequence_order');
 
   // Last 5 published announcements
   // Using adminSupabase here exactly as the admin route does for read-only display.
