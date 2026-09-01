@@ -141,95 +141,6 @@ export async function initSession(input: InitSessionInput): Promise<ActionResult
   };
 }
 
-const SubmitAnswerSchema = z.object({
-  session_id: z.string().uuid(),
-  question_id: z.string().uuid(),
-  selected_option: z.enum(['A', 'B', 'C', 'D']).nullable(),
-  answered_at: z.number(),
-  idempotency_key: z.string().uuid(),
-  time_spent_ms: z.number().int().nonnegative(),
-});
-export type SubmitAnswerInput = z.infer<typeof SubmitAnswerSchema>;
-
-export async function submitAnswer(input: SubmitAnswerInput): Promise<ActionResult<{ saved: true }>> {
-  const authResult = await requireRole('student');
-  if ('error' in authResult) return { error: authResult.error, message: authResult.message };
-  const { userId } = authResult;
-
-  const parsed = SubmitAnswerSchema.safeParse(input);
-  if (!parsed.success) return { error: 'VALIDATION_ERROR', message: 'Invalid input' };
-  const validData = parsed.data;
-
-  const supabase = await createClient();
-
-  const { data: session } = await supabase
-    .from('assessment_sessions')
-    .select('id, student_id, paper_id, closed_at')
-    .eq('id', validData.session_id)
-    .single();
-
-  if (!session) return { error: 'SESSION_NOT_FOUND', message: 'Invalid session' };
-  if (session.student_id !== userId) return { error: 'FORBIDDEN', message: 'Not your session' };
-  if (session.closed_at) return { error: 'SESSION_CLOSED', message: 'Session closed' };
-
-  // C-4 fix: look up the actual submission.id for this session
-  // student_answers.submission_id FK → submissions(id), not assessment_sessions(id)
-  const { data: sub } = await adminSupabase
-    .from('submissions')
-    .select('id')
-    .eq('session_id', validData.session_id)
-    .eq('student_id', userId)
-    .maybeSingle();
-
-  const submissionId = sub?.id ?? validData.session_id;
-
-  // Server-authoritative is_correct: look up correct_option from questions
-  // and compare against the client-supplied selected_option. NEVER trust a
-  // client-supplied is_correct (it's the primary cheating vector).
-  const { data: questionRow } = await adminSupabase
-    .from('questions')
-    .select('correct_option')
-    .eq('id', validData.question_id)
-    .maybeSingle();
-
-  const isCorrect =
-    questionRow?.correct_option != null &&
-    validData.selected_option != null &&
-    questionRow.correct_option === validData.selected_option;
-
-  await adminSupabase.from('student_answers').upsert({
-    idempotency_key: validData.idempotency_key,
-    submission_id:   submissionId,
-    question_id:     validData.question_id,
-    selected_option: validData.selected_option,
-    answered_at:     new Date(validData.answered_at).toISOString(),
-    time_spent_ms:   validData.time_spent_ms,
-    is_correct:      isCorrect,
-  }, { onConflict: 'idempotency_key' });
-
-  // Broadcast a heartbeat-style 'answer_saved' event on the exam channel so
-  // admin monitor clients update in near-real-time (Zone 2 migration from
-  // postgres_changes to broadcast per 10_architecture.md §5).
-  try {
-    const channel = adminSupabase.channel(`exam:${session.paper_id}`, { config: { private: true } });
-    await channel.subscribe((status) => {
-      if (status === 'SUBSCRIBED') {
-        channel.send({
-          type: 'broadcast',
-          event: 'answer_saved',
-          payload: {
-            student_id: userId,
-            timestamp: Date.now(),
-          },
-        }).then(() => adminSupabase.removeChannel(channel));
-      }
-    });
-  } catch {
-    // Broadcast is fire-and-forget; never block the answer save on it.
-  }
-
-  return { ok: true, data: { saved: true } };
-}
 
 const AnswerSchema = z.object({
   question_id: z.string().uuid(),
@@ -349,7 +260,7 @@ export async function submitExam(input: SubmitExamInput): Promise<ActionResult<{
         is_correct:      isCorrect,
       };
     });
-    await adminSupabase.from('student_answers').upsert(payloads, { onConflict: 'idempotency_key' });
+    await adminSupabase.from('student_answers').upsert(payloads, { onConflict: 'idempotency_key', ignoreDuplicates: true });
   }
 
   await adminSupabase.from('activity_logs').insert({

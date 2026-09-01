@@ -1,1 +1,0 @@
-DO $$ BEGIN FOR i IN 1..1000 LOOP INSERT INTO public.students (id, full_name, roll_number, institution_id, level_id, cohort_id) VALUES (gen_random_uuid(), 'Fake Student ' || i, 'ROLLZ' || i, '00000000-0000-0000-0000-000000000000', 'be579d14-501e-457f-b882-fa9a8f53b12e', 'cccccccc-0000-0000-0000-000000000001'); END LOOP; END $$;

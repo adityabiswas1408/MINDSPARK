@@ -94,9 +94,7 @@ Null grades must be filtered before stats/charts:
 Supabase returns permission denied (42501).
 Custom GUC parameter not registered in pg_settings.
 Does not appear when querying pg_settings.
-Solution: pass secret as p_secret TEXT parameter to RPC.
-Route computes HMAC using process.env.HMAC_SECRET.
-RPC uses p_secret directly instead of current_setting().
+Solution: Clock-guard HMAC validation now lives entirely in the Next.js route layer (using process.env.HMAC_SECRET), not the RPC. The offline sync RPC no longer validates the HMAC or requires a p_secret parameter.
 
 ### Supabase Nano compute hard limits
 Max 200 concurrent client connections (fixed at Nano tier).
@@ -136,6 +134,9 @@ student_answers also added — check for this too.
   and submissions.dpm are now orphan on the read path — kept in the schema for
   analytics use only.
 - See db/sql-editor/2026-04-14-results-flow-columns.sql.
+
+### Hallucinated releaseAnswerKey UI
+There is no `assessments/[id]` page or `releaseAnswerKey` component wire-up anywhere in the frontend. A previous agent round hallucinated the existence of this UI. The server action `releaseAnswerKey` in `src/app/actions/results.ts` exists but is completely orphaned from the frontend.
 
 ### Assessment engine config + timing (2026-04-14)
 - 2026-04-14: exam_papers.per_question_time_seconds (int, nullable, CHECK 5..600) and
@@ -318,22 +319,8 @@ a join will work.
 ---
 
 ## Fake Data Landmines
-Verified hardcoded values shipping as real data.
-Fix before deployment to real students.
+*All previously identified Fake Data Landmines (hardcoded dashboard metrics, lobby checklists, fake analytics) have been resolved and removed from the codebase. The rule below remains in effect:*
 
-- student/dashboard/page.tsx — "Progress to next level 42%"
-  is a hardcoded literal, not a DB query
-- student/dashboard/page.tsx — Skill Metrics
-  {Logical Reasoning: 88, Speed: 64, Accuracy: 92}
-  are a module-level const — not from DB
-- lobby-client.tsx — Camera & Secure Browser checklist
-  always shows ✓ without running any permission check
-- levels-client.tsx — "Avg Competencies: 0" and
-  "Curriculum Density: —" are hardcoded literals
-- announcements-client.tsx — "Engagement Insights:
-  25% higher read rate" is hardcoded marketing copy
-- settings-client.tsx — Auto-archive toggle has no
-  DB column backing (comment in file confirms this)
 Rule: before rendering any number, percentage, or toggle,
 verify it is backed by a DB column or computation.
 
@@ -360,24 +347,8 @@ question_id must be valid UUID — not "question-0" strings.
 
 ## Broken Triggers
 
-### student_answers.update_student_answers_modtime is broken (2026-04-14)
-The trigger `update_student_answers_modtime` runs `update_modified_column()`
-which sets `NEW.updated_at = NOW()` — but `student_answers` has NO
-`updated_at` column. Every UPDATE on `student_answers` errors with
-`ERROR 42703: record "new" has no field "updated_at"`.
-
-Implications:
-- All existing INSERTs via `ON CONFLICT ... DO NOTHING` were fine
-  because DO NOTHING skips the UPDATE path.
-- Any `ON CONFLICT ... DO UPDATE` or standalone `UPDATE student_answers`
-  fails silently in production (or loudly when tested).
-- When running a backfill (e.g. Wave 1 is_correct backfill on
-  2026-04-14), wrap the UPDATE in:
-    ALTER TABLE student_answers DISABLE TRIGGER update_student_answers_modtime;
-    UPDATE ...;
-    ALTER TABLE student_answers ENABLE TRIGGER update_student_answers_modtime;
-Future cleanup (out of Wave 1 scope): either DROP the trigger or ADD
-the `updated_at TIMESTAMPTZ DEFAULT NOW()` column. Pick one.
+### [RESOLVED] student_answers.update_student_answers_modtime is broken (2026-04-14)
+*Resolved: The `updated_at` TIMESTAMPTZ column was added to `student_answers` on live DB, and the trigger now fires successfully on UPDATE.*
 
 ## Realtime Presence Payload Limitation
 Supabase realtime.messages RLS gates topic access only (so unauthorized users cannot join the lobby), but it does not validate the presence payload contents. A student can technically claim any student_id in their own presence.track() call. This is accepted for now given its low severity.

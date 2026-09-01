@@ -33,6 +33,12 @@ function initials(name: string): string {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }
 
+function formatBirthDate(dob?: string | null, dateOfBirth?: string | null): string | null {
+  const dateStr = dob ?? dateOfBirth;
+  if (!dateStr) return null;
+  return new Date(dateStr).toLocaleDateString();
+}
+
 export default async function StudentProfilePage({
   params,
 }: {
@@ -49,7 +55,7 @@ export default async function StudentProfilePage({
   const [studentRes, levelsRes, submissionsRes] = await Promise.all([
     supabase
       .from('students')
-      .select('id, full_name, roll_number, level_id, created_at, deleted_at, date_of_birth, levels(id, name, sequence_order)')
+      .select('id, full_name, roll_number, level_id, created_at, deleted_at, dob, date_of_birth, levels(id, name, sequence_order)')
       .eq('id', id)
       .eq('institution_id', institutionId)
       .single(),
@@ -151,11 +157,11 @@ export default async function StudentProfilePage({
                     {new Date(student.created_at as string).toLocaleDateString()}
                   </span>
                 </div>
-                {student.date_of_birth && (
+                {formatBirthDate(student.dob as string | undefined, student.date_of_birth as string | undefined) && (
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">DOB</span>
                     <span className="text-secondary tabular-nums">
-                      {new Date(student.date_of_birth as string).toLocaleDateString()}
+                      {formatBirthDate(student.dob as string | undefined, student.date_of_birth as string | undefined)}
                     </span>
                   </div>
                 )}
