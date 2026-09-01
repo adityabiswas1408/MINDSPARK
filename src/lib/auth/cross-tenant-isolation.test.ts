@@ -21,7 +21,7 @@ describe('Cross-Tenant Isolation RLS Tests', () => {
     try {
       console.log('SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'set' : 'missing');
       console.log('SERVICE_ROLE:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'missing');
-      const postfix = Date.now().toString();
+      const postfix = Date.now().toString() + Math.random().toString(36).substring(7);
       // 1. Create Institution A and B
       console.log('Inserting Inst A...');
       const instResA = await adminSupabase.from('institutions').insert({ name: 'Test Inst A', slug: `test-inst-a-${postfix}` }).select('id').single();

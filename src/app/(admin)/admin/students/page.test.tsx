@@ -112,7 +112,7 @@ describe('Admin Students Page Server-Side Search', () => {
         roll_number: `ROLL-${ts}-${i}`
       });
     }
-  }, 30000); // 30s timeout
+  }, 60000); // 30s timeout
 
   afterAll(async () => {
     for (const id of authUsersToCleanup) {

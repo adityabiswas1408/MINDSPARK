@@ -32,24 +32,24 @@ export function ScoreTrendChart({ data }: ScoreTrendChartProps) {
     <div className="h-[280px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--slate-200)" />
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 12, fill: '#475569', fontFamily: 'DM Sans' }}
+            tick={{ fontSize: 12, fill: 'var(--text-secondary)', fontFamily: 'DM Sans' }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
             domain={[0, 100]}
-            tick={{ fontSize: 12, fill: '#475569', fontFamily: 'DM Mono' }}
+            tick={{ fontSize: 12, fill: 'var(--text-secondary)', fontFamily: 'DM Mono' }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v) => `${v}%`}
           />
           <Tooltip
             contentStyle={{
-              background: '#fff',
-              border: '1px solid #E2E8F0',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--slate-200)',
               borderRadius: 8,
               fontSize: 12,
               fontFamily: 'DM Sans',
@@ -59,10 +59,10 @@ export function ScoreTrendChart({ data }: ScoreTrendChartProps) {
           <Line
             type="monotone"
             dataKey="avgScore"
-            stroke="#1A3829"
+            stroke="var(--clr-green-800)"
             strokeWidth={2}
-            dot={{ r: 3, fill: '#1A3829', strokeWidth: 0 }}
-            activeDot={{ r: 5, fill: '#1A3829', strokeWidth: 0 }}
+            dot={{ r: 3, fill: 'var(--clr-green-800)', strokeWidth: 0 }}
+            activeDot={{ r: 5, fill: 'var(--clr-green-800)', strokeWidth: 0 }}
           />
         </LineChart>
       </ResponsiveContainer>

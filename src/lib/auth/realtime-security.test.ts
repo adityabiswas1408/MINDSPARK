@@ -23,7 +23,7 @@ describe('Realtime Security & Isolation Tests', () => {
   let authorizedStudentEmail: string;
 
   beforeAll(async () => {
-    const postfix = Date.now().toString();
+    const postfix = Date.now().toString() + Math.random().toString(36).substring(7);
     
     // 1. Create Institutions
     const { data: instResA } = await adminSupabase.from('institutions').insert({ name: 'Test Inst A', slug: `test-inst-a-${postfix}` }).select('id').single();

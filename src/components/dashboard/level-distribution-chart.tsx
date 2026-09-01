@@ -32,33 +32,33 @@ export function LevelDistributionChart({ data }: LevelDistributionChartProps) {
     <div className="h-[280px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--slate-200)" vertical={false} />
           <XAxis
             dataKey="level"
-            tick={{ fontSize: 12, fill: '#475569', fontFamily: 'DM Sans' }}
+            tick={{ fontSize: 12, fill: 'var(--text-secondary)', fontFamily: 'DM Sans' }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
             allowDecimals={false}
-            tick={{ fontSize: 12, fill: '#475569', fontFamily: 'DM Mono' }}
+            tick={{ fontSize: 12, fill: 'var(--text-secondary)', fontFamily: 'DM Mono' }}
             axisLine={false}
             tickLine={false}
           />
           <Tooltip
             contentStyle={{
-              background: '#fff',
-              border: '1px solid #E2E8F0',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--slate-200)',
               borderRadius: 8,
               fontSize: 12,
               fontFamily: 'DM Sans',
             }}
             formatter={(value) => [Number(value), 'Students']}
-            cursor={{ fill: '#F8FAFC' }}
+            cursor={{ fill: 'var(--slate-50)' }}
           />
           <Bar
             dataKey="students"
-            fill="#1A3829"
+            fill="var(--clr-green-800)"
             radius={[4, 4, 0, 0]}
             maxBarSize={48}
           />
