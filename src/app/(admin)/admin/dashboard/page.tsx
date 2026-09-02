@@ -15,8 +15,8 @@ import { Users, BookOpen, TrendingUp, Radio } from 'lucide-react';
 import { unstable_cache } from 'next/cache';
 import { adminSupabase } from '@/lib/supabase/admin';
 
-const getCachedDashboardData = unstable_cache(
-  async (institutionId: string) => {
+const getCachedDashboardData = (institutionId: string) => unstable_cache(
+  async () => {
     const [metricsRes, activityRes, livePulseRes] = await Promise.all([
       adminSupabase.rpc('get_dashboard_metrics', { p_institution_id: institutionId }),
       
@@ -39,9 +39,9 @@ const getCachedDashboardData = unstable_cache(
     ]);
     return { metricsRes, activityRes, livePulseRes };
   },
-  ['dashboard-data-v1'],
+  ['dashboard-data-v1', institutionId],
   { revalidate: 300 }
-);
+)();
 
 export default async function AdminDashboardPage() {
   const authResult = await requireRole(['admin', 'teacher']);
