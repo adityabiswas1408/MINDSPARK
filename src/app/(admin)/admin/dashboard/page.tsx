@@ -11,35 +11,44 @@ import { Users, BookOpen, TrendingUp, Radio } from 'lucide-react';
 
 // TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
 // See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const revalidate = 300;
+
+import { unstable_cache } from 'next/cache';
+import { adminSupabase } from '@/lib/supabase/admin';
+
+const getCachedDashboardData = unstable_cache(
+  async (institutionId: string) => {
+    const [metricsRes, activityRes, livePulseRes] = await Promise.all([
+      adminSupabase.rpc('get_dashboard_metrics', { p_institution_id: institutionId }),
+      
+      // Recent activity — last 10 rows
+      adminSupabase
+        .from('activity_logs')
+        .select('id, action_type, entity_type, timestamp')
+        .eq('institution_id', institutionId)
+        .order('timestamp', { ascending: false })
+        .limit(10),
+
+      // Live Pulse widget: first LIVE exam paper with its active session count
+      adminSupabase
+        .from('exam_papers')
+        .select('id, title, assessment_sessions(id)')
+        .eq('institution_id', institutionId)
+        .eq('status', 'LIVE')
+        .order('opened_at', { ascending: false })
+        .limit(1),
+    ]);
+    return { metricsRes, activityRes, livePulseRes };
+  },
+  ['dashboard-data-v1'],
+  { revalidate: 300 }
+);
 
 export default async function AdminDashboardPage() {
   const authResult = await requireRole(['admin', 'teacher']);
   if ('error' in authResult) return null;
   const { institutionId } = authResult;
 
-  const supabase = await createClient();
-
-  const [metricsRes, activityRes, livePulseRes] = await Promise.all([
-    supabase.rpc('get_dashboard_metrics', { p_institution_id: institutionId }),
-    
-    // Recent activity — last 10 rows
-    supabase
-      .from('activity_logs')
-      .select('id, action_type, entity_type, timestamp')
-      .eq('institution_id', institutionId)
-      .order('timestamp', { ascending: false })
-      .limit(10),
-
-    // Live Pulse widget: first LIVE exam paper with its active session count
-    supabase
-      .from('exam_papers')
-      .select('id, title, assessment_sessions(id)')
-      .eq('institution_id', institutionId)
-      .eq('status', 'LIVE')
-      .order('opened_at', { ascending: false })
-      .limit(1),
-  ]);
+  const { metricsRes, activityRes, livePulseRes } = await getCachedDashboardData(institutionId);
 
   const metrics = (metricsRes.data as any) || {
     totalStudents: 0,
